@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/UIForge.API/UIForge.API.csproj" />
+  </Folder>
+</Solution>
