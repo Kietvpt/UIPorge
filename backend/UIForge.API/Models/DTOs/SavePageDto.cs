@@ -8,7 +8,9 @@ namespace UIForge.API.Models.DTOs
         public string? ProjectId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Route { get; set; } = "/";
+        public string? Icon { get; set; }
         public string LayoutTemplateId { get; set; } = "sidebar-left";
+        public JsonElement? LayoutConfig { get; set; }
         public JsonElement Components { get; set; }
     }
 }

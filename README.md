@@ -17,8 +17,14 @@ UIForge/
 │   │   │   └── TopBar.tsx             # Undo/Redo, Live Preview toggle, Save
 │   │   ├── renderer/       # Runtime Renderer (mô tả bằng JSON Schema)
 │   │   │   ├── Renderer.tsx           # Dynamic dispatcher
-│   │   │   └── components/
-│   │   │       └── CoreComponents.tsx # Button, TextBox, Label, Container, Table...
+│   │   │   └── components/            # Mỗi component 1 file riêng
+│   │   │       ├── index.ts           # Barrel export (thêm component mới → export ở đây)
+│   │   │       ├── types.ts           # Props dùng chung
+│   │   │       ├── ForgeButton.tsx
+│   │   │       ├── ForgeTextBox.tsx
+│   │   │       ├── ForgeLabel.tsx
+│   │   │       ├── ForgeContainer.tsx
+│   │   │       └── ForgeTable.tsx
 │   │   ├── layouts/        # Layout Templates phần mềm
 │   │   │   └── SidebarLayout.tsx      # Navbar bên trái + Nút mở/đóng inspector bên phải
 │   │   ├── store/          # Zustand State Management (undo/redo, CRUD component)

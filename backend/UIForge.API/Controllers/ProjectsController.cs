@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UIForge.API.Data;
@@ -7,6 +8,7 @@ namespace UIForge.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] // Yêu cầu đăng nhập
     public class ProjectsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -28,6 +30,7 @@ namespace UIForge.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Dev")]
         public async Task<IActionResult> CreateProject([FromBody] Project project)
         {
             project.Id = Guid.NewGuid().ToString("N");
