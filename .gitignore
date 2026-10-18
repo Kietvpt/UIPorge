@@ -1,0 +1,31 @@
+# ===== Visual Studio / Rider =====
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ===== .NET build output =====
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Dd]ebug/
+[Rr]elease/
+*.dll
+*.pdb
+*.exe
+*.cache
+project.assets.json
+project.nuget.cache
+
+# ===== Node / Frontend =====
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# ===== Misc =====
+Thumbs.db
+.DS_Store
+*.log

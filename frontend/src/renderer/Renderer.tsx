@@ -6,7 +6,7 @@ import {
   ForgeLabel,
   ForgeContainer,
   ForgeTable,
-} from './components/CoreComponents'
+} from './components'
 import { useEditorStore } from '@/store/editorStore'
 
 interface ComponentRendererProps {

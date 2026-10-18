@@ -29,6 +29,9 @@ interface EditorState {
   deleteFeature: (id: string) => void
   updateFeatureLayout: (id: string, layoutConfig: Partial<FeatureLayoutConfig>) => void
 
+  // Hydrate toàn bộ features từ server (sau khi login / reload)
+  setFeatures: (features: FeaturePage[]) => void
+
   // Actions for Components in the active feature
   selectComponent: (componentId: string | null) => void
   addComponent: (component: ComponentNode, parentId?: string | null) => void
@@ -144,6 +147,17 @@ export const useEditorStore = create<EditorState>()(
           activeFeatureId: id,
           selection: { componentId: null, pageId: id },
         }))
+      },
+
+      setFeatures: (features) => {
+        if (!features.length) return
+        set({
+          features,
+          activeFeatureId: features[0].id,
+          selection: { componentId: null, pageId: features[0].id },
+          history: [features],
+          historyIndex: 0,
+        })
       },
 
       addFeature: (name, icon = 'Layers') => {

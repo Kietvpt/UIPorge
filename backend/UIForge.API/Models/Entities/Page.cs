@@ -19,15 +19,17 @@ namespace UIForge.API.Models.Entities
         [MaxLength(200)]
         public string Route { get; set; } = "/";
 
+        /// <summary>Tên icon (lucide-react) hiển thị trên navbar</summary>
+        [MaxLength(100)]
+        public string? Icon { get; set; }
+
         [Required]
         [MaxLength(100)]
         public string LayoutTemplateId { get; set; } = "sidebar-left";
 
-        /// <summary>
-        /// Stores the entire JSON tree of components for ultra-fast rendering & flexibility
-        /// </summary>
+        /// <summary>Cấu hình layout tổng của page (direction, gap, wrap) dạng JSON</summary>
         [Column(TypeName = "nvarchar(max)")]
-        public string ComponentsJson { get; set; } = "[]";
+        public string? LayoutConfigJson { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -36,5 +38,7 @@ namespace UIForge.API.Models.Entities
         // Navigation
         [ForeignKey("ProjectId")]
         public Project? Project { get; set; }
+
+        public ICollection<UIComponent> Components { get; set; } = new List<UIComponent>();
     }
 }

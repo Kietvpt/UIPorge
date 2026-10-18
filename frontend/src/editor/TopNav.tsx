@@ -9,7 +9,7 @@ import {
   Bell,
   Search,
   Sparkles,
-  ChevronDown,
+  LogOut,
   PanelRightOpen,
   PanelRightClose,
 } from 'lucide-react'
@@ -21,6 +21,12 @@ interface TopNavProps {
   isSaving?: boolean
   showRightPanel: boolean
   onToggleRightPanel: () => void
+  /** Quyền chỉnh sửa (role Dev). Viewer sẽ bị ẩn công cụ edit/save. */
+  canEdit: boolean
+  userName?: string
+  userRole?: string
+  branch?: string
+  onLogout?: () => void
 }
 
 export const TopNav: React.FC<TopNavProps> = ({
@@ -30,6 +36,11 @@ export const TopNav: React.FC<TopNavProps> = ({
   isSaving = false,
   showRightPanel,
   onToggleRightPanel,
+  canEdit,
+  userName,
+  userRole,
+  branch,
+  onLogout,
 }) => {
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
@@ -73,6 +84,7 @@ export const TopNav: React.FC<TopNavProps> = ({
       </div>
 
       {/* ── 2. Editor Tools (Undo, Redo, Preview, Save) ── */}
+      {canEdit ? (
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-lg border border-slate-800">
           <button
@@ -123,6 +135,12 @@ export const TopNav: React.FC<TopNavProps> = ({
           <span>{isSaving ? 'Đang lưu...' : 'Lưu Giao Diện'}</span>
         </button>
       </div>
+      ) : (
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/70 border border-slate-700 text-xs text-slate-400">
+          <Eye className="w-3.5 h-3.5" />
+          <span>Chế độ xem — không có quyền chỉnh sửa</span>
+        </div>
+      )}
 
       {/* ── 3. Account Information & Global User Actions ── */}
       <div className="flex items-center gap-3">
@@ -160,17 +178,28 @@ export const TopNav: React.FC<TopNavProps> = ({
         <div className="flex items-center gap-3 pl-1 pr-2 py-1 rounded-xl hover:bg-slate-800/60 border border-transparent hover:border-slate-800 transition-colors cursor-pointer">
           <div className="relative">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-bold text-white text-xs shadow-sm">
-              AD
+              {(userName || 'U').slice(0, 2).toUpperCase()}
             </div>
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-slate-900" />
           </div>
 
           <div className="text-left leading-tight hidden sm:block">
-            <div className="text-xs font-semibold text-slate-100">Nguyễn Văn Admin</div>
-            <div className="text-[10px] text-slate-400">System Architect</div>
+            <div className="text-xs font-semibold text-slate-100">{userName || 'Người dùng'}</div>
+            <div className="text-[10px] text-slate-400">
+              {userRole === 'Dev' ? 'Developer • được chỉnh sửa' : 'Người dùng • chỉ xem'}
+              {branch ? ` • DB: ${branch}` : ''}
+            </div>
           </div>
 
-          <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-colors cursor-pointer"
+              title="Đăng xuất"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </header>
