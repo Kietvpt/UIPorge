@@ -1,9 +1,13 @@
 import axios from 'axios'
 import { useAuthStore } from '@/store/authStore'
 
-// Axios instance dùng chung: baseURL /api (đi qua Vite proxy -> backend)
+// Backend API URL:
+// - Mặc định local dev kết nối backend HTTPS: https://localhost:7057/api
+// - Khi deploy môi trường khác (staging/production): cấu hình biến môi trường VITE_API_URL
+const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://localhost:7057/api'
+
 export const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: apiBaseUrl,
   timeout: 15000,
 })
 

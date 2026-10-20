@@ -6,10 +6,11 @@ namespace UIForge.API.Models.Entities
     public class Page
     {
         [Key]
-        public string Id { get; set; } = Guid.NewGuid().ToString("N");
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [Required]
-        public string ProjectId { get; set; } = string.Empty;
+        public int ProjectId { get; set; }
 
         [Required]
         [MaxLength(200)]

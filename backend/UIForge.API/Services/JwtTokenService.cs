@@ -24,7 +24,7 @@ namespace UIForge.API.Services
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim("fullName", user.FullName ?? user.Username),
                 new Claim(ClaimTypes.Role, user.Role),

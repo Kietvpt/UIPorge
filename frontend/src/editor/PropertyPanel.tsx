@@ -70,6 +70,7 @@ export const PropertyPanel: React.FC = () => {
   }
 
   const isContainer = selectedNode.type === 'Container'
+  const effectiveTab = !isContainer && (activeTab === 'layout' || activeTab === 'children') ? 'props' : activeTab
   const layoutMode: LayoutMode = selectedNode.props.layoutMode || 'flex'
   const flexConfig = selectedNode.props.flexConfig || {
     direction: 'row',
@@ -133,7 +134,7 @@ export const PropertyPanel: React.FC = () => {
           <button
             onClick={() => setActiveTab('layout')}
             className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${
-              activeTab === 'layout'
+              effectiveTab === 'layout'
                 ? 'border-blue-500 text-blue-400 bg-slate-800/40'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
@@ -148,7 +149,7 @@ export const PropertyPanel: React.FC = () => {
           <button
             onClick={() => setActiveTab('children')}
             className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${
-              activeTab === 'children'
+              effectiveTab === 'children'
                 ? 'border-blue-500 text-blue-400 bg-slate-800/40'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
@@ -162,7 +163,7 @@ export const PropertyPanel: React.FC = () => {
         <button
           onClick={() => setActiveTab('styles')}
           className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${
-            activeTab === 'styles'
+            effectiveTab === 'styles'
               ? 'border-blue-500 text-blue-400 bg-slate-800/40'
               : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
@@ -174,7 +175,7 @@ export const PropertyPanel: React.FC = () => {
         <button
           onClick={() => setActiveTab('props')}
           className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${
-            activeTab === 'props'
+            effectiveTab === 'props'
               ? 'border-blue-500 text-blue-400 bg-slate-800/40'
               : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
@@ -186,7 +187,7 @@ export const PropertyPanel: React.FC = () => {
         <button
           onClick={() => setActiveTab('events')}
           className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${
-            activeTab === 'events'
+            effectiveTab === 'events'
               ? 'border-blue-500 text-blue-400 bg-slate-800/40'
               : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
@@ -199,7 +200,7 @@ export const PropertyPanel: React.FC = () => {
       {/* Tab Contents */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
         {/* ── TAB 1: BỐ CỤC (FLEX / GRID CHUYÊN BIỆT CHO CONTAINER) ── */}
-        {isContainer && activeTab === 'layout' && (
+        {isContainer && effectiveTab === 'layout' && (
           <div className="space-y-4">
             <div>
               <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
@@ -464,7 +465,7 @@ export const PropertyPanel: React.FC = () => {
         )}
 
         {/* ── TAB 2: THÀNH PHẦN CON TRONG KHOẢNG TRẮNG NÀY (BẤM VÀO THÌ TRỎ ĐẾN ĐÓ) ── */}
-        {isContainer && activeTab === 'children' && (
+        {isContainer && effectiveTab === 'children' && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
@@ -536,7 +537,7 @@ export const PropertyPanel: React.FC = () => {
         )}
 
         {/* ── TAB 3: CSS & KÍCH THƯỚC (TỰ ĐỘNG CHIA ĐỀU KHÔNG GIAN CÒN LẠI CHO SIBLINGS) ── */}
-        {activeTab === 'styles' && (
+        {effectiveTab === 'styles' && (
           <div className="space-y-4">
             {/* Quick Sizing Presets */}
             <div className="p-3 bg-gradient-to-br from-blue-950/40 to-slate-900 rounded-xl border border-blue-900/50 space-y-2.5">
@@ -767,7 +768,7 @@ export const PropertyPanel: React.FC = () => {
         )}
 
         {/* ── TAB 4: PROPS ── */}
-        {activeTab === 'props' && (
+        {effectiveTab === 'props' && (
           <div className="space-y-3.5">
             <div>
               <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
@@ -843,7 +844,7 @@ export const PropertyPanel: React.FC = () => {
         )}
 
         {/* ── TAB 5: EVENTS ── */}
-        {activeTab === 'events' && (
+        {effectiveTab === 'events' && (
           <div className="space-y-3.5">
             <div className="text-xs font-semibold text-slate-300">Cấu hình Sự kiện (Events)</div>
             <button

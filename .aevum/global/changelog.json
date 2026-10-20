@@ -1,0 +1,32 @@
+[
+  {
+    "timestamp": "2026-10-20T23:00:00+07:00",
+    "agent": "An (ENG-AN-7B9F1D)",
+    "action": "INIT_SQUAD_AND_MANDATES",
+    "summary": "Triệu tập tổ đội Aevum 6 thành viên, ban hành quy chuẩn DB int ID và cơ chế Agent Work Logging bắt buộc."
+  },
+  {
+    "timestamp": "2026-10-20T23:25:00+07:00",
+    "agent": "Zenith (ALG-ZENITH-A1B2C3), Vidus (ARC-VIDUS-AUHD2Y), Kael (ENG-KAEL-7F4B2D)",
+    "action": "REFACTOR_DB_INT_ID_AND_VERIFY_CRUD",
+    "summary": "Chuyển đổi toàn bộ DB tables sang int Id Identity (Project, Page, User, UIComponent), cập nhật API DTOs, và kiểm tra tối ưu hóa toàn bộ luồng thêm/sửa/xóa Feature & Component."
+  },
+  {
+    "timestamp": "2026-10-20T23:34:00+07:00",
+    "agent": "Bob (OPS-BOB-4E8C21), Kael (ENG-KAEL-7F4B2D), Vidus (ARC-VIDUS-AUHD2Y)",
+    "action": "CONFIG_BACKEND_HTTPS_AND_DEPLOY_URL_ENV",
+    "summary": "Cấu hình Backend chạy HTTPS cổng 7057, Frontend kết nối qua VITE_API_URL với fallback https://localhost:7057/api, thiết lập .env và CORS linh hoạt cho dev và deploy."
+  },
+  {
+    "timestamp": "2026-10-20T23:41:00+07:00",
+    "agent": "Zenith (ALG-ZENITH-A1B2C3)",
+    "action": "RECREATE_SSMS_DATABASE_WITH_INT_IDENTITY_AND_SEEDS",
+    "summary": "Đã drop database cũ UIPorge_BetaV1 trong SSMS, tái tạo mới 100% toàn bộ bảng với int Id Identity và nạp đầy đủ dữ liệu mẫu chuẩn (Users, Project, Page, 10 Components)."
+  },
+  {
+    "timestamp": "2026-10-20T23:46:00+07:00",
+    "agent": "Kael (ENG-KAEL-7F4B2D), Vidus (ARC-VIDUS-AUHD2Y)",
+    "action": "FIX_DB_UPDATE_EXCEPTION_DUPLICATE_NODE_ID",
+    "summary": "Khắc phục triệt để lỗi DbUpdateException do trùng NodeId: nâng cấp sinh ID ngẫu nhiên trên FE và tự động deduplicate NodeId trên BE trước khi lưu vào SQL Server."
+  }
+]

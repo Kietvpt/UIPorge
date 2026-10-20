@@ -33,7 +33,6 @@ namespace UIForge.API.Controllers
         [Authorize(Roles = "Dev")]
         public async Task<IActionResult> CreateProject([FromBody] Project project)
         {
-            project.Id = Guid.NewGuid().ToString("N");
             project.CreatedAt = DateTime.UtcNow;
             project.UpdatedAt = DateTime.UtcNow;
 

@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UIForge.API.Models.Entities
 {
     public class Project
     {
         [Key]
-        public string Id { get; set; } = Guid.NewGuid().ToString("N");
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [Required]
         [MaxLength(200)]
@@ -14,7 +16,7 @@ namespace UIForge.API.Models.Entities
         [MaxLength(1000)]
         public string? Description { get; set; }
 
-        public string OwnerId { get; set; } = "default-user";
+        public int OwnerId { get; set; } = 1;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

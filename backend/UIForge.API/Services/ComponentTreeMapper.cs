@@ -16,14 +16,23 @@ namespace UIForge.API.Services
         /// <summary>
         /// Insert cây components vào DB theo từng tầng (roots trước, con sau)
         /// để Id identity của cha được DB sinh ra trước khi gán cho con.
+        /// Tự động deduplicate NodeId nếu client gửi trùng id trong cùng 1 page.
         /// </summary>
-        public static async Task InsertTreeAsync(AppDbContext context, JsonElement components, string pageId)
+        public static async Task InsertTreeAsync(AppDbContext context, JsonElement components, int pageId)
         {
             if (components.ValueKind == JsonValueKind.Array)
-                await InsertLevelAsync(context, components, pageId, null);
+            {
+                var usedNodeIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                await InsertLevelAsync(context, components, pageId, null, usedNodeIds);
+            }
         }
 
-        private static async Task InsertLevelAsync(AppDbContext context, JsonElement nodes, string pageId, int? parentId)
+        private static async Task InsertLevelAsync(
+            AppDbContext context,
+            JsonElement nodes,
+            int pageId,
+            int? parentId,
+            HashSet<string> usedNodeIds)
         {
             var batch = new List<(JsonElement Node, UIComponent Row)>();
             var autoOrder = 0;
@@ -31,11 +40,21 @@ namespace UIForge.API.Services
             foreach (var node in nodes.EnumerateArray())
             {
                 autoOrder++;
+                var rawId = GetStr(node, "id") ?? Guid.NewGuid().ToString("N");
+
+                // Đảm bảo NodeId luôn unique trong phạm vi 1 page, tránh vi phạm IX_Components_PageId_NodeId
+                var uniqueNodeId = rawId;
+                var suffixIndex = 1;
+                while (!usedNodeIds.Add(uniqueNodeId))
+                {
+                    uniqueNodeId = $"{rawId}-{suffixIndex++}";
+                }
+
                 var row = new UIComponent
                 {
                     PageId = pageId,
                     ParentId = parentId,
-                    NodeId = GetStr(node, "id") ?? Guid.NewGuid().ToString("N"),
+                    NodeId = uniqueNodeId,
                     Type = GetStr(node, "type") ?? "Container",
                     PropsJson = GetRaw(node, "props", "{}"),
                     StyleJson = GetRaw(node, "style", "{}"),
@@ -58,7 +77,7 @@ namespace UIForge.API.Services
                     && children.ValueKind == JsonValueKind.Array
                     && children.GetArrayLength() > 0)
                 {
-                    await InsertLevelAsync(context, children, pageId, row.Id);
+                    await InsertLevelAsync(context, children, pageId, row.Id, usedNodeIds);
                 }
             }
         }
@@ -98,30 +117,28 @@ namespace UIForge.API.Services
             return arr;
         }
 
-        // ---------- JSON helpers ----------
+        // ---------- Helpers ----------
 
-        private static string? GetStr(JsonElement node, string prop)
-            => node.TryGetProperty(prop, out var el) && el.ValueKind == JsonValueKind.String
-                ? el.GetString()
+        private static string? GetStr(JsonElement el, string prop)
+            => el.TryGetProperty(prop, out var v) && v.ValueKind == JsonValueKind.String
+                ? v.GetString()
                 : null;
 
-        private static int? GetInt(JsonElement node, string prop)
-            => node.TryGetProperty(prop, out var el) && el.ValueKind == JsonValueKind.Number && el.TryGetInt32(out var v)
-                ? v
+        private static int? GetInt(JsonElement el, string prop)
+            => el.TryGetProperty(prop, out var v) && v.ValueKind == JsonValueKind.Number
+                ? v.GetInt32()
                 : null;
 
-        private static string GetRaw(JsonElement node, string prop, string fallback)
-            => node.TryGetProperty(prop, out var el)
-               && el.ValueKind != JsonValueKind.Undefined
-               && el.ValueKind != JsonValueKind.Null
-                ? el.GetRawText()
+        private static string GetRaw(JsonElement el, string prop, string fallback)
+            => el.TryGetProperty(prop, out var v) && v.ValueKind != JsonValueKind.Undefined && v.ValueKind != JsonValueKind.Null
+                ? v.GetRawText()
                 : fallback;
 
-        private static JsonNode? ParseOr(string? json, string fallback)
+        private static JsonNode? ParseOr(string? raw, string fallback)
         {
             try
             {
-                return JsonNode.Parse(string.IsNullOrWhiteSpace(json) ? fallback : json);
+                return JsonNode.Parse(string.IsNullOrWhiteSpace(raw) ? fallback : raw);
             }
             catch
             {

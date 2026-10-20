@@ -1,0 +1,88 @@
+{
+  "version": "2.3.0",
+  "framework": "2-Tier-Tool-Framework",
+  "universal_core_tools": [
+    "aevum_squad_direct_message",
+    "aevum_squad_handoff",
+    "aevum_squad_huddle",
+    "aevum_search_knowledge",
+    "aevum_query_workspace_reflex",
+    "aevum_add_memory",
+    "aevum_create_report",
+    "aevum_submit_report",
+    "aevum_get_active_persona"
+  ],
+  "specialized_bundles": {
+    "knowledge_reflex": [
+      "aevum_query_workspace_reflex",
+      "aevum_record_reflex_interaction"
+    ],
+    "architecture": [
+      "aevum_create_domain",
+      "aevum_create_feature",
+      "aevum_create_plan",
+      "aevum_explore_architecture",
+      "aevum_rename_structure",
+      "aevum_delete_structure"
+    ],
+    "development": [
+      "aevum_add_plan_step",
+      "aevum_update_plan_step",
+      "aevum_mark_plan_done",
+      "aevum_run_shell_command",
+      "aevum_run_automation_task"
+    ],
+    "research": [
+      "aevum_deep_research",
+      "aevum_capture_research_insight",
+      "aevum_synthesize_report",
+      "aevum_analyze_research_progress",
+      "aevum_create_research_domain",
+      "aevum_branch_research_node",
+      "aevum_link_research_nodes",
+      "aevum_get_research_ontology",
+      "aevum_get_research_architecture",
+      "aevum_get_research_node",
+      "aevum_promote_research_to_plan"
+    ],
+    "ops": [
+      "aevum_get_runtime_telemetry",
+      "aevum_run_sanity_check",
+      "aevum_analyze_debt",
+      "aevum_trigger_memory_reclaim"
+    ]
+  },
+  "persona_defaults": {
+    "vidus": [
+      "architecture",
+      "ops",
+      "knowledge_reflex"
+    ],
+    "an": [
+      "development",
+      "architecture",
+      "research",
+      "knowledge_reflex"
+    ],
+    "luna": [
+      "research",
+      "architecture",
+      "knowledge_reflex"
+    ],
+    "zenith": [
+      "research",
+      "development",
+      "knowledge_reflex"
+    ],
+    "kael": [
+      "development",
+      "research",
+      "ops"
+    ],
+    "valerie": [
+      "research",
+      "ops",
+      "development"
+    ]
+  }
+}

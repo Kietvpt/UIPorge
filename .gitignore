@@ -29,3 +29,8 @@ dist-ssr/
 Thumbs.db
 .DS_Store
 *.log
+
+# ===== Local IDE / Tools =====
+.gemini/
+.antigravitycli/
+.vscode/

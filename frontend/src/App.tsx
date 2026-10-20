@@ -26,6 +26,7 @@ export function App() {
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
   const setFeatures = useEditorStore((s) => s.setFeatures)
+  const updateFeatureId = useEditorStore((s) => s.updateFeatureId)
 
   // Người dùng thường (User) luôn ở chế độ xem, không được chỉnh sửa
   const effectivePreview = isPreview || !isDev

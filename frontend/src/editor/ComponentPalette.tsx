@@ -66,14 +66,42 @@ const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
 
 export const ComponentPalette: React.FC = () => {
   const addComponent = useEditorStore((s) => s.addComponent)
+  const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
   const selection = useEditorStore((s) => s.selection)
 
+  const activeFeature = features.find((f) => f.id === activeFeatureId)
+
+  const findNode = (nodes: ComponentNode[], id: string | null): ComponentNode | null => {
+    if (!id) return null
+    for (const node of nodes) {
+      if (node.id === id) return node
+      if (node.children) {
+        const found = findNode(node.children, id)
+        if (found) return found
+      }
+    }
+    return null
+  }
+
   const handleAddComponent = (def: ComponentDefinition) => {
+    const selected = findNode(activeFeature?.components || [], selection.componentId)
+
+    // Nếu chọn Container: thêm vào trong Container.
+    // Nếu chọn component lá (Button, Label...): thêm cùng cấp (dùng parentId của node đó).
+    let targetParentId: string | null = null
+    if (selected) {
+      if (selected.type === 'Container') {
+        targetParentId = selected.id
+      } else {
+        targetParentId = selected.parentId || null
+      }
+    }
+
     const newComponent: ComponentNode = {
-      id: `${def.type.toLowerCase()}-${Date.now().toString(36)}`,
+      id: `${def.type.toLowerCase()}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
       type: def.type,
-      parentId: selection.componentId || null,
+      parentId: targetParentId,
       pageId: activeFeatureId,
       props: { ...def.defaultProps },
       style: { ...def.defaultStyle },
@@ -81,7 +109,7 @@ export const ComponentPalette: React.FC = () => {
       order: 1,
     }
 
-    addComponent(newComponent, selection.componentId || null)
+    addComponent(newComponent, targetParentId)
   }
 
   return (
