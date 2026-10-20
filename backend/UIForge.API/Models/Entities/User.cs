@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UIForge.API.Models.Entities
 {
     public class User
     {
         [Key]
-        public string Id { get; set; } = Guid.NewGuid().ToString("N");
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [Required]
         [MaxLength(100)]

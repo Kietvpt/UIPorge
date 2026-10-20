@@ -36,8 +36,8 @@ namespace UIForge.API.Controllers
         }
 
         /// <summary>Chi tiết 1 page kèm cây components</summary>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetPage(string id)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetPage(int id)
         {
             var page = await _context.Pages
                 .Include(p => p.Components)
@@ -62,15 +62,15 @@ namespace UIForge.API.Controllers
             await using var tx = await _context.Database.BeginTransactionAsync();
             try
             {
-                var pageId = string.IsNullOrEmpty(dto.Id) ? Guid.NewGuid().ToString("N") : dto.Id;
-                var page = await _context.Pages.FindAsync(pageId);
+                int pageIntId = 0;
+                bool isExisting = !string.IsNullOrEmpty(dto.Id) && int.TryParse(dto.Id, out pageIntId) && pageIntId > 0;
+                var page = isExisting ? await _context.Pages.FindAsync(pageIntId) : null;
 
                 if (page == null)
                 {
                     page = new Page
                     {
-                        Id = pageId,
-                        ProjectId = string.IsNullOrEmpty(dto.ProjectId) ? "demo-project-001" : dto.ProjectId,
+                        ProjectId = dto.ProjectId ?? 1,
                         Name = dto.Name,
                         Route = dto.Route,
                         Icon = dto.Icon,
@@ -80,6 +80,7 @@ namespace UIForge.API.Controllers
                         UpdatedAt = DateTime.UtcNow,
                     };
                     _context.Pages.Add(page);
+                    await _context.SaveChangesAsync(); // Sinh Id (int identity)
                 }
                 else
                 {
@@ -89,8 +90,8 @@ namespace UIForge.API.Controllers
                     page.LayoutTemplateId = dto.LayoutTemplateId;
                     page.LayoutConfigJson = LayoutConfigRaw(dto) ?? page.LayoutConfigJson;
                     page.UpdatedAt = DateTime.UtcNow;
+                    await _context.SaveChangesAsync();
                 }
-                await _context.SaveChangesAsync();
 
                 // Xóa toàn bộ component cũ của page bằng ExecuteDelete
                 // (SQL thuần, không track entity -> không xung đột key với các row mới)
@@ -111,9 +112,9 @@ namespace UIForge.API.Controllers
         }
 
         /// <summary>Xóa page (chỉ Dev)</summary>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         [Authorize(Roles = "Dev")]
-        public async Task<IActionResult> DeletePage(string id)
+        public async Task<IActionResult> DeletePage(int id)
         {
             var page = await _context.Pages.FindAsync(id);
             if (page == null) return NotFound(new { message = $"Page '{id}' not found." });

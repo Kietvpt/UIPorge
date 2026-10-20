@@ -27,6 +27,7 @@ interface EditorState {
   addFeature: (name: string, icon?: string) => string
   renameFeature: (id: string, name: string) => void
   deleteFeature: (id: string) => void
+  updateFeatureId: (oldId: string, newId: string) => void
   updateFeatureLayout: (id: string, layoutConfig: Partial<FeatureLayoutConfig>) => void
 
   // Hydrate toàn bộ features từ server (sau khi login / reload)
@@ -52,7 +53,7 @@ const MAX_HISTORY = 40
 
 const initialFeatures: FeaturePage[] = [
   {
-    id: 'feat-dashboard',
+    id: '1',
     name: 'Tổng quan hệ thống',
     icon: 'LayoutDashboard',
     route: '/dashboard',
@@ -67,7 +68,7 @@ const initialFeatures: FeaturePage[] = [
         id: 'box-stats',
         type: 'Container',
         parentId: null,
-        pageId: 'feat-dashboard',
+        pageId: '1',
         props: {
           layoutMode: 'grid',
           gridConfig: { columns: 3, gap: '16px' },
@@ -88,13 +89,13 @@ const initialFeatures: FeaturePage[] = [
             id: 'stat-1',
             type: 'Container',
             parentId: 'box-stats',
-            pageId: 'feat-dashboard',
+            pageId: '1',
             props: { layoutMode: 'flex', flexConfig: { direction: 'column', wrap: 'nowrap', justify: 'flex-start', align: 'flex-start', gap: '4px' } },
             style: { padding: '16px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' },
             events: [],
             children: [
-              { id: 'lbl-stat-1', type: 'Label', parentId: 'stat-1', pageId: 'feat-dashboard', props: { label: 'Doanh thu hôm nay' }, style: { color: '#94a3b8', fontSize: '12px' }, events: [], order: 1 },
-              { id: 'lbl-stat-val-1', type: 'Label', parentId: 'stat-1', pageId: 'feat-dashboard', props: { label: '₫ 128,450,000' }, style: { color: '#38bdf8', fontSize: '20px', fontWeight: 'bold' }, events: [], order: 2 },
+              { id: 'lbl-stat-1', type: 'Label', parentId: 'stat-1', pageId: '1', props: { label: 'Doanh thu hôm nay' }, style: { color: '#94a3b8', fontSize: '12px' }, events: [], order: 1 },
+              { id: 'lbl-stat-val-1', type: 'Label', parentId: 'stat-1', pageId: '1', props: { label: '₫ 128,450,000' }, style: { color: '#38bdf8', fontSize: '20px', fontWeight: 'bold' }, events: [], order: 2 },
             ],
             order: 1,
           },
@@ -102,13 +103,13 @@ const initialFeatures: FeaturePage[] = [
             id: 'stat-2',
             type: 'Container',
             parentId: 'box-stats',
-            pageId: 'feat-dashboard',
+            pageId: '1',
             props: { layoutMode: 'flex', flexConfig: { direction: 'column', wrap: 'nowrap', justify: 'flex-start', align: 'flex-start', gap: '4px' } },
             style: { padding: '16px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' },
             events: [],
             children: [
-              { id: 'lbl-stat-2', type: 'Label', parentId: 'stat-2', pageId: 'feat-dashboard', props: { label: 'Đơn hàng mới' }, style: { color: '#94a3b8', fontSize: '12px' }, events: [], order: 1 },
-              { id: 'lbl-stat-val-2', type: 'Label', parentId: 'stat-2', pageId: 'feat-dashboard', props: { label: '1,429 đơn' }, style: { color: '#4ade80', fontSize: '20px', fontWeight: 'bold' }, events: [], order: 2 },
+              { id: 'lbl-stat-2', type: 'Label', parentId: 'stat-2', pageId: '1', props: { label: 'Đơn hàng mới' }, style: { color: '#94a3b8', fontSize: '12px' }, events: [], order: 1 },
+              { id: 'lbl-stat-val-2', type: 'Label', parentId: 'stat-2', pageId: '1', props: { label: '1,429 đơn' }, style: { color: '#4ade80', fontSize: '20px', fontWeight: 'bold' }, events: [], order: 2 },
             ],
             order: 2,
           },
@@ -116,13 +117,13 @@ const initialFeatures: FeaturePage[] = [
             id: 'stat-3',
             type: 'Container',
             parentId: 'box-stats',
-            pageId: 'feat-dashboard',
+            pageId: '1',
             props: { layoutMode: 'flex', flexConfig: { direction: 'column', wrap: 'nowrap', justify: 'flex-start', align: 'flex-start', gap: '4px' } },
             style: { padding: '16px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' },
             events: [],
             children: [
-              { id: 'lbl-stat-3', type: 'Label', parentId: 'stat-3', pageId: 'feat-dashboard', props: { label: 'Tỉ lệ hoàn tất' }, style: { color: '#94a3b8', fontSize: '12px' }, events: [], order: 1 },
-              { id: 'lbl-stat-val-3', type: 'Label', parentId: 'stat-3', pageId: 'feat-dashboard', props: { label: '98.6%' }, style: { color: '#facc15', fontSize: '20px', fontWeight: 'bold' }, events: [], order: 2 },
+              { id: 'lbl-stat-3', type: 'Label', parentId: 'stat-3', pageId: '1', props: { label: 'Tỉ lệ hoàn tất' }, style: { color: '#94a3b8', fontSize: '12px' }, events: [], order: 1 },
+              { id: 'lbl-stat-val-3', type: 'Label', parentId: 'stat-3', pageId: '1', props: { label: '98.6%' }, style: { color: '#facc15', fontSize: '20px', fontWeight: 'bold' }, events: [], order: 2 },
             ],
             order: 3,
           },
@@ -161,7 +162,7 @@ export const useEditorStore = create<EditorState>()(
       },
 
       addFeature: (name, icon = 'Layers') => {
-        const id = `feat-${Date.now().toString(36)}`
+        const id = `feat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
         const newFeature: FeaturePage = {
           id,
           name: name.trim() || 'Tính năng mới',
@@ -192,6 +193,26 @@ export const useEditorStore = create<EditorState>()(
         set((s) => {
           const next = s.features.map((f) => (f.id === id ? { ...f, name } : f))
           return recordHistory(s, next)
+        })
+      },
+
+      updateFeatureId: (oldId, newId) => {
+        set((s) => {
+          const next = s.features.map((f) =>
+            f.id === oldId
+              ? {
+                  ...f,
+                  id: newId,
+                  route: f.route === `/${oldId}` ? `/${newId}` : f.route,
+                  components: f.components.map((c) => ({ ...c, pageId: newId })),
+                }
+              : f
+          )
+          return {
+            features: next,
+            activeFeatureId: s.activeFeatureId === oldId ? newId : s.activeFeatureId,
+            selection: s.selection.pageId === oldId ? { ...s.selection, pageId: newId } : s.selection,
+          }
         })
       },
 

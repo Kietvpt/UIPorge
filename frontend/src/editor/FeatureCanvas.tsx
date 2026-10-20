@@ -53,7 +53,7 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({ isEditing }) => {
     customProps: Record<string, unknown> = {},
     customStyle: Record<string, any> = {}
   ): ComponentNode => {
-    const id = `${type.toLowerCase()}-${Date.now().toString(36)}`
+    const id = `${type.toLowerCase()}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
     return {
       id,
       type,

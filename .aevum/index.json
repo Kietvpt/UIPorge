@@ -1,0 +1,89 @@
+{
+  "version": "2.1.0",
+  "project": "UIPorge",
+  "domains": [],
+  "global": {
+    "architecture": "global/architecture.md",
+    "conventions": "global/conventions.md",
+    "agent_rules": "global/agent_rules.md",
+    "agent_rules_compressed": "global/agent_rules_compressed.md",
+    "tech_stack": "global/tech_stack.md",
+    "dictionary": "global/dictionary.md",
+    "memory": "global/memory.md",
+    "developer_profile": "global/developer_profile.md",
+    "companion_persona": "global/companion_persona.json",
+    "evolution_report": "global/evolution_report.md",
+    "handshake_registry": "mcp/handshake_registry.json",
+    "knowledge_rules": "Every active persona has a dedicated knowledge folder in `.aevum/global/personas/<id>/knowledge/`. Log project-specific patterns and agent-exclusive wisdom there.",
+    "debtHistory": [
+      88,
+      92,
+      90,
+      95,
+      93,
+      97,
+      100
+    ]
+  },
+  "agents": [
+    {
+      "id": "ENG-AN-7B9F1D",
+      "name": "An",
+      "capability": "AI Tuning",
+      "level": 1,
+      "knowledgePath": ".aevum/global/personas/an/knowledge"
+    },
+    {
+      "id": "DSN-LUNA-3C9A12",
+      "name": "Luna",
+      "capability": "UI/UX Design",
+      "level": 1,
+      "knowledgePath": ".aevum/global/personas/luna/knowledge"
+    },
+    {
+      "id": "ARC-VIDUS-AUHD2Y",
+      "name": "Vidus",
+      "capability": "Architect",
+      "level": 1,
+      "knowledgePath": ".aevum/global/personas/vidus/knowledge"
+    },
+    {
+      "id": "ALG-ZENITH-A1B2C3",
+      "name": "Zenith",
+      "capability": "Algorithm Design & Database Optimization",
+      "level": 1,
+      "knowledgePath": ".aevum/global/personas/zenith/knowledge"
+    },
+    {
+      "id": "ENG-KAEL-7F4B2D",
+      "name": "Kael",
+      "capability": "Frontend Systems Architecture",
+      "level": 6,
+      "knowledgePath": ".aevum/global/personas/kael/knowledge"
+    },
+    {
+      "id": "OPS-BOB-4E8C21",
+      "name": "KubeMaster (Bob)",
+      "capability": "DevOps & CI/CD",
+      "level": 1,
+      "knowledgePath": ".aevum/global/personas/kubemaster__bob_/knowledge"
+    },
+    {
+      "id": "DOC-DOCUWRITER-9F1B2C",
+      "name": "DocuWriter",
+      "capability": "Technical Documentation",
+      "level": 1,
+      "knowledgePath": ".aevum/global/personas/docuwriter/knowledge"
+    }
+  ],
+  "research": [
+    {
+      "id": "mis_flow_state_seed",
+      "topic": "Tối Ưu Hóa Trạng Thái Dòng Chảy (Flow State) Cùng AI",
+      "author_persona": "An",
+      "status": "completed",
+      "path": "research/tech_optimizing_flow_state_with_ai.md",
+      "date": "2026-09-23"
+    }
+  ]
+}

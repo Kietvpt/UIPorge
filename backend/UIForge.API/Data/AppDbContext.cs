@@ -63,7 +63,7 @@ namespace UIForge.API.Data
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
-                    Id = "user-admin",
+                    Id = 1,
                     Username = "admin",
                     PasswordHash = PasswordHasher.Hash("admin123"),
                     FullName = "Quản trị hệ thống",
@@ -72,7 +72,7 @@ namespace UIForge.API.Data
                 },
                 new User
                 {
-                    Id = "user-viewer",
+                    Id = 2,
                     Username = "viewer",
                     PasswordHash = PasswordHasher.Hash("viewer123"),
                     FullName = "Người dùng xem",
@@ -82,15 +82,15 @@ namespace UIForge.API.Data
             );
 
             // ---------- Seed demo project ----------
-            var demoProjectId = "demo-project-001";
-            var demoPageId = "feat-dashboard";
+            const int demoProjectId = 1;
+            const int demoPageId = 1;
 
             modelBuilder.Entity<Project>().HasData(new Project
             {
                 Id = demoProjectId,
                 Name = "Enterprise Demo System",
                 Description = "Low-code system template built with UIForge",
-                OwnerId = "user-admin",
+                OwnerId = 1,
                 CreatedAt = seedDate,
                 UpdatedAt = seedDate,
             });

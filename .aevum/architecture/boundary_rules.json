@@ -1,0 +1,938 @@
+[
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "aevum_test_lab",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"aevum_test_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "agent-intelligence",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"agent-intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "agent_bridge",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"agent_bridge\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "core",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"core\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "core_architecture",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"core_architecture\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "core_intelligence",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"core_intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "example_domain",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"example_domain\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "hai_neuro_cognitive_experiment_lab",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"hai_neuro_cognitive_experiment_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "knowledge_reflex_engine",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"knowledge_reflex_engine\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "plan-governance-qun-tr-k-hoch",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"plan-governance-qun-tr-k-hoch\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "portfolio",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"portfolio\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "pricing_and_subscription",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"pricing_and_subscription\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "system-architecture-documentation",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"system-architecture-documentation\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "teamwork-protocol",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"teamwork-protocol\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "ui_views",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"ui_views\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_cloud_backend",
+    "target": "user_authentication",
+    "description": "Domain \"aevum_cloud_backend\" không được phép import từ \"user_authentication\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "aevum_cloud_backend",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"aevum_cloud_backend\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "agent-intelligence",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"agent-intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "agent_bridge",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"agent_bridge\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "core",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"core\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "core_architecture",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"core_architecture\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "core_intelligence",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"core_intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "example_domain",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"example_domain\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "hai_neuro_cognitive_experiment_lab",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"hai_neuro_cognitive_experiment_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "knowledge_reflex_engine",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"knowledge_reflex_engine\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "plan-governance-qun-tr-k-hoch",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"plan-governance-qun-tr-k-hoch\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "portfolio",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"portfolio\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "pricing_and_subscription",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"pricing_and_subscription\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "system-architecture-documentation",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"system-architecture-documentation\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "teamwork-protocol",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"teamwork-protocol\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "ui_views",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"ui_views\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "aevum_test_lab",
+    "target": "user_authentication",
+    "description": "Domain \"aevum_test_lab\" không được phép import từ \"user_authentication\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "aevum_cloud_backend",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"aevum_cloud_backend\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "aevum_test_lab",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"aevum_test_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "agent_bridge",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"agent_bridge\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "core",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"core\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "core_architecture",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"core_architecture\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "core_intelligence",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"core_intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "example_domain",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"example_domain\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "hai_neuro_cognitive_experiment_lab",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"hai_neuro_cognitive_experiment_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "knowledge_reflex_engine",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"knowledge_reflex_engine\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "plan-governance-qun-tr-k-hoch",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"plan-governance-qun-tr-k-hoch\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "portfolio",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"portfolio\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "pricing_and_subscription",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"pricing_and_subscription\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "system-architecture-documentation",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"system-architecture-documentation\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "teamwork-protocol",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"teamwork-protocol\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "ui_views",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"ui_views\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "agent-intelligence",
+    "target": "user_authentication",
+    "description": "Domain \"agent-intelligence\" không được phép import từ \"user_authentication\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "aevum_cloud_backend",
+    "description": "Domain \"core\" không được phép import từ \"aevum_cloud_backend\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "aevum_test_lab",
+    "description": "Domain \"core\" không được phép import từ \"aevum_test_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "agent-intelligence",
+    "description": "Domain \"core\" không được phép import từ \"agent-intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "agent_bridge",
+    "description": "Domain \"core\" không được phép import từ \"agent_bridge\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "core_architecture",
+    "description": "Domain \"core\" không được phép import từ \"core_architecture\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "core_intelligence",
+    "description": "Domain \"core\" không được phép import từ \"core_intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "example_domain",
+    "description": "Domain \"core\" không được phép import từ \"example_domain\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "hai_neuro_cognitive_experiment_lab",
+    "description": "Domain \"core\" không được phép import từ \"hai_neuro_cognitive_experiment_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "knowledge_reflex_engine",
+    "description": "Domain \"core\" không được phép import từ \"knowledge_reflex_engine\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "plan-governance-qun-tr-k-hoch",
+    "description": "Domain \"core\" không được phép import từ \"plan-governance-qun-tr-k-hoch\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "portfolio",
+    "description": "Domain \"core\" không được phép import từ \"portfolio\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "pricing_and_subscription",
+    "description": "Domain \"core\" không được phép import từ \"pricing_and_subscription\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "system-architecture-documentation",
+    "description": "Domain \"core\" không được phép import từ \"system-architecture-documentation\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "teamwork-protocol",
+    "description": "Domain \"core\" không được phép import từ \"teamwork-protocol\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "ui_views",
+    "description": "Domain \"core\" không được phép import từ \"ui_views\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "core",
+    "target": "user_authentication",
+    "description": "Domain \"core\" không được phép import từ \"user_authentication\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "aevum_cloud_backend",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"aevum_cloud_backend\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "aevum_test_lab",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"aevum_test_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "agent-intelligence",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"agent-intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "agent_bridge",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"agent_bridge\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "core",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"core\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "core_architecture",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"core_architecture\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "core_intelligence",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"core_intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "example_domain",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"example_domain\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "knowledge_reflex_engine",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"knowledge_reflex_engine\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "plan-governance-qun-tr-k-hoch",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"plan-governance-qun-tr-k-hoch\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "portfolio",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"portfolio\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "pricing_and_subscription",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"pricing_and_subscription\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "system-architecture-documentation",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"system-architecture-documentation\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "teamwork-protocol",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"teamwork-protocol\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "ui_views",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"ui_views\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "hai_neuro_cognitive_experiment_lab",
+    "target": "user_authentication",
+    "description": "Domain \"hai_neuro_cognitive_experiment_lab\" không được phép import từ \"user_authentication\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "aevum_cloud_backend",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"aevum_cloud_backend\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "aevum_test_lab",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"aevum_test_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "agent-intelligence",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"agent-intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "agent_bridge",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"agent_bridge\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "core",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"core\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "core_architecture",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"core_architecture\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "example_domain",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"example_domain\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "hai_neuro_cognitive_experiment_lab",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"hai_neuro_cognitive_experiment_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "plan-governance-qun-tr-k-hoch",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"plan-governance-qun-tr-k-hoch\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "portfolio",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"portfolio\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "pricing_and_subscription",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"pricing_and_subscription\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "system-architecture-documentation",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"system-architecture-documentation\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "teamwork-protocol",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"teamwork-protocol\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "ui_views",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"ui_views\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "knowledge_reflex_engine",
+    "target": "user_authentication",
+    "description": "Domain \"knowledge_reflex_engine\" không được phép import từ \"user_authentication\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "aevum_cloud_backend",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"aevum_cloud_backend\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "aevum_test_lab",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"aevum_test_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "agent-intelligence",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"agent-intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "agent_bridge",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"agent_bridge\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "core_architecture",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"core_architecture\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "core_intelligence",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"core_intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "example_domain",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"example_domain\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "hai_neuro_cognitive_experiment_lab",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"hai_neuro_cognitive_experiment_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "knowledge_reflex_engine",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"knowledge_reflex_engine\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "plan-governance-qun-tr-k-hoch",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"plan-governance-qun-tr-k-hoch\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "portfolio",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"portfolio\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "system-architecture-documentation",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"system-architecture-documentation\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "teamwork-protocol",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"teamwork-protocol\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "ui_views",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"ui_views\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "pricing_and_subscription",
+    "target": "user_authentication",
+    "description": "Domain \"pricing_and_subscription\" không được phép import từ \"user_authentication\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "aevum_cloud_backend",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"aevum_cloud_backend\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "aevum_test_lab",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"aevum_test_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "agent-intelligence",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"agent-intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "agent_bridge",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"agent_bridge\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "core_architecture",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"core_architecture\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "core_intelligence",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"core_intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "example_domain",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"example_domain\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "hai_neuro_cognitive_experiment_lab",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"hai_neuro_cognitive_experiment_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "knowledge_reflex_engine",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"knowledge_reflex_engine\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "plan-governance-qun-tr-k-hoch",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"plan-governance-qun-tr-k-hoch\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "portfolio",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"portfolio\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "pricing_and_subscription",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"pricing_and_subscription\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "teamwork-protocol",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"teamwork-protocol\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "ui_views",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"ui_views\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "system-architecture-documentation",
+    "target": "user_authentication",
+    "description": "Domain \"system-architecture-documentation\" không được phép import từ \"user_authentication\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "aevum_cloud_backend",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"aevum_cloud_backend\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "aevum_test_lab",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"aevum_test_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "agent-intelligence",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"agent-intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "agent_bridge",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"agent_bridge\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "core",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"core\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "core_architecture",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"core_architecture\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "core_intelligence",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"core_intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "example_domain",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"example_domain\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "hai_neuro_cognitive_experiment_lab",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"hai_neuro_cognitive_experiment_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "knowledge_reflex_engine",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"knowledge_reflex_engine\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "plan-governance-qun-tr-k-hoch",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"plan-governance-qun-tr-k-hoch\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "portfolio",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"portfolio\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "pricing_and_subscription",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"pricing_and_subscription\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "system-architecture-documentation",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"system-architecture-documentation\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "ui_views",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"ui_views\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "teamwork-protocol",
+    "target": "user_authentication",
+    "description": "Domain \"teamwork-protocol\" không được phép import từ \"user_authentication\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "aevum_cloud_backend",
+    "description": "Domain \"user_authentication\" không được phép import từ \"aevum_cloud_backend\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "aevum_test_lab",
+    "description": "Domain \"user_authentication\" không được phép import từ \"aevum_test_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "agent-intelligence",
+    "description": "Domain \"user_authentication\" không được phép import từ \"agent-intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "agent_bridge",
+    "description": "Domain \"user_authentication\" không được phép import từ \"agent_bridge\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "core_architecture",
+    "description": "Domain \"user_authentication\" không được phép import từ \"core_architecture\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "core_intelligence",
+    "description": "Domain \"user_authentication\" không được phép import từ \"core_intelligence\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "example_domain",
+    "description": "Domain \"user_authentication\" không được phép import từ \"example_domain\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "hai_neuro_cognitive_experiment_lab",
+    "description": "Domain \"user_authentication\" không được phép import từ \"hai_neuro_cognitive_experiment_lab\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "knowledge_reflex_engine",
+    "description": "Domain \"user_authentication\" không được phép import từ \"knowledge_reflex_engine\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "plan-governance-qun-tr-k-hoch",
+    "description": "Domain \"user_authentication\" không được phép import từ \"plan-governance-qun-tr-k-hoch\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "portfolio",
+    "description": "Domain \"user_authentication\" không được phép import từ \"portfolio\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "pricing_and_subscription",
+    "description": "Domain \"user_authentication\" không được phép import từ \"pricing_and_subscription\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "system-architecture-documentation",
+    "description": "Domain \"user_authentication\" không được phép import từ \"system-architecture-documentation\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "teamwork-protocol",
+    "description": "Domain \"user_authentication\" không được phép import từ \"teamwork-protocol\" (không có trong Depends On)"
+  },
+  {
+    "type": "cannot_import",
+    "source": "user_authentication",
+    "target": "ui_views",
+    "description": "Domain \"user_authentication\" không được phép import từ \"ui_views\" (không có trong Depends On)"
+  }
+]

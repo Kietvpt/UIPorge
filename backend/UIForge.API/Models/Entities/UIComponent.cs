@@ -21,7 +21,7 @@ namespace UIForge.API.Models.Entities
         public string NodeId { get; set; } = string.Empty;
 
         [Required]
-        public string PageId { get; set; } = string.Empty;
+        public int PageId { get; set; }
 
         /// <summary>Id (identity) của component cha. NULL = node gốc của page.</summary>
         public int? ParentId { get; set; }

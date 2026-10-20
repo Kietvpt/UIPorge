@@ -1,3 +1,4 @@
+import { deletePage } from '@/api/pagesApi'
 import React, { useState } from 'react'
 import { useEditorStore } from '@/store/editorStore'
 import { ContextMenu, MenuItem } from './ContextMenu'
