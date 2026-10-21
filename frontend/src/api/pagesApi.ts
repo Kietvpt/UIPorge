@@ -58,6 +58,15 @@ export function apiPageToFeature(p: ApiPage): FeaturePage {
   // Get scriptFile from top-level or layoutConfig
   const scriptFile = p.scriptFile || p.layoutConfig?.scriptFile || ''
 
+  // Đảm bảo tất cả component (kể cả component lồng trong container) đều có pageId string đồng bộ
+  const normalizeTree = (nodes: ComponentNode[]): ComponentNode[] => {
+    return nodes.map((node) => ({
+      ...node,
+      pageId: strId,
+      children: node.children && node.children.length > 0 ? normalizeTree(node.children) : node.children,
+    }))
+  }
+
   return {
     id: strId,
     name: p.name,
@@ -65,7 +74,7 @@ export function apiPageToFeature(p: ApiPage): FeaturePage {
     icon: p.icon || 'Layers',
     scriptFile,
     layoutConfig: p.layoutConfig || { direction: 'column', gap: '16px', wrap: 'wrap' },
-    components: (p.components || []).map((c) => ({ ...c, pageId: strId })),
+    components: normalizeTree(p.components || []),
     createdAt: p.createdAt,
     updatedAt: p.updatedAt,
   }

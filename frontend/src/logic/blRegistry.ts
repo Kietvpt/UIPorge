@@ -41,14 +41,31 @@ function saveRegistry(registry: Record<string, string[]>) {
   } catch {}
 }
 
+export function normalizeBlKey(fileName?: string): string {
+  if (!fileName || !fileName.trim()) return ''
+  let clean = fileName.trim().replace(/\\/g, '/').split('/').pop() || ''
+  const lower = clean.toLowerCase()
+  if (lower.includes('customer')) return 'customerManagement.bl.ts'
+  if (lower.includes('dashboard')) return 'dashboard.bl.ts'
+  if (!clean.endsWith('.ts')) {
+    if (!clean.endsWith('.bl')) clean = `${clean}.bl`
+    clean = `${clean}.ts`
+  }
+  return clean
+}
+
 /** Get list of functions exported by a BL file */
 export function getFunctionsForBlFile(fileName?: string): string[] {
   if (!fileName || !fileName.trim()) return []
-  const norm = fileName.trim()
+  const norm = normalizeBlKey(fileName)
   const registry = loadRegistry()
 
   if (registry[norm] && registry[norm].length > 0) {
     return registry[norm]
+  }
+
+  if (registry[fileName.trim()] && registry[fileName.trim()].length > 0) {
+    return registry[fileName.trim()]
   }
 
   // If new file without registered functions, seed with standard starter functions
@@ -61,8 +78,8 @@ export function getFunctionsForBlFile(fileName?: string): string[] {
 /** Add a new function name to a BL file */
 export function addFunctionToBlFile(fileName: string, functionName: string): string[] {
   if (!fileName || !functionName) return []
-  const normFile = fileName.trim()
-  const normFn = functionName.trim()
+  const normFile = normalizeBlKey(fileName)
+  const normFn = functionName.trim().replace(/\(.*?\)/g, '')
   if (!normFile || !normFn) return []
 
   const registry = loadRegistry()
@@ -77,8 +94,8 @@ export function addFunctionToBlFile(fileName: string, functionName: string): str
 /** Remove a function from a BL file */
 export function removeFunctionFromBlFile(fileName: string, functionName: string): string[] {
   if (!fileName || !functionName) return []
-  const normFile = fileName.trim()
-  const normFn = functionName.trim()
+  const normFile = normalizeBlKey(fileName)
+  const normFn = functionName.trim().replace(/\(.*?\)/g, '')
 
   const registry = loadRegistry()
   const current = registry[normFile] || []

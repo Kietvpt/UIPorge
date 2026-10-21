@@ -46,5 +46,11 @@
     "agent": "Kael (ENG-KAEL-7F4B2D), Vidus (ARC-VIDUS-AUHD2Y)",
     "action": "IMPLEMENT_BL_FILE_BINDING_MULTI_EVENTS_CUSTOM_CSS_RESIZABLE_PANELS",
     "summary": "Hoàn thành 4 phân hệ lớn: Ràng buộc file nghiệp vụ BL (khóa canvas nếu chưa có file), hệ thống đa sự kiện gắn hàm gọi từ file BL, Custom CSS Textarea cho component, và thanh viền kéo chuột co giãn LeftNavbar/PropertyPanel."
+  },
+  {
+    "timestamp": "2026-10-21T18:40:00+07:00",
+    "agent": "Kael (ENG-KAEL-7F4B2D)",
+    "action": "FIX_BL_EVENT_TRIGGER_EXECUTION",
+    "summary": "Khắc phục triệt để lỗi sự kiện không gọi hàm BL: hỗ trợ nhấp đúp/Ctrl+Click trên Canvas thiết kế, click trên Preview mode, nút '▶ Chạy Thử' trực tiếp tại PropertyPanel, chuẩn hóa tên file/hàm và bổ sung alert trực quan trong customerManagement.bl.ts."
   }
 ]

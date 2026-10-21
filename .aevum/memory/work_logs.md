@@ -369,3 +369,30 @@
 - **✅ Kết quả kiểm thử & Trạng thái**:
   - Frontend: `tsc -b && vite build` -> **0 Errors, build thành công trong 1.79s**.
 
+
+---
+
+### [2026-10-21 18:40] - Kael (ENG-KAEL-7F4B2D) - Khắc Phục Lỗi Kích Hoạt Sự Kiện Không Gọi Hàm Nghiệp Vụ BL
+- **🎯 Mục tiêu**:
+  - Khắc phục triệt để tình trạng người dùng gắn sự kiện (`click`, `dblclick`...) cho component nhưng khi thực hiện trên màn hình thì hàm trong file BL không được gọi.
+  - Hỗ trợ gọi hàm BL từ nhiều phương thức: trực tiếp trong chế độ Xem Thử (Preview), nhấp đúp/Ctrl+Click trên Canvas thiết kế, và nút **"▶ Chạy Thử"** trực tiếp tại PropertyPanel.
+- **📂 File đã tác động**:
+  - `frontend/src/logic/eventRunner.ts`:
+    - Chuẩn hóa cơ chế tìm kiếm module BL (`resolveBlModule`): tự động xử lý mọi biến thể tên file (`customerManagement`, `customerManagement.bl`, `customerManagement.bl.ts`, không phân biệt hoa thường).
+    - Chuẩn hóa tên hàm (`findFunctionInModule`): loại bỏ dấu ngoặc đơn `()` và đối số thừa, hỗ trợ so khớp không phân biệt hoa thường.
+    - Cung cấp hàm `executeSingleEvent` và `triggerComponentEvent` với thông báo toast trực quan và log màu chi tiết.
+  - `frontend/src/logic/customerManagement.bl.ts` & `dashboard.bl.ts`: Bổ sung `alert()` popup và log tham số ngữ cảnh `context`, giúp người dùng nhận biết ngay lập tức khi hàm BL được thực thi thành công trong trình duyệt.
+  - `frontend/src/renderer/components/ForgeButton.tsx`:
+    - Sửa lỗi đối chiếu Feature: dùng so sánh chuỗi linh hoạt `String(f.id) === String(node.pageId) || String(f.id) === String(activeFeatureId)`.
+    - Hỗ trợ thực thi sự kiện ở cả 2 chế độ:
+      - Chế độ Xem Thử (Preview): Click bình thường hoặc Double Click kích hoạt hàm BL tương ứng.
+      - Chế độ Thiết Kế (Edit): Nhấp đúp chuột hoặc giữ `Ctrl + Click` / `Alt + Click` kích hoạt ngay hàm BL để test nhanh mà không làm gián đoạn việc chọn component.
+  - `frontend/src/renderer/components/ForgeTextBox.tsx` & `ForgeLabel.tsx`: Hỗ trợ sự kiện `change`, `focus`, `blur`, `click`, `dblclick`.
+  - `frontend/src/editor/PropertyPanel.tsx`:
+    - Bổ sung nút **"▶ Chạy Thử Sự Kiện Này"** trên từng thẻ sự kiện trong tab Sự Kiện, cho phép dev kiểm tra ngay lập tức hàm BL đã liên kết.
+    - Bổ sung hộp mẹo hướng dẫn 3 cách kích hoạt và chạy thử sự kiện.
+  - `frontend/src/api/pagesApi.ts`: Chuẩn hóa đệ quy toàn bộ cây component để đảm bảo mọi component con lồng trong container đều giữ đúng `pageId` đồng bộ.
+  - `frontend/src/logic/blRegistry.ts`: Chuẩn hóa key file BL để luôn lấy đủ danh sách hàm khi dev nhập tên file không có đuôi `.bl.ts`.
+- **✅ Kết quả kiểm thử & Trạng thái**:
+  - Frontend: `tsc -b && vite build` -> **0 Errors, build thành công trong 2.81s**.
+  - Kiểm thử logic resolver: 6/6 kịch bản kiểm thử khớp tên file và hàm đều đạt `PASS`.

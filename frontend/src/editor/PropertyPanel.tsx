@@ -22,8 +22,10 @@ import {
   PlusCircle,
   Check,
   Code,
+  Play,
 } from 'lucide-react'
 import { getFunctionsForBlFile, addFunctionToBlFile } from '@/logic/blRegistry'
+import { executeSingleEvent } from '@/logic/eventRunner'
 import { parseRawCss, formatStyleToCss } from './cssParser'
 import type { LayoutMode, EventTrigger, EventAction, ComponentNode } from '@/types/schema'
 
@@ -1044,6 +1046,19 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                 <span>+ Gắn Thêm Sự Kiện</span>
               </button>
 
+              {/* Hướng dẫn kích hoạt sự kiện */}
+              <div className="p-2.5 rounded-xl bg-blue-950/40 border border-blue-800/50 text-[11px] text-blue-200/90 space-y-1">
+                <div className="font-semibold text-blue-300 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Cách kích hoạt & kiểm tra sự kiện:</span>
+                </div>
+                <ul className="list-disc pl-4 space-y-0.5 text-[10px] text-slate-300">
+                  <li>Bấm nút <strong>▶ Chạy Thử</strong> ở từng thẻ sự kiện bên dưới.</li>
+                  <li>Hoặc ở Canvas: Giữ <code className="text-cyan-300 bg-slate-800 px-1 rounded">Ctrl + Click</code> hoặc <code className="text-cyan-300 bg-slate-800 px-1 rounded">Nhấp đúp chuột</code>.</li>
+                  <li>Hoặc bấm nút <strong>"Xem Thử Trực Tiếp"</strong> ở thanh trên cùng để thao tác như người dùng thật.</li>
+                </ul>
+              </div>
+
               {/* Danh sách các sự kiện đã gắn */}
               {eventsList.length > 0 ? (
                 <div className="space-y-3">
@@ -1117,6 +1132,28 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                           />
                         </div>
                       </div>
+
+                      {/* Nút Chạy Thử sự kiện ngay lập tức */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          executeSingleEvent(
+                            ev,
+                            selectedNode.props.label || selectedNode.type,
+                            blFile,
+                            {
+                              componentId: selectedNode.id,
+                              pageId: activeFeatureId,
+                              trigger: ev.trigger,
+                            }
+                          )
+                        }}
+                        className="w-full mt-2 py-1.5 px-3 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm hover:text-emerald-300 active:scale-[0.99]"
+                        title="Bấm để kích hoạt và chạy hàm BL này ngay lập tức"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-emerald-400" />
+                        <span>▶ Chạy Thử Sự Kiện Này</span>
+                      </button>
                     </div>
                   ))}
                 </div>

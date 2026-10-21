@@ -7,7 +7,10 @@ import { useEditorStore } from '@/store/editorStore'
 export const ForgeButton: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const { props, style } = node
   const features = useEditorStore((s) => s.features)
-  const currentFeature = features.find((f) => f.id === node.pageId)
+  const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
+  const currentFeature =
+    features.find((f) => String(f.id) === String(node.pageId)) ||
+    features.find((f) => String(f.id) === String(activeFeatureId))
   const blFileName = currentFeature?.scriptFile
   // Separate flex-item layout styles from inner visual styles
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
@@ -37,14 +40,41 @@ export const ForgeButton: React.FC<ComponentProps> = ({ node, isEditing }) => {
       className={`inline-flex items-center justify-center font-medium rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${variantClasses} ${sizeClasses}`}
       onClick={(e) => {
         if (isEditing) {
-          e.stopPropagation()
+          // Ở chế độ thiết kế: Giữ phím Ctrl / Alt + Click để chạy thử trực tiếp sự kiện click
+          if (e.ctrlKey || e.metaKey || e.altKey) {
+            e.stopPropagation()
+            triggerComponentEvent(node.events, 'click', props.label || 'Nút bấm', blFileName, {
+              componentId: node.id,
+              pageId: currentFeature?.id,
+              trigger: 'click (Ctrl+Click)',
+            })
+          }
+          // Click bình thường để chọn component trong editor
         } else {
-          triggerComponentEvent(node.events, 'click', props.label || 'Nút bấm', blFileName)
+          // Ở chế độ Xem thử (Preview): Click bình thường chạy sự kiện click
+          triggerComponentEvent(node.events, 'click', props.label || 'Nút bấm', blFileName, {
+            componentId: node.id,
+            pageId: currentFeature?.id,
+            trigger: 'click',
+          })
         }
       }}
       onDoubleClick={(e) => {
-        if (!isEditing) {
-          triggerComponentEvent(node.events, 'dblclick', props.label || 'Nút bấm', blFileName)
+        e.stopPropagation()
+        const hasDblClick = node.events?.some((ev) => ev.trigger === 'dblclick' || ev.trigger === 'onDoubleClick')
+        if (hasDblClick) {
+          triggerComponentEvent(node.events, 'dblclick', props.label || 'Nút bấm', blFileName, {
+            componentId: node.id,
+            pageId: currentFeature?.id,
+            trigger: 'dblclick',
+          })
+        } else if (isEditing) {
+          // Ở chế độ thiết kế: Nhấp đúp chuột vào nút có sự kiện click để kích hoạt chạy thử nhanh
+          triggerComponentEvent(node.events, 'click', props.label || 'Nút bấm', blFileName, {
+            componentId: node.id,
+            pageId: currentFeature?.id,
+            trigger: 'click (kích hoạt từ nhấp đúp test)',
+          })
         }
       }}
     >
