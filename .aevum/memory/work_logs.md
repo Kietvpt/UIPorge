@@ -221,3 +221,151 @@
   - Frontend: `npm run build` -> **0 Errors, build thành công trong 2.73s**.
   - Backend: Đã cập nhật file mã nguồn `ComponentTreeMapper.cs`. Master chỉ cần restart nhẹ backend `dotnet run` là hoàn tất!
 
+
+---
+
+### [2026-10-21 15:00] - Kael (ENG-KAEL-7F4B2D) - Hiện thực hóa Tính năng Kéo & Thả Component (Drag and Drop Architecture)
+- **🎯 Mục tiêu**:
+  - Hiện thực hóa tính năng Kéo & Thả (Drag & Drop) toàn diện cho dự án UIForge theo yêu cầu của Master.
+  - Hỗ trợ cả 2 nhu cầu: (1) Kéo component từ thanh công cụ Palette thả trực tiếp vào Canvas hoặc Container; (2) Kéo các component đã có trên Canvas để đổi thứ tự (Reorder) hoặc di chuyển lồng vào/ra khỏi Container (Nesting & Reparenting).
+- **📂 File đã tác động**:
+  - `frontend/package.json`: Cài đặt bộ thư viện chuyên biệt `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`.
+  - `frontend/src/store/editorStore.ts`:
+    - Bổ sung action `moveComponent(dragId, newParentId, newIndex)`: bóc tách node (`extractNode`), cập nhật `parentId`, chèn vào vị trí đích (`insertNodeInParent`) và đánh số lại thứ tự `order: 1, 2, 3...`.
+    - Mở rộng action `addComponent(component, parentId, targetIndex)` hỗ trợ chèn chính xác tại chỉ mục mong muốn khi drop từ Palette.
+  - `frontend/src/editor/useDragDrop.ts` (Created):
+    - Quản lý logic va chạm kép (`pointerWithin` ưu tiên, fallback sang `rectIntersection`).
+    - Phòng vệ chống vòng lặp vô hạn `isDescendant`: ngăn không cho kéo Container cha thả vào chính nó hoặc vào bất kỳ Container con/cháu nào của nó.
+    - Xử lý các quy tắc phân loại Drop Target tự nhiên: Sibling reorder khi cùng cha, Nesting khi thả vào Container, Sibling insertion khi thả trước phần tử con, Root drop khi thả ra nền Canvas.
+  - `frontend/src/editor/DraggableComponent.tsx` (Created):
+    - Đóng gói useDraggable và useDroppable cho từng component.
+    - Tay nắm kéo (Drag Handle) dạng pill gọn gàng ở góc trên bên phải khi hover hoặc select.
+    - Hiệu ứng thị giác chỉ dẫn vị trí thả: Đường kẻ xanh phát sáng (Drop indicator line) cho vị trí anh em, viền phát sáng viền sáng (Drop highlight box) cho Container.
+  - `frontend/src/editor/ComponentPalette.tsx`:
+    - Biến từng mục trong bảng thành phần thành Draggable (`useDraggable`) mang theo metadata. Hỗ trợ song song cả bấm Click để thêm và Kéo thả trực tiếp.
+  - `frontend/src/editor/LeftNavbar.tsx`:
+    - Thêm Tab chuyển đổi giữa **📑 Màn hình** (Features list) và **🧩 Thành phần** (Draggable Palette) để người dùng thao tác kéo thả thuận tiện nhất.
+  - `frontend/src/editor/FeatureCanvas.tsx`:
+    - Cấu hình vùng Droppable nền (`canvas-root`), hiển thị chỉ dẫn khi kéo thả vào khoảng trống.
+  - `frontend/src/App.tsx`:
+    - Bao bọc toàn bộ không gian làm việc trong `DndContext` thống nhất.
+    - Tích hợp `DragOverlay` hiển thị con trỏ mờ (Ghost Preview) bám theo chuột khi đang kéo.
+- **✅ Kết quả kiểm thử & Trạng thái**:
+  - Frontend: `tsc -b && vite build` -> **0 Errors, build thành công trong 1.78s**.
+
+---
+
+### [2026-10-21 15:10] - Kael (ENG-KAEL-7F4B2D) - Đồng bộ Kích thước (Width, Height, Flex) Lên Outer Wrapper `<div class="group/drag relative">`
+- **🎯 Mục tiêu**:
+  - Khắc phục vấn đề bố cục khi component được bọc bởi `DraggableComponent`: Trong mô hình CSS Flexbox, phần tử con trực tiếp của thẻ cha (Flex item) chính là `<div class="group/drag relative">`.
+  - Nếu các thuộc tính bố cục (`width`, `height`, `minHeight`, `maxHeight`, `flex`, `minWidth`, `maxWidth`) chỉ nằm ở thẻ con bên trong (`ForgeContainer` hoặc Leaf component) mà không nằm ở thẻ wrapper ngoài, Flexbox của thẻ cha sẽ không thể co giãn hoặc định tỉ lệ chính xác (ví dụ `50%`, `33.3%`, `flex: 1`).
+- **📂 File đã tác động**:
+  - `frontend/src/editor/DraggableComponent.tsx`:
+    - Tạo hàm tính toán bố cục `getComponentOuterLayoutStyle(node, parentFlexConfig)`.
+    - Đưa toàn bộ các thuộc tính định kích thước và co giãn (`width`, `height`, `minHeight`, `maxHeight`, `flex`, `minWidth`, `maxWidth`, `alignSelf`) trực tiếp lên thẻ `<div class="group/drag relative" style="...">`.
+    - Bổ sung `display: flex; flex-direction: column` cho wrapper để component bên trong luôn lấp đầy 100% không gian của wrapper.
+  - `frontend/src/renderer/Renderer.tsx`:
+    - Bổ sung prop `isWrappedByDrag`. Khi component được bọc bởi `DraggableComponent`, inner wrapper sẽ thiết lập `width: 100%; height: 100%` để lấp đầy thẻ drag ngoài.
+  - `frontend/src/renderer/components/ForgeContainer.tsx`:
+    - Nhận prop `isWrappedByDrag`. Khi `true`, gán `width: 100%; flex: 1 1 auto; height: 100%` cho container con, tránh việc tính đè 2 lần tỉ lệ phần trăm (`50% của 50% = 25%`).
+- **✅ Kết quả kiểm thử & Trạng thái**:
+  - Frontend: `tsc -b && vite build` -> **0 Errors, build thành công trong 1.80s**.
+  - Khi người dùng chọn nhanh preset `50%`, `33.3%`, `100%`, `Flex: 1` hoặc gõ Width/Height tùy chỉnh trong `PropertyPanel`, thẻ `<div class="group/drag relative">` sẽ cập nhật `style` ngay tức thì.
+
+---
+
+### [2026-10-21 15:25] - Kael (ENG-KAEL-7F4B2D) - Tinh Chỉnh Giao Diện Gọn Gàng & Lưu Trạng Thái Màn Hình (URL Persistence on F5)
+- **🎯 Mục tiêu**:
+  - Thực thi 6 tinh chỉnh giao diện & trải nghiệm người dùng theo chỉ thị của Master:
+    1. Bỏ Tab "Thành phần" (Dev chuột phải vào màn hình hoặc khoảng trắng để thêm).
+    2. Bỏ huy hiệu "Flex (Dọc) / Ngang" trên Container để giao diện thoáng, không bị rối mắt.
+    3. Ẩn ô thông báo "Chế độ xem — không có quyền chỉnh sửa" đối với người dùng thông thường (viewer/user).
+    4. Bỏ thanh tiêu đề "DANH MỤC FEATURES..." ở sidebar trái (Dev chuột phải vào sidebar để tạo màn hình mới).
+    5. Bỏ thanh chọn "Bố cục màn hình", mặc định các khối bố cục là xếp dọc (`column`).
+    6. Tích hợp tính năng lưu URL màn hình: Khi bấm chuyển sang Feature nào, tự động cập nhật URL (`?feature={id}`) và `localStorage`. Khi nhấn F5 (Refresh trình duyệt), màn hình đang làm việc sẽ được khôi phục chính xác 100%.
+- **📂 File đã tác động**:
+  - `frontend/src/renderer/components/ForgeContainer.tsx`: Loại bỏ hoàn toàn khối huy hiệu hiển thị chế độ Flex/Grid ở góc trên của Container.
+  - `frontend/src/editor/TopNav.tsx`: Loại bỏ badge "Chế độ xem — không có quyền chỉnh sửa" cho tài khoản thường.
+  - `frontend/src/editor/LeftNavbar.tsx`: Tối giản hóa sidebar, bỏ tab switcher và bỏ header "Danh mục Features". Giữ nguyên tính năng chuột phải tạo màn hình mới / đổi tên / xóa.
+  - `frontend/src/editor/FeatureCanvas.tsx`: Loại bỏ thanh "Bố cục màn hình", đặt mặc định hướng layout là `column`.
+  - `frontend/src/store/editorStore.ts`:
+    - Bổ sung hàm `getSavedFeatureId()` và `saveActiveFeatureIdToUrl()`.
+    - Đồng bộ `activeFeatureId` với URL Query (`?feature=...`) và `localStorage` trong tất cả các action: `setActiveFeature`, `setFeatures`, `addFeature`, `updateFeatureId`, `deleteFeature`.
+  - `frontend/src/App.tsx`:
+    - Lắng nghe sự kiện `popstate` để hỗ trợ nút Back/Forward của trình duyệt khi duyệt qua các màn hình.
+- **✅ Kết quả kiểm thử & Trạng thái**:
+  - Frontend: `tsc -b && vite build` -> **0 Errors, build thành công trong 1.97s**.
+  - URL luôn cập nhật đồng bộ với màn hình hiện tại (ví dụ: `/?feature=3`), nhấn F5 giữ nguyên chính xác màn hình đang chọn.
+
+---
+
+### [2026-10-21 15:25] - Kael (ENG-KAEL-7F4B2D) - Tinh Chỉnh Giao Diện Gọn Gàng & Lưu Trạng Thái Màn Hình (URL Persistence on F5)
+- **🎯 Mục tiêu**:
+  - Thực thi 6 tinh chỉnh giao diện & trải nghiệm người dùng theo chỉ thị của Master:
+    1. Bỏ Tab "Thành phần" (Dev chuột phải vào màn hình hoặc khoảng trắng để thêm).
+    2. Bỏ huy hiệu "Flex (Dọc) / Ngang" trên Container để giao diện thoáng, không bị rối mắt.
+    3. Ẩn ô thông báo "Chế độ xem — không có quyền chỉnh sửa" đối với người dùng thông thường (viewer/user).
+    4. Bỏ thanh tiêu đề "DANH MỤC FEATURES..." ở sidebar trái (Dev chuột phải vào sidebar để tạo màn hình mới).
+    5. Bỏ thanh chọn "Bố cục màn hình", mặc định các khối bố cục là xếp dọc (`column`).
+    6. Tích hợp tính năng lưu URL màn hình: Khi bấm chuyển sang Feature nào, tự động cập nhật URL (`?feature={id}`) và `localStorage`. Khi nhấn F5 (Refresh trình duyệt), màn hình đang làm việc sẽ được khôi phục chính xác 100%.
+- **📂 File đã tác động**:
+  - `frontend/src/renderer/components/ForgeContainer.tsx`: Loại bỏ hoàn toàn khối huy hiệu hiển thị chế độ Flex/Grid ở góc trên của Container.
+  - `frontend/src/editor/TopNav.tsx`: Loại bỏ badge "Chế độ xem — không có quyền chỉnh sửa" cho tài khoản thường.
+  - `frontend/src/editor/LeftNavbar.tsx`: Tối giản hóa sidebar, bỏ tab switcher và bỏ header "Danh mục Features". Giữ nguyên tính năng chuột phải tạo màn hình mới / đổi tên / xóa.
+  - `frontend/src/editor/FeatureCanvas.tsx`: Loại bỏ thanh "Bố cục màn hình", đặt mặc định hướng layout là `column`.
+  - `frontend/src/store/editorStore.ts`:
+    - Bổ sung hàm `getSavedFeatureId()` và `saveActiveFeatureIdToUrl()`.
+    - Đồng bộ `activeFeatureId` với URL Query (`?feature=...`) và `localStorage` trong tất cả các action: `setActiveFeature`, `setFeatures`, `addFeature`, `updateFeatureId`, `deleteFeature`.
+  - `frontend/src/App.tsx`:
+    - Lắng nghe sự kiện `popstate` để hỗ trợ nút Back/Forward của trình duyệt khi duyệt qua các màn hình.
+- **✅ Kết quả kiểm thử & Trạng thái**:
+  - Frontend: `tsc -b && vite build` -> **0 Errors, build thành công trong 1.97s**.
+  - URL luôn cập nhật đồng bộ với màn hình hiện tại (ví dụ: `/?feature=3`), nhấn F5 giữ nguyên chính xác màn hình đang chọn.
+
+
+---
+
+### [2026-10-21 16:15] - Kael (ENG-KAEL-7F4B2D) & Vidus (ARC-VIDUS-AUHD2Y) - Triển Khai Hoàn Chỉnh Hệ Thống File Nghiệp Vụ (BL Binding), Đa Sự Kiện, Custom CSS & Resizable Panels
+- **🎯 Mục tiêu**:
+  - Thực thi toàn bộ kế hoạch 4 phân hệ đã được Master phê duyệt:
+    1. **Feature BL File Binding**: Mỗi Feature bắt buộc gắn với 1 file logic TypeScript (`*.bl.ts`). Nếu chưa có file thì Canvas bị khóa và hiển thị màn hình yêu cầu khai báo tên file.
+    2. **Component Multi-Event System**: Cho phép gắn nhiều sự kiện (`click`, `dblclick`, `change`...) cho 1 component. Mỗi sự kiện gồm loại trigger và hàm gọi thực thi thuộc file BL của Feature hiện tại.
+    3. **Custom CSS Textarea**: Ô soạn thảo CSS trong Tab Kiểu dáng cho phép gõ mã CSS thuần (`font-weight: bold; color: red; ...`), tự động phân tích (parse) và áp dụng riêng biệt cho component đó.
+    4. **Resizable Panels**: Thanh viền kéo chuột co giãn linh hoạt ở cả `LeftNavbar` và `PropertyPanel`, tự động lưu kích thước vào `localStorage`.
+- **📂 File đã tác động**:
+  - `frontend/src/editor/useResizablePanels.ts` (Created): Quản lý sự kiện kéo thả chuột co giãn độ rộng 2 thanh biên trái và phải kèm giới hạn min/max an toàn.
+  - `frontend/src/editor/cssParser.ts` (Created): Parser chuyển đổi chuỗi CSS thô sang `React.CSSProperties` và ngược lại.
+  - `frontend/src/logic/blRegistry.ts` (Created): Quản lý danh mục các hàm được export của từng file BL, hỗ trợ tra cứu và thêm hàm mới.
+  - `frontend/src/logic/eventRunner.ts` (Created): Kích hoạt các sự kiện gắn trên component khi ở chế độ xem trước (Preview), hiển thị thông báo gọi hàm trực quan.
+  - `frontend/src/types/schema.ts`: Mở rộng `FeaturePage.scriptFile`, `ComponentEvent` (`id`, `trigger`, `handlerName`), và `ComponentStyle.customCss`.
+  - `frontend/src/store/editorStore.ts`: Bổ sung action `updateFeatureScriptFile`.
+  - `frontend/src/editor/LeftNavbar.tsx` & `PropertyPanel.tsx`: Nhận prop `width` linh hoạt, tích hợp Inspector Feature hiển thị file BL và danh mục hàm khi không chọn component.
+  - `frontend/src/editor/FeatureCanvas.tsx`: Tích hợp BL Lock Guard - khóa Canvas nếu Feature chưa gắn file BL và cung cấp form nhập tên file trực tiếp.
+  - `frontend/src/renderer/components/ForgeButton.tsx`: Kích hoạt `triggerComponentEvent` cho cả sự kiện click và dblclick.
+  - `frontend/src/api/pagesApi.ts` & `App.tsx`: Đồng bộ trường `scriptFile` qua API lưu trang.
+- **✅ Kết quả kiểm thử & Trạng thái**:
+  - Frontend: `tsc -b && vite build` -> **0 Errors, build thành công trong 1.79s**.
+
+---
+
+### [2026-10-21 16:15] - Kael (ENG-KAEL-7F4B2D) & Vidus (ARC-VIDUS-AUHD2Y) - Triển Khai Hoàn Chỉnh Hệ Thống File Nghiệp Vụ (BL Binding), Đa Sự Kiện, Custom CSS & Resizable Panels
+- **🎯 Mục tiêu**:
+  - Thực thi toàn bộ kế hoạch 4 phân hệ đã được Master phê duyệt:
+    1. **Feature BL File Binding**: Mỗi Feature bắt buộc gắn với 1 file logic TypeScript (`*.bl.ts`). Nếu chưa có file thì Canvas bị khóa và hiển thị màn hình yêu cầu khai báo tên file.
+    2. **Component Multi-Event System**: Cho phép gắn nhiều sự kiện (`click`, `dblclick`, `change`...) cho 1 component. Mỗi sự kiện gồm loại trigger và hàm gọi thực thi thuộc file BL của Feature hiện tại.
+    3. **Custom CSS Textarea**: Ô soạn thảo CSS trong Tab Kiểu dáng cho phép gõ mã CSS thuần (`font-weight: bold; color: red; ...`), tự động phân tích (parse) và áp dụng riêng biệt cho component đó.
+    4. **Resizable Panels**: Thanh viền kéo chuột co giãn linh hoạt ở cả `LeftNavbar` và `PropertyPanel`, tự động lưu kích thước vào `localStorage`.
+- **📂 File đã tác động**:
+  - `frontend/src/editor/useResizablePanels.ts` (Created): Quản lý sự kiện kéo thả chuột co giãn độ rộng 2 thanh biên trái và phải kèm giới hạn min/max an toàn.
+  - `frontend/src/editor/cssParser.ts` (Created): Parser chuyển đổi chuỗi CSS thô sang `React.CSSProperties` và ngược lại.
+  - `frontend/src/logic/blRegistry.ts` (Created): Quản lý danh mục các hàm được export của từng file BL, hỗ trợ tra cứu và thêm hàm mới.
+  - `frontend/src/logic/eventRunner.ts` (Created): Kích hoạt các sự kiện gắn trên component khi ở chế độ xem trước (Preview), hiển thị thông báo gọi hàm trực quan.
+  - `frontend/src/types/schema.ts`: Mở rộng `FeaturePage.scriptFile`, `ComponentEvent` (`id`, `trigger`, `handlerName`), và `ComponentStyle.customCss`.
+  - `frontend/src/store/editorStore.ts`: Bổ sung action `updateFeatureScriptFile`.
+  - `frontend/src/editor/LeftNavbar.tsx` & `PropertyPanel.tsx`: Nhận prop `width` linh hoạt, tích hợp Inspector Feature hiển thị file BL và danh mục hàm khi không chọn component.
+  - `frontend/src/editor/FeatureCanvas.tsx`: Tích hợp BL Lock Guard - khóa Canvas nếu Feature chưa gắn file BL và cung cấp form nhập tên file trực tiếp.
+  - `frontend/src/renderer/components/ForgeButton.tsx`: Kích hoạt `triggerComponentEvent` cho cả sự kiện click và dblclick.
+  - `frontend/src/api/pagesApi.ts` & `App.tsx`: Đồng bộ trường `scriptFile` qua API lưu trang.
+- **✅ Kết quả kiểm thử & Trạng thái**:
+  - Frontend: `tsc -b && vite build` -> **0 Errors, build thành công trong 1.79s**.
+

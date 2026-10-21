@@ -14,6 +14,13 @@ interface ComponentRendererProps {
   isEditing?: boolean
   onContextMenu?: (e: React.MouseEvent, node: ComponentNode) => void
   parentFlexConfig?: FlexConfig
+  /** True when wrapped inside DraggableComponent, outer sizing is on draggable wrapper */
+  isWrappedByDrag?: boolean
+  /**
+   * Optional render prop — if provided, each child of a Container is rendered via this function.
+   * Used by DraggableComponent to inject drag/drop wrappers around children without circular deps.
+   */
+  renderChild?: (child: ComponentNode, childFlexConfig?: FlexConfig) => React.ReactNode
 }
 
 export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
@@ -21,6 +28,8 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   isEditing = false,
   onContextMenu,
   parentFlexConfig,
+  isWrappedByDrag = false,
+  renderChild,
 }) => {
   const selection = useEditorStore((s) => s.selection)
   const selectComponent = useEditorStore((s) => s.selectComponent)
@@ -43,10 +52,40 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   }
 
   // 1. If it's a Container (Khoảng Trắng):
-  // Render ForgeContainer directly without any extra wrapping div!
   if (node.type === 'Container') {
     const layoutMode = node.props.layoutMode || 'flex'
     const flexConfig = node.props.flexConfig
+    const childFlexConfig = layoutMode === 'flex' ? flexConfig : undefined
+
+    const renderChildren = () => {
+      if (!node.children || node.children.length === 0) {
+        return (
+          <div className="w-full text-center py-4 text-xs text-slate-500 italic select-none">
+            Chuột phải vào đây để thêm nút, textbox, khoảng trắng con...
+          </div>
+        )
+      }
+
+      return node.children.map((child) => {
+        if (renderChild) {
+          return (
+            <React.Fragment key={child.id}>
+              {renderChild(child, childFlexConfig)}
+            </React.Fragment>
+          )
+        }
+        return (
+          <ComponentRenderer
+            key={child.id}
+            node={child}
+            isEditing={isEditing}
+            onContextMenu={onContextMenu}
+            parentFlexConfig={childFlexConfig}
+            isWrappedByDrag={false}
+          />
+        )
+      })
+    }
 
     return (
       <ForgeContainer
@@ -56,22 +95,9 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         onClick={handleClick}
         onContextMenu={handleContextMenu}
         parentFlexConfig={parentFlexConfig}
+        isWrappedByDrag={isWrappedByDrag}
       >
-        {node.children && node.children.length > 0 ? (
-          node.children.map((child) => (
-            <ComponentRenderer
-              key={child.id}
-              node={child}
-              isEditing={isEditing}
-              onContextMenu={onContextMenu}
-              parentFlexConfig={layoutMode === 'flex' ? flexConfig : undefined}
-            />
-          ))
-        ) : (
-          <div className="w-full text-center py-4 text-xs text-slate-500 italic select-none">
-            Chuột phải vào đây để thêm nút, textbox, khoảng trắng con...
-          </div>
-        )}
+        {renderChildren()}
       </ForgeContainer>
     )
   }
@@ -96,12 +122,13 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     }
   }
 
-  // Auto calculate width for leaf items if parent flex defines columnsPerRow
+  // Calculate layout styles if NOT wrapped by DraggableComponent
   let leafWidth = node.style?.width
   let leafFlex = node.style?.flex
   let leafMaxWidth = node.style?.maxWidth
 
   if (
+    !isWrappedByDrag &&
     parentFlexConfig &&
     parentFlexConfig.direction === 'row' &&
     parentFlexConfig.columnsPerRow &&
@@ -122,12 +149,19 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     }
   }
 
-  const wrapperStyle: React.CSSProperties = {
-    flex: leafFlex,
-    width: leafWidth,
-    maxWidth: leafMaxWidth,
-    minWidth: node.style?.minWidth !== undefined ? node.style.minWidth : 0,
-  }
+  const wrapperStyle: React.CSSProperties = isWrappedByDrag
+    ? {
+        width: '100%',
+        height: '100%',
+        boxSizing: 'border-box',
+      }
+    : {
+        flex: leafFlex,
+        width: leafWidth,
+        maxWidth: leafMaxWidth,
+        minWidth: node.style?.minWidth !== undefined ? node.style.minWidth : 0,
+        boxSizing: 'border-box',
+      }
 
   return (
     <div

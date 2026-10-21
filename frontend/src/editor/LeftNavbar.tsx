@@ -5,17 +5,17 @@ import { ContextMenu, MenuItem } from './ContextMenu'
 import {
   LayoutDashboard,
   Layers,
-  Plus,
-  Box,
-  FileCode,
-  Settings,
   MoreVertical,
   Trash2,
   Edit2,
   FolderPlus,
 } from 'lucide-react'
 
-export const LeftNavbar: React.FC = () => {
+interface LeftNavbarProps {
+  width?: number
+}
+
+export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
   const setActiveFeature = useEditorStore((s) => s.setActiveFeature)
@@ -100,8 +100,13 @@ export const LeftNavbar: React.FC = () => {
           label: '🗑️ Xóa Feature này',
           icon: Trash2,
           danger: true,
-          onClick: () => {
+          onClick: async () => {
             if (confirm('Bạn có chắc chắn muốn xóa Feature này?')) {
+              try {
+                await deletePage(contextMenu.featureId!)
+              } catch {
+                // Ignore API failure if offline/local
+              }
               deleteFeature(contextMenu.featureId!)
             }
           },
@@ -119,28 +124,10 @@ export const LeftNavbar: React.FC = () => {
     <>
       <aside
         onContextMenu={handleSidebarContextMenu}
+        style={{ width: width ? `${width}px` : undefined }}
         className="w-64 border-r border-slate-800 bg-slate-900/90 flex flex-col shrink-0 select-none relative"
       >
-        {/* Header */}
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Danh mục Features
-            </h2>
-            <p className="text-[10px] text-slate-500 mt-0.5">
-              💡 Chuột phải để thêm feature mới
-            </p>
-          </div>
-          <button
-            onClick={handleOpenAddModal}
-            className="p-1.5 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer"
-            title="Thêm Feature mới"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Feature List */}
+        {/* Feature List (Chuột phải vào nền để thêm mới) */}
         <nav className="p-3 space-y-1.5 overflow-y-auto flex-1">
           {features.map((feature, idx) => {
             const isActive = feature.id === activeFeatureId
@@ -183,8 +170,8 @@ export const LeftNavbar: React.FC = () => {
 
         {/* Sidebar Footer */}
         <div className="p-3 border-t border-slate-800 bg-slate-950/40 text-[11px] text-slate-400 flex items-center justify-between">
-          <span>Tổng số: {features.length} features</span>
-          <span className="text-[10px] text-slate-500 font-mono">v1.0</span>
+          <span>{features.length} màn hình</span>
+          <span className="text-[10px] text-slate-500 font-mono">v1.2</span>
         </div>
       </aside>
 

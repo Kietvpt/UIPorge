@@ -135,12 +135,7 @@ export const TopNav: React.FC<TopNavProps> = ({
           <span>{isSaving ? 'Đang lưu...' : 'Lưu Giao Diện'}</span>
         </button>
       </div>
-      ) : (
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/70 border border-slate-700 text-xs text-slate-400">
-          <Eye className="w-3.5 h-3.5" />
-          <span>Chế độ xem — không có quyền chỉnh sửa</span>
-        </div>
-      )}
+      ) : null}
 
       {/* ── 3. Account Information & Global User Actions ── */}
       <div className="flex items-center gap-3">

@@ -20,8 +20,10 @@ export type EventTrigger = 'onClick' | 'onChange' | 'onSubmit' | 'onFocus' | 'on
 export type EventAction = 'navigate' | 'callApi' | 'showModal' | 'hideModal' | 'setState' | 'custom'
 
 export interface ComponentEvent {
-  trigger: EventTrigger
-  action: EventAction
+  id?: string
+  trigger: string
+  handlerName?: string
+  action?: EventAction
   payload?: Record<string, unknown>
 }
 
@@ -42,6 +44,7 @@ export interface GridConfig {
 }
 
 export interface ComponentStyle {
+  customCss?: string
   width?: string
   height?: string
   minHeight?: string
@@ -135,6 +138,7 @@ export interface FeaturePage {
   icon?: string
   route: string
   description?: string
+  scriptFile?: string
   components: ComponentNode[]
   layoutConfig?: FeatureLayoutConfig
   createdAt?: string

@@ -29,17 +29,21 @@ interface EditorState {
   deleteFeature: (id: string) => void
   updateFeatureId: (oldId: string, newId: string) => void
   updateFeatureLayout: (id: string, layoutConfig: Partial<FeatureLayoutConfig>) => void
+  updateFeatureScriptFile: (id: string, scriptFile: string) => void
 
   // Hydrate toàn bộ features từ server (sau khi login / reload)
   setFeatures: (features: FeaturePage[]) => void
 
   // Actions for Components in the active feature
   selectComponent: (componentId: string | null) => void
-  addComponent: (component: ComponentNode, parentId?: string | null) => void
+  addComponent: (component: ComponentNode, parentId?: string | null, targetIndex?: number) => void
   updateComponentProps: (componentId: string, props: Partial<ComponentProps>) => void
   updateComponentStyle: (componentId: string, style: Partial<ComponentStyle>) => void
   updateComponentEvents: (componentId: string, events: ComponentEvent[]) => void
   removeComponent: (componentId: string) => void
+
+  // Drag & Drop: move a component to a new parent at a specific index
+  moveComponent: (dragId: string, newParentId: string | null, newIndex: number) => void
 
   // Smart flex layout: Adjust one component width without resetting custom settings of siblings
   distributeSiblingWidths: (componentId: string, primaryWidthPercent: number) => void
@@ -58,6 +62,7 @@ const initialFeatures: FeaturePage[] = [
     icon: 'LayoutDashboard',
     route: '/dashboard',
     description: 'Bảng điều khiển và thống kê chung',
+    scriptFile: 'dashboard.bl.ts',
     layoutConfig: {
       direction: 'column',
       gap: '16px',
@@ -134,16 +139,43 @@ const initialFeatures: FeaturePage[] = [
   },
 ]
 
+
+// ── URL & LocalStorage Persistence Helpers ──
+export function getSavedFeatureId(): string | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const urlParams = new URLSearchParams(window.location.search)
+    const fromUrl = urlParams.get('feature') || urlParams.get('page')
+    if (fromUrl) return fromUrl
+    return localStorage.getItem('uiforge_active_feature_id')
+  } catch {
+    return null
+  }
+}
+
+export function saveActiveFeatureIdToUrl(id: string) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem('uiforge_active_feature_id', id)
+    const url = new URL(window.location.href)
+    url.searchParams.set('feature', id)
+    window.history.replaceState(null, '', url.toString())
+  } catch {
+    // Ignore in unsupported environments
+  }
+}
+
 export const useEditorStore = create<EditorState>()(
   devtools(
     (set) => ({
       features: initialFeatures,
-      activeFeatureId: initialFeatures[0].id,
-      selection: { componentId: null, pageId: initialFeatures[0].id },
+      activeFeatureId: getSavedFeatureId() || initialFeatures[0].id,
+      selection: { componentId: null, pageId: getSavedFeatureId() || initialFeatures[0].id },
       history: [initialFeatures],
       historyIndex: 0,
 
       setActiveFeature: (id) => {
+        saveActiveFeatureIdToUrl(id)
         set((s) => ({
           activeFeatureId: id,
           selection: { componentId: null, pageId: id },
@@ -152,10 +184,13 @@ export const useEditorStore = create<EditorState>()(
 
       setFeatures: (features) => {
         if (!features.length) return
+        const savedId = getSavedFeatureId()
+        const target = (savedId && features.find((f) => f.id === savedId || f.route === `/${savedId}` || f.route === savedId)) || features[0]
+        saveActiveFeatureIdToUrl(target.id)
         set({
           features,
-          activeFeatureId: features[0].id,
-          selection: { componentId: null, pageId: features[0].id },
+          activeFeatureId: target.id,
+          selection: { componentId: null, pageId: target.id },
           history: [features],
           historyIndex: 0,
         })
@@ -168,6 +203,7 @@ export const useEditorStore = create<EditorState>()(
           name: name.trim() || 'Tính năng mới',
           icon,
           route: `/${id}`,
+          scriptFile: '',
           layoutConfig: {
             direction: 'column',
             gap: '16px',
@@ -178,6 +214,7 @@ export const useEditorStore = create<EditorState>()(
           updatedAt: new Date().toISOString(),
         }
 
+        saveActiveFeatureIdToUrl(id)
         set((s) => {
           const nextFeatures = [...s.features, newFeature]
           return {
@@ -208,9 +245,11 @@ export const useEditorStore = create<EditorState>()(
                 }
               : f
           )
+          const updatedActiveId = s.activeFeatureId === oldId ? newId : s.activeFeatureId
+          saveActiveFeatureIdToUrl(updatedActiveId)
           return {
             features: next,
-            activeFeatureId: s.activeFeatureId === oldId ? newId : s.activeFeatureId,
+            activeFeatureId: updatedActiveId,
             selection: s.selection.pageId === oldId ? { ...s.selection, pageId: newId } : s.selection,
           }
         })
@@ -221,6 +260,7 @@ export const useEditorStore = create<EditorState>()(
           if (s.features.length <= 1) return {}
           const next = s.features.filter((f) => f.id !== id)
           const newActiveId = s.activeFeatureId === id ? next[0].id : s.activeFeatureId
+          saveActiveFeatureIdToUrl(newActiveId)
           return {
             ...recordHistory(s, next),
             activeFeatureId: newActiveId,
@@ -245,30 +285,48 @@ export const useEditorStore = create<EditorState>()(
         })
       },
 
+      updateFeatureScriptFile: (id, scriptFile) => {
+        set((s) => {
+          const next = s.features.map((f) => (f.id === id ? { ...f, scriptFile: scriptFile.trim() } : f))
+          return recordHistory(s, next)
+        })
+      },
+
       selectComponent: (componentId) => {
         set((s) => ({
           selection: { ...s.selection, componentId },
         }))
       },
 
-      addComponent: (component, parentId = null) => {
+      addComponent: (component, parentId = null, targetIndex?: number) => {
         set((s) => {
           const currentFeature = s.features.find((f) => f.id === s.activeFeatureId)
           if (!currentFeature) return {}
 
           let updatedComponents: ComponentNode[]
           if (parentId) {
-            // Nested inside a container
-            updatedComponents = addNodeToParent(currentFeature.components, parentId, component)
+            if (targetIndex !== undefined) {
+              updatedComponents = insertNodeInParent(currentFeature.components, parentId, component, targetIndex)
+            } else {
+              updatedComponents = addNodeToParent(currentFeature.components, parentId, component)
+            }
           } else {
-            // Root level
-            updatedComponents = [...currentFeature.components, component]
+            if (targetIndex !== undefined) {
+              const rootNodes = [...currentFeature.components]
+              rootNodes.splice(targetIndex, 0, component)
+              updatedComponents = rootNodes.map((n, i) => ({ ...n, order: i + 1 }))
+            } else {
+              updatedComponents = [...currentFeature.components, component]
+            }
           }
 
           const nextFeatures = s.features.map((f) =>
             f.id === s.activeFeatureId ? { ...f, components: updatedComponents } : f
           )
-          return recordHistory(s, nextFeatures)
+          return {
+            ...recordHistory(s, nextFeatures),
+            selection: { ...s.selection, componentId: component.id },
+          }
         })
       },
 
@@ -333,6 +391,39 @@ export const useEditorStore = create<EditorState>()(
             ...recordHistory(s, next),
             selection: { ...s.selection, componentId: null },
           }
+        })
+      },
+
+      moveComponent: (dragId, newParentId, newIndex) => {
+        set((s) => {
+          const currentFeature = s.features.find((f) => f.id === s.activeFeatureId)
+          if (!currentFeature) return {}
+
+          // Extract the dragged node (remove from current position)
+          const extracted = extractNode(currentFeature.components, dragId)
+          if (!extracted) return {}
+          const [movedNode, treeWithout] = extracted
+
+          // Update parentId on the moved node
+          const updatedNode: ComponentNode = { ...movedNode, parentId: newParentId }
+
+          // Insert at target position
+          let updatedComponents: ComponentNode[]
+          if (newParentId === null) {
+            // Root-level: work on flat root list, reorder, then merge children back
+            const rootNodes = treeWithout.filter((c) => !c.parentId)
+            rootNodes.splice(newIndex, 0, updatedNode)
+            const withOrder = rootNodes.map((n, i) => ({ ...n, order: i + 1 }))
+            const childNodes = treeWithout.filter((c) => c.parentId)
+            updatedComponents = [...withOrder, ...childNodes]
+          } else {
+            updatedComponents = insertNodeInParent(treeWithout, newParentId, updatedNode, newIndex)
+          }
+
+          const nextFeatures = s.features.map((f) =>
+            f.id === s.activeFeatureId ? { ...f, components: updatedComponents } : f
+          )
+          return recordHistory(s, nextFeatures)
         })
       },
 
@@ -475,6 +566,95 @@ function updateSiblingList(
         ...node,
         children: updateSiblingList(node.children, targetId, primaryPercent),
       }
+    }
+    return node
+  })
+}
+
+
+// Extracts a node (by id) from the tree, returns [extractedNode, treeWithoutNode]
+// Works on FLAT list (components array at feature level)
+function extractNode(
+  nodes: ComponentNode[],
+  id: string
+): [ComponentNode, ComponentNode[]] | null {
+  // Check root level first
+  const rootIdx = nodes.findIndex((n) => n.id === id)
+  if (rootIdx !== -1) {
+    const node = nodes[rootIdx]
+    const remaining = [...nodes.slice(0, rootIdx), ...nodes.slice(rootIdx + 1)]
+    return [node, remaining]
+  }
+
+  // Search in children of each node
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i]
+    if (!node.children || node.children.length === 0) continue
+
+    const childIdx = node.children.findIndex((c) => c.id === id)
+    if (childIdx !== -1) {
+      const found = node.children[childIdx]
+      const newChildren = [
+        ...node.children.slice(0, childIdx),
+        ...node.children.slice(childIdx + 1),
+      ]
+      const updatedNode = { ...node, children: newChildren }
+      const updatedNodes = [...nodes.slice(0, i), updatedNode, ...nodes.slice(i + 1)]
+      return [found, updatedNodes]
+    }
+
+    // Recurse deeper
+    const result = extractNodeFromChildren(node.children, id)
+    if (result) {
+      const [found, newChildren] = result
+      const updatedNode = { ...node, children: newChildren }
+      const updatedNodes = [...nodes.slice(0, i), updatedNode, ...nodes.slice(i + 1)]
+      return [found, updatedNodes]
+    }
+  }
+  return null
+}
+
+function extractNodeFromChildren(
+  children: ComponentNode[],
+  id: string
+): [ComponentNode, ComponentNode[]] | null {
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i]
+    if (child.id === id) {
+      const remaining = [...children.slice(0, i), ...children.slice(i + 1)]
+      return [child, remaining]
+    }
+    if (child.children && child.children.length > 0) {
+      const result = extractNodeFromChildren(child.children, id)
+      if (result) {
+        const [found, newGrandchildren] = result
+        const updatedChild = { ...child, children: newGrandchildren }
+        const newChildren = [...children.slice(0, i), updatedChild, ...children.slice(i + 1)]
+        return [found, newChildren]
+      }
+    }
+  }
+  return null
+}
+
+// Insert a node into a parent container at a specific index, update order for all siblings
+function insertNodeInParent(
+  nodes: ComponentNode[],
+  parentId: string,
+  newNode: ComponentNode,
+  atIndex: number
+): ComponentNode[] {
+  return nodes.map((node) => {
+    if (node.id === parentId) {
+      const existingChildren = node.children || []
+      const newChildren = [...existingChildren]
+      newChildren.splice(atIndex, 0, { ...newNode, parentId })
+      const withOrder = newChildren.map((c, i) => ({ ...c, order: i + 1 }))
+      return { ...node, children: withOrder }
+    }
+    if (node.children && node.children.length > 0) {
+      return { ...node, children: insertNodeInParent(node.children, parentId, newNode, atIndex) }
     }
     return node
   })

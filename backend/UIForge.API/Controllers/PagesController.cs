@@ -74,6 +74,7 @@ namespace UIForge.API.Controllers
                         Name = dto.Name,
                         Route = dto.Route,
                         Icon = dto.Icon,
+                        ScriptFile = dto.ScriptFile,
                         LayoutTemplateId = dto.LayoutTemplateId,
                         LayoutConfigJson = LayoutConfigRaw(dto),
                         CreatedAt = DateTime.UtcNow,
@@ -87,6 +88,7 @@ namespace UIForge.API.Controllers
                     page.Name = dto.Name;
                     page.Route = dto.Route;
                     page.Icon = dto.Icon ?? page.Icon;
+                    page.ScriptFile = dto.ScriptFile ?? page.ScriptFile;
                     page.LayoutTemplateId = dto.LayoutTemplateId;
                     page.LayoutConfigJson = LayoutConfigRaw(dto) ?? page.LayoutConfigJson;
                     page.UpdatedAt = DateTime.UtcNow;
@@ -133,6 +135,7 @@ namespace UIForge.API.Controllers
             p.Name,
             p.Route,
             p.Icon,
+            p.ScriptFile,
             p.LayoutTemplateId,
             LayoutConfig = ParseJsonOrNull(p.LayoutConfigJson),
             Components = ComponentTreeMapper.BuildTree(p.Components),
