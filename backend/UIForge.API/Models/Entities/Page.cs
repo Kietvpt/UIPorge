@@ -28,6 +28,10 @@ namespace UIForge.API.Models.Entities
         [MaxLength(100)]
         public string LayoutTemplateId { get; set; } = "sidebar-left";
 
+        /// <summary>Tên file nghiệp vụ TypeScript (BL file) gắn với màn hình này</summary>
+        [MaxLength(255)]
+        public string? ScriptFile { get; set; }
+
         /// <summary>Cấu hình layout tổng của page (direction, gap, wrap) dạng JSON</summary>
         [Column(TypeName = "nvarchar(max)")]
         public string? LayoutConfigJson { get; set; }

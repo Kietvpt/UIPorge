@@ -102,6 +102,7 @@ namespace UIForge.API.Data
                 Name = "Tổng quan hệ thống",
                 Route = "/dashboard",
                 Icon = "LayoutDashboard",
+                ScriptFile = "dashboard.bl.ts",
                 LayoutTemplateId = "sidebar-left",
                 LayoutConfigJson = "{\"direction\":\"column\",\"gap\":\"16px\",\"wrap\":\"wrap\"}",
                 CreatedAt = seedDate,

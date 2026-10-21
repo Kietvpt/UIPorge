@@ -1,6 +1,11 @@
 import { apiClient } from './client'
 import type { ComponentNode, FeatureLayoutConfig, FeaturePage } from '@/types/schema'
 
+export interface ExtendedLayoutConfig extends FeatureLayoutConfig {
+  scriptFile?: string
+  [key: string]: any
+}
+
 // Kiểu dữ liệu page trả về từ backend
 export interface ApiPage {
   id: number | string
@@ -8,8 +13,9 @@ export interface ApiPage {
   name: string
   route: string
   icon?: string
+  scriptFile?: string
   layoutTemplateId?: string
-  layoutConfig?: FeatureLayoutConfig | null
+  layoutConfig?: ExtendedLayoutConfig | null
   components: ComponentNode[]
   createdAt?: string
   updatedAt?: string
@@ -21,7 +27,8 @@ export interface SavePageRequest {
   name: string
   route: string
   icon?: string
-  layoutConfig?: FeatureLayoutConfig
+  scriptFile?: string
+  layoutConfig?: ExtendedLayoutConfig
   components: ComponentNode[]
 }
 
@@ -48,13 +55,26 @@ export async function deletePage(id: number | string): Promise<void> {
 /** Chuyển Page từ API -> FeaturePage của editor store */
 export function apiPageToFeature(p: ApiPage): FeaturePage {
   const strId = String(p.id)
+  // Get scriptFile from top-level or layoutConfig
+  const scriptFile = p.scriptFile || p.layoutConfig?.scriptFile || ''
+
+  // Đảm bảo tất cả component (kể cả component lồng trong container) đều có pageId string đồng bộ
+  const normalizeTree = (nodes: ComponentNode[]): ComponentNode[] => {
+    return nodes.map((node) => ({
+      ...node,
+      pageId: strId,
+      children: node.children && node.children.length > 0 ? normalizeTree(node.children) : node.children,
+    }))
+  }
+
   return {
     id: strId,
     name: p.name,
     route: p.route,
     icon: p.icon || 'Layers',
+    scriptFile,
     layoutConfig: p.layoutConfig || { direction: 'column', gap: '16px', wrap: 'wrap' },
-    components: (p.components || []).map((c) => ({ ...c, pageId: strId })),
+    components: normalizeTree(p.components || []),
     createdAt: p.createdAt,
     updatedAt: p.updatedAt,
   }

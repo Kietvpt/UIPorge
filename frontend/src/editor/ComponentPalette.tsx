@@ -1,9 +1,10 @@
 import React from 'react'
+import { useDraggable } from '@dnd-kit/core'
 import { useEditorStore } from '@/store/editorStore'
 import type { ComponentType, ComponentNode } from '@/types/schema'
-import { Square, Type, FileText, Table as TableIcon, Box, Plus } from 'lucide-react'
+import { Square, Type, FileText, Table as TableIcon, Box, GripVertical, Plus } from 'lucide-react'
 
-interface ComponentDefinition {
+export interface ComponentDefinition {
   type: ComponentType
   name: string
   description: string
@@ -12,46 +13,46 @@ interface ComponentDefinition {
   defaultStyle: Record<string, string>
 }
 
-const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
+export const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
+  {
+    type: 'Container',
+    name: 'Khoảng Trắng (Container)',
+    description: 'Bố cục linh hoạt Flexbox hoặc Grid',
+    icon: Box,
+    defaultProps: {
+      layoutMode: 'flex',
+      flexConfig: { direction: 'row', wrap: 'wrap', gap: '16px', justify: 'flex-start', align: 'stretch' },
+    },
+    defaultStyle: { padding: '16px', minHeight: '120px' },
+  },
   {
     type: 'Button',
     name: 'Nút bấm (Button)',
-    description: 'Kích hoạt hành động & sự kiện',
+    description: 'Kích hoạt hành động & sự kiện click',
     icon: Square,
-    defaultProps: { label: 'Nút mới', variant: 'primary', size: 'md' },
+    defaultProps: { label: 'Nút bấm', variant: 'primary', size: 'md' },
     defaultStyle: {},
   },
   {
     type: 'TextBox',
     name: 'Ô nhập liệu (TextBox)',
-    description: 'Trường nhập văn bản đơn hàng',
+    description: 'Nhập thông tin văn bản người dùng',
     icon: Type,
-    defaultProps: { label: 'Tên trường', placeholder: 'Nhập giá trị...', required: false },
+    defaultProps: { label: 'Tên trường', placeholder: 'Nhập giá trị...' },
     defaultStyle: {},
   },
   {
     type: 'Label',
     name: 'Nhãn chữ (Label)',
-    description: 'Tiêu đề và văn bản mô tả',
+    description: 'Tiêu đề và nội dung tĩnh',
     icon: FileText,
     defaultProps: { label: 'Tiêu đề khối' },
     defaultStyle: { fontSize: '16px', fontWeight: 'bold' },
   },
   {
-    type: 'Container',
-    name: 'Khoảng Trắng (Container)',
-    description: 'Bố cục Flexbox hoặc CSS Grid',
-    icon: Box,
-    defaultProps: {
-      layoutMode: 'flex',
-      flexConfig: { direction: 'row', wrap: 'wrap', gap: '16px' },
-    },
-    defaultStyle: { padding: '16px', minHeight: '100px' },
-  },
-  {
     type: 'Table',
     name: 'Bảng dữ liệu (Table)',
-    description: 'Bảng hiển thị danh sách nghiệp vụ',
+    description: 'Bảng danh sách bản ghi nghiệp vụ',
     icon: TableIcon,
     defaultProps: {
       columns: [
@@ -64,7 +65,78 @@ const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
   },
 ]
 
-export const ComponentPalette: React.FC = () => {
+interface PaletteItemProps {
+  item: ComponentDefinition
+  onClick: (def: ComponentDefinition) => void
+  isEditing: boolean
+}
+
+const PaletteItem: React.FC<PaletteItemProps> = ({ item, onClick, isEditing }) => {
+  const Icon = item.icon
+
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `palette-${item.type}`,
+    disabled: !isEditing,
+    data: {
+      isPaletteItem: true,
+      type: item.type,
+      name: item.name,
+      defaultProps: item.defaultProps,
+      defaultStyle: item.defaultStyle,
+    },
+  })
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`relative group rounded-xl border transition-all select-none ${
+        isDragging
+          ? 'opacity-40 border-blue-500 bg-blue-950/30'
+          : 'border-slate-800 bg-slate-800/40 hover:bg-slate-800 hover:border-slate-700'
+      }`}
+    >
+      <div className="flex items-center justify-between p-2.5">
+        {/* Click area */}
+        <button
+          type="button"
+          onClick={() => onClick(item)}
+          className="flex-1 flex items-center gap-2.5 text-left cursor-pointer"
+          title="Bấm để thêm vào vị trí đang chọn"
+        >
+          <div className="p-2 rounded-lg bg-slate-800 text-blue-400 group-hover:text-blue-300 group-hover:bg-blue-600/20 transition-colors shrink-0">
+            <Icon className="w-4 h-4" />
+          </div>
+          <div className="truncate">
+            <div className="text-xs font-semibold text-slate-200 group-hover:text-white truncate">
+              {item.name}
+            </div>
+            <div className="text-[10px] text-slate-400 truncate mt-0.5">
+              {item.description}
+            </div>
+          </div>
+        </button>
+
+        {/* Drag handle */}
+        {isEditing && (
+          <div
+            {...attributes}
+            {...listeners}
+            className="p-1.5 rounded-lg text-slate-500 hover:text-blue-400 hover:bg-slate-700/50 cursor-grab active:cursor-grabbing transition-colors ml-1"
+            title="Kéo & thả vào giao diện"
+          >
+            <GripVertical className="w-4 h-4" />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+interface ComponentPaletteProps {
+  isEditing?: boolean
+}
+
+export const ComponentPalette: React.FC<ComponentPaletteProps> = ({ isEditing = true }) => {
   const addComponent = useEditorStore((s) => s.addComponent)
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
@@ -88,7 +160,7 @@ export const ComponentPalette: React.FC = () => {
     const selected = findNode(activeFeature?.components || [], selection.componentId)
 
     // Nếu chọn Container: thêm vào trong Container.
-    // Nếu chọn component lá (Button, Label...): thêm cùng cấp (dùng parentId của node đó).
+    // Nếu chọn component lá (Button, Label...): thêm cùng cấp.
     let targetParentId: string | null = null
     if (selected) {
       if (selected.type === 'Container') {
@@ -113,39 +185,26 @@ export const ComponentPalette: React.FC = () => {
   }
 
   return (
-    <div className="w-64 border-r border-slate-800 bg-slate-900 flex flex-col h-full shrink-0 select-none">
-      <div className="p-3.5 border-b border-slate-800">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-          Component Palette
+    <div className="flex flex-col h-full select-none">
+      <div className="p-3 border-b border-slate-800 bg-slate-900/60">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+          <span>Thành phần giao diện</span>
+          <span className="text-[10px] text-blue-400 font-normal">Kéo hoặc Click</span>
         </h2>
-        <p className="text-[11px] text-slate-500 mt-0.5">Bấm để thêm vào vị trí đang chọn</p>
+        <p className="text-[11px] text-slate-400 mt-1 leading-snug">
+          ✋ Kéo thả trực tiếp vào màn hình hoặc 🖱️ bấm để thêm nhanh vào khối đang chọn.
+        </p>
       </div>
 
       <div className="p-3 space-y-2 overflow-y-auto flex-1">
-        {AVAILABLE_COMPONENTS.map((item) => {
-          const Icon = item.icon
-          return (
-            <button
-              key={item.type}
-              type="button"
-              onClick={() => handleAddComponent(item)}
-              className="w-full text-left p-2.5 rounded-lg border border-slate-800 bg-slate-800/40 hover:bg-slate-800 hover:border-slate-700 transition-all flex items-center justify-between group cursor-pointer"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded bg-slate-800 text-blue-400 group-hover:text-blue-300 group-hover:bg-blue-600/20 transition-colors">
-                  <Icon className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-slate-200 group-hover:text-white">
-                    {item.name}
-                  </div>
-                  <div className="text-[10px] text-slate-500 line-clamp-1">{item.description}</div>
-                </div>
-              </div>
-              <Plus className="w-4 h-4 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </button>
-          )
-        })}
+        {AVAILABLE_COMPONENTS.map((item) => (
+          <PaletteItem
+            key={item.type}
+            item={item}
+            onClick={handleAddComponent}
+            isEditing={isEditing}
+          />
+        ))}
       </div>
     </div>
   )
