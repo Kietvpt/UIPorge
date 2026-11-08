@@ -18,6 +18,19 @@ const DEFAULT_BL_FUNCTIONS: Record<string, string[]> = {
     'saveCustomerDetails',
     'deleteCustomerRecord',
   ],
+  'fclImport.bl.ts': [
+    'AutoFillVendor',
+    'CheckMBL',
+    'TryParseData',
+    'FeeSuggestion',
+    'AutoPOL',
+    'AutoPOD',
+    'onSave',
+    'onEManifest',
+    'onPrintDocuments',
+    'onAccountingSync',
+    'onRunFunction',
+  ],
 }
 
 const STORAGE_KEY = 'uiforge_bl_functions_registry'
@@ -47,6 +60,7 @@ export function normalizeBlKey(fileName?: string): string {
   const lower = clean.toLowerCase()
   if (lower.includes('customer')) return 'customerManagement.bl.ts'
   if (lower.includes('dashboard')) return 'dashboard.bl.ts'
+  if (lower.includes('fcl')) return 'fclImport.bl.ts'
   if (!clean.endsWith('.ts')) {
     if (!clean.endsWith('.bl')) clean = `${clean}.bl`
     clean = `${clean}.ts`

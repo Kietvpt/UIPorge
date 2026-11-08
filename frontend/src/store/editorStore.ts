@@ -8,7 +8,11 @@ import type {
   ComponentStyle,
   ComponentProps,
   ComponentEvent,
+  DataBindingConfig,
+  ValidationConfig,
+  ComponentPermissionConfig,
 } from '@/types/schema'
+import { FCL_IMPORT_PAGE_TREE } from '@/data/fclImportTemplate'
 
 interface EditorState {
   // All features in the system
@@ -40,6 +44,10 @@ interface EditorState {
   updateComponentProps: (componentId: string, props: Partial<ComponentProps>) => void
   updateComponentStyle: (componentId: string, style: Partial<ComponentStyle>) => void
   updateComponentEvents: (componentId: string, events: ComponentEvent[]) => void
+  updateComponentDataBinding: (componentId: string, dataBinding: Partial<DataBindingConfig>) => void
+  updateComponentValidation: (componentId: string, validation: Partial<ValidationConfig>) => void
+  updateComponentPermissions: (componentId: string, permissions: Partial<ComponentPermissionConfig>) => void
+  updateComponentOrder: (componentId: string, order: number) => void
   removeComponent: (componentId: string) => void
 
   // Drag & Drop: move a component to a new parent at a specific index
@@ -136,6 +144,20 @@ const initialFeatures: FeaturePage[] = [
         order: 1,
       },
     ],
+  },
+  {
+    id: '2',
+    name: 'FCL Import (Logistics ERP)',
+    icon: 'Ship',
+    route: '/fcl-import',
+    description: 'Màn hình quản lý lô hàng FCL chuyển đổi từ C# Core (Tái hiện chuẩn xác 100% Ảnh 4)',
+    scriptFile: 'fclImport.bl.ts',
+    layoutConfig: {
+      direction: 'column',
+      gap: '16px',
+      wrap: 'nowrap',
+    },
+    components: FCL_IMPORT_PAGE_TREE,
   },
 ]
 
@@ -371,6 +393,71 @@ export const useEditorStore = create<EditorState>()(
               components: updateNodeInList(f.components, componentId, (n) => ({
                 ...n,
                 events,
+              })),
+            }
+          })
+          return recordHistory(s, next)
+        })
+      },
+
+      updateComponentDataBinding: (componentId, dataBinding) => {
+        set((s) => {
+          const next = s.features.map((f) => {
+            if (f.id !== s.activeFeatureId) return f
+            return {
+              ...f,
+              components: updateNodeInList(f.components, componentId, (n) => ({
+                ...n,
+                dataBinding: { ...n.dataBinding, ...dataBinding },
+              })),
+            }
+          })
+          return recordHistory(s, next)
+        })
+      },
+
+      updateComponentValidation: (componentId, validation) => {
+        set((s) => {
+          const next = s.features.map((f) => {
+            if (f.id !== s.activeFeatureId) return f
+            return {
+              ...f,
+              components: updateNodeInList(f.components, componentId, (n) => ({
+                ...n,
+                validation: { ...n.validation, ...validation },
+              })),
+            }
+          })
+          return recordHistory(s, next)
+        })
+      },
+
+      updateComponentPermissions: (componentId, permissions) => {
+        set((s) => {
+          const next = s.features.map((f) => {
+            if (f.id !== s.activeFeatureId) return f
+            return {
+              ...f,
+              components: updateNodeInList(f.components, componentId, (n) => ({
+                ...n,
+                permissions: { ...n.permissions, ...permissions },
+              })),
+            }
+          })
+          return recordHistory(s, next)
+        })
+      },
+
+      updateComponentOrder: (componentId, order) => {
+        set((s) => {
+          const next = s.features.map((f) => {
+            if (f.id !== s.activeFeatureId) return f
+            return {
+              ...f,
+              components: updateNodeInList(f.components, componentId, (n) => ({
+                ...n,
+                order,
+                props: { ...n.props, order },
               })),
             }
           })

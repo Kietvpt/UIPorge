@@ -6,4 +6,5 @@ export interface ComponentProps {
   node: ComponentNode
   isEditing?: boolean
   onRightClick?: (e: React.MouseEvent, node: ComponentNode) => void
+  children?: React.ReactNode
 }

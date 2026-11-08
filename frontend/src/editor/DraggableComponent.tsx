@@ -4,75 +4,26 @@ import { CSS } from '@dnd-kit/utilities'
 import type { ComponentNode, FlexConfig } from '@/types/schema'
 import { ComponentRenderer } from '@/renderer/Renderer'
 import { GripVertical } from 'lucide-react'
+import { getComponentOuterLayoutStyle, type ParentLayoutContext } from '@/renderer/layoutUtils'
+
+export { getComponentOuterLayoutStyle }
+export type { ParentLayoutContext }
 
 interface DraggableComponentProps {
   node: ComponentNode
   isEditing: boolean
   onContextMenu: (e: React.MouseEvent, node: ComponentNode) => void
+  parentLayout?: ParentLayoutContext
   parentFlexConfig?: FlexConfig
   activeId?: string | null
   overId?: string | null
-}
-
-/**
- * Calculates outer layout styles (sizing, flex, min/max dimensions)
- * that MUST sit on the direct child of the parent flex/grid container.
- */
-export function getComponentOuterLayoutStyle(
-  node: ComponentNode,
-  parentFlexConfig?: FlexConfig
-): React.CSSProperties {
-  const style = node.style || {}
-
-  let autoWidth: string | undefined = style.flex ? undefined : '100%'
-  let autoFlex: string | undefined = style.flex
-  let autoMaxWidth: string | number | undefined = style.maxWidth
-
-  if (
-    parentFlexConfig &&
-    parentFlexConfig.direction === 'row' &&
-    parentFlexConfig.columnsPerRow &&
-    parentFlexConfig.columnsPerRow !== 'auto'
-  ) {
-    const cols =
-      typeof parentFlexConfig.columnsPerRow === 'number'
-        ? parentFlexConfig.columnsPerRow
-        : parseInt(String(parentFlexConfig.columnsPerRow), 10)
-
-    if (!isNaN(cols) && cols > 0) {
-      const gapNum = parseInt(parentFlexConfig.gap || '12', 10) || 12
-      const calcWidth =
-        cols === 1 ? '100%' : `calc((100% - ${(cols - 1) * gapNum}px) / ${cols})`
-
-      if (style.width === undefined && style.flex === undefined) {
-        autoWidth = calcWidth
-        autoFlex = `0 0 ${calcWidth}`
-        autoMaxWidth = calcWidth
-      }
-    }
-  }
-
-  const width = style.width !== undefined ? style.width : autoWidth
-  const flex = style.flex !== undefined ? style.flex : autoFlex
-  const maxWidth = style.maxWidth !== undefined ? style.maxWidth : autoMaxWidth
-  const minWidth = style.minWidth !== undefined ? style.minWidth : 0
-
-  return {
-    width,
-    flex,
-    maxWidth,
-    minWidth,
-    height: style.height,
-    minHeight: style.minHeight || (node.type === 'Container' ? '90px' : undefined),
-    maxHeight: style.maxHeight,
-    alignSelf: style.alignSelf,
-  }
 }
 
 export const DraggableComponent: React.FC<DraggableComponentProps> = ({
   node,
   isEditing,
   onContextMenu,
+  parentLayout,
   parentFlexConfig,
   activeId,
   overId,
@@ -105,8 +56,21 @@ export const DraggableComponent: React.FC<DraggableComponentProps> = ({
     setDropRef(el)
   }
 
-  // Calculate layout styles (width, height, flex) for the wrapper div
-  const outerLayoutStyle = getComponentOuterLayoutStyle(node, parentFlexConfig)
+  // Chuẩn hóa layout context từ parentLayout hoặc parentFlexConfig
+  const effectiveLayout: ParentLayoutContext | undefined =
+    parentLayout ||
+    (parentFlexConfig
+      ? {
+          mode: 'flex',
+          direction: parentFlexConfig.direction,
+          columnsPerRow: parentFlexConfig.columnsPerRow,
+          gap: parentFlexConfig.gap,
+          wrap: parentFlexConfig.wrap,
+        }
+      : undefined)
+
+  // Calculate layout styles (width, height, flex, gridColumn) for the wrapper div
+  const outerLayoutStyle = getComponentOuterLayoutStyle(node, effectiveLayout)
 
   const dndStyle: React.CSSProperties = {
     ...outerLayoutStyle,
@@ -120,8 +84,9 @@ export const DraggableComponent: React.FC<DraggableComponentProps> = ({
   }
 
   // Visual cues
-  const isDropTargetContainer = isOver && node.type === 'Container' && !isDragging
-  const isSiblingDropTarget = isOver && node.type !== 'Container' && !isDragging
+  const isContainerLike = node.type === 'Container' || node.type === 'Section' || node.type === 'Tabs'
+  const isDropTargetContainer = isOver && isContainerLike && !isDragging
+  const isSiblingDropTarget = isOver && !isContainerLike && !isDragging
 
   return (
     <div ref={setRefs} style={dndStyle} className="group/drag relative">
@@ -156,15 +121,25 @@ export const DraggableComponent: React.FC<DraggableComponentProps> = ({
         node={node}
         isEditing={isEditing}
         onContextMenu={onContextMenu}
+        parentLayout={effectiveLayout}
         parentFlexConfig={parentFlexConfig}
         isWrappedByDrag={true}
-        renderChild={(childNode, childFlexConfig) => (
+        renderChild={(childNode, childLayout) => (
           <DraggableComponent
             key={childNode.id}
             node={childNode}
             isEditing={isEditing}
             onContextMenu={onContextMenu}
-            parentFlexConfig={childFlexConfig}
+            parentLayout={
+              childLayout && 'mode' in childLayout
+                ? (childLayout as ParentLayoutContext)
+                : undefined
+            }
+            parentFlexConfig={
+              childLayout && !('mode' in childLayout)
+                ? (childLayout as FlexConfig)
+                : undefined
+            }
             activeId={activeId}
             overId={overId}
           />

@@ -59,6 +59,9 @@ namespace UIForge.API.Services
                     PropsJson = GetRaw(node, "props", "{}"),
                     StyleJson = GetRaw(node, "style", "{}"),
                     EventsJson = GetRaw(node, "events", "[]"),
+                    DataBindingJson = GetRawNullable(node, "dataBinding"),
+                    ValidationJson = GetRawNullable(node, "validation"),
+                    PermissionsJson = GetRawNullable(node, "permissions"),
                     Order = GetInt(node, "order") ?? autoOrder,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
@@ -111,6 +114,20 @@ namespace UIForge.API.Services
                     ["events"] = ParseOr(r.EventsJson, "[]"),
                     ["order"] = r.Order,
                 };
+
+                if (!string.IsNullOrWhiteSpace(r.DataBindingJson) && r.DataBindingJson != "null")
+                {
+                    obj["dataBinding"] = ParseOr(r.DataBindingJson, "{}");
+                }
+                if (!string.IsNullOrWhiteSpace(r.ValidationJson) && r.ValidationJson != "null")
+                {
+                    obj["validation"] = ParseOr(r.ValidationJson, "{}");
+                }
+                if (!string.IsNullOrWhiteSpace(r.PermissionsJson) && r.PermissionsJson != "null")
+                {
+                    obj["permissions"] = ParseOr(r.PermissionsJson, "{}");
+                }
+
                 obj["children"] = BuildLevel(lookup, nodeIdById, r.Id);
                 arr.Add(obj);
             }
@@ -130,9 +147,32 @@ namespace UIForge.API.Services
                 : null;
 
         private static string GetRaw(JsonElement el, string prop, string fallback)
-            => el.TryGetProperty(prop, out var v) && v.ValueKind != JsonValueKind.Undefined && v.ValueKind != JsonValueKind.Null
-                ? v.GetRawText()
-                : fallback;
+        {
+            try
+            {
+                return el.TryGetProperty(prop, out var v) && v.ValueKind != JsonValueKind.Undefined && v.ValueKind != JsonValueKind.Null
+                    ? v.GetRawText()
+                    : fallback;
+            }
+            catch
+            {
+                return fallback;
+            }
+        }
+
+        private static string? GetRawNullable(JsonElement el, string prop)
+        {
+            try
+            {
+                return el.TryGetProperty(prop, out var v) && v.ValueKind != JsonValueKind.Undefined && v.ValueKind != JsonValueKind.Null
+                    ? v.GetRawText()
+                    : null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         private static JsonNode? ParseOr(string? raw, string fallback)
         {

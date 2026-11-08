@@ -3,16 +3,30 @@ import type { ComponentNode, FlexConfig } from '@/types/schema'
 import {
   ForgeButton,
   ForgeTextBox,
+  ForgeNumber,
+  ForgeTextarea,
   ForgeLabel,
   ForgeContainer,
-  ForgeTable,
+  ForgeAdvancedGrid,
+  ForgeSelect,
+  ForgeCheckbox,
+  ForgeDatePicker,
+  ForgeDivider,
+  ForgeModal,
+  ForgeSection,
+  ForgeTabStack,
 } from './components'
+import { groupNodesByTabStack } from './tabStackUtils'
 import { useEditorStore } from '@/store/editorStore'
+import { PermissionGuard } from './PermissionGuard'
+import { getComponentOuterLayoutStyle, type ParentLayoutContext } from './layoutUtils'
 
 interface ComponentRendererProps {
   node: ComponentNode
   isEditing?: boolean
+  isSelected?: boolean
   onContextMenu?: (e: React.MouseEvent, node: ComponentNode) => void
+  parentLayout?: ParentLayoutContext
   parentFlexConfig?: FlexConfig
   /** True when wrapped inside DraggableComponent, outer sizing is on draggable wrapper */
   isWrappedByDrag?: boolean
@@ -20,13 +34,17 @@ interface ComponentRendererProps {
    * Optional render prop — if provided, each child of a Container is rendered via this function.
    * Used by DraggableComponent to inject drag/drop wrappers around children without circular deps.
    */
-  renderChild?: (child: ComponentNode, childFlexConfig?: FlexConfig) => React.ReactNode
+  renderChild?: (
+    child: ComponentNode,
+    childLayout?: ParentLayoutContext | FlexConfig
+  ) => React.ReactNode
 }
 
 export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   node,
   isEditing = false,
   onContextMenu,
+  parentLayout,
   parentFlexConfig,
   isWrappedByDrag = false,
   renderChild,
@@ -51,26 +69,72 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     }
   }
 
-  // 1. If it's a Container (Khoảng Trắng):
-  if (node.type === 'Container') {
-    const layoutMode = node.props.layoutMode || 'flex'
-    const flexConfig = node.props.flexConfig
-    const childFlexConfig = layoutMode === 'flex' ? flexConfig : undefined
+  // 1. If it's a Container hoặc Section:
+  if (node.type === 'Container' || node.type === 'Section' || node.type === 'Tabs') {
+    const layoutMode =
+      node.props.layoutMode || (node.type === 'Section' ? 'grid' : 'flex')
+    const flexConfig = (node.props.flexConfig as Partial<FlexConfig>) || {}
+    const gridConfig = (node.props.gridConfig as Record<string, any>) || {}
+
+    const resolvedFlexConfig: FlexConfig = {
+      direction: flexConfig.direction || 'row',
+      wrap: flexConfig.wrap || 'wrap',
+      gap: flexConfig.gap || '12px',
+      columnsPerRow: flexConfig.columnsPerRow || 'auto',
+    }
+
+    const totalCols =
+      Number(
+        gridConfig.columns ||
+          (typeof flexConfig.columnsPerRow === 'number'
+            ? flexConfig.columnsPerRow
+            : 12)
+      ) || 12
+
+    // Xây dựng layout context chuẩn hóa truyền xuống toàn bộ các con:
+    const childParentLayout: ParentLayoutContext = {
+      mode: layoutMode === 'flex' ? 'flex' : 'grid',
+      direction: flexConfig.direction || 'row',
+      columnsPerRow: flexConfig.columnsPerRow || 'auto',
+      gap: flexConfig.gap || gridConfig.gap || '12px',
+      wrap: flexConfig.wrap || 'wrap',
+      gridColumns: totalCols,
+    }
 
     const renderChildren = () => {
-      if (!node.children || node.children.length === 0) {
+      const rawChildren = node.children || []
+      if (rawChildren.length === 0) {
         return (
-          <div className="w-full text-center py-4 text-xs text-slate-500 italic select-none">
+          <div className="w-full text-center py-6 text-xs text-slate-500 italic select-none col-span-12 border border-dashed border-slate-800 rounded-lg bg-slate-950/40">
             Chuột phải vào đây để thêm nút, textbox, khoảng trắng con...
           </div>
         )
       }
 
-      return node.children.map((child) => {
+      // ── ÁP DỤNG CƠ CHẾ GOM NHÓM TAB (TAB STACK THEO ORDER) ──
+      const groups = groupNodesByTabStack(rawChildren)
+
+      return groups.map((group, gIdx) => {
+        if (group.type === 'tab_stack') {
+          return (
+            <ForgeTabStack
+              key={`tab_stack_${node.id}_${group.order}_${gIdx}`}
+              parentId={node.id}
+              order={group.order}
+              tabNodes={group.nodes}
+              isEditing={isEditing}
+              parentFlexConfig={resolvedFlexConfig}
+              onContextMenu={onContextMenu}
+              renderChild={renderChild}
+            />
+          )
+        }
+
+        const child = group.node
         if (renderChild) {
           return (
             <React.Fragment key={child.id}>
-              {renderChild(child, childFlexConfig)}
+              {renderChild(child, childParentLayout)}
             </React.Fragment>
           )
         }
@@ -80,39 +144,85 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             node={child}
             isEditing={isEditing}
             onContextMenu={onContextMenu}
-            parentFlexConfig={childFlexConfig}
+            parentLayout={childParentLayout}
             isWrappedByDrag={false}
           />
         )
       })
     }
 
+    if (node.type === 'Section') {
+      return (
+        <PermissionGuard node={node} isEditing={isEditing}>
+          <div onClick={handleClick} onContextMenu={handleContextMenu} className="w-full">
+            <ForgeSection node={node} isEditing={isEditing}>
+              {renderChildren()}
+            </ForgeSection>
+          </div>
+        </PermissionGuard>
+      )
+    }
+
+    if (node.type === 'Tabs') {
+      return (
+        <PermissionGuard node={node} isEditing={isEditing}>
+          <ForgeContainer
+            node={node}
+            isEditing={isEditing}
+            isSelected={isSelected}
+            onClick={handleClick}
+            onContextMenu={handleContextMenu}
+            parentFlexConfig={parentFlexConfig}
+            isWrappedByDrag={isWrappedByDrag}
+          >
+            {renderChildren()}
+          </ForgeContainer>
+        </PermissionGuard>
+      )
+    }
+
     return (
-      <ForgeContainer
-        node={node}
-        isEditing={isEditing}
-        isSelected={isSelected}
-        onClick={handleClick}
-        onContextMenu={handleContextMenu}
-        parentFlexConfig={parentFlexConfig}
-        isWrappedByDrag={isWrappedByDrag}
-      >
-        {renderChildren()}
-      </ForgeContainer>
+      <PermissionGuard node={node} isEditing={isEditing}>
+        <ForgeContainer
+          node={node}
+          isEditing={isEditing}
+          isSelected={isSelected}
+          onClick={handleClick}
+          onContextMenu={handleContextMenu}
+          parentFlexConfig={parentFlexConfig}
+          isWrappedByDrag={isWrappedByDrag}
+        >
+          {renderChildren()}
+        </ForgeContainer>
+      </PermissionGuard>
     )
   }
 
-  // 2. For non-container components (Button, TextBox, Label, Table)
+  // 2. For non-container components
   const renderLeafContent = () => {
     switch (node.type) {
       case 'Button':
         return <ForgeButton node={node} isEditing={isEditing} />
       case 'TextBox':
         return <ForgeTextBox node={node} isEditing={isEditing} />
+      case 'Textarea':
+        return <ForgeTextarea node={node} isEditing={isEditing} />
+      case 'Number':
+        return <ForgeNumber node={node} isEditing={isEditing} />
       case 'Label':
         return <ForgeLabel node={node} isEditing={isEditing} />
       case 'Table':
-        return <ForgeTable node={node} isEditing={isEditing} />
+        return <ForgeAdvancedGrid node={node} isEditing={isEditing} />
+      case 'Select':
+        return <ForgeSelect node={node} isEditing={isEditing} />
+      case 'Checkbox':
+        return <ForgeCheckbox node={node} isEditing={isEditing} />
+      case 'DatePicker':
+        return <ForgeDatePicker node={node} isEditing={isEditing} />
+      case 'Divider':
+        return <ForgeDivider node={node} isEditing={isEditing} />
+      case 'Modal':
+        return <ForgeModal node={node} isEditing={isEditing} />
       default:
         return (
           <div className="p-3 bg-red-950/40 border border-red-800 rounded text-red-300 text-xs">
@@ -122,32 +232,20 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     }
   }
 
-  // Calculate layout styles if NOT wrapped by DraggableComponent
-  let leafWidth = node.style?.width
-  let leafFlex = node.style?.flex
-  let leafMaxWidth = node.style?.maxWidth
+  // Calculate layout styles if NOT wrapped by DraggableComponent (Preview Mode)
+  const effectiveLayout: ParentLayoutContext | undefined =
+    parentLayout ||
+    (parentFlexConfig
+      ? {
+          mode: 'flex',
+          direction: parentFlexConfig.direction,
+          columnsPerRow: parentFlexConfig.columnsPerRow,
+          gap: parentFlexConfig.gap,
+          wrap: parentFlexConfig.wrap,
+        }
+      : undefined)
 
-  if (
-    !isWrappedByDrag &&
-    parentFlexConfig &&
-    parentFlexConfig.direction === 'row' &&
-    parentFlexConfig.columnsPerRow &&
-    parentFlexConfig.columnsPerRow !== 'auto'
-  ) {
-    const cols =
-      typeof parentFlexConfig.columnsPerRow === 'number'
-        ? parentFlexConfig.columnsPerRow
-        : parseInt(String(parentFlexConfig.columnsPerRow), 10)
-
-    if (!isNaN(cols) && cols > 0 && leafWidth === undefined && leafFlex === undefined) {
-      const gapNum = parseInt(parentFlexConfig.gap || '12', 10) || 12
-      const calcWidth =
-        cols === 1 ? '100%' : `calc((100% - ${(cols - 1) * gapNum}px) / ${cols})`
-      leafWidth = calcWidth
-      leafFlex = `0 0 ${calcWidth}`
-      leafMaxWidth = calcWidth
-    }
-  }
+  const outerStyle = getComponentOuterLayoutStyle(node, effectiveLayout)
 
   const wrapperStyle: React.CSSProperties = isWrappedByDrag
     ? {
@@ -156,35 +254,34 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         boxSizing: 'border-box',
       }
     : {
-        flex: leafFlex,
-        width: leafWidth,
-        maxWidth: leafMaxWidth,
-        minWidth: node.style?.minWidth !== undefined ? node.style.minWidth : 0,
+        ...outerStyle,
         boxSizing: 'border-box',
       }
 
   return (
-    <div
-      onClick={handleClick}
-      onContextMenu={handleContextMenu}
-      style={wrapperStyle}
-      className={`relative group transition-all duration-150 box-border ${
-        isEditing
-          ? `cursor-pointer rounded-lg ${
-              isSelected
-                ? 'ring-2 ring-blue-500 shadow-lg shadow-blue-500/20'
-                : 'hover:outline-1 hover:outline-blue-400/40'
-            }`
-          : ''
-      }`}
-    >
-      {isEditing && isSelected && (
-        <div className="absolute -top-3 left-2 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow z-20 uppercase tracking-wider flex items-center gap-1">
-          <span>{node.type}</span>
-          <span className="opacity-75">#{node.id.slice(-4)}</span>
-        </div>
-      )}
-      {renderLeafContent()}
-    </div>
+    <PermissionGuard node={node} isEditing={isEditing}>
+      <div
+        onClick={handleClick}
+        onContextMenu={handleContextMenu}
+        style={wrapperStyle}
+        className={`relative group transition-all duration-150 box-border ${
+          isEditing
+            ? `cursor-pointer rounded-lg ${
+                isSelected
+                  ? 'ring-2 ring-blue-500 shadow-lg shadow-blue-500/20'
+                  : 'hover:outline-1 hover:outline-blue-400/40'
+              }`
+            : ''
+        }`}
+      >
+        {isEditing && isSelected && (
+          <div className="absolute -top-3 left-2 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow z-20 uppercase tracking-wider flex items-center gap-1">
+            <span>{node.type}</span>
+            <span className="opacity-75">#{node.id.slice(-4)}</span>
+          </div>
+        )}
+        {renderLeafContent()}
+      </div>
+    </PermissionGuard>
   )
 }

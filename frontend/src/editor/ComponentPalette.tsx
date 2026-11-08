@@ -2,7 +2,24 @@ import React from 'react'
 import { useDraggable } from '@dnd-kit/core'
 import { useEditorStore } from '@/store/editorStore'
 import type { ComponentType, ComponentNode } from '@/types/schema'
-import { Square, Type, FileText, Table as TableIcon, Box, GripVertical, Plus } from 'lucide-react'
+import {
+  Square,
+  Type,
+  FileText,
+  Table as TableIcon,
+  Box,
+  GripVertical,
+  Plus,
+  Hash,
+  Calendar,
+  CheckSquare,
+  Minus,
+  Layers,
+  ChevronDownSquare,
+  Maximize2,
+  AlignLeft,
+  FolderKanban,
+} from 'lucide-react'
 
 export interface ComponentDefinition {
   type: ComponentType
@@ -15,9 +32,21 @@ export interface ComponentDefinition {
 
 export const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
   {
+    type: 'Section',
+    name: 'Khối Bố Cục (Section Card)',
+    description: 'Thẻ chứa viền đổ bóng với lưới 12-cột chuẩn Core',
+    icon: Layers,
+    defaultProps: {
+      title: 'GENERAL - FCL IMPORT',
+      collapsible: true,
+      boxShadow: true,
+    },
+    defaultStyle: { width: '100%' },
+  },
+  {
     type: 'Container',
     name: 'Khoảng Trắng (Container)',
-    description: 'Bố cục linh hoạt Flexbox hoặc Grid',
+    description: 'Bố cục tự do Flexbox hoặc Grid',
     icon: Box,
     defaultProps: {
       layoutMode: 'flex',
@@ -26,42 +55,154 @@ export const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
     defaultStyle: { padding: '16px', minHeight: '120px' },
   },
   {
-    type: 'Button',
-    name: 'Nút bấm (Button)',
-    description: 'Kích hoạt hành động & sự kiện click',
-    icon: Square,
-    defaultProps: { label: 'Nút bấm', variant: 'primary', size: 'md' },
+    type: 'TextBox',
+    name: 'Ô Nhập Chữ (TextBox)',
+    description: 'Nhập text kèm nhãn bên trái (Job No, M-BL No)',
+    icon: Type,
+    defaultProps: {
+      label: 'Job No.',
+      showLabel: true,
+      labelPosition: 'left',
+      colSpan: 4,
+      placeholder: 'FCL-26020005...',
+    },
     defaultStyle: {},
   },
   {
-    type: 'TextBox',
-    name: 'Ô nhập liệu (TextBox)',
-    description: 'Nhập thông tin văn bản người dùng',
-    icon: Type,
-    defaultProps: { label: 'Tên trường', placeholder: 'Nhập giá trị...' },
+    type: 'Number',
+    name: 'Ô Nhập Số (Number)',
+    description: 'Nhập số tiền tệ/trọng lượng (GW, CBM, VGM)',
+    icon: Hash,
+    defaultProps: {
+      label: 'Total GW',
+      showLabel: true,
+      labelPosition: 'left',
+      colSpan: 4,
+      precision: 0,
+      placeholder: '1,085',
+    },
+    defaultStyle: {},
+  },
+  {
+    type: 'DatePicker',
+    name: 'Lịch Ngày (DatePicker)',
+    description: 'Chọn ngày tháng chuẩn DD/MM/YYYY (S.Date, ETA)',
+    icon: Calendar,
+    defaultProps: {
+      label: 'S.Date',
+      showLabel: true,
+      labelPosition: 'left',
+      colSpan: 4,
+    },
+    defaultStyle: {},
+  },
+  {
+    type: 'Select',
+    name: 'Dropdown Lựa Chọn (Select2)',
+    description: 'Menu thả xuống chọn thực thể (Vendor, Service, POL)',
+    icon: ChevronDownSquare,
+    defaultProps: {
+      label: 'Service',
+      showLabel: true,
+      labelPosition: 'left',
+      colSpan: 4,
+      options: [
+        { value: 'CYCY', label: 'CY/CY' },
+        { value: 'CFSCFS', label: 'CFS/CFS' },
+        { value: 'DOOR', label: 'DOOR TO DOOR' },
+      ],
+    },
+    defaultStyle: {},
+  },
+  {
+    type: 'Checkbox',
+    name: 'Hộp Kiểm (Checkbox)',
+    description: 'Lựa chọn đúng/sai (Active, IsJob, Surrendered)',
+    icon: CheckSquare,
+    defaultProps: {
+      label: 'Surrendered',
+      showLabel: true,
+      labelPosition: 'left',
+      colSpan: 2,
+    },
+    defaultStyle: {},
+  },
+  {
+    type: 'Table',
+    name: 'Bảng Dữ Liệu Nâng Cao (Grid)',
+    description: 'Bảng doanh nghiệp có Cột Cố Định và Dòng Tính Tổng',
+    icon: TableIcon,
+    defaultProps: {
+      label: 'CONTAINER INFORMATION',
+      columns: [
+        { key: 'jobNo', title: 'Job No.', width: '130px', sticky: 'left', sortable: true },
+        { key: 'pol', title: 'POL', width: '150px', sortable: true },
+        { key: 'pod', title: 'POD', width: '150px', sortable: true },
+        { key: 'packages', title: 'Số Kiện', width: '90px', align: 'right', aggregate: 'sum', sortable: true },
+        { key: 'gw', title: 'GW (KGS)', width: '110px', align: 'right', aggregate: 'sum', sortable: true },
+        { key: 'cbm', title: 'CBM', width: '100px', align: 'right', aggregate: 'sum', sortable: true },
+      ],
+    },
+    defaultStyle: { width: '100%' },
+  },
+  {
+    type: 'Button',
+    name: 'Nút Bấm (Button)',
+    description: 'Kích hoạt hành động (Lưu, In chứng từ, Duyệt)',
+    icon: Square,
+    defaultProps: { label: 'Lưu Dữ Liệu', variant: 'primary', size: 'md' },
     defaultStyle: {},
   },
   {
     type: 'Label',
-    name: 'Nhãn chữ (Label)',
-    description: 'Tiêu đề và nội dung tĩnh',
+    name: 'Nhãn Tiêu Đề (Label)',
+    description: 'Tiêu đề và nội dung tĩnh phân đoạn',
     icon: FileText,
-    defaultProps: { label: 'Tiêu đề khối' },
-    defaultStyle: { fontSize: '16px', fontWeight: 'bold' },
+    defaultProps: { label: 'Tiêu đề khối thông tin' },
+    defaultStyle: { fontSize: '14px', fontWeight: 'bold' },
   },
   {
-    type: 'Table',
-    name: 'Bảng dữ liệu (Table)',
-    description: 'Bảng danh sách bản ghi nghiệp vụ',
-    icon: TableIcon,
+    type: 'Divider',
+    name: 'Đường Phân Cách (Divider)',
+    description: 'Đường kẻ ngang ngăn chia các khu vực',
+    icon: Minus,
+    defaultProps: { label: 'Thông tin mở rộng' },
+    defaultStyle: {},
+  },
+  {
+    type: 'Modal',
+    name: 'Hộp Thoại (Modal Dialog)',
+    description: 'Cửa sổ popup nhập liệu hoặc xác nhận thao tác',
+    icon: Maximize2,
+    defaultProps: { title: 'Cửa Sổ Nhập Liệu Chi Tiết' },
+    defaultStyle: { width: '100%' },
+  },
+  {
+    type: 'Textarea',
+    name: 'Văn Bản Dài (Textarea)',
+    description: 'Ô nhập văn bản nhiều dòng (Notes, Description, Remarks)',
+    icon: AlignLeft,
     defaultProps: {
-      columns: [
-        { key: 'id', title: 'Mã', width: '80px' },
-        { key: 'name', title: 'Tên' },
-        { key: 'status', title: 'Trạng thái' },
-      ],
+      label: 'Notes',
+      showLabel: true,
+      labelPosition: 'left',
+      colSpan: 12,
+      rows: 3,
+      placeholder: 'Ghi chú đơn hàng...',
     },
     defaultStyle: {},
+  },
+  {
+    type: 'Tabs',
+    name: 'Phân Hệ Tabs (Tabs Container)',
+    description: 'Thanh điều hướng chuyển đổi giữa các phân hệ nghiệp vụ',
+    icon: FolderKanban,
+    defaultProps: {
+      tabs: [
+        { id: 'main', label: 'TAB 1' },
+      ],
+    },
+    defaultStyle: { width: '100%' },
   },
 ]
 
@@ -89,11 +230,10 @@ const PaletteItem: React.FC<PaletteItemProps> = ({ item, onClick, isEditing }) =
   return (
     <div
       ref={setNodeRef}
-      className={`relative group rounded-xl border transition-all select-none ${
-        isDragging
-          ? 'opacity-40 border-blue-500 bg-blue-950/30'
-          : 'border-slate-800 bg-slate-800/40 hover:bg-slate-800 hover:border-slate-700'
-      }`}
+      className={`relative group rounded-xl border transition-all select-none ${isDragging
+        ? 'opacity-40 border-blue-500 bg-blue-950/30'
+        : 'border-slate-800 bg-slate-800/40 hover:bg-slate-800 hover:border-slate-700'
+        }`}
     >
       <div className="flex items-center justify-between p-2.5">
         {/* Click area */}

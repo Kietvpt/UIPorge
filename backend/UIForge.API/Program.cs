@@ -98,6 +98,18 @@ try
     await using var db = factory.Create(null);
     await db.Database.EnsureCreatedAsync();
     Console.WriteLine("[DB] Default branch database is ready.");
+
+    // Non-destructive schema migration for Phase 1 (DataBinding, Validation, Permissions)
+    const string sqlMigration = @"
+        IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Components') AND name = 'DataBindingJson')
+            ALTER TABLE Components ADD DataBindingJson NVARCHAR(MAX) NULL;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Components') AND name = 'ValidationJson')
+            ALTER TABLE Components ADD ValidationJson NVARCHAR(MAX) NULL;
+        IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Components') AND name = 'PermissionsJson')
+            ALTER TABLE Components ADD PermissionsJson NVARCHAR(MAX) NULL;
+    ";
+    await db.Database.ExecuteSqlRawAsync(sqlMigration);
+    Console.WriteLine("[DB] Components schema migrated with DataBindingJson, ValidationJson, PermissionsJson.");
 }
 catch (Exception ex)
 {

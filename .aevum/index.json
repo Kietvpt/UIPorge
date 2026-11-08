@@ -1,7 +1,63 @@
 {
   "version": "2.1.0",
   "project": "UIPorge",
-  "domains": [],
+  "domains": [
+    {
+      "id": "dom_backend_api",
+      "name": "Backend Core & Data Services",
+      "path": ".aevum/domains/dom_backend_api",
+      "plans": [],
+      "features": [
+        {
+          "id": "feat_auth_service",
+          "name": "Authentication & Tenant Access Control",
+          "path": "features/feat_auth_service",
+          "plans": []
+        },
+        {
+          "id": "feat_pages_hierarchy_api",
+          "name": "Pages & Component Tree Hierarchy API",
+          "path": "features/feat_pages_hierarchy_api",
+          "plans": []
+        },
+        {
+          "id": "feat_project_management",
+          "name": "Project Workspace & Multi-Tenant Management",
+          "path": "features/feat_project_management",
+          "plans": []
+        }
+      ]
+    },
+    {
+      "id": "dom_frontend_studio",
+      "name": "Frontend Studio & Runtime",
+      "path": ".aevum/domains/dom_frontend_studio",
+      "plans": [
+        "plans/plan_phase1_schema_data_binding.md",
+        "plans/plan_phase2_component_library_advanced_grid.md"
+      ],
+      "features": [
+        {
+          "id": "feat_component_renderer",
+          "name": "Forge UI Component Renderers & 120Hz Smoothness",
+          "path": "features/feat_component_renderer",
+          "plans": []
+        },
+        {
+          "id": "feat_logic_runtime",
+          "name": "Business Logic Runtime & Event Dispatcher",
+          "path": "features/feat_logic_runtime",
+          "plans": []
+        },
+        {
+          "id": "feat_visual_editor",
+          "name": "Visual Canvas Editor & Property Inspector",
+          "path": "features/feat_visual_editor",
+          "plans": []
+        }
+      ]
+    }
+  ],
   "global": {
     "architecture": "global/architecture.md",
     "conventions": "global/conventions.md",
@@ -16,29 +72,22 @@
     "handshake_registry": "mcp/handshake_registry.json",
     "knowledge_rules": "Every active persona has a dedicated knowledge folder in `.aevum/global/personas/<id>/knowledge/`. Log project-specific patterns and agent-exclusive wisdom there.",
     "debtHistory": [
-      88,
       92,
       90,
       95,
       93,
       97,
-      100
+      100,
+      40
     ]
   },
   "agents": [
     {
-      "id": "ENG-AN-7B9F1D",
-      "name": "An",
-      "capability": "AI Tuning",
+      "id": "ALG-ZENITH-A1B2C3",
+      "name": "Zenith",
+      "capability": "Algorithm Design & Database Optimization",
       "level": 1,
-      "knowledgePath": ".aevum/global/personas/an/knowledge"
-    },
-    {
-      "id": "DSN-LUNA-3C9A12",
-      "name": "Luna",
-      "capability": "UI/UX Design",
-      "level": 1,
-      "knowledgePath": ".aevum/global/personas/luna/knowledge"
+      "knowledgePath": ".aevum/global/personas/zenith/knowledge"
     },
     {
       "id": "ARC-VIDUS-AUHD2Y",
@@ -48,11 +97,25 @@
       "knowledgePath": ".aevum/global/personas/vidus/knowledge"
     },
     {
-      "id": "ALG-ZENITH-A1B2C3",
-      "name": "Zenith",
-      "capability": "Algorithm Design & Database Optimization",
+      "id": "DOC-DOCUWRITER-9F1B2C",
+      "name": "DocuWriter",
+      "capability": "Technical Documentation",
       "level": 1,
-      "knowledgePath": ".aevum/global/personas/zenith/knowledge"
+      "knowledgePath": ".aevum/global/personas/docuwriter/knowledge"
+    },
+    {
+      "id": "DSN-LUNA-3C9A12",
+      "name": "Luna",
+      "capability": "UI/UX Design",
+      "level": 1,
+      "knowledgePath": ".aevum/global/personas/luna/knowledge"
+    },
+    {
+      "id": "ENG-AN-7B9F1D",
+      "name": "An",
+      "capability": "AI Tuning",
+      "level": 1,
+      "knowledgePath": ".aevum/global/personas/an/knowledge"
     },
     {
       "id": "ENG-KAEL-7F4B2D",
@@ -66,14 +129,7 @@
       "name": "KubeMaster (Bob)",
       "capability": "DevOps & CI/CD",
       "level": 1,
-      "knowledgePath": ".aevum/global/personas/kubemaster__bob_/knowledge"
-    },
-    {
-      "id": "DOC-DOCUWRITER-9F1B2C",
-      "name": "DocuWriter",
-      "capability": "Technical Documentation",
-      "level": 1,
-      "knowledgePath": ".aevum/global/personas/docuwriter/knowledge"
+      "knowledgePath": ".aevum/global/personas/bob/knowledge"
     }
   ],
   "research": [
@@ -84,6 +140,14 @@
       "status": "completed",
       "path": "research/tech_optimizing_flow_state_with_ai.md",
       "date": "2026-09-23"
+    },
+    {
+      "id": "mis_csharp_core_ui_to_uiporge",
+      "topic": "Giải Phẫu Kiến Trúc C# Core UI & Lộ Trình Tái Thiết Kế UIPorge Low-Code Studio",
+      "author_persona": "An",
+      "status": "completed",
+      "path": "research/plan_uiporge_step_by_step_migration_blueprint.md",
+      "date": "2026-11-08"
     }
   ]
 }
