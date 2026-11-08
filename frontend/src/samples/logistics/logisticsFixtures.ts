@@ -79,3 +79,4 @@ export const SAMPLE_CONTAINERS = [
 export const SAMPLE_SHIPMENT_DETAILS = [
   { id: 1, transactionId: 1, custom: true, trucking: false, hblNo: 'OLSC2600154', customer: 'FOXLINK DA NANG', salesman: 'NGO PHAN THI LY', salesSupport: 'HO THI MAI', handleGroup: 'SEA IMPORT', documentNo: 'DOC-2602-0089', shipmentType: 'NOMINATED', doNo: 'FCL-26020025-1', referenceNo: 'REF-8899', active: true },
 ]
+

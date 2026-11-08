@@ -107,3 +107,4 @@ export async function fetchEntityMetadata(): Promise<EntityMetadata[]> {
   cachedMetadata = FALLBACK_ENTITY_CATALOGS
   return FALLBACK_ENTITY_CATALOGS
 }
+

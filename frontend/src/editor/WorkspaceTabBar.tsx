@@ -73,3 +73,4 @@ export const WorkspaceTabBar: React.FC = () => {
     </div>
   )
 }
+

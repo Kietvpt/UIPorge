@@ -449,3 +449,4 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
     document.body
   )
 }
+
