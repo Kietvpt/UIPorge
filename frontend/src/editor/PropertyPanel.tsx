@@ -7,34 +7,39 @@ import {
   Trash2,
   Box,
   Columns,
-  Maximize2,
   Layers,
-  ArrowRightLeft,
-  ArrowUpDown,
-  Square,
-  Type,
-  FileText,
   Table as TableIcon,
   Plus,
-  ChevronRight,
-  Sparkles,
   FileCode,
   PlusCircle,
   Check,
   Code,
   Play,
+  Database,
+  ShieldCheck,
+  CheckCircle2,
+  Lock,
 } from 'lucide-react'
 import { getFunctionsForBlFile, addFunctionToBlFile } from '@/logic/blRegistry'
 import { executeSingleEvent } from '@/logic/eventRunner'
 import { parseRawCss, formatStyleToCss } from './cssParser'
-import type { LayoutMode, EventTrigger, EventAction, ComponentNode } from '@/types/schema'
+import type {
+  LayoutMode,
+  ComponentNode,
+  TableColumn,
+  FlexConfig,
+} from '@/types/schema'
+import { MOCK_ENTITY_CATALOGS } from '@/data/mockEntityCatalog'
 
 interface PropertyPanelProps {
   width?: number
 }
 
 export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
-  const [activeTab, setActiveTab] = useState<'layout' | 'children' | 'props' | 'styles' | 'events'>('layout')
+  const [activeTab, setActiveTab] = useState<
+    'layout' | 'children' | 'props' | 'styles' | 'events' | 'data' | 'validation' | 'permissions'
+  >('layout')
+  const [selectedColumnIndex, setSelectedColumnIndex] = useState<number | null>(null)
 
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
@@ -44,150 +49,224 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
   const updateComponentProps = useEditorStore((s) => s.updateComponentProps)
   const updateComponentStyle = useEditorStore((s) => s.updateComponentStyle)
   const updateComponentEvents = useEditorStore((s) => s.updateComponentEvents)
+  const updateComponentDataBinding = useEditorStore((s) => s.updateComponentDataBinding)
+  const updateComponentValidation = useEditorStore((s) => s.updateComponentValidation)
+  const updateComponentPermissions = useEditorStore((s) => s.updateComponentPermissions)
+  const updateComponentOrder = useEditorStore((s) => s.updateComponentOrder)
   const removeComponent = useEditorStore((s) => s.removeComponent)
   const distributeSiblingWidths = useEditorStore((s) => s.distributeSiblingWidths)
   const updateFeatureScriptFile = useEditorStore((s) => s.updateFeatureScriptFile)
 
   // Local state for adding function to BL file
   const [newBlFnInput, setNewBlFnInput] = useState('')
-  // Force rerender when BL functions change
   const [blFnVer, setBlFnVer] = useState(0)
 
   const activeFeature = features.find((f) => f.id === activeFeatureId)
 
   // Find component recursively in tree
-  const findNode = (nodes: any[]): any => {
+  const findNodeById = (nodes: any[], targetId: string | null): any => {
+    if (!targetId) return null
     for (const node of nodes) {
-      if (node.id === selection.componentId) return node
+      if (node.id === targetId) return node
       if (node.children) {
-        const found = findNode(node.children)
+        const found = findNodeById(node.children, targetId)
         if (found) return found
       }
     }
     return null
   }
 
-  const selectedNode: ComponentNode | null = activeFeature ? findNode(activeFeature.components) : null
+  const selectedNode: ComponentNode | null = selection.componentId && activeFeature
+    ? findNodeById(activeFeature.components, selection.componentId)
+    : null
 
+  const parentNode = selectedNode?.parentId && activeFeature
+    ? findNodeById(activeFeature.components, selectedNode.parentId)
+    : null
+
+  const parentTabContainer = parentNode && (parentNode.props?.isTab || parentNode.props?.tab || parentNode.type === 'Tabs')
+    ? parentNode
+    : null
+
+  // Trạng thái khi chưa chọn component nào (Xem và cấu hình Feature / Trang)
   if (!selectedNode) {
-    const blFile = activeFeature?.scriptFile || ''
-    const availableFns = getFunctionsForBlFile(blFile)
+    const rootComponents = activeFeature
+      ? activeFeature.components.filter((c) => !c.parentId)
+      : []
 
     return (
-      <aside style={{ width: width ? `${width}px` : undefined }} className="w-80 border-l border-slate-800 bg-slate-900 flex flex-col h-full shrink-0 select-none overflow-hidden">
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              Cấu hình Màn hình (Feature)
-            </h2>
-            <p className="text-[11px] text-slate-400 mt-0.5">{activeFeature?.name}</p>
-          </div>
-          <div className="p-2 rounded-lg bg-blue-600/10 text-blue-400">
-            <FileCode className="w-4 h-4" />
+      <aside
+        style={{ width: width ? `${width}px` : '380px' }}
+        className="shrink-0 bg-slate-900 border-l border-slate-800 flex flex-col h-full z-10 transition-all select-none overflow-hidden"
+      >
+        <div className="p-3.5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-900/90 backdrop-blur">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="p-1.5 bg-blue-600/20 text-blue-400 rounded-lg text-xs font-bold uppercase">
+              Feature
+            </span>
+            <div className="min-w-0">
+              <h2 className="text-xs font-bold text-slate-200 truncate">
+                {activeFeature?.name || 'Trang'}
+              </h2>
+              <span className="text-[10px] text-cyan-400 font-mono">{activeFeature?.route}</span>
+            </div>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
-          {/* File Nghiệp Vụ (BL File) Binding */}
-          <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                📄 File Nghiệp Vụ (BL File)
-              </label>
-              <span className="text-[10px] text-amber-400 font-mono">TypeScript</span>
-            </div>
-
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="customerManagement.bl.ts..."
-                value={activeFeature?.scriptFile || ''}
-                onChange={(e) => updateFeatureScriptFile(activeFeatureId, e.target.value)}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <p className="text-[10px] text-slate-400 leading-relaxed">
-              Mỗi màn hình gắn với 1 file logic. Các component trên màn hình này sẽ gọi các hàm được khai báo trong file này.
-            </p>
-          </div>
-
-          {/* Danh mục hàm nghiệp vụ */}
-          {blFile ? (
-            <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                  ⚡ Hàm Trong File ({availableFns.length})
-                </label>
-                <span className="text-[10px] text-emerald-400 font-mono">Exported</span>
-              </div>
-
-              <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
-                {availableFns.map((fn) => (
-                  <span
-                    key={fn}
-                    className="px-2 py-1 rounded-md bg-slate-800 text-slate-200 border border-slate-700 text-[11px] font-mono flex items-center gap-1 shadow-sm"
-                  >
-                    <span className="text-cyan-400">fn:</span>
-                    <span>{fn}()</span>
+          {activeFeature && (
+            <>
+              {/* ── THÔNG TIN CƠ BẢN TRANG ── */}
+              <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Đường dẫn (Route)
                   </span>
-                ))}
-              </div>
-
-              {/* Add function input */}
-              <div className="pt-2 border-t border-slate-800/80 space-y-1.5">
-                <label className="text-[10px] text-slate-400 font-medium">Thêm hàm mới vào file BL này:</label>
-                <div className="flex items-center gap-1.5">
+                  <span className="text-cyan-400 font-mono text-[11px] font-semibold">
+                    {activeFeature.route}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    File Nghiệp Vụ (.bl.ts)
+                  </span>
                   <input
                     type="text"
-                    placeholder="Tên hàm, ví dụ: Hellowolrk1..."
-                    value={newBlFnInput}
-                    onChange={(e) => setNewBlFnInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault()
-                        if (newBlFnInput.trim()) {
-                          addFunctionToBlFile(blFile, newBlFnInput.trim())
-                          setNewBlFnInput('')
-                          setBlFnVer((v) => v + 1)
-                        }
-                      }
-                    }}
-                    className="flex-1 px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    value={activeFeature.scriptFile || ''}
+                    placeholder="feature.bl.ts..."
+                    onChange={(e) => updateFeatureScriptFile(activeFeature.id, e.target.value)}
+                    className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-emerald-400 font-mono text-xs focus:outline-none focus:border-emerald-500"
                   />
+                </div>
+              </div>
+
+              {/* ── DANH SÁCH PHẦN TỬ CỦA TRANG & ĐIỀU CHỈNH ORDER (ẢNH 2 CỦA MASTER) ── */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between pb-1.5 border-b border-slate-800">
+                  <div>
+                    <label className="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <Layers className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Phần Tử Trang ({rootComponents.length})</span>
+                    </label>
+                    <p className="text-[10px] text-slate-500">
+                      Chỉnh Order (từ nhỏ đến lớn). Cùng Order & tab=true sẽ Stack lại!
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => {
-                      if (newBlFnInput.trim()) {
-                        addFunctionToBlFile(blFile, newBlFnInput.trim())
-                        setNewBlFnInput('')
-                        setBlFnVer((v) => v + 1)
-                      }
+                      const newId = `box_${Date.now().toString(36)}`
+                      addComponent(
+                        {
+                          id: newId,
+                          type: 'Container',
+                          parentId: null,
+                          pageId: activeFeature.id,
+                          order: rootComponents.length + 1,
+                          props: {
+                            layoutMode: 'flex',
+                            flexConfig: { direction: 'column', gap: '12px', wrap: 'wrap' },
+                          },
+                          style: { width: '100%', minHeight: '120px' },
+                          events: [],
+                          children: [],
+                        },
+                        null
+                      )
                     }}
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold cursor-pointer shrink-0 transition-colors"
+                    className="px-2 py-1 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors"
                   >
-                    + Thêm
+                    <Plus className="w-3 h-3" />
+                    <span>+ Container</span>
                   </button>
                 </div>
-              </div>
-            </div>
-          ) : (
-            <div className="p-4 bg-amber-950/20 border border-amber-800/50 rounded-xl text-center text-amber-400 text-xs">
-              Vui lòng nhập tên file BL ở trên để bắt đầu định nghĩa các hàm nghiệp vụ cho màn hình này.
-            </div>
-          )}
 
-          <div className="p-3 bg-slate-800/40 rounded-xl border border-slate-800 text-[11px] text-slate-400 leading-relaxed">
-            💡 Nhấp vào bất kỳ component nào trên Canvas để chỉnh sửa kiểu dáng CSS hoặc gắn các sự kiện gọi hàm tương ứng.
-          </div>
+                {rootComponents.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-950/40">
+                    Trang chưa có phần tử nào. Chuột phải vào màn hình hoặc bấm "+ Container" để thêm mới.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {[...rootComponents]
+                      .sort((a, b) => (a.order ?? 1) - (b.order ?? 1))
+                      .map((c, idx) => {
+                        const isTab = Boolean(c.props?.tab || c.props?.isTab || c.type === 'Tabs')
+                        return (
+                          <div
+                            key={c.id}
+                            onClick={() => selectComponent(c.id)}
+                            className="p-2.5 rounded-xl border bg-slate-950/80 border-slate-800 hover:border-blue-500/60 flex items-center justify-between gap-2 cursor-pointer transition-all hover:bg-slate-900/60"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800 shrink-0">
+                                #{idx + 1}
+                              </span>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="text-xs font-bold text-slate-200 truncate max-w-[130px]">
+                                    {c.props.label || c.props.title || c.type}
+                                  </span>
+                                  <span className="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400 uppercase font-mono">
+                                    {c.type}
+                                  </span>
+                                  {isTab && (
+                                    <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-bold uppercase">
+                                      TAB
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-[10px] text-slate-500 font-mono">#{c.id}</span>
+                              </div>
+                            </div>
+
+                            {/* Order Input & Remove */}
+                            <div className="flex items-center gap-2 shrink-0">
+                              <div className="flex items-center gap-1" title="Thứ tự ưu tiên sắp xếp (từ nhỏ đến lớn)">
+                                <span className="text-[10px] text-slate-400 font-semibold">Order:</span>
+                                <input
+                                  type="number"
+                                  value={Number(c.order ?? c.props.order ?? (idx + 1))}
+                                  onClick={(e) => e.stopPropagation()}
+                                  onChange={(e) => {
+                                    const newOrder = Number(e.target.value)
+                                    updateComponentOrder(c.id, newOrder)
+                                  }}
+                                  className="w-14 px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-amber-400 font-mono text-xs text-center focus:outline-none focus:border-amber-500 font-bold"
+                                />
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  removeComponent(c.id)
+                                }}
+                                className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors cursor-pointer"
+                                title="Xóa phần tử này"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      })}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </aside>
     )
   }
 
-  const isContainer = selectedNode.type === 'Container'
+  const isContainer =
+    selectedNode.type === 'Container' ||
+    selectedNode.type === 'Section' ||
+    selectedNode.type === 'Tabs'
   const effectiveTab = !isContainer && (activeTab === 'layout' || activeTab === 'children') ? 'props' : activeTab
   const layoutMode: LayoutMode = selectedNode.props.layoutMode || 'flex'
-  const flexConfig = selectedNode.props.flexConfig || {
+  const flexConfig: FlexConfig = (selectedNode.props.flexConfig as FlexConfig) || {
     direction: 'row',
     wrap: 'wrap',
     justify: 'flex-start',
@@ -198,77 +277,57 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
   const gridConfig = selectedNode.props.gridConfig || { columns: 2, gap: '16px' }
   const childrenList = selectedNode.children || []
 
-  // Helper to get component icon
-  const getComponentIcon = (type: string) => {
-    switch (type) {
-      case 'Container':
-        return Box
-      case 'Button':
-        return Square
-      case 'TextBox':
-        return Type
-      case 'Label':
-        return FileText
-      case 'Table':
-        return TableIcon
-      default:
-        return Layers
-    }
-  }
-
   return (
-    <aside style={{ width: width ? `${width}px` : undefined }} className="w-80 border-l border-slate-800 bg-slate-900 flex flex-col h-full shrink-0 select-none">
+    <aside
+      style={{ width: width ? `${width}px` : '380px' }}
+      className="shrink-0 bg-slate-900 border-l border-slate-800 flex flex-col h-full z-10 transition-all select-none overflow-hidden"
+    >
       {/* Header */}
-      <div className="p-3.5 border-b border-slate-800 flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
-              {selectedNode.type}
-            </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
-              #{selectedNode.id.slice(-5)}
-            </span>
+      <div className="p-3 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-900/90 backdrop-blur">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="p-1.5 bg-blue-600/20 text-blue-400 rounded-lg text-xs font-bold uppercase">
+            {selectedNode.type}
+          </span>
+          <div className="min-w-0">
+            <h2 className="text-xs font-bold text-slate-200 truncate">
+              {selectedNode.props.label || selectedNode.type}
+            </h2>
+            <span className="text-[10px] text-slate-500 font-mono">#{selectedNode.id}</span>
           </div>
-          <p className="text-[11px] text-slate-400">
-            {isContainer ? `Khoảng trắng (${childrenList.length} phần tử)` : 'Tùy biến phần tử'}
-          </p>
         </div>
 
         <button
+          type="button"
           onClick={() => removeComponent(selectedNode.id)}
-          className="text-slate-400 hover:text-red-400 p-1.5 rounded hover:bg-slate-800 transition-colors cursor-pointer"
-          title="Xóa Component này"
+          className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+          title="Xóa component này"
         >
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-slate-800 text-xs font-medium overflow-x-auto">
+      {/* Tab Navigation */}
+      <div className="flex items-center border-b border-slate-800 bg-slate-950/60 overflow-x-auto text-xs shrink-0 no-scrollbar">
         {isContainer && (
           <button
             onClick={() => setActiveTab('layout')}
-            className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${
-              effectiveTab === 'layout'
-                ? 'border-blue-500 text-blue-400 bg-slate-800/40'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
+            className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'layout'
+              ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
           >
             <Columns className="w-3.5 h-3.5" />
             Bố cục
           </button>
         )}
 
-        {/* Tab Thành Phần Con dành cho Container */}
         {isContainer && (
           <button
             onClick={() => setActiveTab('children')}
-            className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${
-              effectiveTab === 'children'
-                ? 'border-blue-500 text-blue-400 bg-slate-800/40'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-            title="Xem và chuyển nhanh giữa các component con trong khoảng trắng này"
+            className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'children'
+              ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
           >
             <Layers className="w-3.5 h-3.5" />
             <span>Phần tử ({childrenList.length})</span>
@@ -276,45 +335,78 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
         )}
 
         <button
-          onClick={() => setActiveTab('styles')}
-          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${
-            effectiveTab === 'styles'
-              ? 'border-blue-500 text-blue-400 bg-slate-800/40'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Paintbrush className="w-3.5 h-3.5" />
-          CSS / Kích thước
-        </button>
-
-        <button
           onClick={() => setActiveTab('props')}
-          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${
-            effectiveTab === 'props'
-              ? 'border-blue-500 text-blue-400 bg-slate-800/40'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
+          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'props'
+            ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
+            : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
         >
           <Sliders className="w-3.5 h-3.5" />
           Props
         </button>
 
         <button
+          onClick={() => setActiveTab('styles')}
+          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'styles'
+            ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
+            : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+        >
+          <Paintbrush className="w-3.5 h-3.5" />
+          CSS
+        </button>
+
+        <button
           onClick={() => setActiveTab('events')}
-          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${
-            effectiveTab === 'events'
-              ? 'border-blue-500 text-blue-400 bg-slate-800/40'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
+          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'events'
+            ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
+            : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
         >
           <Zap className="w-3.5 h-3.5" />
           Events
+        </button>
+
+        <button
+          onClick={() => setActiveTab('data')}
+          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'data'
+            ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
+            : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          title="Liên kết dữ liệu thực thể (Data Binding) - Tương đương DataSource trong Core cũ"
+        >
+          <Database className="w-3.5 h-3.5" />
+          Data
+        </button>
+
+        <button
+          onClick={() => setActiveTab('validation')}
+          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'validation'
+            ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
+            : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          title="Quy tắc kiểm tra hợp lệ dữ liệu (Validation Rules)"
+        >
+          <ShieldCheck className="w-3.5 h-3.5" />
+          Validation
+        </button>
+
+        <button
+          onClick={() => setActiveTab('permissions')}
+          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'permissions'
+            ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
+            : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          title="Phân quyền hiển thị và thao tác theo vai trò (SecurityBL.cs & PolicyEditorBL.cs)"
+        >
+          <Lock className="w-3.5 h-3.5" />
+          Quyền hạn
         </button>
       </div>
 
       {/* Tab Contents */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
-        {/* ── TAB 1: BỐ CỤC (FLEX / GRID CHUYÊN BIỆT CHO CONTAINER) ── */}
+        {/* ── TAB 1: BỐ CỤC (LAYOUT MODE CHO CONTAINER) ── */}
         {isContainer && effectiveTab === 'layout' && (
           <div className="space-y-4">
             <div>
@@ -324,16 +416,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={() =>
-                    updateComponentProps(selectedNode.id, {
-                      layoutMode: 'flex',
-                    })
-                  }
-                  className={`p-2.5 rounded-lg border text-left flex items-center gap-2 cursor-pointer transition-all ${
-                    layoutMode === 'flex'
-                      ? 'bg-blue-600/20 border-blue-500 text-blue-300 font-semibold shadow-sm'
-                      : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:bg-slate-800'
-                  }`}
+                  onClick={() => updateComponentProps(selectedNode.id, { layoutMode: 'flex' })}
+                  className={`p-2.5 rounded-lg border text-left flex items-center gap-2 cursor-pointer transition-all ${layoutMode === 'flex'
+                    ? 'bg-blue-600/20 border-blue-500 text-blue-300 font-semibold shadow-sm'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:bg-slate-800'
+                    }`}
                 >
                   <Box className="w-4 h-4 text-blue-400" />
                   <div>
@@ -344,453 +431,1002 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
 
                 <button
                   type="button"
-                  onClick={() =>
-                    updateComponentProps(selectedNode.id, {
-                      layoutMode: 'grid',
-                    })
-                  }
-                  className={`p-2.5 rounded-lg border text-left flex items-center gap-2 cursor-pointer transition-all ${
-                    layoutMode === 'grid'
-                      ? 'bg-blue-600/20 border-blue-500 text-blue-300 font-semibold shadow-sm'
-                      : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:bg-slate-800'
-                  }`}
+                  onClick={() => updateComponentProps(selectedNode.id, { layoutMode: 'grid' })}
+                  className={`p-2.5 rounded-lg border text-left flex items-center gap-2 cursor-pointer transition-all ${layoutMode === 'grid'
+                    ? 'bg-blue-600/20 border-blue-500 text-blue-300 font-semibold shadow-sm'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:bg-slate-800'
+                    }`}
                 >
-                  <Columns className="w-4 h-4 text-cyan-400" />
+                  <Columns className="w-4 h-4 text-emerald-400" />
                   <div>
                     <div className="text-xs">CSS Grid</div>
-                    <div className="text-[9px] text-slate-500">Chia theo lưới cột</div>
+                    <div className="text-[9px] text-slate-500">Chia cột đều nhau</div>
                   </div>
                 </button>
               </div>
-            </div>
 
-            {/* If Flexbox */}
-            {layoutMode === 'flex' && (
-              <div className="space-y-3 p-3 bg-slate-800/40 rounded-xl border border-slate-800">
-                <div className="text-[11px] font-bold text-slate-300">Cấu hình Flexbox</div>
-
-                <div>
-                  <label className="text-[10px] text-slate-400 block mb-1">
-                    Hướng bố trí các phần tử bên trong:
-                  </label>
+              {/* ── CẤU HÌNH CHI TIẾT FLEXBOX ── */}
+              {layoutMode === 'flex' && (
+                <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3 mt-3">
                   <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        updateComponentProps(selectedNode.id, {
-                          flexConfig: { ...flexConfig, direction: 'row' },
-                        })
-                      }
-                      className={`p-2 rounded text-xs flex items-center justify-center gap-1.5 border cursor-pointer ${
-                        flexConfig.direction === 'row'
-                          ? 'bg-blue-600 text-white border-blue-500 font-bold shadow-sm'
-                          : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-750'
-                      }`}
-                    >
-                      <ArrowRightLeft className="w-3.5 h-3.5" />
-                      <span>Hàng ngang (Row)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        updateComponentProps(selectedNode.id, {
-                          flexConfig: { ...flexConfig, direction: 'column' },
-                        })
-                      }
-                      className={`p-2 rounded text-xs flex items-center justify-center gap-1.5 border cursor-pointer ${
-                        flexConfig.direction === 'column'
-                          ? 'bg-blue-600 text-white border-blue-500 font-bold shadow-sm'
-                          : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-750'
-                      }`}
-                    >
-                      <ArrowUpDown className="w-3.5 h-3.5" />
-                      <span>Cột dọc (Column)</span>
-                    </button>
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Hướng Bố Cục
+                      </label>
+                      <select
+                        value={flexConfig.direction || 'row'}
+                        onChange={(e) =>
+                          updateComponentProps(selectedNode.id, {
+                            flexConfig: { ...flexConfig, direction: e.target.value as any },
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500"
+                      >
+                        <option value="row">Hàng ngang (Row)</option>
+                        <option value="column">Cột dọc (Column)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Tổng Số Cột Lưới / Dòng
+                      </label>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="number"
+                          min="1"
+                          max="48"
+                          value={typeof flexConfig.columnsPerRow === 'number' ? flexConfig.columnsPerRow : (gridConfig.columns || 12)}
+                          onChange={(e) => {
+                            const val = Math.max(1, Number(e.target.value) || 12)
+                            updateComponentProps(selectedNode.id, {
+                              flexConfig: { ...flexConfig, columnsPerRow: val },
+                              gridConfig: { ...gridConfig, columns: val },
+                            })
+                          }}
+                          className="w-14 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-cyan-400 font-mono text-xs text-center font-bold"
+                          title="Nhập số cột tổng của lưới (Ví dụ: 12)"
+                        />
+                        <select
+                          value={String(flexConfig.columnsPerRow || '12')}
+                          onChange={(e) => {
+                            const val = e.target.value === 'auto' ? 'auto' : Number(e.target.value)
+                            updateComponentProps(selectedNode.id, {
+                              flexConfig: {
+                                ...flexConfig,
+                                columnsPerRow: val,
+                                wrap: val !== 'auto' ? 'wrap' : flexConfig.wrap,
+                              },
+                              gridConfig: {
+                                ...gridConfig,
+                                columns: val === 'auto' ? 12 : val,
+                              },
+                            })
+                          }}
+                          className="flex-1 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-cyan-400 font-mono text-xs focus:outline-none focus:border-cyan-500 font-bold"
+                        >
+                          <option value="12">12 Cột (Chuẩn ERP)</option>
+                          <option value="24">24 Cột (Mịn hơn)</option>
+                          <option value="6">6 Cột</option>
+                          <option value="4">4 Cột</option>
+                          <option value="3">3 Cột</option>
+                          <option value="2">2 Cột</option>
+                          <option value="1">1 Cột (Full 100%)</option>
+                          <option value="auto">Tự động (Auto)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CĂN LỀ NGANG (JUSTIFY) & CĂN LỀ DỌC (ALIGN) */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Căn Lề Ngang (Justify)
+                      </label>
+                      <select
+                        value={flexConfig.justify || 'flex-start'}
+                        onChange={(e) =>
+                          updateComponentProps(selectedNode.id, {
+                            flexConfig: { ...flexConfig, justify: e.target.value },
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500 font-medium"
+                      >
+                        <option value="flex-start">← Trái (flex-start)</option>
+                        <option value="center">↔ Vào giữa (center)</option>
+                        <option value="flex-end">→ Phải (flex-end)</option>
+                        <option value="space-between">⇥ Dãn 2 đầu (space-between)</option>
+                        <option value="space-around">⇹ Dãn phân bổ (space-around)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Căn Lề Dọc (Align)
+                      </label>
+                      <select
+                        value={flexConfig.align || 'center'}
+                        onChange={(e) =>
+                          updateComponentProps(selectedNode.id, {
+                            flexConfig: { ...flexConfig, align: e.target.value },
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500 font-medium"
+                      >
+                        <option value="center">↕ Vào giữa (center)</option>
+                        <option value="flex-start">↑ Đỉnh / Trên (flex-start)</option>
+                        <option value="flex-end">↓ Đáy / Dưới (flex-end)</option>
+                        <option value="stretch">↕ Kéo giãn (stretch)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Khoảng Cách (Gap)
+                      </label>
+                      <select
+                        value={flexConfig.gap || '12px'}
+                        onChange={(e) =>
+                          updateComponentProps(selectedNode.id, {
+                            flexConfig: { ...flexConfig, gap: e.target.value },
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500"
+                      >
+                        <option value="4px">4px (Nhỏ)</option>
+                        <option value="8px">8px (Vừa)</option>
+                        <option value="12px">12px (Chuẩn)</option>
+                        <option value="16px">16px (Rộng)</option>
+                        <option value="24px">24px (Rất rộng)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Xuống Dòng (Wrap)
+                      </label>
+                      <select
+                        value={flexConfig.wrap || 'wrap'}
+                        onChange={(e) =>
+                          updateComponentProps(selectedNode.id, {
+                            flexConfig: { ...flexConfig, wrap: e.target.value as any },
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500"
+                      >
+                        <option value="wrap">Cho phép rớt dòng (wrap)</option>
+                        <option value="nowrap">Cố định 1 hàng (nowrap)</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
+              )}
 
-                {/* Số cột trên dòng (Columns per row) - Cho phép nhập số lượng tùy ý */}
-                {flexConfig.direction === 'row' && (
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <label className="text-[10px] text-slate-300 block font-bold">
-                        Số ô / cột trên 1 dòng:
+              {/* ── CẤU HÌNH CHI TIẾT CSS GRID (CHIA CỘT LƯỚI ĐỀU NHAU) ── */}
+              {layoutMode === 'grid' && (
+                <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3 mt-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Tổng Số Cột Lưới
                       </label>
-                      <span className="text-[10px] text-cyan-400 font-mono font-semibold">
-                        {flexConfig.columnsPerRow && flexConfig.columnsPerRow !== 'auto'
-                          ? `${flexConfig.columnsPerRow} ô/dòng`
-                          : 'Tự động (Auto)'}
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="number"
+                          min="1"
+                          max="48"
+                          value={gridConfig.columns || 12}
+                          onChange={(e) => {
+                            const val = Math.max(1, Number(e.target.value) || 12)
+                            updateComponentProps(selectedNode.id, {
+                              gridConfig: { ...gridConfig, columns: val },
+                              flexConfig: { ...flexConfig, columnsPerRow: val },
+                            })
+                          }}
+                          className="w-14 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-mono text-xs text-center font-bold"
+                          title="Nhập số cột lưới (Ví dụ: 12)"
+                        />
+                        <select
+                          value={String(gridConfig.columns || 12)}
+                          onChange={(e) => {
+                            const val = Number(e.target.value)
+                            updateComponentProps(selectedNode.id, {
+                              gridConfig: { ...gridConfig, columns: val },
+                              flexConfig: { ...flexConfig, columnsPerRow: val },
+                            })
+                          }}
+                          className="flex-1 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-mono text-xs focus:outline-none focus:border-emerald-500 font-bold"
+                        >
+                          <option value="12">12 Cột (Chuẩn ERP)</option>
+                          <option value="24">24 Cột (Mịn hơn)</option>
+                          <option value="6">6 Cột</option>
+                          <option value="4">4 Cột</option>
+                          <option value="3">3 Cột</option>
+                          <option value="2">2 Cột</option>
+                          <option value="1">1 Cột (Full 100%)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Khoảng Cách (Gap)
+                      </label>
+                      <select
+                        value={flexConfig.gap || gridConfig.gap || '12px'}
+                        onChange={(e) =>
+                          updateComponentProps(selectedNode.id, {
+                            flexConfig: { ...flexConfig, gap: e.target.value },
+                            gridConfig: { ...gridConfig, gap: e.target.value },
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-emerald-500"
+                      >
+                        <option value="4px">4px (Nhỏ)</option>
+                        <option value="8px">8px (Vừa)</option>
+                        <option value="12px">12px (Chuẩn)</option>
+                        <option value="16px">16px (Rộng)</option>
+                        <option value="24px">24px (Rất rộng)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* CĂN LỀ NGANG (JUSTIFY) & CĂN LỀ DỌC (ALIGN) */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Căn Lề Ngang (Justify)
+                      </label>
+                      <select
+                        value={flexConfig.justify || 'flex-start'}
+                        onChange={(e) =>
+                          updateComponentProps(selectedNode.id, {
+                            flexConfig: { ...flexConfig, justify: e.target.value },
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-emerald-500 font-medium"
+                      >
+                        <option value="flex-start">← Trái (flex-start)</option>
+                        <option value="center">↔ Vào giữa (center)</option>
+                        <option value="flex-end">→ Phải (flex-end)</option>
+                        <option value="space-between">⇥ Dãn 2 đầu (space-between)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Căn Lề Dọc (Align)
+                      </label>
+                      <select
+                        value={flexConfig.align || 'center'}
+                        onChange={(e) =>
+                          updateComponentProps(selectedNode.id, {
+                            flexConfig: { ...flexConfig, align: e.target.value },
+                          })
+                        }
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-emerald-500 font-medium"
+                      >
+                        <option value="center">↕ Vào giữa (center)</option>
+                        <option value="flex-start">↑ Trên (flex-start)</option>
+                        <option value="flex-end">↓ Dưới (flex-end)</option>
+                        <option value="stretch">↕ Kéo giãn (stretch)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ── CẤU HÌNH PHÂN HỆ TAB (isTab = true - KẾ THỪA C# CORE ComponentGroup.IsTab) ── */}
+            <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">
+                    Chế Độ Tab (isTab = true)
+                  </label>
+                  <p className="text-[10px] text-slate-500">
+                    Biến Container thành thanh điều hướng Tab chuẩn ERP
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={Boolean(
+                    selectedNode.props.isTab ||
+                    selectedNode.props.tab ||
+                    selectedNode.type === 'Tabs'
+                  )}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    const currentTabs = (selectedNode.props.tabs as any[]) || [
+                      { id: 'main', label: 'MAIN INFORMATION' },
+                    ]
+                    updateComponentProps(selectedNode.id, {
+                      isTab: checked,
+                      tab: checked,
+                      tabs: checked ? currentTabs : selectedNode.props.tabs,
+                      activeTabId: checked
+                        ? selectedNode.props.activeTabId || currentTabs[0]?.id
+                        : undefined,
+                    })
+                  }}
+                  className="w-4 h-4 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
+                />
+              </div>
+
+              {Boolean(
+                selectedNode.props.isTab ||
+                selectedNode.props.tab ||
+                selectedNode.type === 'Tabs'
+              ) && (
+                <div className="space-y-3 pt-2 border-t border-slate-800/80">
+                  <div>
+                    <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                      Tên Nhãn Tab (Hiển Thị Trên Thanh Tab)
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedNode.props.label || ''}
+                      placeholder="e.g. MAIN INFORMATION, MASTER COST..."
+                      onChange={(e) => updateComponentProps(selectedNode.id, { label: e.target.value })}
+                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-bold text-xs focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Thứ Tự (Order)
+                      </label>
+                      <input
+                        type="number"
+                        value={Number(selectedNode.order ?? selectedNode.props.order ?? 1)}
+                        onChange={(e) => {
+                          const newOrder = Number(e.target.value)
+                          updateComponentOrder(selectedNode.id, newOrder)
+                        }}
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-amber-400 font-mono text-xs focus:outline-none focus:border-amber-500 font-bold"
+                      />
+                      <span className="text-[9px] text-slate-500 block mt-0.5">
+                        Cùng Order sẽ Stack thành thanh Tab
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div>
+                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                        Huy Hiệu (Badge)
+                      </label>
                       <input
-                        type="number"
-                        min={1}
-                        max={16}
-                        value={
-                          flexConfig.columnsPerRow && flexConfig.columnsPerRow !== 'auto'
-                            ? flexConfig.columnsPerRow
-                            : ''
-                        }
-                        placeholder="Nhập số cột (vd: 2, 3, 4, 6...)"
-                        onChange={(e) => {
-                          const val = e.target.value.trim()
-                          const num = parseInt(val, 10)
+                        type="text"
+                        value={selectedNode.props.badge !== undefined ? String(selectedNode.props.badge) : ''}
+                        placeholder="e.g. 2, NEW..."
+                        onChange={(e) =>
                           updateComponentProps(selectedNode.id, {
-                            flexConfig: {
-                              ...flexConfig,
-                              columnsPerRow: !isNaN(num) && num > 0 ? num : 'auto',
-                            },
+                            badge: e.target.value || undefined,
                           })
-                        }}
-                        className="flex-1 px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono"
+                        }
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-emerald-500"
                       />
-                      {flexConfig.columnsPerRow && flexConfig.columnsPerRow !== 'auto' && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            updateComponentProps(selectedNode.id, {
-                              flexConfig: {
-                                ...flexConfig,
-                                columnsPerRow: 'auto',
-                              },
-                            })
-                          }
-                          className="px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 text-xs border border-slate-700 cursor-pointer"
-                        >
-                          Xóa
-                        </button>
-                      )}
+                      <span className="text-[9px] text-slate-500 block mt-0.5">
+                        Số lượng / nhãn nhỏ
+                      </span>
                     </div>
-
-                    {/* Quick buttons */}
-                    <div className="flex items-center gap-1.5 mt-2">
-                      <span className="text-[10px] text-slate-500">Gợi ý nhanh:</span>
-                      {[2, 3, 4, 6].map((num) => (
-                        <button
-                          key={num}
-                          type="button"
-                          onClick={() =>
-                            updateComponentProps(selectedNode.id, {
-                              flexConfig: {
-                                ...flexConfig,
-                                columnsPerRow: num,
-                              },
-                            })
-                          }
-                          className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                            flexConfig.columnsPerRow === num
-                              ? 'bg-blue-600 text-white border-blue-500'
-                              : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-750'
-                          }`}
-                        >
-                          {num} ô
-                        </button>
-                      ))}
-                    </div>
-
-                    <p className="text-[10px] text-slate-500 mt-1.5 italic">
-                      💡 Ví dụ nhập <strong>4</strong>: Hệ thống sẽ tự động ép đúng <strong>4 ô trên 1 dòng</strong>. Nếu bạn thêm 8 ô, 4 ô sau sẽ tự động xuống dòng thứ 2!
-                    </p>
-                  </div>
-                )}
-
-                <div>
-                  <label className="text-[10px] text-slate-400 block mb-1">Canh lề chính (Justify):</label>
-                  <select
-                    value={flexConfig.justify}
-                    onChange={(e) =>
-                      updateComponentProps(selectedNode.id, {
-                        flexConfig: { ...flexConfig, justify: e.target.value as any },
-                      })
-                    }
-                    className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200"
-                  >
-                    <option value="flex-start">Bắt đầu (Start)</option>
-                    <option value="center">Ở giữa (Center)</option>
-                    <option value="space-between">Giãn đều hai bên (Space-Between)</option>
-                    <option value="flex-end">Cuối cùng (End)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-[10px] text-slate-400 block mb-1">Khoảng cách giữa các mục (Gap):</label>
-                  <input
-                    type="text"
-                    value={flexConfig.gap || '12px'}
-                    onChange={(e) =>
-                      updateComponentProps(selectedNode.id, {
-                        flexConfig: { ...flexConfig, gap: e.target.value },
-                      })
-                    }
-                    placeholder="12px, 16px..."
-                    className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 font-mono"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* If CSS Grid */}
-            {layoutMode === 'grid' && (
-              <div className="space-y-3 p-3 bg-slate-800/40 rounded-xl border border-slate-800">
-                <div className="text-[11px] font-bold text-slate-300">Cấu hình CSS Grid</div>
-
-                <div>
-                  <label className="text-[10px] text-slate-400 block mb-1">Số cột lưới (Columns):</label>
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {[1, 2, 3, 4].map((col) => (
-                      <button
-                        key={col}
-                        type="button"
-                        onClick={() =>
-                          updateComponentProps(selectedNode.id, {
-                            gridConfig: { ...gridConfig, columns: col },
-                          })
-                        }
-                        className={`p-1.5 rounded text-xs font-mono font-bold border cursor-pointer ${
-                          gridConfig.columns === col
-                            ? 'bg-blue-600 text-white border-blue-500'
-                            : 'bg-slate-800 text-slate-400 border-slate-700'
-                        }`}
-                      >
-                        {col} Col
-                      </button>
-                    ))}
                   </div>
                 </div>
-
-                <div>
-                  <label className="text-[10px] text-slate-400 block mb-1">Khoảng cách ô lưới (Gap):</label>
-                  <input
-                    type="text"
-                    value={gridConfig.gap || '16px'}
-                    onChange={(e) =>
-                      updateComponentProps(selectedNode.id, {
-                        gridConfig: { ...gridConfig, gap: e.target.value },
-                      })
-                    }
-                    placeholder="16px, 20px..."
-                    className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 font-mono"
-                  />
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
 
-        {/* ── TAB 2: THÀNH PHẦN CON TRONG KHOẢNG TRẮNG NÀY (BẤM VÀO THÌ TRỎ ĐẾN ĐÓ) ── */}
+        {/* ── TAB 1.5: PHẦN TỬ CON (DANH SÁCH CHILDREN & SẮP XẾP ORDER - ẢNH 1) ── */}
         {isContainer && effectiveTab === 'children' && (
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
               <div>
-                <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
-                  Phần tử bên trong khoảng trắng
-                </span>
-                <span className="text-[10px] text-slate-500">
-                  Nhấp vào để trỏ và điều chỉnh trực tiếp component đó
-                </span>
+                <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
+                  Danh Sách Phần Tử Con ({childrenList.length})
+                </label>
+                <p className="text-[10px] text-slate-500">
+                  Sắp xếp ưu tiên theo trường Thứ tự (Order) từ nhỏ đến lớn
+                </p>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-900 font-semibold">
-                {childrenList.length} items
-              </span>
             </div>
 
             {childrenList.length === 0 ? (
-              <div className="p-5 border border-dashed border-slate-800 rounded-xl text-center text-slate-500 text-xs italic">
-                Khoảng trắng này chưa có component con nào. Chuột phải lên khoảng trắng để thêm!
+              <div className="p-6 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-950/40">
+                Chưa có phần tử con nào bên trong Container này. Chuột phải vào màn hình hoặc kéo thả để thêm mới.
               </div>
             ) : (
-              <div className="space-y-1.5">
-                {childrenList.map((child, idx) => {
-                  const Icon = getComponentIcon(child.type)
-                  const sizeLabel = child.style.width || (child.style.flex ? 'Flex: 1' : 'Auto')
-
-                  return (
-                    <div
-                      key={child.id}
-                      onClick={() => selectComponent(child.id)}
-                      className="group flex items-center justify-between p-2.5 rounded-xl border border-slate-800 bg-slate-800/50 hover:bg-slate-800 hover:border-blue-500/50 transition-all cursor-pointer"
-                      title="Bấm để chọn và điều chỉnh component này"
-                    >
-                      <div className="flex items-center gap-2.5 truncate">
-                        <div className="p-1.5 rounded-lg bg-slate-900 text-blue-400 group-hover:text-blue-300 group-hover:bg-blue-600/20 transition-colors">
-                          <Icon className="w-3.5 h-3.5" />
+              <div className="space-y-2">
+                {[...childrenList]
+                  .sort((a, b) => (a.order ?? 1) - (b.order ?? 1))
+                  .map((child, idx) => {
+                    const isSelected = selection.componentId === child.id
+                    const isChildTab = Boolean(child.props?.tab || child.props?.isTab || child.type === 'Tabs')
+                    return (
+                      <div
+                        key={child.id}
+                        onClick={() => selectComponent(child.id)}
+                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 cursor-pointer transition-all ${
+                          isSelected
+                            ? 'bg-blue-600/20 border-blue-500 shadow-sm'
+                            : 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800 shrink-0">
+                            #{idx + 1}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-xs font-bold text-slate-200 truncate max-w-[140px]">
+                                {child.props.label || child.props.title || child.type}
+                              </span>
+                              <span className="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400 uppercase font-mono">
+                                {child.type}
+                              </span>
+                              {isChildTab && (
+                                <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-bold uppercase">
+                                  TAB
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[10px] text-slate-500 font-mono">#{child.id}</span>
+                          </div>
                         </div>
-                        <div className="truncate text-left">
-                          <div className="text-xs font-semibold text-slate-200 group-hover:text-white truncate">
-                            {child.props.label ? String(child.props.label) : child.type}
+
+                        {/* Order input & Actions */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          <div className="flex items-center gap-1" title="Thứ tự ưu tiên sắp xếp (từ nhỏ đến lớn)">
+                            <span className="text-[10px] text-slate-400 font-semibold">Order:</span>
+                            <input
+                              type="number"
+                              value={child.order ?? (idx + 1)}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => {
+                                const newOrder = Number(e.target.value)
+                                updateComponentOrder(child.id, newOrder)
+                              }}
+                              className="w-14 px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-amber-400 font-mono text-xs text-center focus:outline-none focus:border-amber-500 font-bold"
+                            />
                           </div>
-                          <div className="text-[10px] text-slate-500 flex items-center gap-1.5 font-mono">
-                            <span>#{child.id.slice(-4)}</span>
-                            <span>•</span>
-                            <span className="text-cyan-400">{sizeLabel}</span>
-                          </div>
+
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              removeComponent(child.id)
+                            }}
+                            className="p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors cursor-pointer"
+                            title="Xóa phần tử này"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            removeComponent(child.id)
-                          }}
-                          className="p-1 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Xóa component con này"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                        <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors" />
-                      </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
               </div>
             )}
           </div>
         )}
 
-        {/* ── TAB 3: CSS & KÍCH THƯỚC (TỰ ĐỘNG CHIA ĐỀU KHÔNG GIAN CÒN LẠI CHO SIBLINGS) ── */}
-        {effectiveTab === 'styles' && (
+        {/* ── TAB 2: PROPS (THUỘC TÍNH NÂNG CAO & GRIDPOLICY INSPECTOR) ── */}
+        {effectiveTab === 'props' && (
           <div className="space-y-4">
-            {/* Quick Sizing Presets */}
-            <div className="p-3 bg-gradient-to-br from-blue-950/40 to-slate-900 rounded-xl border border-blue-900/50 space-y-2.5">
-              <div className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                <label className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider block">
-                  ⚡ Chọn nhanh kích thước ô (Không đổi setting ô khác)
-                </label>
+            {/* Thứ Tự & Số Cột Chiếm Dụng (Order & ColSpan) */}
+            <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-xl space-y-3">
+              <label className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block">
+                Thứ Tự & Bố Cục (Order & Sắp Xếp)
+              </label>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                    Thứ Tự (Order)
+                  </label>
+                  <input
+                    type="number"
+                    value={Number(selectedNode.order ?? selectedNode.props.order ?? 1)}
+                    onChange={(e) => {
+                      const newOrder = Number(e.target.value)
+                      updateComponentOrder(selectedNode.id, newOrder)
+                    }}
+                    className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-amber-400 font-mono text-xs focus:outline-none focus:border-amber-500 font-bold"
+                  />
+                  <span className="text-[9px] text-slate-500 block mt-0.5">
+                    Sắp xếp nhỏ đến lớn. Cùng Order sẽ stack lại.
+                  </span>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                    Số Cột Chiếm Dụng (ColSpan)
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="number"
+                      min="1"
+                      max="48"
+                      value={Number(selectedNode.props.colSpan || 4)}
+                      onChange={(e) => {
+                        const val = Math.max(1, Number(e.target.value) || 1)
+                        updateComponentProps(selectedNode.id, { colSpan: val })
+                      }}
+                      className="w-14 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-blue-400 font-mono text-xs text-center font-bold"
+                      title="Nhập số cột tùy ý (Ví dụ: 4 cho 1/3 dòng, 8 cho 2/3 dòng)"
+                    />
+                    <select
+                      value={selectedNode.props.colSpan || 4}
+                      onChange={(e) => updateComponentProps(selectedNode.id, { colSpan: Number(e.target.value) })}
+                      className="flex-1 px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500"
+                    >
+                      <option value={1}>1 Cột (8.3%)</option>
+                      <option value={2}>2 Cột (16.6%)</option>
+                      <option value={3}>3 Cột (25%)</option>
+                      <option value={4}>4 Cột (33.3% - 1/3 dòng)</option>
+                      <option value={6}>6 Cột (50% - 1/2 dòng)</option>
+                      <option value={8}>8 Cột (66.6% - 2/3 dòng)</option>
+                      <option value={9}>9 Cột (75% dòng)</option>
+                      <option value={12}>12 Cột (100% full dòng)</option>
+                    </select>
+                  </div>
+                  <span className="text-[9px] text-cyan-400 block mt-1 font-mono font-medium">
+                    Chiếm {selectedNode.props.colSpan || 4}/12 cột ({Math.round(((Number(selectedNode.props.colSpan) || 4) / 12) * 100)}% dòng)
+                  </span>
+                </div>
               </div>
+            </div>
+            {/* Kích hoạt chế độ Tab cho Container */}
+            {isContainer && (
+              <div className="p-3 bg-emerald-950/20 border border-emerald-800/40 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">
+                      Thuộc Tính Tab (tab = true)
+                    </label>
+                    <p className="text-[10px] text-slate-500">
+                      Cùng Order với Container khác sẽ tự động Stack thành thanh Tab
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(
+                      selectedNode.props.tab ||
+                        selectedNode.props.isTab ||
+                        selectedNode.type === 'Tabs'
+                    )}
+                    onChange={(e) => {
+                      const checked = e.target.checked
+                      updateComponentProps(selectedNode.id, {
+                        tab: checked,
+                        isTab: checked,
+                      })
+                    }}
+                    className="w-4 h-4 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
 
-              <div className="grid grid-cols-2 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateComponentStyle(selectedNode.id, {
-                      width: '50%',
-                      flex: '0 0 50%',
-                      maxWidth: '50%',
-                      minWidth: 0,
-                    })
+            {/* Phân hệ Tab chứa component này */}
+            {parentTabContainer && (
+              <div className="p-3 bg-emerald-950/30 border border-emerald-800/40 rounded-xl space-y-1.5">
+                <label className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                  Thuộc Tab Phân Hệ (Container Cha)
+                </label>
+                <select
+                  value={
+                    selectedNode.props.tabId ||
+                    ((parentTabContainer.props.tabs as any[])?.[0]?.id) ||
+                    'main'
                   }
-                  className={`p-2 rounded-lg text-xs font-semibold border text-center transition-all cursor-pointer ${
-                    selectedNode.style.width === '50%'
-                      ? 'bg-blue-600 text-white border-blue-500 shadow-sm'
-                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750'
-                  }`}
+                  onChange={(e) => updateComponentProps(selectedNode.id, { tabId: e.target.value })}
+                  className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs focus:outline-none focus:border-emerald-500 font-medium"
                 >
-                  50% (Nửa hàng)
-                </button>
+                  {(((parentTabContainer.props.tabs as any[]) || [])).map((t: any) => (
+                    <option key={t.id} value={t.id}>
+                      {t.label} ({t.id})
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Component này chỉ hiển thị khi người dùng chọn tab này trên Canvas.
+                </p>
+              </div>
+            )}
+            {/* Nhãn & Vị trí hiển thị (Left Label Standard) */}
+            <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-xl space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Nhãn Hiển Thị (Label)
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-slate-400">Hiển thị nhãn</span>
+                  <input
+                    type="checkbox"
+                    checked={selectedNode.props.showLabel ?? true}
+                    onChange={(e) => updateComponentProps(selectedNode.id, { showLabel: e.target.checked })}
+                    className="rounded bg-slate-800 border-slate-700 text-blue-600"
+                  />
+                </div>
+              </div>
+              <input
+                type="text"
+                value={selectedNode.props.label || ''}
+                placeholder="Nhập tên nhãn (ví dụ: Job No., S. Lines...)"
+                onChange={(e) => updateComponentProps(selectedNode.id, { label: e.target.value })}
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 text-xs focus:outline-none focus:border-blue-500"
+              />
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateComponentStyle(selectedNode.id, {
-                      width: '33.333%',
-                      flex: '0 0 33.333%',
-                      maxWidth: '33.333%',
-                      minWidth: 0,
-                    })
-                  }
-                  className={`p-2 rounded-lg text-xs font-semibold border text-center transition-all cursor-pointer ${
-                    selectedNode.style.width === '33.333%'
-                      ? 'bg-blue-600 text-white border-blue-500 shadow-sm'
-                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750'
-                  }`}
-                >
-                  33.3% (1/3 hàng)
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateComponentStyle(selectedNode.id, {
-                      width: '25%',
-                      flex: '0 0 25%',
-                      maxWidth: '25%',
-                      minWidth: 0,
-                    })
-                  }
-                  className={`p-2 rounded-lg text-xs font-semibold border text-center transition-all cursor-pointer ${
-                    selectedNode.style.width === '25%'
-                      ? 'bg-blue-600 text-white border-blue-500 shadow-sm'
-                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750'
-                  }`}
-                >
-                  25% (1/4 hàng)
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateComponentStyle(selectedNode.id, {
-                      width: '100%',
-                      flex: '0 0 100%',
-                      maxWidth: '100%',
-                      minWidth: 0,
-                    })
-                  }
-                  className={`p-2 rounded-lg text-xs font-semibold border text-center transition-all cursor-pointer ${
-                    selectedNode.style.width === '100%'
-                      ? 'bg-blue-600 text-white border-blue-500 shadow-sm'
-                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750'
-                  }`}
-                >
-                  100% (Toàn dòng)
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateComponentStyle(selectedNode.id, {
-                      flex: '1 1 0%',
-                      width: undefined,
-                      maxWidth: undefined,
-                      minWidth: 0,
-                    })
-                  }
-                  className={`p-2 rounded-lg text-xs font-semibold border text-center transition-all cursor-pointer col-span-2 ${
-                    selectedNode.style.flex === '1 1 0%' && !selectedNode.style.width
-                      ? 'bg-blue-600 text-white border-blue-500 shadow-sm'
-                      : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750'
-                  }`}
-                >
-                  Tự co giãn chia đều (Flex: 1)
-                </button>
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60">
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                    Vị Trí Nhãn
+                  </label>
+                  <select
+                    value={selectedNode.props.labelPosition || 'left'}
+                    onChange={(e) => updateComponentProps(selectedNode.id, { labelPosition: e.target.value as any })}
+                    className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs"
+                  >
+                    <option value="left">Bên Trái (Chuẩn ERP)</option>
+                    <option value="top">Phía Trên (Top)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                    Số Cột Chiếm Dụng (ColSpan)
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="number"
+                      min="1"
+                      max="48"
+                      value={Number(selectedNode.props.colSpan || 4)}
+                      onChange={(e) => {
+                        const val = Math.max(1, Number(e.target.value) || 1)
+                        updateComponentProps(selectedNode.id, { colSpan: val })
+                      }}
+                      className="w-14 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-blue-400 font-mono text-xs text-center font-bold"
+                    />
+                    <select
+                      value={selectedNode.props.colSpan || 4}
+                      onChange={(e) => updateComponentProps(selectedNode.id, { colSpan: Number(e.target.value) })}
+                      className="flex-1 px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs"
+                    >
+                      {[1, 2, 3, 4, 6, 8, 9, 12].map((n) => (
+                        <option key={n} value={n}>
+                          {n} Cột ({Math.round((n / 12) * 100)}%)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <span className="text-[9px] text-cyan-400 block mt-1 font-mono font-medium">
+                    Chiếm {selectedNode.props.colSpan || 4}/12 cột ({Math.round(((Number(selectedNode.props.colSpan) || 4) / 12) * 100)}% dòng)
+                  </span>
+                </div>
               </div>
             </div>
 
+            {/* Các trường đặc thù theo từng component */}
+            {selectedNode.type === 'TextBox' && (
+              <div>
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                  Placeholder Gợi Ý
+                </label>
+                <input
+                  type="text"
+                  value={selectedNode.props.placeholder || ''}
+                  onChange={(e) => updateComponentProps(selectedNode.id, { placeholder: e.target.value })}
+                  className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded text-slate-100"
+                />
+              </div>
+            )}
+
+            {selectedNode.type === 'Textarea' && (
+              <div>
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                  Số Dòng Hiển Thị (Rows)
+                </label>
+                <input
+                  type="number"
+                  min={2}
+                  max={20}
+                  value={selectedNode.props.rows || 3}
+                  onChange={(e) => updateComponentProps(selectedNode.id, { rows: Number(e.target.value) })}
+                  className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded text-slate-100"
+                />
+              </div>
+            )}
+
+            {selectedNode.type === 'Number' && (
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                    Số Chữ Số Thập Phân (Precision)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={6}
+                    value={selectedNode.props.precision !== undefined ? selectedNode.props.precision : 2}
+                    onChange={(e) => updateComponentProps(selectedNode.id, { precision: Number(e.target.value) })}
+                    className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded text-slate-100"
+                  />
+                </div>
+                <div className="flex items-center gap-2 pt-4">
+                  <input
+                    type="checkbox"
+                    checked={selectedNode.props.thousandsSeparator ?? true}
+                    onChange={(e) => updateComponentProps(selectedNode.id, { thousandsSeparator: e.target.checked })}
+                    className="rounded bg-slate-800 border-slate-700 text-blue-600"
+                  />
+                  <span className="text-[10px] text-slate-300">Phân cách hàng nghìn</span>
+                </div>
+              </div>
+            )}
+
+            {/* ── BẢNG DỮ LIỆU: GRIDPOLICY COLUMNS INSPECTOR (ẢNH 3, 5 & 6) ── */}
+            {selectedNode.type === 'Table' && (() => {
+              const rawCols = (selectedNode.props.columns as TableColumn[]) || []
+              const selectedCol = selectedColumnIndex !== null ? rawCols[selectedColumnIndex] : null
+
+              const updateColumn = (idx: number, patch: Partial<TableColumn>) => {
+                const updated = rawCols.map((c, i) => (i === idx ? { ...c, ...patch } : c))
+                updateComponentProps(selectedNode.id, { columns: updated })
+              }
+
+              const addColumn = () => {
+                const newCol: TableColumn = {
+                  key: `col_${Date.now().toString().slice(-4)}`,
+                  title: 'Cột Mới',
+                  width: '120px',
+                  align: 'left',
+                  componentType: 'TextBox',
+                  editable: true,
+                  sortable: true,
+                }
+                const updated = [...rawCols, newCol]
+                updateComponentProps(selectedNode.id, { columns: updated })
+                setSelectedColumnIndex(updated.length - 1)
+              }
+
+              const removeColumn = (idx: number) => {
+                const updated = rawCols.filter((_, i) => i !== idx)
+                updateComponentProps(selectedNode.id, { columns: updated })
+                if (selectedColumnIndex === idx) setSelectedColumnIndex(null)
+              }
+
+              return (
+                <div className="space-y-3 pt-2 border-t border-slate-800">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <TableIcon className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Quản Lý Cột (GridPolicy Model)</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={addColumn}
+                      className="px-2 py-1 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded text-[10px] font-bold flex items-center gap-1 transition-colors"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Thêm Cột</span>
+                    </button>
+                  </div>
+
+                  {/* Danh sách cột kiểu tóm tắt giống Ảnh 3 */}
+                  <div className="max-h-48 overflow-y-auto border border-slate-800 rounded-lg divide-y divide-slate-800 bg-slate-950">
+                    {rawCols.map((col, idx) => {
+                      const isSelected = selectedColumnIndex === idx
+                      return (
+                        <div
+                          key={col.key || idx}
+                          onClick={() => setSelectedColumnIndex(idx)}
+                          className={`p-2 flex items-center justify-between cursor-pointer transition-colors ${isSelected ? 'bg-blue-600/20 text-blue-200' : 'hover:bg-slate-900 text-slate-300'
+                            }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-[10px] font-mono text-slate-500">#{idx + 1}</span>
+                            <span className="font-bold truncate text-xs">{col.title}</span>
+                            <span className="text-[10px] text-cyan-400 font-mono">[{col.key}]</span>
+                            {col.sticky === 'left' && (
+                              <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 rounded text-[9px]">Ghim</span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-slate-500 font-mono">{col.width || 'auto'}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                removeColumn(idx)
+                              }}
+                              className="text-slate-500 hover:text-red-400 p-0.5"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Chi tiết cài đặt thuộc tính cột đang chọn (Tương ứng Ảnh 6) */}
+                  {selectedCol && selectedColumnIndex !== null && (
+                    <div className="p-3 bg-slate-950 border border-cyan-800/40 rounded-xl space-y-3">
+                      <div className="text-[11px] font-bold text-cyan-300 flex items-center justify-between">
+                        <span>Chi Tiết Thuộc Tính Cột: {selectedCol.title}</span>
+                        <span className="text-[10px] font-mono text-slate-500">Index: {selectedColumnIndex}</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400 block mb-1">
+                            Field Name (Trường DB)
+                          </label>
+                          <input
+                            type="text"
+                            value={selectedCol.key}
+                            onChange={(e) => updateColumn(selectedColumnIndex, { key: e.target.value })}
+                            className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-cyan-400 font-mono text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400 block mb-1">
+                            Short Desc (Tên Tiêu Đề)
+                          </label>
+                          <input
+                            type="text"
+                            value={selectedCol.title}
+                            onChange={(e) => updateColumn(selectedColumnIndex, { title: e.target.value })}
+                            className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400 block mb-1">
+                            Component Kiểu Ô
+                          </label>
+                          <select
+                            value={selectedCol.componentType || 'TextBox'}
+                            onChange={(e) => updateColumn(selectedColumnIndex, { componentType: e.target.value as any })}
+                            className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs"
+                          >
+                            <option value="TextBox">Input (Văn bản)</option>
+                            <option value="Number">Number (Số / Cân nặng)</option>
+                            <option value="DatePicker">Datepicker (Lịch ngày)</option>
+                            <option value="Select">Dropdown (Lựa chọn)</option>
+                            <option value="Checkbox">Checkbox (Hộp kiểm)</option>
+                            <option value="Button">Button (Thao tác)</option>
+                            <option value="Label">Label (Nhãn thuần)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400 block mb-1">
+                            Độ Rộng (Width)
+                          </label>
+                          <input
+                            type="text"
+                            value={selectedCol.width || ''}
+                            placeholder="144px, 120px..."
+                            onChange={(e) => updateColumn(selectedColumnIndex, { width: e.target.value })}
+                            className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 font-mono text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400 block mb-1">
+                            Căn Lề (Align)
+                          </label>
+                          <select
+                            value={selectedCol.align || 'left'}
+                            onChange={(e) => updateColumn(selectedColumnIndex, { align: e.target.value as any })}
+                            className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs"
+                          >
+                            <option value="left">Căn Trái</option>
+                            <option value="center">Căn Giữa</option>
+                            <option value="right">Căn Phải (Số liệu)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400 block mb-1">
+                            Tính Tổng (Summary)
+                          </label>
+                          <select
+                            value={selectedCol.aggregate || 'none'}
+                            onChange={(e) => updateColumn(selectedColumnIndex, { aggregate: e.target.value as any })}
+                            className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs"
+                          >
+                            <option value="none">Không tính tổng</option>
+                            <option value="sum">Tổng cộng (Sum)</option>
+                            <option value="avg">Trung bình (Avg)</option>
+                            <option value="count">Đếm số dòng (Count)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Các cờ điều khiển: Frozen, Editable, Sortable */}
+                      <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800">
+                        <label className="flex items-center gap-1.5 text-[10px] text-slate-300 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={selectedCol.sticky === 'left'}
+                            onChange={(e) => updateColumn(selectedColumnIndex, { sticky: e.target.checked ? 'left' : undefined })}
+                            className="rounded bg-slate-800 border-slate-700 text-amber-500"
+                          />
+                          <span>Cố định (Frozen)</span>
+                        </label>
+                        <label className="flex items-center gap-1.5 text-[10px] text-slate-300 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={selectedCol.editable ?? true}
+                            onChange={(e) => updateColumn(selectedColumnIndex, { editable: e.target.checked })}
+                            className="rounded bg-slate-800 border-slate-700 text-blue-500"
+                          />
+                          <span>Cho phép sửa</span>
+                        </label>
+                        <label className="flex items-center gap-1.5 text-[10px] text-slate-300 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={selectedCol.sortable ?? true}
+                            onChange={(e) => updateColumn(selectedColumnIndex, { sortable: e.target.checked })}
+                            className="rounded bg-slate-800 border-slate-700 text-emerald-500"
+                          />
+                          <span>Sắp xếp</span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+
+            {/* Trạng thái chung: Disabled, Required, Readonly */}
+            <div className="pt-3 border-t border-slate-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-300">Bắt buộc nhập (Required)</span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(selectedNode.props.required)}
+                  onChange={(e) => updateComponentProps(selectedNode.id, { required: e.target.checked })}
+                  className="rounded bg-slate-800 border-slate-700 text-red-500 cursor-pointer"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-300">Vô hiệu hóa (Disabled)</span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(selectedNode.props.disabled)}
+                  onChange={(e) => updateComponentProps(selectedNode.id, { disabled: e.target.checked })}
+                  className="rounded bg-slate-800 border-slate-700 text-blue-600 cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB 3: STYLES / CSS TÙY BIẾN ── */}
+        {effectiveTab === 'styles' && (
+          <div className="space-y-4">
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                  Độ rộng tùy chỉnh (Width)
+                  Độ rộng (Width)
                 </label>
                 <input
                   type="text"
                   value={selectedNode.style.width || ''}
-                  placeholder="50%, 300px, 100%..."
-                  onChange={(e) => {
-                    const val = e.target.value
-                    if (val.endsWith('%') || val.endsWith('px')) {
-                      updateComponentStyle(selectedNode.id, {
-                        width: val,
-                        flex: `0 0 ${val}`,
-                        maxWidth: val,
-                        minWidth: 0,
-                      })
-                    } else {
-                      updateComponentStyle(selectedNode.id, {
-                        width: val,
-                        flex: undefined,
-                        maxWidth: undefined,
-                      })
-                    }
-                  }}
+                  placeholder="100%, 250px..."
+                  onChange={(e) => updateComponentStyle(selectedNode.id, { width: e.target.value })}
                   className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-xs"
                 />
               </div>
-
               <div>
                 <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
                   Chiều cao (Height)
@@ -810,92 +1446,19 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                  Padding (Đệm trong)
-                </label>
-                <input
-                  type="text"
-                  value={selectedNode.style.padding || ''}
-                  placeholder="16px..."
-                  onChange={(e) => updateComponentStyle(selectedNode.id, { padding: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                  Bo góc (Radius)
-                </label>
-                <input
-                  type="text"
-                  value={selectedNode.style.borderRadius || ''}
-                  placeholder="8px, 12px..."
-                  onChange={(e) => updateComponentStyle(selectedNode.id, { borderRadius: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-xs"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                Màu nền (Background Color)
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={selectedNode.style.backgroundColor || '#1e293b'}
-                  onChange={(e) => updateComponentStyle(selectedNode.id, { backgroundColor: e.target.value })}
-                  className="w-7 h-7 rounded border border-slate-700 cursor-pointer bg-transparent"
-                />
-                <input
-                  type="text"
-                  value={selectedNode.style.backgroundColor || ''}
-                  placeholder="#1e293b hoặc rgb(...)"
-                  onChange={(e) => updateComponentStyle(selectedNode.id, { backgroundColor: e.target.value })}
-                  className="flex-1 px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-xs"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                Màu chữ (Text Color)
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={selectedNode.style.color || '#ffffff'}
-                  onChange={(e) => updateComponentStyle(selectedNode.id, { color: e.target.value })}
-                  className="w-7 h-7 rounded border border-slate-700 cursor-pointer bg-transparent"
-                />
-                <input
-                  type="text"
-                  value={selectedNode.style.color || ''}
-                  placeholder="#ffffff"
-                  onChange={(e) => updateComponentStyle(selectedNode.id, { color: e.target.value })}
-                  className="flex-1 px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-xs"
-                />
-              </div>
-            </div>
-
-            {/* ── 🎨 MÃ CSS TÙY CHỈNH (CUSTOM CSS TEXTAREA) ── */}
+            {/* Custom CSS Textarea */}
             <div className="p-3 bg-slate-950/70 rounded-xl border border-slate-800 space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                   <Code className="w-3.5 h-3.5 text-cyan-400" />
                   <span>CSS Tùy Chỉnh (Custom CSS)</span>
                 </label>
-                <span className="text-[10px] text-cyan-400 font-mono">Áp dụng riêng</span>
+                <span className="text-[10px] text-cyan-400 font-mono">Trực tiếp</span>
               </div>
-              <p className="text-[10px] text-slate-400 leading-snug">
-                Gõ mã CSS trực tiếp (ví dụ: <code className="text-cyan-300">font-weight: bold; color: red;</code>) để tạo kiểu riêng biệt cho component này.
-              </p>
               <textarea
                 rows={5}
                 value={selectedNode.style.customCss || formatStyleToCss(selectedNode.style)}
-                placeholder="font-weight: bold;&#10;color: red;&#10;box-shadow: 0 4px 6px rgba(0,0,0,0.1);"
+                placeholder="border-radius: 8px;&#10;box-shadow: 0 4px 6px rgba(0,0,0,0.1);"
                 onChange={(e) => {
                   const raw = e.target.value
                   const parsed = parseRawCss(raw)
@@ -903,6 +1466,17 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                     ...parsed,
                     customCss: raw,
                   })
+                  // Tự động đồng bộ sang flexConfig nếu có justify-content hoặc align-items:
+                  if (parsed.justifyContent || parsed.alignItems) {
+                    const currentFlex = (selectedNode.props.flexConfig as any) || {}
+                    updateComponentProps(selectedNode.id, {
+                      flexConfig: {
+                        ...currentFlex,
+                        ...(parsed.justifyContent ? { justify: parsed.justifyContent } : {}),
+                        ...(parsed.alignItems ? { align: parsed.alignItems } : {}),
+                      },
+                    })
+                  }
                 }}
                 className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 font-mono text-[11px] leading-relaxed focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 resize-y"
               />
@@ -910,85 +1484,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
           </div>
         )}
 
-        {/* ── TAB 4: PROPS ── */}
-        {effectiveTab === 'props' && (
-          <div className="space-y-3.5">
-            <div>
-              <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                Tên hiển thị / Label
-              </label>
-              <input
-                type="text"
-                value={selectedNode.props.label || ''}
-                onChange={(e) => updateComponentProps(selectedNode.id, { label: e.target.value })}
-                className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100"
-              />
-            </div>
-
-            {selectedNode.type === 'TextBox' && (
-              <div>
-                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                  Placeholder
-                </label>
-                <input
-                  type="text"
-                  value={selectedNode.props.placeholder || ''}
-                  onChange={(e) => updateComponentProps(selectedNode.id, { placeholder: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100"
-                />
-              </div>
-            )}
-
-            {selectedNode.type === 'Button' && (
-              <>
-                <div>
-                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                    Kiểu nút (Variant)
-                  </label>
-                  <select
-                    value={selectedNode.props.variant || 'primary'}
-                    onChange={(e) => updateComponentProps(selectedNode.id, { variant: e.target.value as any })}
-                    className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100"
-                  >
-                    <option value="primary">Primary (Xanh dương)</option>
-                    <option value="secondary">Secondary (Xám đen)</option>
-                    <option value="danger">Danger (Đỏ cảnh báo)</option>
-                    <option value="ghost">Ghost (Viền trong suốt)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                    Kích thước (Size)
-                  </label>
-                  <select
-                    value={selectedNode.props.size || 'md'}
-                    onChange={(e) => updateComponentProps(selectedNode.id, { size: e.target.value as any })}
-                    className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100"
-                  >
-                    <option value="sm">Nhỏ (Small)</option>
-                    <option value="md">Vừa (Medium)</option>
-                    <option value="lg">Lớn (Large)</option>
-                  </select>
-                </div>
-              </>
-            )}
-
-            <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
-              <span className="text-slate-300">Vô hiệu hóa (Disabled)</span>
-              <input
-                type="checkbox"
-                checked={Boolean(selectedNode.props.disabled)}
-                onChange={(e) => updateComponentProps(selectedNode.id, { disabled: e.target.checked })}
-                className="rounded bg-slate-800 border-slate-700 text-blue-600 cursor-pointer"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* ── TAB 5: ĐA SỰ KIỆN (MULTI-EVENT SYSTEM) ── */}
+        {/* ── TAB 4: EVENTS (ĐA SỰ KIỆN & TEST RUNNER) ── */}
         {effectiveTab === 'events' && (() => {
-          const blFile = activeFeature?.scriptFile || ''
+          const blFile = activeFeature?.scriptFile || 'fclImport.bl.ts'
           const availableFns = getFunctionsForBlFile(blFile)
           const eventsList = selectedNode.events || []
 
@@ -998,17 +1496,15 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
             { value: 'change', label: 'Thay đổi giá trị (change)' },
             { value: 'focus', label: 'Khi chọn ô (focus)' },
             { value: 'blur', label: 'Khi rời ô (blur)' },
-            { value: 'mouseenter', label: 'Rê chuột vào (mouseenter)' },
-            { value: 'mouseleave', label: 'Rê chuột ra (mouseleave)' },
           ]
 
           const handleAddEvent = () => {
-            const defaultFn = availableFns[0] || 'Hellowolrk1'
+            const defaultFn = availableFns[0] || 'AutoFillVendor'
             const newEvent = {
               id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
               trigger: 'click',
               handlerName: defaultFn,
-              action: 'custom' as any,
+              action: 'custom',
             }
             updateComponentEvents(selectedNode.id, [...eventsList, newEvent])
           }
@@ -1023,117 +1519,122 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
             updateComponentEvents(selectedNode.id, next)
           }
 
+          const handleAddNewFunctionToBl = () => {
+            if (!newBlFnInput.trim()) return
+            addFunctionToBlFile(blFile, newBlFnInput.trim())
+            setNewBlFnInput('')
+            setBlFnVer((v) => v + 1)
+          }
+
           return (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                    Sự Kiện Component ({eventsList.length})
+                    Danh Sách Sự Kiện ({eventsList.length})
                   </h3>
-                  <p className="text-[10px] text-slate-400 mt-0.5">
-                    File BL: <span className="font-mono text-cyan-400">{blFile || '(chưa gắn file)'}</span>
-                  </p>
+                  <p className="text-[10px] text-slate-400">File BL: <span className="font-mono text-emerald-400">{blFile}</span></p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddEvent}
+                  className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer shadow-md shadow-blue-600/20"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>+ Thêm Sự Kiện</span>
+                </button>
+              </div>
+
+              {/* Form thêm nhanh hàm mới vào BL file */}
+              <div className="p-2.5 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1.5">
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                  <FileCode className="w-3 h-3 text-cyan-400" />
+                  <span>Khai Báo Hàm Mới Trong {blFile}</span>
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    value={newBlFnInput}
+                    onChange={(e) => setNewBlFnInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        handleAddNewFunctionToBl()
+                      }
+                    }}
+                    placeholder="ví dụ: CheckMBL, AutoFillVendor..."
+                    className="flex-1 px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddNewFunctionToBl}
+                    className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Lưu Hàm</span>
+                  </button>
                 </div>
               </div>
 
-              {/* Nút gắn thêm sự kiện */}
-              <button
-                type="button"
-                onClick={handleAddEvent}
-                className="w-full py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <PlusCircle className="w-4 h-4" />
-                <span>+ Gắn Thêm Sự Kiện</span>
-              </button>
-
-              {/* Hướng dẫn kích hoạt sự kiện */}
-              <div className="p-2.5 rounded-xl bg-blue-950/40 border border-blue-800/50 text-[11px] text-blue-200/90 space-y-1">
-                <div className="font-semibold text-blue-300 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                  <span>Cách kích hoạt & kiểm tra sự kiện:</span>
-                </div>
-                <ul className="list-disc pl-4 space-y-0.5 text-[10px] text-slate-300">
-                  <li>Bấm nút <strong>▶ Chạy Thử</strong> ở từng thẻ sự kiện bên dưới.</li>
-                  <li>Hoặc ở Canvas: Giữ <code className="text-cyan-300 bg-slate-800 px-1 rounded">Ctrl + Click</code> hoặc <code className="text-cyan-300 bg-slate-800 px-1 rounded">Nhấp đúp chuột</code>.</li>
-                  <li>Hoặc bấm nút <strong>"Xem Thử Trực Tiếp"</strong> ở thanh trên cùng để thao tác như người dùng thật.</li>
-                </ul>
-              </div>
-
-              {/* Danh sách các sự kiện đã gắn */}
+              {/* Danh sách các sự kiện đã cấu hình */}
               {eventsList.length > 0 ? (
                 <div className="space-y-3">
                   {eventsList.map((ev, idx) => (
                     <div
                       key={ev.id || idx}
-                      className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2.5 relative group/evt shadow-sm"
+                      className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-2.5 shadow-sm"
                     >
-                      <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
-                        <span className="text-[11px] font-bold text-blue-400 flex items-center gap-1.5 font-mono">
-                          <Zap className="w-3.5 h-3.5 text-amber-400" />
-                          <span>Sự kiện #{idx + 1}</span>
+                      <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
+                        <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                          Sự Kiện #{idx + 1}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveEvent(idx)}
-                          className="text-slate-500 hover:text-red-400 p-1 rounded hover:bg-slate-800 transition-colors cursor-pointer"
+                          className="text-slate-500 hover:text-red-400 p-1 rounded transition-colors"
                           title="Xóa sự kiện này"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
 
-                      {/* Input 1: Event Trigger */}
-                      <div>
-                        <label className="text-[10px] font-semibold text-slate-400 block mb-1">
-                          1. Sự kiện kích hoạt (Event):
-                        </label>
-                        <select
-                          value={ev.trigger || 'click'}
-                          onChange={(e) => handleUpdateEvent(idx, { trigger: e.target.value })}
-                          className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 font-mono focus:outline-none focus:border-blue-500 cursor-pointer"
-                        >
-                          {triggerOptions.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                            Loại Trigger
+                          </label>
+                          <select
+                            value={ev.trigger || 'click'}
+                            onChange={(e) => handleUpdateEvent(idx, { trigger: e.target.value })}
+                            className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                          >
+                            {triggerOptions.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-                      {/* Input 2: Function Name */}
-                      <div>
-                        <label className="text-[10px] font-semibold text-slate-400 block mb-1 flex items-center justify-between">
-                          <span>2. Hàm gọi thực thi (Function):</span>
-                          <span className="text-[9px] text-cyan-400 font-mono">Trong file BL</span>
-                        </label>
-                        <div className="space-y-1.5">
-                          {/* Dropdown choose from available functions */}
-                          {availableFns.length > 0 && (
-                            <select
-                              value={ev.handlerName || availableFns[0] || ''}
-                              onChange={(e) => handleUpdateEvent(idx, { handlerName: e.target.value })}
-                              className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 font-mono focus:outline-none focus:border-blue-500 cursor-pointer"
-                            >
-                              {availableFns.map((fn) => (
-                                <option key={fn} value={fn}>
-                                  {fn}()
-                                </option>
-                              ))}
-                            </select>
-                          )}
-
-                          {/* Or type custom function name */}
-                          <input
-                            type="text"
-                            placeholder="Hoặc gõ tên hàm tùy chỉnh..."
-                            value={ev.handlerName || ''}
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                            Hàm Xử Lý (BL Function)
+                          </label>
+                          <select
+                            value={ev.handlerName || availableFns[0] || ''}
                             onChange={(e) => handleUpdateEvent(idx, { handlerName: e.target.value })}
-                            className="w-full px-2.5 py-1.5 bg-slate-900/90 border border-slate-700 rounded-lg text-xs text-cyan-300 font-mono placeholder-slate-500 focus:outline-none focus:border-cyan-500"
-                          />
+                            className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-cyan-300 font-mono text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                          >
+                            {availableFns.map((fn) => (
+                              <option key={fn} value={fn}>
+                                {fn}()
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </div>
 
-                      {/* Nút Chạy Thử sự kiện ngay lập tức */}
+                      {/* Nút chạy thử sự kiện ngay lập tức */}
                       <button
                         type="button"
                         onClick={() => {
@@ -1161,10 +1662,353 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                 <div className="p-6 border border-dashed border-slate-800 rounded-xl text-center text-slate-500 space-y-1">
                   <p className="text-xs">Component này chưa gắn sự kiện nào.</p>
                   <p className="text-[10px] text-slate-600">
-                    Bấm nút <strong>"+ Gắn Thêm Sự Kiện"</strong> ở trên để thêm sự kiện (click, dblclick, change...) và hàm tương ứng.
+                    Bấm nút <strong>"+ Thêm Sự Kiện"</strong> ở trên để thêm sự kiện (click, change...) và hàm tương ứng.
                   </p>
                 </div>
               )}
+            </div>
+          )
+        })()}
+
+        {/* ── TAB 5: DATA BINDING (LIÊN KẾT THỰC THỂ) ── */}
+        {effectiveTab === 'data' && (() => {
+          const binding = selectedNode.dataBinding || {}
+          const selectedEntity = MOCK_ENTITY_CATALOGS.find((e) => e.name === binding.entityName)
+          const availableFields = selectedEntity ? selectedEntity.fields : []
+
+          return (
+            <div className="space-y-4">
+              <div className="p-3 bg-blue-950/20 border border-blue-800/40 rounded-xl space-y-1">
+                <div className="text-xs font-bold text-blue-300 flex items-center gap-1.5">
+                  <Database className="w-4 h-4 text-blue-400" />
+                  <span>Liên Kết Dữ Liệu Thực Thể (Data Binding)</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Liên kết component này với một trường dữ liệu trong thực thể nghiệp vụ (Entity Catalog). Dữ liệu sẽ tự động được tải và lưu trữ đồng bộ.
+                </p>
+              </div>
+
+              {/* Chọn Thực Thể (Entity) */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Thực Thể Dữ Liệu (Entity)
+                </label>
+                <select
+                  value={binding.entityName || ''}
+                  onChange={(e) => {
+                    const entName = e.target.value
+                    const ent = MOCK_ENTITY_CATALOGS.find((x) => x.name === entName)
+                    const firstField = ent?.fields[0]?.name || ''
+                    updateComponentDataBinding(selectedNode.id, {
+                      entityName: entName,
+                      fieldName: firstField,
+                    })
+                  }}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+                >
+                  <option value="">-- Chọn Thực Thể --</option>
+                  {MOCK_ENTITY_CATALOGS.map((ent) => (
+                    <option key={ent.id} value={ent.name}>
+                      {ent.displayName} ({ent.name})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Chọn Trường Dữ Liệu (Field) */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Trường Dữ Liệu (Field Name)
+                </label>
+                <select
+                  disabled={!selectedEntity}
+                  value={binding.fieldName || ''}
+                  onChange={(e) => updateComponentDataBinding(selectedNode.id, { fieldName: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500 disabled:opacity-50 cursor-pointer"
+                >
+                  <option value="">-- Chọn Trường Dữ Liệu --</option>
+                  {availableFields.map((f) => (
+                    <option key={f.name} value={f.name}>
+                      {f.displayName} ({f.name}) [{f.dataType}]
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Bộ Định Dạng Dữ Liệu (Formatter) */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Định Dạng Dữ Liệu (Formatter)
+                </label>
+                <select
+                  value={binding.formatter || ''}
+                  onChange={(e) => updateComponentDataBinding(selectedNode.id, { formatter: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+                >
+                  <option value="">Mặc định (Không định dạng)</option>
+                  <option value="currency_vnd">Tiền tệ VND (₫ 1,000,000)</option>
+                  <option value="currency_usd">Tiền tệ USD ($ 1,000.00)</option>
+                  <option value="date_ddmmyyyy">Ngày tháng (DD/MM/YYYY)</option>
+                  <option value="number_commas">Phân cách hàng nghìn (1,000,000)</option>
+                  <option value="uppercase">Chữ hoa (UPPERCASE)</option>
+                </select>
+              </div>
+
+              {/* Binding 2 Chiều (Two-Way Binding) */}
+              <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-300 block font-semibold">Đồng bộ 2 chiều (Two-Way)</span>
+                  <span className="text-[10px] text-slate-500">Tự động cập nhật model khi người dùng gõ</span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={binding.twoWay ?? true}
+                  onChange={(e) => updateComponentDataBinding(selectedNode.id, { twoWay: e.target.checked })}
+                  className="rounded bg-slate-800 border-slate-700 text-blue-600 cursor-pointer"
+                />
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* ── TAB 6: VALIDATION (QUY TẮC XÁC THỰC) ── */}
+        {effectiveTab === 'validation' && (() => {
+          const val = selectedNode.validation || {}
+
+          return (
+            <div className="space-y-4">
+              <div className="p-3 bg-emerald-950/20 border border-emerald-800/40 rounded-xl space-y-1">
+                <div className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Quy Tắc Xác Thực Dữ Liệu (Validation Rules)</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Thiết lập các điều kiện kiểm tra hợp lệ cho ô nhập liệu. Hệ thống sẽ tự động hiển thị thông báo lỗi khi không thỏa mãn.
+                </p>
+              </div>
+
+              {/* Bắt buộc nhập */}
+              <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-200 font-bold">Bắt buộc nhập (Required)</span>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(val.required)}
+                    onChange={(e) => updateComponentValidation(selectedNode.id, { required: e.target.checked })}
+                    className="rounded bg-slate-800 border-slate-700 text-red-500 cursor-pointer"
+                  />
+                </div>
+                {val.required && (
+                  <input
+                    type="text"
+                    placeholder="Thông báo lỗi khi để trống (ví dụ: Trường này là bắt buộc)..."
+                    value={val.requiredMessage || ''}
+                    onChange={(e) => updateComponentValidation(selectedNode.id, { requiredMessage: e.target.value })}
+                    className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500"
+                  />
+                )}
+              </div>
+
+              {/* Độ dài ký tự */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    Độ dài tối thiểu (Min)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    value={val.minLength !== undefined ? val.minLength : ''}
+                    onChange={(e) =>
+                      updateComponentValidation(selectedNode.id, {
+                        minLength: e.target.value === '' ? undefined : Number(e.target.value),
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    Độ dài tối đa (Max)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="255"
+                    value={val.maxLength !== undefined ? val.maxLength : ''}
+                    onChange={(e) =>
+                      updateComponentValidation(selectedNode.id, {
+                        maxLength: e.target.value === '' ? undefined : Number(e.target.value),
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Regex Pattern */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Mẫu Kiểm Tra Regex (Pattern)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ví dụ: ^[A-Z0-9]{8,18}$ (Mã Bill MBL)"
+                  value={val.pattern || ''}
+                  onChange={(e) => updateComponentValidation(selectedNode.id, { pattern: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                />
+                <input
+                  type="text"
+                  placeholder="Thông báo lỗi khi không khớp mẫu Regex..."
+                  value={val.patternMessage || ''}
+                  onChange={(e) => updateComponentValidation(selectedNode.id, { patternMessage: e.target.value })}
+                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              {/* Custom Validator Function */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Hàm Xác Thực Nghiệp Vụ Tùy Biến (Custom BL)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ví dụ: CheckMBL, validateTaxCode..."
+                  value={val.customValidator || ''}
+                  onChange={(e) => updateComponentValidation(selectedNode.id, { customValidator: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-cyan-300 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                />
+                <p className="text-[10px] text-slate-500">
+                  Tên hàm trong file logic (BL) sẽ được gọi để thẩm định dữ liệu nâng cao.
+                </p>
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* ── TAB 7: PHÂN QUYỀN MỊN (FIELD-LEVEL RBAC - KẾ THỪA SECURITYBL & POLICYEDITORBL) ── */}
+        {effectiveTab === 'permissions' && (() => {
+          const perms = selectedNode.permissions || {}
+          const standardRoles = ['Admin', 'Dev', 'User', 'Manager', 'Staff', 'Customer']
+          const allowedList = perms.allowedRoles || []
+          const readOnlyList = perms.readOnlyRoles || []
+
+          const toggleAllowedRole = (role: string) => {
+            const next = allowedList.includes(role)
+              ? allowedList.filter((r) => r !== role)
+              : [...allowedList, role]
+            updateComponentPermissions(selectedNode.id, { allowedRoles: next })
+          }
+
+          const toggleReadOnlyRole = (role: string) => {
+            const next = readOnlyList.includes(role)
+              ? readOnlyList.filter((r) => r !== role)
+              : [...readOnlyList, role]
+            updateComponentPermissions(selectedNode.id, { readOnlyRoles: next })
+          }
+
+          return (
+            <div className="space-y-4">
+              <div className="p-3 bg-amber-950/20 border border-amber-800/40 rounded-xl space-y-1">
+                <div className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                  <Lock className="w-4 h-4 text-amber-400" />
+                  <span>Phân Quyền Trường Dữ Liệu (Field-Level RBAC)</span>
+                </div>
+                <p className="text-[11px] text-amber-200/80 leading-relaxed">
+                  Kế thừa trực tiếp từ <code>SecurityBL.cs</code> &amp; <code>PolicyEditorBL.cs</code> của C# Core. Giới hạn hiển thị hoặc quyền thao tác cho từng vai trò trên giao diện.
+                </p>
+              </div>
+
+              {/* Vai trò được phép xem & thao tác (allowedRoles) */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Vai Trò Được Phép Truy Cập (Allowed Roles)
+                </label>
+                <p className="text-[10px] text-slate-500">
+                  Để trống = Tất cả mọi vai trò đều được truy cập.
+                </p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {standardRoles.map((role) => {
+                    const isChecked = allowedList.includes(role)
+                    return (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() => toggleAllowedRole(role)}
+                        className={`px-2.5 py-1.5 rounded-lg border text-left text-xs font-medium flex items-center justify-between transition-colors ${isChecked
+                          ? 'bg-blue-600/20 border-blue-500 text-blue-300'
+                          : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                          }`}
+                      >
+                        <span>{role}</span>
+                        {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Vai trò chỉ đọc (readOnlyRoles) */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Vai Trò Chỉ Đọc (Read-Only Roles)
+                </label>
+                <p className="text-[10px] text-slate-500">
+                  Những vai trò này vẫn nhìn thấy component nhưng không thể sửa đổi hoặc click.
+                </p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {standardRoles.map((role) => {
+                    const isChecked = readOnlyList.includes(role)
+                    return (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() => toggleReadOnlyRole(role)}
+                        className={`px-2.5 py-1.5 rounded-lg border text-left text-xs font-medium flex items-center justify-between transition-colors ${isChecked
+                          ? 'bg-amber-600/20 border-amber-500 text-amber-300'
+                          : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                          }`}
+                      >
+                        <span>{role}</span>
+                        {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Hành vi khi không có quyền (deniedBehavior) */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Hành Vi Khi Không Có Quyền (Denied Behavior)
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => updateComponentPermissions(selectedNode.id, { deniedBehavior: 'hide' })}
+                    className={`p-2.5 rounded-lg border text-left text-xs transition-colors ${(perms.deniedBehavior || 'hide') === 'hide'
+                      ? 'bg-blue-600/20 border-blue-500 text-blue-200'
+                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                      }`}
+                  >
+                    <div className="font-bold mb-0.5">Ẩn Hoàn Toàn</div>
+                    <div className="text-[10px] text-slate-400">Không hiển thị trên màn hình</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => updateComponentPermissions(selectedNode.id, { deniedBehavior: 'disable' })}
+                    className={`p-2.5 rounded-lg border text-left text-xs transition-colors ${perms.deniedBehavior === 'disable'
+                      ? 'bg-blue-600/20 border-blue-500 text-blue-200'
+                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                      }`}
+                  >
+                    <div className="font-bold mb-0.5">Khóa Mờ (Disable)</div>
+                    <div className="text-[10px] text-slate-400">Hiển thị xám chỉ đọc</div>
+                  </button>
+                </div>
+              </div>
             </div>
           )
         })()}

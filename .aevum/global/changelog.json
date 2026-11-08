@@ -52,5 +52,61 @@
     "agent": "Kael (ENG-KAEL-7F4B2D)",
     "action": "FIX_BL_EVENT_TRIGGER_EXECUTION",
     "summary": "Khắc phục triệt để lỗi sự kiện không gọi hàm BL: hỗ trợ nhấp đúp/Ctrl+Click trên Canvas thiết kế, click trên Preview mode, nút '▶ Chạy Thử' trực tiếp tại PropertyPanel, chuẩn hóa tên file/hàm và bổ sung alert trực quan trong customerManagement.bl.ts."
+  },
+  {
+    "id": "tx_node_1792758189241_0kb68",
+    "action": "ADD_NODE",
+    "timestamp": "2026-10-23T12:23:09.241Z",
+    "payload": {
+      "id": "aevum://ltm/kael/1792758189240",
+      "type": "SEMANTIC_RULE",
+      "label": "[LTM] Đồng bộ toàn diện kiến trúc dự án UIPorge vào A...",
+      "properties": {
+        "description": "Đồng bộ toàn diện kiến trúc dự án UIPorge vào Aevum Brain: Phân rã 2 Domain chính (Frontend Studio & Runtime và Backend Core & Data Services) cùng 6 Feature chuẩn hóa kiến trúc DDD.",
+        "author": "Master",
+        "date": "2026-10-23T12:23:09.240Z",
+        "validFrom": "2026-10-23T12:23:09.240Z",
+        "salienceScore": 10,
+        "status": "ACTIVE",
+        "tags": [
+          "architecture",
+          "ddd",
+          "uiporge",
+          "sync"
+        ]
+      }
+    }
+  },
+  {
+    "id": "tx_edge_1792758189250_w4zbq",
+    "action": "ADD_EDGE",
+    "timestamp": "2026-10-23T12:23:09.250Z",
+    "payload": {
+      "source": "aevum://entity/master",
+      "target": "aevum://ltm/kael/1792758189240",
+      "type": "teaches"
+    }
+  },
+  {
+    "id": "tx_edge_1792758189258_xs4p9",
+    "action": "ADD_EDGE",
+    "timestamp": "2026-10-23T12:23:09.258Z",
+    "payload": {
+      "source": "aevum://ltm/kael/1792758189240",
+      "target": "aevum://persona/kael",
+      "type": "appliesTo"
+    }
+  },
+  {
+    "timestamp": "2026-10-23T19:50:00+07:00",
+    "agent": "An (ENG-AN-7B9F1D)",
+    "action": "RECRUIT_DEVOPS_AGENT_BOB",
+    "summary": "Tuyển dụng thành công Agent Bob (AID: BOB) chuyên trách CI/CD, DevOps & Docker, sẵn sàng tự động hóa pipeline và container hóa hệ thống UIPorge."
+  },
+  {
+    "timestamp": "2026-10-23T19:55:00+07:00",
+    "agent": "Bob (OPS-BOB-4E8C21)",
+    "action": "PERMANENT_ONBOARDING_AND_KNOWLEDGE_SETUP",
+    "summary": "Đăng ký vĩnh viễn Bob (OPS-BOB-4E8C21) vào index.json và activeSquad, khởi tạo kho tri thức hạ tầng DevOps tại personas/bob/knowledge."
   }
 ]

@@ -4,6 +4,8 @@ import { useEditorStore } from '@/store/editorStore'
 import { ComponentRenderer } from '@/renderer/Renderer'
 import { DraggableComponent } from './DraggableComponent'
 import { ContextMenu, MenuItem } from './ContextMenu'
+import { groupNodesByTabStack } from '@/renderer/tabStackUtils'
+import { ForgeTabStack } from '@/renderer/components'
 import type { ComponentNode, ComponentType } from '@/types/schema'
 import {
   Box,
@@ -85,8 +87,8 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
           type === 'Button'
             ? 'Nút mới'
             : type === 'Label'
-            ? 'Tiêu đề khối'
-            : undefined,
+              ? 'Tiêu đề khối'
+              : undefined,
         variant: type === 'Button' ? 'primary' : undefined,
         size: type === 'Button' ? 'md' : undefined,
         placeholder: type === 'TextBox' ? 'Nhập nội dung...' : undefined,
@@ -113,16 +115,17 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
     })
   }
 
-  // Handle right-click on a specific component (e.g. Container)
+  // Handle right-click on a specific component (Container, Section, Tabs...)
   const handleComponentContextMenu = (e: React.MouseEvent, node: ComponentNode) => {
     if (!isEditing) return
     e.preventDefault()
     e.stopPropagation()
     selectComponent(node.id)
+    const isContainerLike = node.type === 'Container' || node.type === 'Section' || node.type === 'Tabs'
     setContextMenu({
       x: e.clientX,
       y: e.clientY,
-      targetContainerId: node.type === 'Container' ? node.id : node.parentId,
+      targetContainerId: isContainerLike ? node.id : node.parentId,
       selectedNode: node,
     })
   }
@@ -132,12 +135,50 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
     if (!contextMenu) return []
     const { targetContainerId, selectedNode } = contextMenu
 
-    // 1. Right click on a Container (Khoảng Trắng)
-    if (selectedNode && selectedNode.type === 'Container') {
+    // 1. Right click on a Container, Section or Tabs
+    const isContainerLike =
+      selectedNode &&
+      (selectedNode.type === 'Container' ||
+        selectedNode.type === 'Section' ||
+        selectedNode.type === 'Tabs')
+
+    if (selectedNode && isContainerLike) {
       const isGrid = selectedNode.props.layoutMode === 'grid'
       const isRow = selectedNode.props.flexConfig?.direction === 'row'
+      const isTabContainer = Boolean(
+        selectedNode.props.isTab || selectedNode.props.tab || selectedNode.type === 'Tabs'
+      )
+      const currentTabId = (selectedNode.props.activeTabId as string) || (selectedNode.props.tabs as any[])?.[0]?.id || 'main'
+      const tabProp = isTabContainer ? { tabId: currentTabId } : {}
 
       return [
+        ...(isTabContainer
+          ? [
+            {
+              label: '📑 + Thêm Tab Mới vào phân hệ này',
+              icon: Box,
+              onClick: () => {
+                const currentTabs = (selectedNode.props.tabs as any[]) || [
+                  { id: 'main', label: 'TAB 1' },
+                ]
+                const newTabId = `tab_${Date.now().toString(36)}`
+                const updatedTabs = [
+                  ...currentTabs,
+                  { id: newTabId, label: `Tab Mới ${currentTabs.length + 1}` },
+                ]
+                updateComponentProps(selectedNode.id, {
+                  tabs: updatedTabs,
+                  activeTabId: newTabId,
+                })
+              },
+            },
+            {
+              divider: true,
+              label: '',
+              onClick: () => { },
+            },
+          ]
+          : []),
         {
           label: '📦 Thêm Khoảng Trắng con (Bố cục Flexbox)',
           icon: Box,
@@ -153,6 +194,7 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
                   align: 'stretch',
                   gap: '12px',
                 },
+                ...tabProp,
               },
               {
                 flex: isRow ? '1' : undefined,
@@ -176,6 +218,7 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
               {
                 layoutMode: 'grid',
                 gridConfig: { columns: 2, gap: '12px' },
+                ...tabProp,
               },
               {
                 flex: isRow ? '1' : undefined,
@@ -191,34 +234,150 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
           },
         },
         {
+          label: '🗂️ Thêm Khung Card / Section (12 Cột)',
+          icon: Columns,
+          onClick: () => {
+            const sec = createNewComponent('Section', {
+              title: 'Phân Vùng Mới',
+              label: 'Phân Vùng Mới',
+              collapsible: true,
+              boxShadow: true,
+              colSpan: 12,
+              ...tabProp,
+            })
+            addComponent(sec, targetContainerId)
+          },
+        },
+        {
           divider: true,
           label: '',
-          onClick: () => {},
+          onClick: () => { },
         },
         {
-          label: '➕ Thêm Nút vào khoảng trắng này',
-          icon: Square,
-          onClick: () => addComponent(createNewComponent('Button'), targetContainerId),
-        },
-        {
-          label: '➕ Thêm TextBox vào khoảng trắng này',
+          label: '➕ Thêm TextBox (Ô nhập liệu)',
           icon: Type,
-          onClick: () => addComponent(createNewComponent('TextBox'), targetContainerId),
+          onClick: () =>
+            addComponent(
+              createNewComponent('TextBox', {
+                label: 'Ô nhập liệu',
+                labelPosition: 'left',
+                colSpan: 4,
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
         },
         {
-          label: '➕ Thêm Nhãn chữ vào khoảng trắng này',
+          label: '➕ Thêm Số (Number)',
+          icon: Type,
+          onClick: () =>
+            addComponent(
+              createNewComponent('Number', {
+                label: 'Số tiền / Lượng',
+                labelPosition: 'left',
+                colSpan: 4,
+                precision: 2,
+                thousandsSeparator: true,
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
+        },
+        {
+          label: '➕ Thêm Chọn Ngày (DatePicker)',
+          icon: Type,
+          onClick: () =>
+            addComponent(
+              createNewComponent('DatePicker', {
+                label: 'Ngày tháng',
+                labelPosition: 'left',
+                colSpan: 4,
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
+        },
+        {
+          label: '➕ Thêm Dropdown (Select)',
+          icon: Type,
+          onClick: () =>
+            addComponent(
+              createNewComponent('Select', {
+                label: 'Lựa chọn',
+                labelPosition: 'left',
+                colSpan: 4,
+                options: [
+                  { value: 'opt1', label: 'Tùy chọn 1' },
+                  { value: 'opt2', label: 'Tùy chọn 2' },
+                ],
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
+        },
+        {
+          label: '➕ Thêm Hộp Kiểm (Checkbox)',
+          icon: Square,
+          onClick: () =>
+            addComponent(
+              createNewComponent('Checkbox', {
+                label: 'Kích hoạt',
+                labelPosition: 'left',
+                colSpan: 4,
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
+        },
+        {
+          label: '➕ Thêm Ghi Chú Nhiều Dòng (Textarea)',
           icon: FileText,
-          onClick: () => addComponent(createNewComponent('Label'), targetContainerId),
+          onClick: () =>
+            addComponent(
+              createNewComponent('Textarea', {
+                label: 'Ghi chú',
+                labelPosition: 'left',
+                colSpan: 12,
+                rows: 3,
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
         },
         {
-          label: '➕ Thêm Bảng dữ liệu',
+          label: '➕ Thêm Nút Bấm (Button)',
+          icon: Square,
+          onClick: () =>
+            addComponent(
+              createNewComponent('Button', {
+                label: 'Nút bấm',
+                variant: 'primary',
+                size: 'sm',
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
+        },
+        {
+          label: '➕ Thêm Bảng Dữ Liệu (Advanced Grid)',
           icon: TableIcon,
-          onClick: () => addComponent(createNewComponent('Table'), targetContainerId),
+          onClick: () =>
+            addComponent(
+              createNewComponent('Table', {
+                columns: [
+                  { key: 'col1', title: 'Cột 1', width: '120px' },
+                  { key: 'col2', title: 'Cột 2', width: '150px' },
+                  { key: 'col3', title: 'Cột 3', width: '120px' },
+                ],
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
         },
         {
           divider: true,
           label: '',
-          onClick: () => {},
+          onClick: () => { },
         },
         {
           label: isRow
@@ -228,7 +387,12 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
           onClick: () => {
             updateComponentProps(selectedNode.id, {
               flexConfig: {
-                ...(selectedNode.props.flexConfig || { wrap: 'wrap', justify: 'flex-start', align: 'center', gap: '12px' }),
+                ...(selectedNode.props.flexConfig || {
+                  wrap: 'wrap',
+                  justify: 'flex-start',
+                  align: 'center',
+                  gap: '12px',
+                }),
                 direction: isRow ? 'column' : 'row',
               },
             })
@@ -241,7 +405,13 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
             if (isGrid) {
               updateComponentProps(selectedNode.id, {
                 layoutMode: 'flex',
-                flexConfig: { direction: 'row', wrap: 'wrap', justify: 'flex-start', align: 'center', gap: '12px' },
+                flexConfig: {
+                  direction: 'row',
+                  wrap: 'wrap',
+                  justify: 'flex-start',
+                  align: 'center',
+                  gap: '12px',
+                },
               })
             } else {
               updateComponentProps(selectedNode.id, {
@@ -252,7 +422,7 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
           },
         },
         {
-          label: '🗑️ Xóa khoảng trắng này',
+          label: '🗑️ Xóa khối này',
           icon: Trash2,
           danger: true,
           onClick: () => removeComponent(selectedNode.id),
@@ -323,7 +493,7 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
       {
         divider: true,
         label: '',
-        onClick: () => {},
+        onClick: () => { },
       },
       {
         label: '🔘 Thêm Nút bấm (Button)',
@@ -354,9 +524,8 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
     <div
       ref={setCanvasRootRef}
       onContextMenu={handleCanvasContextMenu}
-      className={`flex-1 overflow-y-auto bg-slate-950 p-6 flex flex-col relative mr-2.5 transition-colors ${
-        isCanvasRootOver && isEditing ? 'ring-2 ring-blue-500/50 bg-blue-950/10' : ''
-      }`}
+      className={`flex-1 overflow-y-auto bg-slate-950 p-6 flex flex-col relative mr-2.5 transition-colors ${isCanvasRootOver && isEditing ? 'ring-2 ring-blue-500/50 bg-blue-950/10' : ''
+        }`}
     >
       <div className="max-w w-full mx-auto flex-1 flex flex-col space-y-4">
         {/* Feature Header Bar */}
@@ -406,8 +575,8 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
                 const sanitized = fileName.endsWith('.bl.ts')
                   ? fileName
                   : fileName.endsWith('.ts')
-                  ? fileName.replace(/\.ts$/, '.bl.ts')
-                  : `${fileName}.bl.ts`
+                    ? fileName.replace(/\.ts$/, '.bl.ts')
+                    : `${fileName}.bl.ts`
                 updateFeatureScriptFile(activeFeatureId, sanitized)
                 setBlInputName('')
               }}
@@ -471,11 +640,10 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
         ) : rootComponents.length === 0 ? (
           <div
             onContextMenu={handleCanvasContextMenu}
-            className={`flex-1 min-h-[400px] border-2 border-dashed rounded-2xl flex flex-col items-center justify-center p-12 text-center transition-all cursor-context-menu ${
-              isCanvasRootOver
-                ? 'border-blue-500 bg-blue-950/20 shadow-xl shadow-blue-500/10'
-                : 'border-slate-800 hover:border-blue-500/50 bg-slate-900/30'
-            }`}
+            className={`flex-1 min-h-[400px] border-2 border-dashed rounded-2xl flex flex-col items-center justify-center p-12 text-center transition-all cursor-context-menu ${isCanvasRootOver
+              ? 'border-blue-500 bg-blue-950/20 shadow-xl shadow-blue-500/10'
+              : 'border-slate-800 hover:border-blue-500/50 bg-slate-900/30'
+              }`}
           >
             <div className="w-14 h-14 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-4 shadow-inner">
               <Box className="w-7 h-7" />
@@ -534,18 +702,75 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
             }}
             className="flex-1"
           >
-            {rootComponents.map((node) =>
-              isEditing ? (
+            {groupNodesByTabStack(rootComponents).map((group, gIdx) => {
+              if (group.type === 'tab_stack') {
+                return (
+                  <ForgeTabStack
+                    key={`root_tab_stack_${group.order}_${gIdx}`}
+                    parentId={null}
+                    order={group.order}
+                    tabNodes={group.nodes}
+                    isEditing={isEditing}
+                    onContextMenu={handleComponentContextMenu}
+                    renderChild={(childNode, childLayout) =>
+                      isEditing ? (
+                        <DraggableComponent
+                          key={childNode.id}
+                          node={childNode}
+                          isEditing={isEditing}
+                          onContextMenu={handleComponentContextMenu}
+                          parentLayout={
+                            childLayout && 'mode' in childLayout
+                              ? (childLayout as any)
+                              : undefined
+                          }
+                          parentFlexConfig={
+                            childLayout && !('mode' in childLayout)
+                              ? (childLayout as any)
+                              : undefined
+                          }
+                          activeId={activeId}
+                          overId={overId}
+                        />
+                      ) : (
+                        <ComponentRenderer
+                          key={childNode.id}
+                          node={childNode}
+                          isEditing={false}
+                          onContextMenu={handleComponentContextMenu}
+                          parentLayout={
+                            childLayout && 'mode' in childLayout
+                              ? (childLayout as any)
+                              : undefined
+                          }
+                          parentFlexConfig={
+                            childLayout && !('mode' in childLayout)
+                              ? (childLayout as any)
+                              : undefined
+                          }
+                        />
+                      )
+                    }
+                  />
+                )
+              }
+
+              const node = group.node
+              const rootParentLayout = {
+                mode: 'flex' as const,
+                direction: rootLayout.direction || 'column',
+                wrap: rootLayout.wrap || 'wrap',
+                gap: rootLayout.gap,
+                columnsPerRow: 'auto' as const,
+              }
+
+              return isEditing ? (
                 <DraggableComponent
                   key={node.id}
                   node={node}
                   isEditing={isEditing}
                   onContextMenu={handleComponentContextMenu}
-                  parentFlexConfig={
-                    rootLayout.direction === 'row'
-                      ? { direction: 'row', wrap: 'wrap', gap: rootLayout.gap, columnsPerRow: 'auto' }
-                      : undefined
-                  }
+                  parentLayout={rootParentLayout}
                   activeId={activeId}
                   overId={overId}
                 />
@@ -555,14 +780,10 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
                   node={node}
                   isEditing={false}
                   onContextMenu={handleComponentContextMenu}
-                  parentFlexConfig={
-                    rootLayout.direction === 'row'
-                      ? { direction: 'row', wrap: 'wrap', gap: rootLayout.gap, columnsPerRow: 'auto' }
-                      : undefined
-                  }
+                  parentLayout={rootParentLayout}
                 />
               )
-            )}
+            })}
           </div>
         )}
       </div>

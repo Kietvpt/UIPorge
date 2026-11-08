@@ -1,0 +1,59 @@
+{
+  "sessionId": "squad_notifications",
+  "createdAt": "2026-10-23T12:55:44.233Z",
+  "updatedAt": "2026-10-23T12:55:44.341Z",
+  "version": 5,
+  "predictedState": {
+    "queues": {
+      "ENG-AN-7B9F1D": [
+        {
+          "id": "notif_1792760144233_8ngyi",
+          "fromAgentId": "OPS-BOB-4E8C21",
+          "toAgentId": "ENG-AN-7B9F1D",
+          "type": "message",
+          "content": "[SQUAD] Agent OPS-BOB-4E8C21 (Bob) is now ONLINE and ready to collaborate.",
+          "timestamp": "2026-10-23T12:55:44.233Z",
+          "status": "pending",
+          "priority": "medium"
+        }
+      ],
+      "ENG-KAEL-7F4B2D": [
+        {
+          "id": "notif_1792760144274_1libm",
+          "fromAgentId": "OPS-BOB-4E8C21",
+          "toAgentId": "ENG-KAEL-7F4B2D",
+          "type": "message",
+          "content": "[SQUAD] Agent OPS-BOB-4E8C21 (Bob) is now ONLINE and ready to collaborate.",
+          "timestamp": "2026-10-23T12:55:44.274Z",
+          "status": "pending",
+          "priority": "medium"
+        }
+      ],
+      "ARC-VIDUS-AUHD2Y": [
+        {
+          "id": "notif_1792760144313_ztbvl",
+          "fromAgentId": "OPS-BOB-4E8C21",
+          "toAgentId": "ARC-VIDUS-AUHD2Y",
+          "type": "message",
+          "content": "[SQUAD] Agent OPS-BOB-4E8C21 (Bob) is now ONLINE and ready to collaborate.",
+          "timestamp": "2026-10-23T12:55:44.313Z",
+          "status": "pending",
+          "priority": "medium"
+        }
+      ],
+      "ALG-ZENITH-A1B2C3": [
+        {
+          "id": "notif_1792760144341_qdcwk",
+          "fromAgentId": "OPS-BOB-4E8C21",
+          "toAgentId": "ALG-ZENITH-A1B2C3",
+          "type": "message",
+          "content": "[SQUAD] Agent OPS-BOB-4E8C21 (Bob) is now ONLINE and ready to collaborate.",
+          "timestamp": "2026-10-23T12:55:44.341Z",
+          "status": "pending",
+          "priority": "medium"
+        }
+      ]
+    }
+  },
+  "discussion": []
+}

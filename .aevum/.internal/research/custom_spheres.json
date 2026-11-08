@@ -1,0 +1,156 @@
+[
+  {
+    "id": "sphere_autonomous_research",
+    "title": "Autonomous AI Discoveries & Papers",
+    "description": "Các tài liệu nghiên cứu chuyên sâu do AI Agent tự động khám phá và tổng hợp theo chuẩn IEEE.",
+    "icon": "Sparkles",
+    "primaryPersona": "An",
+    "rootNodeId": "node_auto_0_arch_csharp_core_ui_deconstruction_md",
+    "masteryPercent": 100,
+    "nodes": {
+      "node_auto_0_arch_csharp_core_ui_deconstruction_md": {
+        "id": "node_auto_0_arch_csharp_core_ui_deconstruction_md",
+        "topic": "Báo Cáo Nghiên Cứu: Giải Phẫu Toàn Diện Kiến Trúc C# Core UI (Bridge.NET) & Mô Hình Hóa Hệ Thống",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "Vidus",
+        "childrenIds": [],
+        "paperFile": "arch_csharp_core_ui_deconstruction.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_1_plan_uiporge_step_by_step_migration_blueprint_md": {
+        "id": "node_auto_1_plan_uiporge_step_by_step_migration_blueprint_md",
+        "topic": "Kế Hoạch Hành Động Toàn Diện: Lộ Trình Từng Bước Tái Thiết Kế & Nâng Cấp Hệ Thống UIPorge",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "An",
+        "childrenIds": [],
+        "paperFile": "plan_uiporge_step_by_step_migration_blueprint.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_2_sec_dynamic_policy_rbac_uiporge_md": {
+        "id": "node_auto_2_sec_dynamic_policy_rbac_uiporge_md",
+        "topic": "Báo Cáo An Ninh & Phân Quyền: Kiểm Soát Truy Cập Động Cấp Độ Phần Tử & Trường Dữ Liệu (Field-Level RBAC)",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "Alice",
+        "childrenIds": [],
+        "paperFile": "sec_dynamic_policy_rbac_uiporge.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_3_tech_benchmark_flow_state_telemetry_md": {
+        "id": "node_auto_3_tech_benchmark_flow_state_telemetry_md",
+        "topic": "Đo Lường Định Lượng Telemetry: Thời Gian Duy Trì Dòng Chảy & Tốc Độ Hồi Phục Nhận Thức",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "Zenith",
+        "childrenIds": [],
+        "paperFile": "tech_benchmark_flow_state_telemetry.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_4_tech_data_transport_and_schema_engine_md": {
+        "id": "node_auto_4_tech_data_transport_and_schema_engine_md",
+        "topic": "Báo Cáo Kỹ Thuật: Tầng Vận Chuyển Dữ Liệu, Cơ Chế Chống Chịu (Resilience Queue) & Chuẩn Hóa Schema Trong UIPorge",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "Zenith",
+        "childrenIds": [],
+        "paperFile": "tech_data_transport_and_schema_engine.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_5_tech_debate_human_agency_vs_ai_automation_md": {
+        "id": "node_auto_5_tech_debate_human_agency_vs_ai_automation_md",
+        "topic": "Cân Bằng Tư Duy Sáng Tạo Của Con Người Và Trí Tuệ Tự Động Hóa Của AI: Tranh Biện Biện Chứng An vs Vidus",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "An",
+        "childrenIds": [],
+        "paperFile": "tech_debate_human_agency_vs_ai_automation.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_6_tech_failure_mode_cognitive_fragmentation_md": {
+        "id": "node_auto_6_tech_failure_mode_cognitive_fragmentation_md",
+        "topic": "Phân Tích Các Chế Độ Lỗi Nhận Thức (FMEA) & Sự Đứt Gãy Chú Ý Khi Tương Tác Cùng AI",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "Vidus",
+        "childrenIds": [],
+        "paperFile": "tech_failure_mode_cognitive_fragmentation.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_7_tech_hypothesis_minimalist_workspace_md": {
+        "id": "node_auto_7_tech_hypothesis_minimalist_workspace_md",
+        "topic": "Thiết Kế Môi Trường Tối Giản & Giảm Thiểu Tải Nhận Thức Ngoại Lai",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "Luna",
+        "childrenIds": [],
+        "paperFile": "tech_hypothesis_minimalist_workspace.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_8_tech_mvvm_fluent_to_reactive_components_md": {
+        "id": "node_auto_8_tech_mvvm_fluent_to_reactive_components_md",
+        "topic": "Báo Cáo Kỹ Thuật: Chuyển Dịch Cơ Chế Phản Ứng Dữ Liệu & Dynamic Component Engine Sang React + Zustand",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "Kael",
+        "childrenIds": [],
+        "paperFile": "tech_mvvm_fluent_to_reactive_components.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_9_tech_optimizing_flow_state_with_ai_md": {
+        "id": "node_auto_9_tech_optimizing_flow_state_with_ai_md",
+        "topic": "Tối Ưu Hóa Trạng Thái Dòng Chảy (Flow State) Trong Kỷ Nguyên Trí Tuệ Nhân Tạo",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "An",
+        "childrenIds": [],
+        "paperFile": "tech_optimizing_flow_state_with_ai.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_10_tech_pitfalls_legacy_bridge_dotnet_anti_patterns_md": {
+        "id": "node_auto_10_tech_pitfalls_legacy_bridge_dotnet_anti_patterns_md",
+        "topic": "Báo Cáo Cảnh Báo Sống Còn: Các Anti-Patterns & Cạm Bẫy Của C# Bridge.NET Cần Tránh Tuyệt Đối Trong UIPorge",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "Vidus & An",
+        "childrenIds": [],
+        "paperFile": "tech_pitfalls_legacy_bridge_dotnet_anti_patterns.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_11_tech_poc_ai_assisted_cadence_experiment_md": {
+        "id": "node_auto_11_tech_poc_ai_assisted_cadence_experiment_md",
+        "topic": "Thực Nghiệm Kiểm Chứng Nhịp Làm Việc Cùng AI Trợ Lực (AI-Assisted Cadence POC)",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "Zenith",
+        "childrenIds": [],
+        "paperFile": "tech_poc_ai_assisted_cadence_experiment.md",
+        "insightsCount": 4,
+        "expReward": 500
+      },
+      "node_auto_13_tech_spec_aevum_cadence_protocol_50_10_md": {
+        "id": "node_auto_13_tech_spec_aevum_cadence_protocol_50_10_md",
+        "topic": "Quy Chuẩn Kỹ Thuật Giao Thức Nhịp Độ Tương Tác Aevum Cadence Protocol 50/10 (ACP-1)",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "An",
+        "childrenIds": [],
+        "paperFile": "tech_spec_aevum_cadence_protocol_50_10.md",
+        "insightsCount": 4,
+        "expReward": 500
+      }
+    }
+  }
+]

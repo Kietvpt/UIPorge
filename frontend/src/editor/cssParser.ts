@@ -38,7 +38,10 @@ export function parseRawCss(cssText: string): Record<string, string> {
     const val = trimmed.slice(colonIdx + 1).trim()
 
     if (prop && val) {
-      const camelProp = kebabToCamel(prop)
+      let camelProp = kebabToCamel(prop)
+      // Hỗ trợ alias tiện ích cho Flexbox
+      if (camelProp === 'justify') camelProp = 'justifyContent'
+      if (camelProp === 'align') camelProp = 'alignItems'
       result[camelProp] = val
     }
   }

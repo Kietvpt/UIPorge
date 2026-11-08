@@ -42,6 +42,18 @@ namespace UIForge.API.Models.Entities
         [Column(TypeName = "nvarchar(max)")]
         public string EventsJson { get; set; } = "[]";
 
+        /// <summary>Cấu hình Data Binding liên kết thực thể dữ liệu doanh nghiệp</summary>
+        [Column(TypeName = "nvarchar(max)")]
+        public string? DataBindingJson { get; set; }
+
+        /// <summary>Cấu hình kiểm tra tính hợp lệ dữ liệu (Validation Engine)</summary>
+        [Column(TypeName = "nvarchar(max)")]
+        public string? ValidationJson { get; set; }
+
+        /// <summary>Cấu hình phân quyền hiển thị cấp trường (Field-level RBAC)</summary>
+        [Column(TypeName = "nvarchar(max)")]
+        public string? PermissionsJson { get; set; }
+
         /// <summary>Thứ tự hiển thị trong cùng cấp cha</summary>
         public int Order { get; set; }
 

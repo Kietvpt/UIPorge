@@ -95,19 +95,34 @@ namespace UIForge.API.Data
                 UpdatedAt = seedDate,
             });
 
-            modelBuilder.Entity<Page>().HasData(new Page
-            {
-                Id = demoPageId,
-                ProjectId = demoProjectId,
-                Name = "Tổng quan hệ thống",
-                Route = "/dashboard",
-                Icon = "LayoutDashboard",
-                ScriptFile = "dashboard.bl.ts",
-                LayoutTemplateId = "sidebar-left",
-                LayoutConfigJson = "{\"direction\":\"column\",\"gap\":\"16px\",\"wrap\":\"wrap\"}",
-                CreatedAt = seedDate,
-                UpdatedAt = seedDate,
-            });
+            modelBuilder.Entity<Page>().HasData(
+                new Page
+                {
+                    Id = demoPageId,
+                    ProjectId = demoProjectId,
+                    Name = "Tổng quan hệ thống",
+                    Route = "/dashboard",
+                    Icon = "LayoutDashboard",
+                    ScriptFile = "dashboard.bl.ts",
+                    LayoutTemplateId = "sidebar-left",
+                    LayoutConfigJson = "{\"direction\":\"column\",\"gap\":\"16px\",\"wrap\":\"wrap\"}",
+                    CreatedAt = seedDate,
+                    UpdatedAt = seedDate,
+                },
+                new Page
+                {
+                    Id = 2,
+                    ProjectId = demoProjectId,
+                    Name = "FCL Import (Logistics ERP)",
+                    Route = "/fcl-import",
+                    Icon = "Ship",
+                    ScriptFile = "fclImport.bl.ts",
+                    LayoutTemplateId = "sidebar-left",
+                    LayoutConfigJson = "{\"direction\":\"column\",\"gap\":\"16px\",\"wrap\":\"nowrap\"}",
+                    CreatedAt = seedDate,
+                    UpdatedAt = seedDate,
+                }
+            );
 
             // ---------- Seed cây components demo (dashboard thống kê) ----------
             // Id = identity do DB quản lý; NodeId = id phía client; ParentId = Id của cha

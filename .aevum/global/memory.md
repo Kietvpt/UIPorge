@@ -10,3 +10,7 @@ File này lưu trữ những bài học, sở thích, và quy tắc ngầm đư�
 
 ## Lessons Learned
 - [YYYY-MM-DD]: Lỗi XYZ xảy ra do xung đột thư viện A và B.     
+
+
+### [LEARN - GLOBAL] [SEMANTIC_RULE] - 10/23/2026, 7:23:09 PM
+sync toàn diện ARCH dự án UIPorge vào Aevum Brain: Phân rã 2 Domain chính (Frontend Studio & Runtime & Backend Core & info Services) cùng 6 FEAT chuẩn hóa ARCH DDD.

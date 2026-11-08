@@ -32,6 +32,9 @@ export const customCollisionDetection: CollisionDetection = (args) => {
   return rectIntersection(args)
 }
 
+export const isContainerType = (type?: string) =>
+  type === 'Container' || type === 'Section' || type === 'Tabs'
+
 /** Factory to create a new component when dropped from the Palette */
 export function createPaletteComponent(
   type: ComponentType,
@@ -50,11 +53,64 @@ export function createPaletteComponent(
       defaultProps = { label: 'Nút bấm mới', variant: 'primary', size: 'md', ...defaultProps }
       break
     case 'TextBox':
-      defaultProps = { label: 'Tên trường', placeholder: 'Nhập nội dung...', ...defaultProps }
+      defaultProps = { label: 'Tên trường', labelPosition: 'left', colSpan: 4, placeholder: 'Nhập nội dung...', ...defaultProps }
+      break
+    case 'Number':
+      defaultProps = { label: 'Số tiền / Lượng', labelPosition: 'left', colSpan: 4, precision: 2, thousandsSeparator: true, ...defaultProps }
+      break
+    case 'DatePicker':
+      defaultProps = { label: 'Ngày tháng', labelPosition: 'left', colSpan: 4, ...defaultProps }
+      break
+    case 'Select':
+      defaultProps = {
+        label: 'Lựa chọn',
+        labelPosition: 'left',
+        colSpan: 4,
+        options: [
+          { value: 'opt1', label: 'Tùy chọn 1' },
+          { value: 'opt2', label: 'Tùy chọn 2' },
+        ],
+        ...defaultProps,
+      }
+      break
+    case 'Checkbox':
+      defaultProps = { label: 'Hộp kiểm', labelPosition: 'left', colSpan: 4, ...defaultProps }
+      break
+    case 'Textarea':
+      defaultProps = { label: 'Ghi chú', labelPosition: 'left', colSpan: 12, rows: 3, ...defaultProps }
       break
     case 'Label':
       defaultProps = { label: 'Tiêu đề khối văn bản', ...defaultProps }
       defaultStyle = { fontSize: '16px', fontWeight: 'bold', ...defaultStyle }
+      break
+    case 'Section':
+      defaultProps = {
+        title: 'Khung Card / Phân Vùng Mới',
+        label: 'Khung Card / Phân Vùng Mới',
+        collapsible: true,
+        boxShadow: true,
+        colSpan: 12,
+        ...defaultProps,
+      }
+      defaultStyle = { width: '100%', marginBottom: '16px', ...defaultStyle }
+      break
+    case 'Tabs':
+      defaultProps = {
+        isTab: true,
+        tab: true,
+        tabs: [
+          { id: 'tab1', label: 'TAB 1' },
+          { id: 'tab2', label: 'TAB 2' },
+          { id: 'tab3', label: 'TAB 3' },
+        ],
+        activeTabId: 'tab1',
+        ...defaultProps,
+      }
+      defaultStyle = { width: '100%', ...defaultStyle }
+      break
+    case 'Divider':
+      defaultProps = { ...defaultProps }
+      defaultStyle = { width: '100%', margin: '12px 0', ...defaultStyle }
       break
     case 'Container':
       defaultProps = {
@@ -74,9 +130,9 @@ export function createPaletteComponent(
     case 'Table':
       defaultProps = {
         columns: [
-          { key: 'id', title: 'Mã', width: '80px' },
-          { key: 'name', title: 'Tên' },
-          { key: 'status', title: 'Trạng thái' },
+          { key: 'id', title: 'Mã', width: '80px', componentType: 'TextBox' },
+          { key: 'name', title: 'Tên', width: '160px', componentType: 'TextBox' },
+          { key: 'status', title: 'Trạng thái', width: '120px', componentType: 'TextBox' },
         ],
         ...defaultProps,
       }
@@ -165,10 +221,15 @@ export function useDragDrop() {
 
     // ── Handle PALETTE ITEM drop ──
     if (isPaletteItem && paletteType) {
-      if (overNode.type === 'Container') {
+      if (isContainerType(overNode.type)) {
         // Drop inside container at the end
         const childCount = overNode.children?.length || 0
+        const isTab = Boolean(overNode.props?.isTab || overNode.props?.tab || overNode.type === 'Tabs')
+        const currentTabId = (overNode.props?.activeTabId as string) || (overNode.props?.tabs as any[])?.[0]?.id || 'main'
         const newComp = createPaletteComponent(paletteType, activeFeatureId, overNode.id)
+        if (isTab) {
+          newComp.props = { ...newComp.props, tabId: currentTabId }
+        }
         addComponent(newComp, overNode.id, childCount)
       } else {
         // Drop as sibling before overNode
@@ -195,8 +256,8 @@ export function useDragDrop() {
     // When both are siblings under the same parent AND
     // either both are non-containers, or both are containers
     const isSameParent = dragNode.parentId === overNode.parentId
-    const bothContainers = dragNode.type === 'Container' && overNode.type === 'Container'
-    const bothLeaves = dragNode.type !== 'Container' && overNode.type !== 'Container'
+    const bothContainers = isContainerType(dragNode.type) && isContainerType(overNode.type)
+    const bothLeaves = !isContainerType(dragNode.type) && !isContainerType(overNode.type)
 
     if (isSameParent && (bothContainers || bothLeaves)) {
       // Sibling reorder
@@ -210,7 +271,7 @@ export function useDragDrop() {
     }
 
     // Over a Container: nest inside it (unless it's the node itself or a descendant)
-    if (overNode.type === 'Container') {
+    if (isContainerType(overNode.type)) {
       const childCount = overNode.children?.length || 0
       moveComponent(dragId, overNode.id, childCount)
       return
