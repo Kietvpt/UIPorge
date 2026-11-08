@@ -7,6 +7,7 @@ export interface GridCellComponentProps {
   value: any
   row: any
   rowIndex: number
+  error?: string
   onChange: (newValue: any) => void
   onActionClick?: (actionName: string, row: any) => void
 }
@@ -16,6 +17,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
   value,
   row,
   rowIndex,
+  error,
   onChange,
   onActionClick,
 }) => {
@@ -24,6 +26,11 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
 
   // Chuẩn hóa giá trị hiển thị: nếu giá trị là '—' hoặc '-' thì khi nhập liệu để trống cho user gõ trực tiếp
   const displayValue = value === '—' || value === '-' ? '' : (value ?? '')
+
+  // Lớp CSS báo lỗi viền đỏ khi có vi phạm Validation (ISO 6346, Required, Date Sequence)
+  const errorBorderClass = error
+    ? 'border-red-500/90 bg-red-950/40 text-red-100 ring-1 ring-red-500/70 focus:border-red-400 focus:ring-red-400 placeholder:text-red-400/50'
+    : 'border-slate-700/70 hover:border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40'
 
   // ── 1. CHECKBOX COMPONENT ──
   if (column.componentType === 'Checkbox') {
@@ -130,8 +137,9 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
       <select
         value={value ?? ''}
         disabled={column.disabled}
+        title={error || undefined}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-7 px-2 py-0.5 rounded bg-slate-900/80 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 text-xs border border-slate-700/70 hover:border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40 focus:outline-none transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`w-full h-7 px-2 py-0.5 rounded bg-slate-900/80 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 text-xs border ${errorBorderClass} focus:outline-none transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
       >
         <option value="">— Chọn —</option>
         {options.map((opt) => (
@@ -146,14 +154,14 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
   // ── 6. DATEPICKER COMPONENT (EDITABLE) ──
   if (column.componentType === 'DatePicker' || (column.componentType as string) === 'Datepicker') {
     return (
-      <div className="relative flex items-center w-full">
+      <div className="relative flex items-center w-full" title={error || undefined}>
         <input
           type="text"
           value={displayValue}
           placeholder="DD/MM/YYYY"
           disabled={column.disabled}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full h-7 pl-2.5 pr-7 py-0.5 rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 font-mono text-xs border border-slate-700/70 hover:border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40 focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`w-full h-7 pl-2.5 pr-7 py-0.5 rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 font-mono text-xs border ${errorBorderClass} focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed`}
         />
         <Calendar className="w-3.5 h-3.5 text-emerald-400 absolute right-2 pointer-events-none" />
       </div>
@@ -168,12 +176,13 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
         value={displayValue}
         placeholder="0"
         disabled={column.disabled}
+        title={error || undefined}
         step={column.precision && column.precision > 0 ? Math.pow(10, -column.precision) : 1}
         onChange={(e) => {
           const raw = e.target.value
           onChange(raw === '' ? '' : Number(raw))
         }}
-        className="w-full h-7 px-2.5 py-0.5 text-right font-mono text-xs rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 border border-slate-700/70 hover:border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40 focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`w-full h-7 px-2.5 py-0.5 text-right font-mono text-xs rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 border ${errorBorderClass} focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed`}
       />
     )
   }
@@ -185,12 +194,13 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
         value={displayValue}
         placeholder={column.title ? `Nhập ${column.title}...` : 'Nhập...'}
         disabled={column.disabled}
+        title={error || undefined}
         rows={1}
         onChange={(e) => {
           const val = column.upperCase ? e.target.value.toUpperCase() : e.target.value
           onChange(val)
         }}
-        className="w-full py-1 px-2.5 rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 text-xs border border-slate-700/70 hover:border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40 focus:outline-none transition-all resize-none placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`w-full py-1 px-2.5 rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 text-xs border ${errorBorderClass} focus:outline-none transition-all resize-none placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed`}
       />
     )
   }
@@ -209,11 +219,12 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
       value={displayValue}
       placeholder={column.title ? `Nhập ${column.title}...` : 'Nhập dữ liệu...'}
       disabled={column.disabled}
+      title={error || undefined}
       onChange={(e) => {
         const val = column.upperCase ? e.target.value.toUpperCase() : e.target.value
         onChange(val)
       }}
-      className={`w-full h-7 px-2.5 py-0.5 rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 text-xs border border-slate-700/70 hover:border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40 focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed ${alignClass} ${column.cssClass || ''}`}
+      className={`w-full h-7 px-2.5 py-0.5 rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 text-xs border ${errorBorderClass} focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed ${alignClass} ${column.cssClass || ''}`}
     />
   )
 }

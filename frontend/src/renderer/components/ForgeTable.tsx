@@ -14,6 +14,7 @@ import {
   moveColumn,
 } from './grid/gridPolicyUtils'
 import { useEditorStore } from '@/store/editorStore'
+import { useMasterDetailStore } from '@/logic/masterDetailStore'
 import {
   Search,
   Plus,
@@ -129,8 +130,21 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     return sortColumnsByCorePolicy(rawColumns)
   }, [rawColumns])
 
-  // Dữ liệu dòng (ưu tiên props.data, nếu không có thì lấy mock)
+  // Kết nối Master-Detail Store nếu bảng này thuộc hệ sinh thái Master-Detail (Ảnh 4)
+  const detailGrids = useMasterDetailStore((s) => s.detailGrids)
+  const updateGridCellInStore = useMasterDetailStore((s) => s.updateGridCell)
+  const addGridRowInStore = useMasterDetailStore((s) => s.addGridRow)
+  const deleteGridRowInStore = useMasterDetailStore((s) => s.deleteGridRow)
+  const duplicateGridRowInStore = useMasterDetailStore((s) => s.duplicateGridRow)
+  const validationErrors = useMasterDetailStore((s) => s.validationErrors)
+
+  const isMasterDetailGrid = Boolean(detailGrids && detailGrids[node.id])
+
+  // Dữ liệu dòng (ưu tiên detailGrids từ Master-Detail Store, sau đó tới props.data, mock)
   const [rows, setRows] = useState<any[]>(() => {
+    if (detailGrids && detailGrids[node.id]) {
+      return detailGrids[node.id]
+    }
     if (props.data && Array.isArray(props.data)) {
       return props.data
     }
@@ -142,6 +156,9 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
       { id: 2, name: 'Bản ghi mẫu 02', status: 'Chờ duyệt' },
     ]
   })
+
+  // Dữ liệu hiển thị thời gian thực
+  const activeRows = isMasterDetailGrid ? detailGrids[node.id] : rows
 
   // Đồng bộ rows khi props.data thay đổi
   useEffect(() => {
@@ -211,9 +228,9 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     return calculateLeftOffsets(columns, STT_COL_WIDTH)
   }, [columns])
 
-  // Lọc và sắp xếp dữ liệu
+  // Lọc và sắp xếp dữ liệu (sử dụng activeRows thời gian thực)
   const processedRows = useMemo(() => {
-    let result = [...rows]
+    let result = [...activeRows]
 
     // 1. Tìm kiếm tổng quát
     if (searchTerm.trim()) {
@@ -258,7 +275,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     }
 
     return result
-  }, [rows, searchTerm, showColumnFilters, columnFilters, sortKey, sortOrder])
+  }, [activeRows, searchTerm, showColumnFilters, columnFilters, sortKey, sortOrder])
 
   // Cập nhật và lưu bền vững danh sách dòng
   const commitRows = (nextRows: any[]) => {
@@ -274,43 +291,59 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
   // Sửa giá trị cell trực tiếp (khớp theo rowId để tránh lỗi khi sắp xếp hoặc tìm kiếm)
   const handleCellChange = (rowId: any, colKey: string, newVal: any) => {
-    const updated = rows.map((r, i) => {
-      const match = (r.id !== undefined && r.id === rowId) || (r.id === undefined && i === rowId)
-      return match ? { ...r, [colKey]: newVal } : r
-    })
-    commitRows(updated)
+    if (isMasterDetailGrid) {
+      updateGridCellInStore(node.id, rowId, colKey, newVal)
+    } else {
+      const updated = rows.map((r, i) => {
+        const match = (r.id !== undefined && r.id === rowId) || (r.id === undefined && i === rowId)
+        return match ? { ...r, [colKey]: newVal } : r
+      })
+      commitRows(updated)
+    }
   }
 
   // Thêm dòng mới
   const handleAddRow = () => {
-    const newId = rows.length > 0 ? Math.max(...rows.map((r) => Number(r.id) || 0)) + 1 : 1
-    const newRow: any = { id: newId }
-    columns.forEach((col) => {
-      if (col.componentType === 'Number') newRow[col.key] = 0
-      else if (col.componentType === 'Checkbox') newRow[col.key] = false
-      else if (col.componentType === 'DatePicker') newRow[col.key] = '08/11/2026'
-      else newRow[col.key] = ''
-    })
-    commitRows([...rows, newRow])
+    if (isMasterDetailGrid) {
+      addGridRowInStore(node.id)
+    } else {
+      const newId = rows.length > 0 ? Math.max(...rows.map((r) => Number(r.id) || 0)) + 1 : 1
+      const newRow: any = { id: newId }
+      columns.forEach((col) => {
+        if (col.componentType === 'Number') newRow[col.key] = 0
+        else if (col.componentType === 'Checkbox') newRow[col.key] = false
+        else if (col.componentType === 'DatePicker') newRow[col.key] = '08/11/2026'
+        else newRow[col.key] = ''
+      })
+      commitRows([...rows, newRow])
+    }
   }
 
   // Nhân bản dòng
   const handleDuplicateRow = (rowIdx: number) => {
-    const target = rows[rowIdx]
-    const newId = Math.max(...rows.map((r) => Number(r.id) || 0)) + 1
-    const cloned = { ...target, id: newId }
-    const updated = [...rows]
-    updated.splice(rowIdx + 1, 0, cloned)
-    commitRows(updated)
+    if (isMasterDetailGrid) {
+      duplicateGridRowInStore(node.id, rowIdx)
+    } else {
+      const target = rows[rowIdx]
+      const newId = Math.max(...rows.map((r) => Number(r.id) || 0)) + 1
+      const cloned = { ...target, id: newId }
+      const updated = [...rows]
+      updated.splice(rowIdx + 1, 0, cloned)
+      commitRows(updated)
+    }
   }
 
   // Xóa dòng
   const handleDeleteRow = (rowIdx: number) => {
-    if (rows.length <= 1) {
-      if (!confirm('Bạn có chắc muốn xóa dòng cuối cùng này không?')) return
+    if (isMasterDetailGrid) {
+      deleteGridRowInStore(node.id, rowIdx)
+    } else {
+      if (rows.length <= 1) {
+        if (!confirm('Bạn có chắc muốn xóa dòng cuối cùng này không?')) return
+      }
+      const updated = rows.filter((_, idx) => idx !== rowIdx)
+      commitRows(updated)
     }
-    const updated = rows.filter((_, idx) => idx !== rowIdx)
-    commitRows(updated)
   }
 
   // Xử lý chuột phải vào Dòng mở Menu tác vụ
@@ -773,6 +806,11 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                         ? 'text-center'
                         : 'text-left'
 
+                    const cellError =
+                      validationErrors[`${node.id}_${row.id}_${col.key}`] ||
+                      (col.key === 'containerNo' ? validationErrors[`${node.id}_${row.id}_containerNo`] : undefined) ||
+                      ((col.key === 'etd' || col.key === 'eta') ? validationErrors[`${node.id}_${row.id}_etd_eta`] : undefined)
+
                     return (
                       <td
                         key={col.key}
@@ -793,6 +831,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                           value={cellVal}
                           row={row}
                           rowIndex={rowIdx}
+                          error={cellError}
                           onChange={(newVal) => handleCellChange(row.id ?? rowIdx, col.key, newVal)}
                         />
                       </td>
