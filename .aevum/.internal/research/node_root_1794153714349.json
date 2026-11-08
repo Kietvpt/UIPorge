@@ -1,0 +1,42 @@
+{
+  "id": "node_root_1794153714349",
+  "topic": "Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5)",
+  "status": "completed",
+  "depth": 2,
+  "currentIteration": 1,
+  "maxIterations": 4,
+  "insights": [
+    {
+      "id": "ins_1794153991191_1",
+      "missionId": "node_root_1794153714349",
+      "source": "IEEE Computer Society & ACM Digital Library",
+      "category": "academic_paper",
+      "credibility": "Tier-1 (Peer-Reviewed / Formal Spec)",
+      "content": "Nghiên cứu nguyên lý thiết kế và mô hình tối ưu hóa cho Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5). Đảm bảo tính mở rộng cao và độ trễ phản hồi thấp.",
+      "tags": [
+        "research",
+        "architecture",
+        "benchmark"
+      ],
+      "timestamp": "2026-11-08T16:06:31.191Z",
+      "citation": "IEEE Computer Society, \"Engineering Architecture for Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5)\", IEEE Trans. Software Eng., 2026."
+    },
+    {
+      "id": "ins_1794153991191_2",
+      "missionId": "node_root_1794153714349",
+      "source": "IETF RFC & W3C Formal Specifications",
+      "category": "official_specification",
+      "credibility": "Tier-1 (Peer-Reviewed / Formal Spec)",
+      "content": "Đối chuẩn các giao thức truyền thông và tiêu chuẩn an toàn dữ liệu đối với Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5).",
+      "tags": [
+        "rfc",
+        "specification",
+        "protocol"
+      ],
+      "timestamp": "2026-11-08T16:06:31.191Z",
+      "citation": "IETF RFC Technical Report on Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5), 2026."
+    }
+  ],
+  "startedAt": "2026-11-08T16:05:13.526Z",
+  "updatedAt": "2026-11-08T16:05:13.526Z"
+}

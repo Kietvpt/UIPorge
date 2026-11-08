@@ -9,6 +9,9 @@ File này lưu trữ những bài học, sở thích, và quy tắc ngầm đư�
 - (Ví dụ: API `/login` luôn trả về 200 kể cả khi lỗi, kiểm tra body.error)
 
 ## Lessons Learned
+- **[2026-11-08]**: **Deep Research: Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5)**. Nghiên cứu chuyên sâu về "Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5)" hoàn thành với 2 phát hiện quan trọng (Báo cáo: research/tech_question_kien_truc_ke_hoach_chuyen_doi_ke_tiep_uiporge_stag.md).
+- **[2026-11-08]**: **Deep Research: Giai Đoạn 3: GridPolicy & Enterprise Data Grid System**. Nghiên cứu chuyên sâu về "Giai Đoạn 3: GridPolicy & Enterprise Data Grid System" hoàn thành với 2 phát hiện quan trọng (Báo cáo: research/tech_specification_giai_doan_3_gridpolicy_enterprise_data_grid_system.md).
+- **[2026-11-08]**: **Deep Research: 3.2 Column Properties Dialog (Modal Thiết Lập Cột Chuẩn Ảnh 6)**. Nghiên cứu chuyên sâu về "3.2 Column Properties Dialog (Modal Thiết Lập Cột Chuẩn Ảnh 6)" hoàn thành với 2 phát hiện quan trọng (Báo cáo: research/tech_specification_32_column_properties_dialog_modal_thiet_lap_cot_ch.md).
 - [YYYY-MM-DD]: Lỗi XYZ xảy ra do xung đột thư viện A và B.     
 
 

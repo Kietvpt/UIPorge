@@ -134,6 +134,36 @@
   ],
   "research": [
     {
+      "missionId": "node_root_1794153714349",
+      "topic": "Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5)",
+      "fileName": "tech_question_kien_truc_ke_hoach_chuyen_doi_ke_tiep_uiporge_stag.md",
+      "path": ".aevum/research/tech_question_kien_truc_ke_hoach_chuyen_doi_ke_tiep_uiporge_stag.md",
+      "author": "An",
+      "insightsCount": 2,
+      "status": "completed",
+      "updatedAt": "2026-11-08T16:06:31.209Z"
+    },
+    {
+      "missionId": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+      "topic": "Giai Đoạn 3: GridPolicy & Enterprise Data Grid System",
+      "fileName": "tech_specification_giai_doan_3_gridpolicy_enterprise_data_grid_system.md",
+      "path": ".aevum/research/tech_specification_giai_doan_3_gridpolicy_enterprise_data_grid_system.md",
+      "author": "Kael",
+      "insightsCount": 2,
+      "status": "completed",
+      "updatedAt": "2026-11-08T16:06:18.562Z"
+    },
+    {
+      "missionId": "node_1794153731484_3_2_column_properties_dia",
+      "topic": "3.2 Column Properties Dialog (Modal Thiết Lập Cột Chuẩn Ảnh 6)",
+      "fileName": "tech_specification_32_column_properties_dialog_modal_thiet_lap_cot_ch.md",
+      "path": ".aevum/research/tech_specification_32_column_properties_dialog_modal_thiet_lap_cot_ch.md",
+      "author": "Kael",
+      "insightsCount": 2,
+      "status": "completed",
+      "updatedAt": "2026-11-08T16:06:04.098Z"
+    },
+    {
       "id": "mis_flow_state_seed",
       "topic": "Tối Ưu Hóa Trạng Thái Dòng Chảy (Flow State) Cùng AI",
       "author_persona": "An",

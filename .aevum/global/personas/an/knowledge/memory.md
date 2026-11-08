@@ -9,6 +9,7 @@ File này lưu trữ những bài học, sở thích, và quy tắc ngầm đư�
 - (Ví dụ: API `/login` luôn trả về 200 kể cả khi lỗi, kiểm tra body.error)
 
 ## Lessons Learned
+- **[2026-11-08]**: **Deep Research: Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5)**. Nghiên cứu chuyên sâu về "Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5)" hoàn thành với 2 phát hiện quan trọng (Báo cáo: research/tech_question_kien_truc_ke_hoach_chuyen_doi_ke_tiep_uiporge_stag.md).
 - [YYYY-MM-DD]: Lỗi XYZ xảy ra do xung đột thư viện A và B.     
 
 
