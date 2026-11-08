@@ -1,27 +1,16 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import type { ComponentProps } from './types'
 import { ChevronDown } from 'lucide-react'
 import { triggerComponentEvent } from '@/logic/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
-import { useMasterDetailStore } from '@/logic/masterDetailStore'
-import { getCascadedOptions } from '@/logic/cascadingEngine'
+import { useDataEngine, SelectOption } from '@/core/engines/dataEngine'
 import { FormFieldWrapper } from './FormFieldWrapper'
 
-const SELECT_FIELD_MAP: Record<string, string> = {
-  fld_mbl_type: 'mblType',
-  fld_vendor: 'vendor',
-  fld_pol: 'pol',
-  fld_pod: 'pod',
-  fld_service: 'service',
-  fld_pterm: 'pTerm',
-  fld_ptype: 'pType',
-}
-
 /**
- * ForgeSelect: Kế thừa Select2.cs & Dropdown từ C# Core
- * - Tích hợp Two-Way Master-Detail Data Binding
- * - Hỗ trợ Cascading Dropdown động (POL -> POD theo tuyến vận chuyển)
- * - Tích hợp FormFieldWrapper có label nằm bên trái chuẩn ERP
+ * 📦 ForgeSelect: Generic Dropdown Component
+ * - 100% Trung lập (Domain-Agnostic): Phục vụ mọi ngành nghề.
+ * - Hỗ trợ Reference & Query (OData): Tự động truy vấn danh mục theo metadata từ Database.
+ * - Hỗ trợ Populate Field: Tự động phân tích quy tắc "TargetField = SourceField" để điền dữ liệu.
  */
 export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const { props, style } = node
@@ -33,35 +22,44 @@ export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const blFileName = currentFeature?.scriptFile
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
 
-  // Master-Detail Data Binding
-  const masterRecord = useMasterDetailStore((s) => s.masterRecord)
-  const updateMasterField = useMasterDetailStore((s) => s.updateMasterField)
-  const validationErrors = useMasterDetailStore((s) => s.validationErrors)
+  // Lấy giá trị qua Generic DataEngine
+  const formId = String(node.parentId || activeFeatureId || 'defaultForm')
+  const fieldName = String(node.dataBinding?.fieldName || node.props.name || node.id)
+  const engineVal = useDataEngine((s) => s.getFieldValue(formId, fieldName, undefined))
+  const setFieldValue = useDataEngine((s) => s.setFieldValue)
+  const applyPopulate = useDataEngine((s) => s.applyPopulate)
+  const queryReference = useDataEngine((s) => s.queryReference)
 
-  const fieldKey = SELECT_FIELD_MAP[node.id] || (node.dataBinding?.fieldName ? node.dataBinding.fieldName.toLowerCase() : null)
-  const isBound = Boolean(fieldKey && masterRecord && masterRecord[fieldKey] !== undefined)
-  const currentValue = isBound ? masterRecord[fieldKey] : (props.value ?? '')
-  const fieldError = fieldKey ? (validationErrors[fieldKey] || validationErrors[node.id]) : undefined
+  const currentValue = engineVal !== undefined ? engineVal : (props.value ?? '')
+  const [dynamicOptions, setDynamicOptions] = useState<SelectOption[]>([])
 
-  // Tính toán danh sách options (hỗ trợ Cascading động nếu là POD)
-  let options = props.options && props.options.length > 0 ? props.options : []
-  if (fieldKey === 'pod' || node.id === 'fld_pod') {
-    const cascaded = getCascadedOptions('pol', masterRecord.pol, 'pod')
-    if (cascaded && cascaded.length > 0) {
-      options = cascaded
+  // Tải danh sách Options từ Reference (OData) nếu được cấu hình
+  useEffect(() => {
+    let isMounted = true
+    const reference = props.reference as string | undefined
+    const query = props.query as string | undefined
+    const idField = (props.idField as string) || 'id'
+    const textField = (props.textField as string) || (props.fieldName as string) || 'name'
+
+    if (reference) {
+      queryReference(reference, query, idField, textField).then((res) => {
+        if (isMounted) {
+          setDynamicOptions(res)
+        }
+      })
     }
-  }
-
-  // Đảm bảo option cho Vendor luôn có giá trị được populate
-  if (fieldKey === 'vendor' && currentValue) {
-    const exists = options.some((opt) => opt.value === currentValue)
-    if (!exists) {
-      options = [
-        ...options,
-        { value: currentValue, label: `${currentValue} (Tự động điền theo hãng tàu)` },
-      ]
+    return () => {
+      isMounted = false
     }
-  }
+  }, [props.reference, props.query, props.idField, props.textField, queryReference])
+
+  // Sử dụng dynamicOptions nếu có, ngược lại dùng props.options tĩnh
+  const options: SelectOption[] =
+    dynamicOptions.length > 0
+      ? dynamicOptions
+      : (props.options as SelectOption[]) || []
+
+  const hasError = Boolean(props.validationError)
 
   return (
     <FormFieldWrapper
@@ -70,7 +68,7 @@ export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
       labelPosition={props.labelPosition || 'left'}
       labelWidth={props.labelWidth || '100px'}
       required={props.required}
-      error={fieldError}
+      error={props.validationError ? String(props.validationError) : undefined}
       colSpan={props.colSpan}
       style={{
         width: '100%',
@@ -83,23 +81,34 @@ export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
           disabled={props.disabled}
           value={currentValue}
           className={`w-full px-3 py-1.5 pr-8 bg-slate-900 border rounded-lg text-xs text-slate-100 transition-all appearance-none cursor-pointer disabled:opacity-50 ${
-            fieldError
+            hasError
               ? 'border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none'
               : 'border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
           }`}
           onChange={(e) => {
             const nextVal = e.target.value
-            if (isBound && fieldKey) {
-              updateMasterField(fieldKey, nextVal)
+            setFieldValue(formId, fieldName, nextVal)
+
+            // Tìm rawItem của option được chọn để thực thi Populate
+            const matchedOpt = options.find((opt) => String(opt.value) === String(nextVal))
+            const rawItem = matchedOpt?.rawItem || matchedOpt
+
+            // Thực thi cơ chế Populate Field chuẩn Core C# (Ảnh Modal: Populate field)
+            if (props.populateField && typeof props.populateField === 'string') {
+              applyPopulate(formId, props.populateField, rawItem)
             }
+
             if (!isEditing) {
               triggerComponentEvent(node.events, 'change', props.label || 'Chọn mục', blFileName, {
                 componentId: node.id,
+                fieldName,
                 value: nextVal,
+                selectedItem: rawItem,
               })
             }
           }}
         >
+          <option value="">-- Chọn --</option>
           {options.map((opt) => (
             <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-100 py-1">
               {opt.label}

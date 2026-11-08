@@ -1,4 +1,9 @@
 import type { ComponentEvent, ComponentNode } from '@/types/schema'
+import {
+  SAMPLE_SHIPPING_INFO,
+  SAMPLE_CONTAINERS,
+  SAMPLE_SHIPMENT_DETAILS,
+} from '@/samples/logistics/logisticsFixtures'
 
 interface RawNode {
   id: string
@@ -245,6 +250,11 @@ const RAW_TREE: RawNode[] = [
               labelPosition: 'left',
               colSpan: 4,
               value: 'CNSGH',
+              reference: 'Terminal',
+              idField: 'code',
+              textField: 'fullName',
+              query: 'Active eq true',
+              populateField: 'fld_vendor = vendorName, fld_agent = agentName',
               options: [
                 { value: 'CNSGH', label: 'SHANGHAI / CNSGH' },
                 { value: 'KRPUS', label: 'BUSAN / KRPUS' },
@@ -264,6 +274,11 @@ const RAW_TREE: RawNode[] = [
               labelPosition: 'left',
               colSpan: 4,
               value: 'VNDTS',
+              reference: 'Terminal',
+              idField: 'code',
+              textField: 'fullName',
+              query: 'Active eq true',
+              populateField: 'fld_vendor = vendorName, fld_agent = agentName',
               options: [
                 { value: 'VNDTS', label: 'TIEN SA TERMINAL / VNDTS' },
                 { value: 'VNSGN', label: 'CAT LAI / VNSGN' },
@@ -450,6 +465,8 @@ const RAW_TREE: RawNode[] = [
         type: 'Table',
         props: {
           label: 'SHIPPING INFORMATION',
+          reference: 'Transaction',
+          data: SAMPLE_SHIPPING_INFO,
           columns: [
             { key: 'pol', title: 'POL', width: '160px', sticky: 'left', frozen: true, sortable: true, editable: true, componentType: 'TextBox', order: 1 },
             { key: 'pod', title: 'POD', width: '180px', sortable: true, editable: true, componentType: 'TextBox', order: 2 },
@@ -470,6 +487,8 @@ const RAW_TREE: RawNode[] = [
         type: 'Table',
         props: {
           label: 'CONTAINER INFORMATION',
+          reference: 'Container',
+          data: SAMPLE_CONTAINERS,
           columns: [
             { key: 'containerNo', title: 'CONTAINER NO', width: '160px', sticky: 'left', frozen: true, sortable: true, editable: true, order: 1 },
             { key: 'size', title: 'SIZE', width: '80px', align: 'center', sortable: true, order: 2 },
@@ -491,6 +510,8 @@ const RAW_TREE: RawNode[] = [
         type: 'Table',
         props: {
           label: 'SHIPMENT DETAIL',
+          reference: 'ShipmentDetail',
+          data: SAMPLE_SHIPMENT_DETAILS,
           columns: [
             { key: 'hblNo', title: 'HBL NO', width: '160px', sticky: 'left', frozen: true, sortable: true, editable: true, order: 1 },
             { key: 'custom', title: 'CUSTOM', width: '90px', align: 'center', componentType: 'Checkbox', order: 2 },

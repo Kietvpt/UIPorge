@@ -6,6 +6,8 @@ import {
   PlusCircle,
   ArrowUp,
   ArrowDown,
+  ExternalLink,
+  Maximize2,
 } from 'lucide-react'
 
 export interface RowContextMenuProps {
@@ -21,6 +23,8 @@ export interface RowContextMenuProps {
   onInsertRowBelow: (rowIndex: number) => void
   onMoveRowUp?: (rowIndex: number) => void
   onMoveRowDown?: (rowIndex: number) => void
+  onOpenDetailTab?: (row: any) => void
+  onOpenDetailPopup?: (row: any) => void
 }
 
 export const RowContextMenu: React.FC<RowContextMenuProps> = ({
@@ -36,6 +40,8 @@ export const RowContextMenu: React.FC<RowContextMenuProps> = ({
   onInsertRowBelow,
   onMoveRowUp,
   onMoveRowDown,
+  onOpenDetailTab,
+  onOpenDetailPopup,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -83,6 +89,37 @@ export const RowContextMenu: React.FC<RowContextMenuProps> = ({
       </div>
 
       <div className="py-1">
+        {/* 0. Open Detail in Tab / Popup */}
+        {onOpenDetailTab && (
+          <button
+            type="button"
+            className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-blue-600/20 hover:text-blue-300 text-blue-400 rounded text-left transition-colors cursor-pointer"
+            onClick={() => {
+              onOpenDetailTab(row)
+              onClose()
+            }}
+          >
+            <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
+            <span>Mở chi tiết (Tab đa nhiệm)</span>
+          </button>
+        )}
+
+        {onOpenDetailPopup && (
+          <button
+            type="button"
+            className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-indigo-600/20 hover:text-indigo-300 text-indigo-400 rounded text-left transition-colors cursor-pointer"
+            onClick={() => {
+              onOpenDetailPopup(row)
+              onClose()
+            }}
+          >
+            <Maximize2 className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Mở chi tiết (Cửa sổ Popup)</span>
+          </button>
+        )}
+
+        {(onOpenDetailTab || onOpenDetailPopup) && <div className="my-1 border-t border-slate-800" />}
+
         {/* 1. Duplicate Row */}
         <button
           type="button"

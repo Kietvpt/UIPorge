@@ -17,3 +17,40 @@ File này lưu trữ những bài học, sở thích, và quy tắc ngầm đư�
 
 ### [LEARN - GLOBAL] [SEMANTIC_RULE] - 10/23/2026, 7:23:09 PM
 sync toàn diện ARCH dự án UIPorge vào Aevum Brain: Phân rã 2 Domain chính (Frontend Studio & Runtime & Backend Core & info Services) cùng 6 FEAT chuẩn hóa ARCH DDD.
+
+
+## 🏛️ BỘ NGUYÊN TẮC VÀNG VÀ BẢN TUYÊN NGÔN KIẾN TRÚC UIFORGE (UIFORGE CORE MANIFESTO)
+*Ghi nhận chỉ đạo trực tiếp từ Master ngày 2026-11-09 - Bắt buộc áp dụng vĩnh viễn cho toàn bộ Squad & Subagents*
+
+1. **BẢN CHẤT CỐT LÕI (CORE NATURE)**:
+   - UIForge là một **Enterprise Low-Code UI & Rapid Application Development Framework** trung lập (Domain-Agnostic).
+   - Mục tiêu: Giúp doanh nghiệp ở MỌI NGÀNH NGHỀ (Bán lẻ, Y tế, Tài chính, Sản xuất, Bất động sản, Kho bãi, Logistics...) xây dựng giao diện nhanh chóng và cung cấp các component, engine hỗ trợ dựng Business Logic với tốc độ vượt bậc.
+   - Định hướng đóng gói:
+     - **Frontend Package**: `@uiforge/core` (cài qua npm/yarn vào dự án React).
+     - **Backend Package**: `UIForge.Core` (add qua NuGet vào dự án ASP.NET Core .NET 8).
+     - **Database Core Schema**: Bộ bảng nền tảng của Core (`Features`, `Components`, `ComponentGroups`, `GridPolicies`, `Roles`, `Permissions`...).
+
+2. **NGUYÊN TẮC PHÂN TÁCH RANH GIỚI TUYỆT ĐỐI (STRICT SEPARATION OF CONCERNS)**:
+   - **Lõi Core (Framework Core)**: Hoàn toàn trung lập, **TUYỆT ĐỐI 0% chứa logic nghiệp vụ, tên bảng, trường dữ liệu, hoặc mã code đặc thù của bất kỳ ngành nghề nào** (Không chứa `jobNo`, `sLines`, `containerNo`, `ZIRU8505175`, `SITC`, `CNSGH`, `POL`, `POD`... trong generic components hay core store).
+   - **Màn hình FCL Import (và Logistics)**: Chỉ là **MỘT BÀI TEST MẪU / SAMPLE APP / TEST FIXTURE** để thử nghiệm độ chịu tải và tính phức tạp của Core. Toàn bộ logic của nó phải nằm riêng trong thư mục mẫu (`samples/` hoặc `apps/`), tách rời hoàn toàn khỏi Core.
+
+3. **QUY TẮC BẢNG DỮ LIỆU CỦA DOANH NGHIỆP (CORE ENTITY CONVENTIONS)**:
+   - Mọi bảng nghiệp vụ của doanh nghiệp khi tích hợp vào UIForge phải tuân theo chuẩn `BaseEntity`:
+     - `Id`: Khóa chính chuẩn (int / Guid).
+     - `Active`: Bắt buộc để hỗ trợ **Xóa Mềm (Soft Delete)**. Mọi query mặc định luôn có `Active = true`.
+     - `CreatedDate`, `CreatedBy`, `UpdatedDate`, `UpdatedBy`: Bắt buộc cho Audit Trail.
+     - Khóa ngoại liên kết rõ ràng (`ForeignKey`) giữa các bảng cha - con.
+
+4. **QUY TẮC DATA BINDING, CASCADING & POPULATE DỰA TRÊN METADATA (ODATA)**:
+   - Dùng chuẩn **OData** (`?$filter=...&$orderby=...&$expand=...`) cho mọi câu truy vấn linh hoạt.
+   - Thiết lập Component thông qua Metadata (JSON):
+     - `Reference`: Tên thực thể tham chiếu (được quét động từ Database qua Metadata Discovery API).
+     - `IdField`: Tên trường lưu khóa ngoại (mặc định `Id`).
+     - `FieldName`: Tên trường hiển thị nhãn (ví dụ `FullName`).
+     - `Populate field`: Chuỗi quy tắc ánh xạ động: `TargetField = SourceField`. Core tự bóc tách và gán giá trị mà không hardcode.
+
+5. **QUY TẮC QUẢN LÝ MÀN HÌNH (FEATURE NAVIGATION ENGINE)**:
+   - Màn hình gồm 2 loại:
+     - `FeatureTab`: Mở dạng Tab đa nhiệm trên thanh tiêu đề làm việc song song.
+     - `FeaturePopup`: Mở dạng Modal Dialog / Drawer đè lên màn hình gọi nó.
+   - GridView bắt trọn vẹn context dữ liệu dòng (`row`) để truyền `row.id` làm tham số mở màn hình chi tiết (`openFeature(featureId, params, mode)`).

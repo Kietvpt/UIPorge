@@ -2,20 +2,13 @@ import React from 'react'
 import type { ComponentProps } from './types'
 import { triggerComponentEvent } from '@/logic/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
-import { useMasterDetailStore } from '@/logic/masterDetailStore'
+import { useDataEngine } from '@/core/engines/dataEngine'
 import { FormFieldWrapper } from './FormFieldWrapper'
 
-const NUMBER_FIELD_MAP: Record<string, string> = {
-  fld_tpackages: 'tPackages',
-  fld_total_gw: 'totalGw',
-  fld_total_cbm: 'totalCbm',
-  fld_total_vgm: 'totalVgm',
-}
-
 /**
- * ForgeNumber: Kế thừa Number.cs từ C# Core
- * - Tích hợp Two-Way Master-Detail Data Binding & Reactive Summary Sync
- * - Tự động đồng bộ với tổng số lượng, GW, CBM, VGM từ bảng CONTAINER INFORMATION
+ * 📦 ForgeNumber: Generic Number Input Component
+ * - 100% Trung lập (Domain-Agnostic)
+ * - Two-Way Data Binding với generic DataEngine
  * - Hỗ trợ precision (số chữ số thập phân) và định dạng phân cách hàng nghìn
  */
 export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
@@ -28,16 +21,14 @@ export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const blFileName = currentFeature?.scriptFile
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
 
-  // Master-Detail Data Binding
-  const masterRecord = useMasterDetailStore((s) => s.masterRecord)
-  const updateMasterField = useMasterDetailStore((s) => s.updateMasterField)
-  const validationErrors = useMasterDetailStore((s) => s.validationErrors)
+  // Lấy giá trị qua Generic DataEngine
+  const formId = String(node.parentId || activeFeatureId || 'defaultForm')
+  const fieldName = String(node.dataBinding?.fieldName || node.props.name || node.id)
+  const engineVal = useDataEngine((s) => s.getFieldValue(formId, fieldName, undefined))
+  const setFieldValue = useDataEngine((s) => s.setFieldValue)
 
-  const fieldKey = NUMBER_FIELD_MAP[node.id] || (node.dataBinding?.fieldName ? node.dataBinding.fieldName.toLowerCase() : null)
-  const isBound = Boolean(fieldKey && masterRecord && masterRecord[fieldKey] !== undefined)
   const precision = props.precision !== undefined ? Number(props.precision) : 0
-
-  const rawVal = isBound ? masterRecord[fieldKey] : props.value
+  const rawVal = engineVal !== undefined ? engineVal : props.value
   const displayNum = rawVal !== undefined && rawVal !== null && rawVal !== '' ? Number(rawVal) : 0
 
   const formatDisplay = (num: number) => {
@@ -47,7 +38,7 @@ export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
     })
   }
 
-  const fieldError = fieldKey ? (validationErrors[fieldKey] || validationErrors[node.id]) : undefined
+  const hasError = Boolean(props.validationError)
 
   return (
     <FormFieldWrapper
@@ -56,7 +47,7 @@ export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
       labelPosition={props.labelPosition || 'left'}
       labelWidth={props.labelWidth || '100px'}
       required={props.required}
-      error={fieldError}
+      error={props.validationError ? String(props.validationError) : undefined}
       colSpan={props.colSpan}
       style={{
         width: '100%',
@@ -68,11 +59,11 @@ export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
         <input
           type="text"
           disabled={props.disabled}
-          readOnly={isEditing}
+          readOnly={isEditing || Boolean(props.readOnly)}
           placeholder={props.placeholder || '0'}
           value={formatDisplay(displayNum)}
           className={`w-full px-3 py-1.5 bg-slate-900 border rounded-lg text-xs font-mono text-right text-emerald-400 placeholder-slate-500 transition-all disabled:opacity-50 ${
-            fieldError
+            hasError
               ? 'border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none'
               : 'border-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500'
           }`}
@@ -80,12 +71,11 @@ export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
             const raw = e.target.value.replace(/,/g, '')
             if (raw === '' || !isNaN(Number(raw))) {
               const num = raw === '' ? 0 : Number(raw)
-              if (isBound && fieldKey) {
-                updateMasterField(fieldKey, num)
-              }
+              setFieldValue(formId, fieldName, num)
               if (!isEditing) {
                 triggerComponentEvent(node.events, 'change', props.label || 'Ô số', blFileName, {
                   componentId: node.id,
+                  fieldName,
                   value: num,
                 })
               }

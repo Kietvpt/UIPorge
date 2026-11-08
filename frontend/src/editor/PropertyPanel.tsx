@@ -27,6 +27,7 @@ import { getFunctionsForBlFile, addFunctionToBlFile } from '@/logic/blRegistry'
 import { executeSingleEvent } from '@/logic/eventRunner'
 import { parseRawCss, formatStyleToCss } from './cssParser'
 import { ColumnPropertiesModal } from '@/renderer/components/grid/ColumnPropertiesModal'
+import { ComponentPropertiesModal } from './ComponentPropertiesModal'
 import {
   moveColumn,
   toggleColumnFreeze,
@@ -51,6 +52,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
   >('layout')
   const [selectedColumnIndex, setSelectedColumnIndex] = useState<number | null>(null)
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false)
+  const [isComponentModalOpen, setIsComponentModalOpen] = useState(false)
 
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
@@ -307,14 +309,24 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => removeComponent(selectedNode.id)}
-          className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
-          title="Xóa component này"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setIsComponentModalOpen(true)}
+            className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors cursor-pointer"
+            title="Mở Component properties modal (Chuẩn C# Core)"
+          >
+            <Sliders className="w-4 h-4 text-emerald-400" />
+          </button>
+          <button
+            type="button"
+            onClick={() => removeComponent(selectedNode.id)}
+            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+            title="Xóa component này"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Tab Navigation */}
@@ -2158,6 +2170,21 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
           )
         })()}
       </div>
+
+      {/* ── MODAL CẤU HÌNH COMPONENT PROPERTIES CHUẨN C# CORE (ẢNH MODAL CỦA MASTER) ── */}
+      {isComponentModalOpen && selectedNode && (
+        <ComponentPropertiesModal
+          isOpen={isComponentModalOpen}
+          node={selectedNode}
+          onClose={() => setIsComponentModalOpen(false)}
+          onSave={(nodeId, updatedProps, updatedBinding) => {
+            updateComponentProps(nodeId, updatedProps)
+            if (updatedBinding) {
+              updateComponentDataBinding(nodeId, updatedBinding)
+            }
+          }}
+        />
+      )}
     </aside>
   )
 }

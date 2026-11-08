@@ -117,3 +117,4 @@ flowchart TD
 | 12 | [`frontend/src/logic/eventRunner.ts`](file:///D:/Learn/UIPorge/frontend/src/logic/eventRunner.ts) | Hỗ trợ hiển thị toast thông báo kết quả lưu Transaction từ Backend API |
 | 13 | [`backend/UIForge.API/Controllers/ValidationController.cs`](file:///D:/Learn/UIPorge/backend/UIForge.API/Controllers/ValidationController.cs) | Endpoint kiểm tra ISO 6346 và Unique trên WebAPI |
 | 14 | [`backend/UIForge.API/Controllers/FclImportController.cs`](file:///D:/Learn/UIPorge/backend/UIForge.API/Controllers/FclImportController.cs) | Endpoint lưu hợp nhất Master-Detail Transaction trên WebAPI |
+

@@ -29,85 +29,14 @@ import {
   Filter,
 } from 'lucide-react'
 
-// Mock dữ liệu mặc định chuẩn logistics nếu component chưa có data
-const DEFAULT_TABLE_ROWS: Record<string, any[]> = {
-  grid_shipping_info: [
-    {
-      id: 1,
-      pol: 'SHANGHAI / CNSGH',
-      pod: 'TIEN SA TERMINAL / VNDTS',
-      etd: '26/01/2026',
-      atd: '26/01/2026',
-      eta: '03/02/2026',
-      ata: '03/02/2026',
-      vessel: 'CA OSAKA',
-      voy: '2602W',
-    },
-    {
-      id: 2,
-      pol: 'BUSAN / KRPUS',
-      pod: 'CAT LAI / VNSGN',
-      etd: '28/01/2026',
-      atd: '—',
-      eta: '05/02/2026',
-      ata: '—',
-      vessel: 'DONGJIN ENTERPRISE',
-      voy: '0122S',
-    },
-    {
-      id: 3,
-      pol: 'SINGAPORE / SGSIN',
-      pod: 'HAI PHONG / VNHPH',
-      etd: '02/02/2026',
-      atd: '—',
-      eta: '08/02/2026',
-      ata: '—',
-      vessel: 'SITC HONGKONG',
-      voy: '2418N',
-    },
-    {
-      id: 4,
-      pol: 'NINGBO / CNNGB',
-      pod: 'TIEN SA / VNDTS',
-      etd: '05/02/2026',
-      atd: '—',
-      eta: '11/02/2026',
-      ata: '—',
-      vessel: 'KMTC INCHEON',
-      voy: '2601S',
-    },
-  ],
-  grid_container_info: [
-    {
-      id: 1,
-      size: '40HC',
-      containerNo: 'ZIRU8505175',
-      sealNo: 'ARL2873758',
-      packageNumber: 12,
-      packageType: 'PALLETS',
-      gw: 1085,
-      cbm: 25.0,
-      vgm: 0,
-      description: 'Lô hàng linh kiện điện tử nguyên container (FCL)',
-    },
-  ],
-  grid_shipment_detail: [
-    {
-      id: 1,
-      custom: true,
-      trucking: false,
-      hblNo: 'OLSC2600154',
-      customer: 'FOXLINK DA NANG',
-      salesman: 'NGO PHAN THI LY',
-      salesSupport: 'HO THI MAI',
-      handleGroup: 'SEA IMPORT',
-      documentNo: 'DOC-2602-0089',
-      shipmentType: 'NOMINATED',
-      doNo: 'FCL-26020025-1',
-      referenceNo: 'REF-8899',
-    },
-  ],
-}
+import { useDataEngine } from '@/core/engines/dataEngine'
+import { useNavigationEngine } from '@/core/engines/navigationEngine'
+
+// Mock dữ liệu mặc định trung lập khi bảng chưa được liên kết data
+const DEFAULT_GENERIC_ROWS: any[] = [
+  { id: 1, name: 'Bản ghi mẫu 01', status: 'Hoạt động' },
+  { id: 2, name: 'Bản ghi mẫu 02', status: 'Chờ duyệt' },
+]
 
 export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
   const { props, style } = node
@@ -140,32 +69,54 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
   const isMasterDetailGrid = Boolean(detailGrids && detailGrids[node.id])
 
-  // Dữ liệu dòng (ưu tiên detailGrids từ Master-Detail Store, sau đó tới props.data, mock)
+  // Dữ liệu dòng (ưu tiên props.data, dataset theo Reference, hoặc fallback generic)
+  const reference = (props.reference as string) || (node.dataBinding?.entityName as string)
+  const datasetFromEngine = useDataEngine((s) => reference ? s.getDataset(reference) : undefined)
+
   const [rows, setRows] = useState<any[]>(() => {
-    if (detailGrids && detailGrids[node.id]) {
-      return detailGrids[node.id]
-    }
     if (props.data && Array.isArray(props.data)) {
       return props.data
     }
-    if (DEFAULT_TABLE_ROWS[node.id]) {
-      return DEFAULT_TABLE_ROWS[node.id]
+    if (datasetFromEngine && Array.isArray(datasetFromEngine)) {
+      return datasetFromEngine
     }
-    return [
-      { id: 1, name: 'Bản ghi mẫu 01', status: 'Hoạt động' },
-      { id: 2, name: 'Bản ghi mẫu 02', status: 'Chờ duyệt' },
-    ]
+    return DEFAULT_GENERIC_ROWS
   })
 
   // Dữ liệu hiển thị thời gian thực
-  const activeRows = isMasterDetailGrid ? detailGrids[node.id] : rows
+  const activeRows = (props.data && Array.isArray(props.data)) ? props.data : (datasetFromEngine && Array.isArray(datasetFromEngine)) ? datasetFromEngine : rows
 
-  // Đồng bộ rows khi props.data thay đổi
+  // Đồng bộ rows khi props.data thay đổi, hoặc tự động query theo Reference
   useEffect(() => {
     if (props.data && Array.isArray(props.data)) {
       setRows(props.data)
+      return
     }
-  }, [props.data])
+    let isMounted = true
+    if (reference) {
+      const query = (props.query as string) || (props.filter as string) || ''
+      useDataEngine.getState().queryEntity(reference, query).then((items) => {
+        if (isMounted && items && items.length > 0) {
+          setRows(items)
+        }
+      })
+    }
+    return () => {
+      isMounted = false
+    }
+  }, [props.data, reference, props.query, props.filter])
+
+  // Điều hướng Master-Detail (FeatureTab / FeaturePopup)
+  const detailFeatureId = (props.detailFeatureId as string) || '2'
+  const handleOpenDetailTab = (targetRow: any) => {
+    const title = targetRow.jobNo ? `Lô ${targetRow.jobNo}` : `Chi tiết #${targetRow.id}`
+    useNavigationEngine.getState().openFeature(detailFeatureId, { id: targetRow.id, ...targetRow }, 'Tab', title)
+  }
+
+  const handleOpenDetailPopup = (targetRow: any) => {
+    const title = targetRow.jobNo ? `Chi Tiết Lô Hàng: ${targetRow.jobNo}` : `Chi Tiết Bản Ghi #${targetRow.id}`
+    useNavigationEngine.getState().openFeature(detailFeatureId, { id: targetRow.id, ...targetRow }, 'Popup', title)
+  }
 
   // State tìm kiếm & sắp xếp
   const [searchTerm, setSearchTerm] = useState('')
@@ -781,7 +732,9 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                 <tr
                   key={row.id || rowIdx}
                   onContextMenu={(e) => handleRowContextMenu(e, row, rowIdx)}
-                  className="hover:bg-slate-800/40 transition-colors group cursor-context-menu"
+                  onDoubleClick={() => handleOpenDetailTab(row)}
+                  className="hover:bg-slate-800/40 transition-colors group cursor-pointer"
+                  title="Nhấp đúp chuột để mở chi tiết; Chuột phải để mở menu tác vụ"
                 >
                   {/* Cột STT ghim cố định ở đầu (Left: 0, z-20, bg đặc #0f172a) */}
                   <td
@@ -899,6 +852,8 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
           onInsertRowBelow={handleInsertRowBelow}
           onMoveRowUp={handleMoveRowUp}
           onMoveRowDown={handleMoveRowDown}
+          onOpenDetailTab={handleOpenDetailTab}
+          onOpenDetailPopup={handleOpenDetailPopup}
         />
       )}
     </div>
