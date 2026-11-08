@@ -1,0 +1,130 @@
+import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
+
+export type FeatureDisplayMode = 'Tab' | 'Popup'
+
+export interface ActiveTab {
+  id: string
+  featureId: string
+  title: string
+  icon?: string
+  params?: Record<string, any>
+  isDirty?: boolean
+}
+
+export interface ActivePopup {
+  featureId: string
+  title: string
+  params?: Record<string, any>
+  width?: string
+  onClose?: (result?: any) => void
+}
+
+interface NavigationState {
+  // Danh sách các tab đang mở trên thanh tiêu đề (FeatureTab)
+  openTabs: ActiveTab[]
+  activeTabId: string | null
+
+  // Cửa sổ Popup đang mở đè lên (FeaturePopup)
+  activePopup: ActivePopup | null
+
+  // Actions
+  openFeature: (
+    featureId: string,
+    params?: Record<string, any>,
+    mode?: FeatureDisplayMode,
+    customTitle?: string
+  ) => void
+  closeTab: (tabId: string) => void
+  setActiveTab: (tabId: string) => void
+  closePopup: (result?: any) => void
+}
+
+export const useNavigationEngine = create<NavigationState>()(
+  devtools((set, get) => ({
+    openTabs: [
+      {
+        id: 'tab_home',
+        featureId: '2', // Mặc định mở feature chính
+        title: 'FCL Import (Logistics ERP)',
+      },
+    ],
+    activeTabId: 'tab_home',
+    activePopup: null,
+
+    // 🚀 Mở một Feature theo chuẩn FeatureTab hoặc FeaturePopup (chỉ đạo của Master)
+    openFeature: (
+      featureId: string,
+      params: Record<string, any> = {},
+      mode: FeatureDisplayMode = 'Tab',
+      customTitle?: string
+    ) => {
+      const title = customTitle || (params.id ? `${featureId} - #${params.id}` : featureId)
+
+      if (mode === 'Popup') {
+        set({
+          activePopup: {
+            featureId,
+            title,
+            params,
+          },
+        })
+      } else {
+        // Mở dạng Tab đa nhiệm
+        const tabs = get().openTabs
+        const existingTab = tabs.find((t) => t.featureId === featureId && t.params?.id === params?.id)
+
+        if (existingTab) {
+          // Nếu tab này đã mở rồi thì chỉ cần active
+          set({ activeTabId: existingTab.id })
+        } else {
+          // Tạo tab mới
+          const newTabId = `tab_${featureId}_${params.id || Date.now()}`
+          const newTab: ActiveTab = {
+            id: newTabId,
+            featureId,
+            title,
+            params,
+          }
+          set({
+            openTabs: [...tabs, newTab],
+            activeTabId: newTabId,
+          })
+        }
+      }
+    },
+
+    // Đóng tab
+    closeTab: (tabId: string) => {
+      const tabs = get().openTabs
+      if (tabs.length <= 1) return // Không đóng tab cuối cùng
+      const nextTabs = tabs.filter((t) => t.id !== tabId)
+      const currentActive = get().activeTabId
+      let nextActive = currentActive
+
+      if (currentActive === tabId) {
+        nextActive = nextTabs[nextTabs.length - 1].id
+      }
+
+      set({
+        openTabs: nextTabs,
+        activeTabId: nextActive,
+      })
+    },
+
+    // Chọn tab active
+    setActiveTab: (tabId: string) => {
+      set({ activeTabId: tabId })
+    },
+
+    // Đóng popup
+    closePopup: (result?: any) => {
+      const currentPopup = get().activePopup
+      if (currentPopup?.onClose) {
+        currentPopup.onClose(result)
+      }
+      set({ activePopup: null })
+    },
+  }))
+)
+

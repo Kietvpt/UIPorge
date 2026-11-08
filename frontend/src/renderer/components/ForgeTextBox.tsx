@@ -2,10 +2,15 @@ import React from 'react'
 import type { ComponentProps } from './types'
 import { triggerComponentEvent } from '@/logic/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
+import { useDataEngine } from '@/core/engines/dataEngine'
 import { FormFieldWrapper } from './FormFieldWrapper'
 
-// TextBox Component
-// Tích hợp FormFieldWrapper: Nhãn nằm bên trái chuẩn ERP (Ảnh 1 & 4), hỗ trợ colSpan 1..12
+/**
+ * 📦 ForgeTextBox: Generic Text Input Component
+ * - 100% Trung lập (Domain-Agnostic): Không chứa bất kỳ logic hay tên trường của ngành nghề nào.
+ * - Hỗ trợ Two-Way Data Binding với generic DataEngine thông qua `node.dataBinding.fieldName`.
+ * - Tự động bọc bởi FormFieldWrapper (Label bên trái chuẩn ERP).
+ */
 export const ForgeTextBox: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const { props, style } = node
   const features = useEditorStore((s) => s.features)
@@ -14,8 +19,17 @@ export const ForgeTextBox: React.FC<ComponentProps> = ({ node, isEditing }) => {
     features.find((f) => String(f.id) === String(node.pageId)) ||
     features.find((f) => String(f.id) === String(activeFeatureId))
   const blFileName = currentFeature?.scriptFile
-  // Separate flex-item layout styles from inner visual styles
+
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
+
+  // Lấy giá trị qua Generic DataEngine
+  const formId = String(node.parentId || activeFeatureId || 'defaultForm')
+  const fieldName = String(node.dataBinding?.fieldName || node.props.name || node.id)
+  const engineVal = useDataEngine((s) => s.getFieldValue(formId, fieldName, undefined))
+  const setFieldValue = useDataEngine((s) => s.setFieldValue)
+
+  const displayVal = engineVal !== undefined ? engineVal : (props.value ?? '')
+  const hasError = Boolean(props.validationError)
 
   return (
     <FormFieldWrapper
@@ -24,6 +38,7 @@ export const ForgeTextBox: React.FC<ComponentProps> = ({ node, isEditing }) => {
       labelPosition={props.labelPosition || 'left'}
       labelWidth={props.labelWidth || '100px'}
       required={props.required}
+      error={props.validationError ? String(props.validationError) : undefined}
       colSpan={props.colSpan}
       style={{
         width: '100%',
@@ -34,15 +49,23 @@ export const ForgeTextBox: React.FC<ComponentProps> = ({ node, isEditing }) => {
       <input
         type="text"
         disabled={props.disabled}
-        readOnly={isEditing}
+        readOnly={isEditing || Boolean(props.readOnly)}
         placeholder={props.placeholder || 'Nhập dữ liệu...'}
-        defaultValue={props.value}
-        className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all disabled:opacity-50"
+        value={displayVal}
+        className={`w-full px-3 py-1.5 bg-slate-900 border rounded-lg text-xs text-slate-100 placeholder-slate-500 transition-all disabled:opacity-50 ${
+          hasError
+            ? 'border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none'
+            : 'border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+        }`}
         onChange={(e) => {
+          const nextVal = e.target.value
+          setFieldValue(formId, fieldName, nextVal)
+
           if (!isEditing) {
             triggerComponentEvent(node.events, 'change', props.label || 'Ô nhập liệu', blFileName, {
               componentId: node.id,
-              value: e.target.value,
+              fieldName,
+              value: nextVal,
             })
           }
         }}
@@ -50,6 +73,7 @@ export const ForgeTextBox: React.FC<ComponentProps> = ({ node, isEditing }) => {
           if (!isEditing) {
             triggerComponentEvent(node.events, 'focus', props.label || 'Ô nhập liệu', blFileName, {
               componentId: node.id,
+              fieldName,
             })
           }
         }}
@@ -57,6 +81,7 @@ export const ForgeTextBox: React.FC<ComponentProps> = ({ node, isEditing }) => {
           if (!isEditing) {
             triggerComponentEvent(node.events, 'blur', props.label || 'Ô nhập liệu', blFileName, {
               componentId: node.id,
+              fieldName,
               value: e.target.value,
             })
           }

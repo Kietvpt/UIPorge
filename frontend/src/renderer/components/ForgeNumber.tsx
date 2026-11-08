@@ -1,14 +1,15 @@
-import React, { useState } from 'react'
+import React from 'react'
 import type { ComponentProps } from './types'
 import { triggerComponentEvent } from '@/logic/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
+import { useDataEngine } from '@/core/engines/dataEngine'
 import { FormFieldWrapper } from './FormFieldWrapper'
 
 /**
- * ForgeNumber: Kế thừa Number.cs từ C# Core
- * - Hỗ trợ precision (số chữ số thập phân, vd: 0, 2)
- * - Tự động format phân cách hàng nghìn (1,085 hay 25.00 trong Ảnh 4)
- * - Tích hợp FormFieldWrapper có label nằm bên trái
+ * 📦 ForgeNumber: Generic Number Input Component
+ * - 100% Trung lập (Domain-Agnostic)
+ * - Two-Way Data Binding với generic DataEngine
+ * - Hỗ trợ precision (số chữ số thập phân) và định dạng phân cách hàng nghìn
  */
 export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const { props, style } = node
@@ -20,18 +21,24 @@ export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const blFileName = currentFeature?.scriptFile
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
 
-  const precision = props.precision !== undefined ? Number(props.precision) : 0
-  const initialNum = props.value !== undefined ? Number(props.value) : ''
-  const [val, setVal] = useState<number | string>(initialNum)
+  // Lấy giá trị qua Generic DataEngine
+  const formId = String(node.parentId || activeFeatureId || 'defaultForm')
+  const fieldName = String(node.dataBinding?.fieldName || node.props.name || node.id)
+  const engineVal = useDataEngine((s) => s.getFieldValue(formId, fieldName, undefined))
+  const setFieldValue = useDataEngine((s) => s.setFieldValue)
 
-  const formatDisplay = (v: number | string) => {
-    if (v === '' || isNaN(Number(v))) return ''
-    const num = Number(v)
+  const precision = props.precision !== undefined ? Number(props.precision) : 0
+  const rawVal = engineVal !== undefined ? engineVal : props.value
+  const displayNum = rawVal !== undefined && rawVal !== null && rawVal !== '' ? Number(rawVal) : 0
+
+  const formatDisplay = (num: number) => {
     return num.toLocaleString('en-US', {
       minimumFractionDigits: precision,
       maximumFractionDigits: precision,
     })
   }
+
+  const hasError = Boolean(props.validationError)
 
   return (
     <FormFieldWrapper
@@ -40,6 +47,7 @@ export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
       labelPosition={props.labelPosition || 'left'}
       labelWidth={props.labelWidth || '100px'}
       required={props.required}
+      error={props.validationError ? String(props.validationError) : undefined}
       colSpan={props.colSpan}
       style={{
         width: '100%',
@@ -51,18 +59,24 @@ export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
         <input
           type="text"
           disabled={props.disabled}
-          readOnly={isEditing}
+          readOnly={isEditing || Boolean(props.readOnly)}
           placeholder={props.placeholder || '0'}
-          value={formatDisplay(val)}
-          className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-right text-emerald-400 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all disabled:opacity-50"
+          value={formatDisplay(displayNum)}
+          className={`w-full px-3 py-1.5 bg-slate-900 border rounded-lg text-xs font-mono text-right text-emerald-400 placeholder-slate-500 transition-all disabled:opacity-50 ${
+            hasError
+              ? 'border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none'
+              : 'border-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500'
+          }`}
           onChange={(e) => {
             const raw = e.target.value.replace(/,/g, '')
             if (raw === '' || !isNaN(Number(raw))) {
-              setVal(raw)
+              const num = raw === '' ? 0 : Number(raw)
+              setFieldValue(formId, fieldName, num)
               if (!isEditing) {
                 triggerComponentEvent(node.events, 'change', props.label || 'Ô số', blFileName, {
                   componentId: node.id,
-                  value: raw === '' ? null : Number(raw),
+                  fieldName,
+                  value: num,
                 })
               }
             }
@@ -72,4 +86,3 @@ export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
     </FormFieldWrapper>
   )
 }
-

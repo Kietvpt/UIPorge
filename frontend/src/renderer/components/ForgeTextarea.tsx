@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import type { ComponentProps } from './types'
 import { FormFieldWrapper } from './FormFieldWrapper'
 import { triggerComponentEvent } from '@/logic/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
+import { useDataEngine } from '@/core/engines/dataEngine'
 
 /**
- * ForgeTextarea: Ô nhập văn bản nhiều dòng (Notes, Description, Remarks)
- * - Tự động bọc bởi FormFieldWrapper (nhãn mặc định bên trái 110px)
- * - Hỗ trợ tùy chỉnh số dòng hiển thị (rows)
- * - Hỗ trợ liên kết sự kiện (change, blur, focus) với Business Logic Engine
+ * 📦 ForgeTextarea: Generic Multi-line Textarea Component
+ * - 100% Trung lập (Domain-Agnostic)
+ * - Two-Way Data Binding với generic DataEngine
  */
 export const ForgeTextarea: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const { props, style } = node
@@ -21,8 +21,15 @@ export const ForgeTextarea: React.FC<ComponentProps> = ({ node, isEditing }) => 
 
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
 
-  const rows = Number(props.rows) || 3
-  const [val, setVal] = useState(props.value !== undefined ? String(props.value) : '')
+  // Lấy giá trị qua Generic DataEngine
+  const formId = String(node.parentId || activeFeatureId || 'defaultForm')
+  const fieldName = String(node.dataBinding?.fieldName || node.props.name || node.id)
+  const engineVal = useDataEngine((s) => s.getFieldValue(formId, fieldName, undefined))
+  const setFieldValue = useDataEngine((s) => s.setFieldValue)
+
+  const currentValue = engineVal !== undefined ? engineVal : (props.value !== undefined ? String(props.value) : '')
+  const rows = Number(props.rows) || 2
+  const hasError = Boolean(props.validationError)
 
   return (
     <FormFieldWrapper
@@ -36,39 +43,43 @@ export const ForgeTextarea: React.FC<ComponentProps> = ({ node, isEditing }) => 
     >
       <textarea
         rows={rows}
-        placeholder={props.placeholder || 'Nhập nội dung ghi chú...'}
-        value={val}
+        placeholder={props.placeholder || 'Nhập nội dung...'}
+        value={currentValue}
         disabled={props.disabled}
         readOnly={isEditing || Boolean(props.readOnly)}
         style={{
           width: '100%',
           ...(visualStyle as React.CSSProperties),
         }}
-        className={`w-full px-3 py-2 bg-slate-950 border rounded-lg text-xs font-mono transition-colors resize-y ${
-          props.validationError
-            ? 'border-rose-500 focus:ring-1 focus:ring-rose-500 text-rose-200'
+        className={`w-full px-3 py-1.5 bg-slate-950 border rounded-lg text-xs font-mono transition-colors resize-y ${
+          hasError
+            ? 'border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none'
             : 'border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-100 placeholder-slate-500'
         } ${props.disabled ? 'opacity-50 cursor-not-allowed bg-slate-900' : ''}`}
         onChange={(e) => {
-          setVal(e.target.value)
+          const nextVal = e.target.value
+          setFieldValue(formId, fieldName, nextVal)
           if (!isEditing) {
-            triggerComponentEvent(node.events, 'change', props.label || 'Ghi chú', blFileName, {
+            triggerComponentEvent(node.events, 'change', props.label || 'Văn bản', blFileName, {
               componentId: node.id,
-              value: e.target.value,
+              fieldName,
+              value: nextVal,
             })
           }
         }}
         onFocus={() => {
           if (!isEditing) {
-            triggerComponentEvent(node.events, 'focus', props.label || 'Ghi chú', blFileName, {
+            triggerComponentEvent(node.events, 'focus', props.label || 'Văn bản', blFileName, {
               componentId: node.id,
+              fieldName,
             })
           }
         }}
         onBlur={(e) => {
           if (!isEditing) {
-            triggerComponentEvent(node.events, 'blur', props.label || 'Ghi chú', blFileName, {
+            triggerComponentEvent(node.events, 'blur', props.label || 'Văn bản', blFileName, {
               componentId: node.id,
+              fieldName,
               value: e.target.value,
             })
           }

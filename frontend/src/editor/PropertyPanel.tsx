@@ -19,10 +19,21 @@ import {
   ShieldCheck,
   CheckCircle2,
   Lock,
+  ChevronUp,
+  ChevronDown,
+  GripVertical,
 } from 'lucide-react'
 import { getFunctionsForBlFile, addFunctionToBlFile } from '@/logic/blRegistry'
 import { executeSingleEvent } from '@/logic/eventRunner'
 import { parseRawCss, formatStyleToCss } from './cssParser'
+import { ColumnPropertiesModal } from '@/renderer/components/grid/ColumnPropertiesModal'
+import { ComponentPropertiesModal } from './ComponentPropertiesModal'
+import {
+  moveColumn,
+  toggleColumnFreeze,
+  normalizeColumnOrders,
+  sortColumnsByCorePolicy,
+} from '@/renderer/components/grid/gridPolicyUtils'
 import type {
   LayoutMode,
   ComponentNode,
@@ -40,6 +51,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
     'layout' | 'children' | 'props' | 'styles' | 'events' | 'data' | 'validation' | 'permissions'
   >('layout')
   const [selectedColumnIndex, setSelectedColumnIndex] = useState<number | null>(null)
+  const [isColumnModalOpen, setIsColumnModalOpen] = useState(false)
+  const [isComponentModalOpen, setIsComponentModalOpen] = useState(false)
 
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
@@ -296,14 +309,24 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => removeComponent(selectedNode.id)}
-          className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
-          title="Xóa component này"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setIsComponentModalOpen(true)}
+            className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors cursor-pointer"
+            title="Mở Component properties modal (Chuẩn C# Core)"
+          >
+            <Sliders className="w-4 h-4 text-emerald-400" />
+          </button>
+          <button
+            type="button"
+            onClick={() => removeComponent(selectedNode.id)}
+            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+            title="Xóa component này"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Tab Navigation */}
@@ -1173,9 +1196,35 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
               const rawCols = (selectedNode.props.columns as TableColumn[]) || []
               const selectedCol = selectedColumnIndex !== null ? rawCols[selectedColumnIndex] : null
 
+              const [listDragIdx, setListDragIdx] = useState<number | null>(null)
+              const [listDragOverIdx, setListDragOverIdx] = useState<number | null>(null)
+
               const updateColumn = (idx: number, patch: Partial<TableColumn>) => {
                 const updated = rawCols.map((c, i) => (i === idx ? { ...c, ...patch } : c))
                 updateComponentProps(selectedNode.id, { columns: updated })
+              }
+
+              const handleMoveColumn = (fromIdx: number, toIdx: number) => {
+                if (toIdx < 0 || toIdx >= rawCols.length) return
+                const reordered = moveColumn(rawCols, fromIdx, toIdx)
+                updateComponentProps(selectedNode.id, { columns: reordered })
+                setSelectedColumnIndex(toIdx)
+              }
+
+              const handleToggleFreeze = (columnKey: string) => {
+                const reordered = toggleColumnFreeze(rawCols, columnKey)
+                updateComponentProps(selectedNode.id, { columns: reordered })
+                const newIdx = reordered.findIndex((c) => c.key === columnKey)
+                if (newIdx !== -1) setSelectedColumnIndex(newIdx)
+              }
+
+              const handleOrderChange = (fromIdx: number, newOrder: number) => {
+                const targetIdx = Math.max(0, Math.min(rawCols.length - 1, newOrder - 1))
+                if (targetIdx !== fromIdx) {
+                  const reordered = moveColumn(rawCols, fromIdx, targetIdx)
+                  updateComponentProps(selectedNode.id, { columns: reordered })
+                  setSelectedColumnIndex(targetIdx)
+                }
               }
 
               const addColumn = () => {
@@ -1187,16 +1236,19 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                   componentType: 'TextBox',
                   editable: true,
                   sortable: true,
+                  order: rawCols.length + 1,
                 }
-                const updated = [...rawCols, newCol]
+                const updated = normalizeColumnOrders([...rawCols, newCol])
                 updateComponentProps(selectedNode.id, { columns: updated })
                 setSelectedColumnIndex(updated.length - 1)
               }
 
               const removeColumn = (idx: number) => {
-                const updated = rawCols.filter((_, i) => i !== idx)
+                const filtered = rawCols.filter((_, i) => i !== idx)
+                const updated = normalizeColumnOrders(filtered)
                 updateComponentProps(selectedNode.id, { columns: updated })
                 if (selectedColumnIndex === idx) setSelectedColumnIndex(null)
+                else if (selectedColumnIndex !== null && selectedColumnIndex > idx) setSelectedColumnIndex(selectedColumnIndex - 1)
               }
 
               return (
@@ -1220,19 +1272,82 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                   <div className="max-h-48 overflow-y-auto border border-slate-800 rounded-lg divide-y divide-slate-800 bg-slate-950">
                     {rawCols.map((col, idx) => {
                       const isSelected = selectedColumnIndex === idx
+                      const isFrozen = Boolean(col.frozen || col.sticky === 'left')
+                      const isBeingDragged = listDragIdx === idx
+                      const isDragOver = listDragOverIdx === idx
+
                       return (
                         <div
                           key={col.key || idx}
+                          draggable={true}
+                          onDragStart={() => setListDragIdx(idx)}
+                          onDragOver={(e) => {
+                            e.preventDefault()
+                            if (listDragIdx === null || listDragIdx === idx) return
+                            setListDragOverIdx(idx)
+                          }}
+                          onDragLeave={() => setListDragOverIdx(null)}
+                          onDrop={() => {
+                            if (listDragIdx !== null && listDragIdx !== idx) {
+                              handleMoveColumn(listDragIdx, idx)
+                            }
+                            setListDragIdx(null)
+                            setListDragOverIdx(null)
+                          }}
+                          onDragEnd={() => {
+                            setListDragIdx(null)
+                            setListDragOverIdx(null)
+                          }}
                           onClick={() => setSelectedColumnIndex(idx)}
-                          className={`p-2 flex items-center justify-between cursor-pointer transition-colors ${isSelected ? 'bg-blue-600/20 text-blue-200' : 'hover:bg-slate-900 text-slate-300'
-                            }`}
+                          className={`p-2 flex items-center justify-between cursor-pointer transition-all ${
+                            isBeingDragged ? 'opacity-30 bg-slate-800' : ''
+                          } ${
+                            isDragOver ? 'border-t-2 border-t-emerald-400 bg-emerald-500/10' : ''
+                          } ${
+                            isSelected ? 'bg-blue-600/20 text-blue-200' : 'hover:bg-slate-900 text-slate-300'
+                          }`}
                         >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-[10px] font-mono text-slate-500">#{idx + 1}</span>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            {/* Icon kéo thả (Drag Handle) */}
+                            <GripVertical className="w-3.5 h-3.5 text-slate-500 hover:text-emerald-400 cursor-grab active:cursor-grabbing flex-shrink-0" />
+
+                            {/* Nút điều hướng thứ tự cột (Move Up / Down) */}
+                            <div className="flex flex-col gap-0.5 -ml-0.5 mr-0.5">
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleMoveColumn(idx, idx - 1)
+                                }}
+                                title="Đẩy cột lên trước (Order giảm dần)"
+                                className="p-0.5 rounded text-slate-500 hover:text-cyan-400 hover:bg-slate-800 disabled:opacity-20 disabled:hover:text-slate-500"
+                              >
+                                <ChevronUp className="w-3 h-3" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={idx === rawCols.length - 1}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleMoveColumn(idx, idx + 1)
+                                }}
+                                title="Hạ cột xuống sau (Order tăng dần)"
+                                className="p-0.5 rounded text-slate-500 hover:text-cyan-400 hover:bg-slate-800 disabled:opacity-20 disabled:hover:text-slate-500"
+                              >
+                                <ChevronDown className="w-3 h-3" />
+                              </button>
+                            </div>
+
+                            <span className="text-[10px] font-mono text-slate-500 font-bold min-w-[22px]">
+                              #{col.order ?? idx + 1}
+                            </span>
                             <span className="font-bold truncate text-xs">{col.title}</span>
                             <span className="text-[10px] text-cyan-400 font-mono">[{col.key}]</span>
-                            {col.sticky === 'left' && (
-                              <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 rounded text-[9px]">Ghim</span>
+                            {isFrozen && (
+                              <span className="px-1 py-0.2 bg-amber-500/20 text-amber-300 rounded text-[9px] font-semibold border border-amber-500/30">
+                                📌 Ghim
+                              </span>
                             )}
                           </div>
                           <div className="flex items-center gap-2">
@@ -1261,7 +1376,34 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                         <span className="text-[10px] font-mono text-slate-500">Index: {selectedColumnIndex}</span>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsColumnModalOpen(true)}
+                        className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-xs font-semibold transition-colors"
+                      >
+                        <Sliders className="w-3.5 h-3.5" />
+                        <span>Mở Modal Cấu Hình Đầy Đủ (Chuẩn Ảnh 6)</span>
+                      </button>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-[10px] font-semibold text-amber-400 block mb-1">
+                            Thứ Tự (Order)
+                          </label>
+                          <input
+                            type="number"
+                            min={1}
+                            max={rawCols.length}
+                            value={selectedCol.order ?? (selectedColumnIndex + 1)}
+                            onChange={(e) => {
+                              const newOrder = parseInt(e.target.value, 10)
+                              if (!isNaN(newOrder)) {
+                                handleOrderChange(selectedColumnIndex, newOrder)
+                              }
+                            }}
+                            className="w-full px-2.5 py-1.5 bg-slate-900 border border-amber-600/40 rounded text-amber-400 font-mono text-xs font-bold focus:border-amber-400 focus:outline-none"
+                          />
+                        </div>
                         <div>
                           <label className="text-[10px] font-semibold text-slate-400 block mb-1">
                             Field Name (Trường DB)
@@ -1356,11 +1498,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                         <label className="flex items-center gap-1.5 text-[10px] text-slate-300 cursor-pointer">
                           <input
                             type="checkbox"
-                            checked={selectedCol.sticky === 'left'}
-                            onChange={(e) => updateColumn(selectedColumnIndex, { sticky: e.target.checked ? 'left' : undefined })}
+                            checked={Boolean(selectedCol.frozen || selectedCol.sticky === 'left')}
+                            onChange={() => handleToggleFreeze(selectedCol.key)}
                             className="rounded bg-slate-800 border-slate-700 text-amber-500"
                           />
-                          <span>Cố định (Frozen)</span>
+                          <span className="font-semibold text-amber-400">Cố định (Frozen)</span>
                         </label>
                         <label className="flex items-center gap-1.5 text-[10px] text-slate-300 cursor-pointer">
                           <input
@@ -1382,6 +1524,21 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                         </label>
                       </div>
                     </div>
+                  )}
+
+                  {isColumnModalOpen && selectedCol && selectedColumnIndex !== null && (
+                    <ColumnPropertiesModal
+                      isOpen={isColumnModalOpen}
+                      column={selectedCol}
+                      onClose={() => setIsColumnModalOpen(false)}
+                      onSave={(updated) => {
+                        const updatedCols = rawCols.map((c, i) => (i === selectedColumnIndex ? updated : c))
+                        const normalized = normalizeColumnOrders(updatedCols)
+                        updateComponentProps(selectedNode.id, { columns: normalized })
+                        const newIdx = normalized.findIndex((c) => c.key === updated.key)
+                        if (newIdx !== -1) setSelectedColumnIndex(newIdx)
+                      }}
+                    />
                   )}
                 </div>
               )
@@ -2013,6 +2170,21 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
           )
         })()}
       </div>
+
+      {/* ── MODAL CẤU HÌNH COMPONENT PROPERTIES CHUẨN C# CORE (ẢNH MODAL CỦA MASTER) ── */}
+      {isComponentModalOpen && selectedNode && (
+        <ComponentPropertiesModal
+          isOpen={isComponentModalOpen}
+          node={selectedNode}
+          onClose={() => setIsComponentModalOpen(false)}
+          onSave={(nodeId, updatedProps, updatedBinding) => {
+            updateComponentProps(nodeId, updatedProps)
+            if (updatedBinding) {
+              updateComponentDataBinding(nodeId, updatedBinding)
+            }
+          }}
+        />
+      )}
     </aside>
   )
 }

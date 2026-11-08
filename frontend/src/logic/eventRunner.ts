@@ -76,34 +76,42 @@ function showEventToast(
   fnName: string,
   triggerType: string,
   blFileName?: string,
-  isReal = false
+  isReal = false,
+  customMessage?: string,
+  isSuccess = true
 ) {
   const notif = document.createElement('div')
-  notif.className =
-    'fixed bottom-6 right-6 z-50 bg-slate-900 border border-blue-500 text-white px-4 py-3 rounded-2xl shadow-2xl shadow-blue-500/30 text-xs flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200'
+  notif.className = `fixed bottom-6 right-6 z-50 bg-slate-900 border ${
+    !isSuccess ? 'border-red-500 shadow-red-500/30' : isReal ? 'border-emerald-500 shadow-emerald-500/30' : 'border-blue-500 shadow-blue-500/30'
+  } text-white px-4 py-3 rounded-2xl shadow-2xl text-xs flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200 max-w-md`
+  
+  const icon = !isSuccess ? '⚠️' : isReal ? '⚡' : '⚙'
+  const iconBg = !isSuccess ? 'bg-red-600/25 text-red-400' : isReal ? 'bg-emerald-600/25 text-emerald-400' : 'bg-blue-600/20 text-blue-400'
+  const headerColor = !isSuccess ? 'text-red-300' : isReal ? 'text-emerald-300' : 'text-blue-300'
+
   notif.innerHTML = `
-    <div class="w-8 h-8 rounded-xl ${
-      isReal ? 'bg-emerald-600/25 text-emerald-400' : 'bg-blue-600/20 text-blue-400'
-    } flex items-center justify-center font-bold text-base">
-      ${isReal ? '⚡' : '⚙'}
+    <div class="w-8 h-8 rounded-xl ${iconBg} flex items-center justify-center font-bold text-base flex-shrink-0">
+      ${icon}
     </div>
-    <div>
-      <div class="font-bold ${isReal ? 'text-emerald-300' : 'text-blue-300'} flex items-center gap-1.5">
-        <span>${isReal ? 'Đã gọi hàm BL:' : 'Mô phỏng sự kiện:'}</span>
+    <div class="min-w-0">
+      <div class="font-bold ${headerColor} flex items-center gap-1.5 flex-wrap">
+        <span>${customMessage ? (isSuccess ? 'Thao tác thành công:' : 'Cảnh báo:') : isReal ? 'Đã gọi hàm BL:' : 'Mô phỏng sự kiện:'}</span>
         <span class="font-mono text-cyan-300 font-bold">${fnName}()</span>
       </div>
-      <div class="text-[10px] text-slate-400 mt-0.5">
-        Sự kiện: <span class="font-mono text-amber-400">${triggerType}</span> | File: <span class="font-mono text-emerald-400">${
-    blFileName || 'Chưa gắn file'
-  }</span>
-      </div>
+      ${
+        customMessage
+          ? `<div class="text-[11px] text-slate-200 mt-1 leading-relaxed">${customMessage}</div>`
+          : `<div class="text-[10px] text-slate-400 mt-0.5">
+               Sự kiện: <span class="font-mono text-amber-400">${triggerType}</span> | File: <span class="font-mono text-emerald-400">${blFileName || 'Chưa gắn file'}</span>
+             </div>`
+      }
     </div>
   `
   document.body.appendChild(notif)
   setTimeout(() => {
     notif.classList.add('opacity-0', 'transition-opacity', 'duration-300')
     setTimeout(() => notif.remove(), 300)
-  }, 2800)
+  }, 3800)
 }
 
 /**
@@ -127,8 +135,24 @@ export function executeSingleEvent(
     matchedFnName = matchedName
     if (fn) {
       try {
-        fn(context || { componentName, trigger: triggerType, blFileName: canonicalName })
+        const ret = fn(context || { componentName, trigger: triggerType, blFileName: canonicalName })
         executedRealFunction = true
+
+        if (ret && typeof ret.then === 'function') {
+          ret.then((asyncRes: any) => {
+            if (asyncRes && asyncRes.message) {
+              showEventToast(matchedFnName, triggerType, canonicalName || blFileName, true, asyncRes.message, asyncRes.success !== false)
+            } else {
+              showEventToast(matchedFnName, triggerType, canonicalName || blFileName, true)
+            }
+          }).catch((err: any) => {
+            showEventToast(matchedFnName, triggerType, canonicalName || blFileName, true, String(err), false)
+          })
+          return true
+        } else if (ret && ret.message) {
+          showEventToast(matchedFnName, triggerType, canonicalName || blFileName, true, ret.message, ret.success !== false)
+          return true
+        }
       } catch (err) {
         console.error(`[UIForge BL Error] Lỗi khi thực thi ${matchedName}() trong ${canonicalName}:`, err)
       }

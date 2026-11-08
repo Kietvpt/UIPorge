@@ -7,7 +7,7 @@ import {
   ForgeTextarea,
   ForgeLabel,
   ForgeContainer,
-  ForgeAdvancedGrid,
+  ForgeTable,
   ForgeSelect,
   ForgeCheckbox,
   ForgeDatePicker,
@@ -212,7 +212,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
       case 'Label':
         return <ForgeLabel node={node} isEditing={isEditing} />
       case 'Table':
-        return <ForgeAdvancedGrid node={node} isEditing={isEditing} />
+        return <ForgeTable node={node} isEditing={isEditing} />
       case 'Select':
         return <ForgeSelect node={node} isEditing={isEditing} />
       case 'Checkbox':

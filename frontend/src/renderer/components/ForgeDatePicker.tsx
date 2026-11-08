@@ -1,15 +1,15 @@
-import React, { useState } from 'react'
+import React from 'react'
 import type { ComponentProps } from './types'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { triggerComponentEvent } from '@/logic/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
+import { useDataEngine } from '@/core/engines/dataEngine'
 import { FormFieldWrapper } from './FormFieldWrapper'
 
 /**
- * ForgeDatePicker: Kế thừa Datepicker.cs từ C# Core
- * - Hiển thị định dạng ngày chuẩn DD/MM/YYYY (như S.Date, ETA trong Ảnh 4)
- * - Tích hợp icon Calendar và bộ chọn native / picker
- * - Bọc bởi FormFieldWrapper với Label nằm bên trái
+ * 📦 ForgeDatePicker: Generic Date Picker Component
+ * - 100% Trung lập (Domain-Agnostic)
+ * - Two-Way Data Binding với generic DataEngine
  */
 export const ForgeDatePicker: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const { props, style } = node
@@ -21,7 +21,14 @@ export const ForgeDatePicker: React.FC<ComponentProps> = ({ node, isEditing }) =
   const blFileName = currentFeature?.scriptFile
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
 
-  const [dateVal, setDateVal] = useState(props.value || '')
+  // Lấy giá trị qua Generic DataEngine
+  const formId = String(node.parentId || activeFeatureId || 'defaultForm')
+  const fieldName = String(node.dataBinding?.fieldName || node.props.name || node.id)
+  const engineVal = useDataEngine((s) => s.getFieldValue(formId, fieldName, undefined))
+  const setFieldValue = useDataEngine((s) => s.setFieldValue)
+
+  const currentValue = engineVal !== undefined ? engineVal : (props.value ?? '')
+  const hasError = Boolean(props.validationError)
 
   return (
     <FormFieldWrapper
@@ -30,6 +37,7 @@ export const ForgeDatePicker: React.FC<ComponentProps> = ({ node, isEditing }) =
       labelPosition={props.labelPosition || 'left'}
       labelWidth={props.labelWidth || '100px'}
       required={props.required}
+      error={props.validationError ? String(props.validationError) : undefined}
       colSpan={props.colSpan}
       style={{
         width: '100%',
@@ -39,17 +47,24 @@ export const ForgeDatePicker: React.FC<ComponentProps> = ({ node, isEditing }) =
     >
       <div className="relative w-full flex items-center">
         <input
-          type="date"
+          type="text"
           disabled={props.disabled}
-          readOnly={isEditing}
-          value={dateVal}
-          className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all disabled:opacity-50 [color-scheme:dark]"
+          readOnly={isEditing || Boolean(props.readOnly)}
+          placeholder="DD/MM/YYYY"
+          value={currentValue}
+          className={`w-full px-3 py-1.5 pr-8 bg-slate-900 border rounded-lg text-xs text-slate-100 font-mono transition-all disabled:opacity-50 ${
+            hasError
+              ? 'border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none'
+              : 'border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+          }`}
           onChange={(e) => {
-            setDateVal(e.target.value)
+            const nextVal = e.target.value
+            setFieldValue(formId, fieldName, nextVal)
             if (!isEditing) {
               triggerComponentEvent(node.events, 'change', props.label || 'Chọn ngày', blFileName, {
                 componentId: node.id,
-                value: e.target.value,
+                fieldName,
+                value: nextVal,
               })
             }
           }}
@@ -59,4 +74,3 @@ export const ForgeDatePicker: React.FC<ComponentProps> = ({ node, isEditing }) =
     </FormFieldWrapper>
   )
 }
-

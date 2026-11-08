@@ -1,8 +1,8 @@
 {
   "sessionId": "squad_notifications",
   "createdAt": "2026-10-23T12:55:44.233Z",
-  "updatedAt": "2026-10-23T12:55:44.341Z",
-  "version": 5,
+  "updatedAt": "2026-11-08T16:01:44.961Z",
+  "version": 6,
   "predictedState": {
     "queues": {
       "ENG-AN-7B9F1D": [
@@ -13,7 +13,7 @@
           "type": "message",
           "content": "[SQUAD] Agent OPS-BOB-4E8C21 (Bob) is now ONLINE and ready to collaborate.",
           "timestamp": "2026-10-23T12:55:44.233Z",
-          "status": "pending",
+          "status": "read",
           "priority": "medium"
         }
       ],

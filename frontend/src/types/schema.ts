@@ -124,7 +124,9 @@ export interface ComponentProps {
   [key: string]: unknown
 }
 
-export interface TableColumn {
+export type { GridColumnPolicy, ColumnComponentType, ColumnAlign, ColumnFreeze, SummaryType } from './gridPolicy'
+
+export interface TableColumn extends Partial<import('./gridPolicy').GridColumnPolicy> {
   key: string
   title: string
   width?: string
@@ -133,16 +135,22 @@ export interface TableColumn {
   sortable?: boolean
   filterable?: boolean
   editable?: boolean // tương ứng Editable trong GridPolicy
-  sticky?: 'left' | 'right' // tương ứng Frozen trong GridPolicy
-  aggregate?: 'sum' | 'avg' | 'count' | 'none' // tương ứng Summary trong GridPolicy
+  sticky?: 'left' | 'right' | 'none' // tương ứng Frozen trong GridPolicy
+  frozen?: boolean
+  aggregate?: 'sum' | 'avg' | 'count' | 'min' | 'max' | 'none' // tương ứng Summary trong GridPolicy
   aggregateColSpan?: number // tương ứng SummaryColSpan trong GridPolicy
+  summaryPrefix?: string
+  summarySuffix?: string
   align?: 'left' | 'center' | 'right' // tương ứng TextAlign trong GridPolicy
   format?: 'currency_vnd' | 'currency_usd' | 'date_dmy' | 'number' | string // tương ứng FormatCell
   precision?: number // tương ứng Precision trong GridPolicy
-  componentType?: 'TextBox' | 'Number' | 'DatePicker' | 'Select' | 'Checkbox' | 'Button' | 'Label' // tương ứng Component trong GridPolicy
+  componentType?: 'TextBox' | 'Number' | 'DatePicker' | 'Select' | 'Dropdown' | 'Checkbox' | 'Button' | 'Label' | 'Link' | 'Textarea' // tương ứng Component trong GridPolicy
   options?: SelectOption[] // cho dropdown
   hidden?: boolean
-  validation?: ValidationRule[]
+  populateField?: string
+  cascadeField?: string
+  customCss?: string
+  validation?: any
 }
 
 export interface SelectOption {

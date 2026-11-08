@@ -1,5 +1,280 @@
 [
   {
+    "id": "sphere_1794153714348_uiporge_next_phases_migration_",
+    "title": "UIPorge Next Phases Migration & Enhancement Tree",
+    "description": "Cây kế hoạch triển khai và nghiên cứu kỹ thuật chuyển đổi toàn diện UIPorge: Giai đoạn 3 (GridPolicy & Advanced DataGrid), Giai đoạn 4 (Data Binding & Validation Cascading), Giai đoạn 5 (Dynamic RBAC & Policy Engine).",
+    "icon": "Network",
+    "primaryPersona": "An",
+    "rootNodeId": "node_root_1794153714349",
+    "masteryPercent": 50,
+    "nodes": {
+      "node_root_1794153714349": {
+        "id": "node_root_1794153714349",
+        "topic": "Kiến Trúc & Kế Hoạch Chuyển Đổi Kế Tiếp UIPorge (Stage 3, 4, 5)",
+        "tier": 1,
+        "status": "mastered",
+        "authorPersona": "An",
+        "childrenIds": [
+          "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+          "node_1794153721421_giai_o_n_4_data_binding_c",
+          "node_1794153724617_giai_o_n_5_dynamic_policy"
+        ],
+        "insightsCount": 2,
+        "expReward": 500,
+        "paperFile": "tree_overview_next_phases_migration.md"
+      },
+      "node_1794153717992_giai_o_n_3_gridpolicy_ent": {
+        "id": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+        "topic": "Giai Đoạn 3: GridPolicy & Enterprise Data Grid System",
+        "tier": 2,
+        "status": "mastered",
+        "authorPersona": "Kael",
+        "parentId": "node_root_1794153714349",
+        "childrenIds": [
+          "node_1794153728446_3_1_header_context_menu_m",
+          "node_1794153731484_3_2_column_properties_dia",
+          "node_1794153735051_3_3_summary_footer_row_h_",
+          "node_1794153738192_3_4_frozen_sticky_columns"
+        ],
+        "nodeType": "specification",
+        "insightsCount": 4,
+        "expReward": 400,
+        "paperFile": "plan_stage3_gridpolicy_and_column_manager.md"
+      },
+      "node_1794153721421_giai_o_n_4_data_binding_c": {
+        "id": "node_1794153721421_giai_o_n_4_data_binding_c",
+        "topic": "Giai Đoạn 4: Data Binding, Cascading Fields & Validation Rules",
+        "tier": 2,
+        "status": "researching",
+        "authorPersona": "Zenith",
+        "parentId": "node_root_1794153714349",
+        "childrenIds": [
+          "node_1794153741922_4_1_master_detail_relatio",
+          "node_1794153745247_4_2_cascading_dropdowns_a",
+          "node_1794153748277_4_3_enterprise_validation"
+        ],
+        "nodeType": "specification",
+        "insightsCount": 0,
+        "expReward": 400,
+        "paperFile": "plan_stage4_databinding_cascading_and_validation.md"
+      },
+      "node_1794153724617_giai_o_n_5_dynamic_policy": {
+        "id": "node_1794153724617_giai_o_n_5_dynamic_policy",
+        "topic": "Giai Đoạn 5: Dynamic Policy & Field-Level RBAC Engine",
+        "tier": 2,
+        "status": "researching",
+        "authorPersona": "Alice",
+        "parentId": "node_root_1794153714349",
+        "childrenIds": [
+          "node_1794153751507_5_1_field_level_rbac_ui_d",
+          "node_1794153754784_5_2_backend_policy_enforc"
+        ],
+        "nodeType": "specification",
+        "insightsCount": 0,
+        "expReward": 400,
+        "paperFile": "plan_stage5_dynamic_rbac_and_security_policy.md"
+      },
+      "node_1794153728446_3_1_header_context_menu_m": {
+        "id": "node_1794153728446_3_1_header_context_menu_m",
+        "topic": "3.1 Header Context Menu (Menu Ngữ Cảnh Tiêu Đề Cột)",
+        "tier": 3,
+        "status": "mastered",
+        "authorPersona": "Kael",
+        "parentId": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+        "childrenIds": [],
+        "nodeType": "specification",
+        "insightsCount": 2,
+        "expReward": 400,
+        "paperFile": "plan_stage3_gridpolicy_and_column_manager.md"
+      },
+      "node_1794153731484_3_2_column_properties_dia": {
+        "id": "node_1794153731484_3_2_column_properties_dia",
+        "topic": "3.2 Column Properties Dialog (Modal Thiết Lập Cột Chuẩn Ảnh 6)",
+        "tier": 3,
+        "status": "mastered",
+        "authorPersona": "Kael",
+        "parentId": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+        "childrenIds": [],
+        "nodeType": "specification",
+        "insightsCount": 2,
+        "expReward": 400,
+        "paperFile": "plan_stage3_gridpolicy_and_column_manager.md"
+      },
+      "node_1794153735051_3_3_summary_footer_row_h_": {
+        "id": "node_1794153735051_3_3_summary_footer_row_h_",
+        "topic": "3.3 Summary Footer Row (Hàng Tổng Hợp Chân Bảng Chuẩn Ảnh 4)",
+        "tier": 3,
+        "status": "mastered",
+        "authorPersona": "Kael",
+        "parentId": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+        "childrenIds": [],
+        "nodeType": "specification",
+        "insightsCount": 2,
+        "expReward": 400,
+        "paperFile": "plan_stage3_gridpolicy_and_column_manager.md"
+      },
+      "node_1794153738192_3_4_frozen_sticky_columns": {
+        "id": "node_1794153738192_3_4_frozen_sticky_columns",
+        "topic": "3.4 Frozen Sticky Columns & Inline Cell Editing",
+        "tier": 3,
+        "status": "mastered",
+        "authorPersona": "Kael",
+        "parentId": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+        "childrenIds": [],
+        "nodeType": "specification",
+        "insightsCount": 2,
+        "expReward": 400,
+        "paperFile": "plan_stage3_gridpolicy_and_column_manager.md"
+      },
+      "node_1794153741922_4_1_master_detail_relatio": {
+        "id": "node_1794153741922_4_1_master_detail_relatio",
+        "topic": "4.1 Master-Detail Relation Engine (Đồng Bộ Form & Lưới Con)",
+        "tier": 3,
+        "status": "researching",
+        "authorPersona": "Zenith",
+        "parentId": "node_1794153721421_giai_o_n_4_data_binding_c",
+        "childrenIds": [],
+        "nodeType": "specification",
+        "insightsCount": 0,
+        "expReward": 400
+      },
+      "node_1794153745247_4_2_cascading_dropdowns_a": {
+        "id": "node_1794153745247_4_2_cascading_dropdowns_a",
+        "topic": "4.2 Cascading Dropdowns & Auto-populate Engine",
+        "tier": 3,
+        "status": "researching",
+        "authorPersona": "Zenith",
+        "parentId": "node_1794153721421_giai_o_n_4_data_binding_c",
+        "childrenIds": [],
+        "nodeType": "specification",
+        "insightsCount": 0,
+        "expReward": 400
+      },
+      "node_1794153748277_4_3_enterprise_validation": {
+        "id": "node_1794153748277_4_3_enterprise_validation",
+        "topic": "4.3 Enterprise Validation Rules Engine (Quy Tắc Kiểm Tra Toàn Vẹn)",
+        "tier": 3,
+        "status": "researching",
+        "authorPersona": "Zenith",
+        "parentId": "node_1794153721421_giai_o_n_4_data_binding_c",
+        "childrenIds": [],
+        "nodeType": "specification",
+        "insightsCount": 0,
+        "expReward": 400
+      },
+      "node_1794153751507_5_1_field_level_rbac_ui_d": {
+        "id": "node_1794153751507_5_1_field_level_rbac_ui_d",
+        "topic": "5.1 Field-Level RBAC UI & Dynamic PermissionGuard",
+        "tier": 3,
+        "status": "researching",
+        "authorPersona": "Alice",
+        "parentId": "node_1794153724617_giai_o_n_5_dynamic_policy",
+        "childrenIds": [],
+        "nodeType": "specification",
+        "insightsCount": 0,
+        "expReward": 400
+      },
+      "node_1794153754784_5_2_backend_policy_enforc": {
+        "id": "node_1794153754784_5_2_backend_policy_enforc",
+        "topic": "5.2 Backend Policy Enforcement & Claim-Based API Filtering",
+        "tier": 3,
+        "status": "researching",
+        "authorPersona": "Alice",
+        "parentId": "node_1794153724617_giai_o_n_5_dynamic_policy",
+        "childrenIds": [],
+        "nodeType": "specification",
+        "insightsCount": 0,
+        "expReward": 400
+      }
+    },
+    "edges": [
+      {
+        "id": "edge_node_root_1794153714349_derives_from_node_1794153717992_giai_o_n_3_gridpolicy_ent_1794153717992",
+        "sourceNodeId": "node_root_1794153714349",
+        "targetNodeId": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_root_1794153714349_derives_from_node_1794153721421_giai_o_n_4_data_binding_c_1794153721421",
+        "sourceNodeId": "node_root_1794153714349",
+        "targetNodeId": "node_1794153721421_giai_o_n_4_data_binding_c",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_root_1794153714349_derives_from_node_1794153724617_giai_o_n_5_dynamic_policy_1794153724617",
+        "sourceNodeId": "node_root_1794153714349",
+        "targetNodeId": "node_1794153724617_giai_o_n_5_dynamic_policy",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_1794153717992_giai_o_n_3_gridpolicy_ent_derives_from_node_1794153728446_3_1_header_context_menu_m_1794153728446",
+        "sourceNodeId": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+        "targetNodeId": "node_1794153728446_3_1_header_context_menu_m",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_1794153717992_giai_o_n_3_gridpolicy_ent_derives_from_node_1794153731484_3_2_column_properties_dia_1794153731484",
+        "sourceNodeId": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+        "targetNodeId": "node_1794153731484_3_2_column_properties_dia",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_1794153717992_giai_o_n_3_gridpolicy_ent_derives_from_node_1794153735051_3_3_summary_footer_row_h__1794153735051",
+        "sourceNodeId": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+        "targetNodeId": "node_1794153735051_3_3_summary_footer_row_h_",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_1794153717992_giai_o_n_3_gridpolicy_ent_derives_from_node_1794153738192_3_4_frozen_sticky_columns_1794153738192",
+        "sourceNodeId": "node_1794153717992_giai_o_n_3_gridpolicy_ent",
+        "targetNodeId": "node_1794153738192_3_4_frozen_sticky_columns",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_1794153721421_giai_o_n_4_data_binding_c_derives_from_node_1794153741922_4_1_master_detail_relatio_1794153741922",
+        "sourceNodeId": "node_1794153721421_giai_o_n_4_data_binding_c",
+        "targetNodeId": "node_1794153741922_4_1_master_detail_relatio",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_1794153721421_giai_o_n_4_data_binding_c_derives_from_node_1794153745247_4_2_cascading_dropdowns_a_1794153745247",
+        "sourceNodeId": "node_1794153721421_giai_o_n_4_data_binding_c",
+        "targetNodeId": "node_1794153745247_4_2_cascading_dropdowns_a",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_1794153721421_giai_o_n_4_data_binding_c_derives_from_node_1794153748277_4_3_enterprise_validation_1794153748277",
+        "sourceNodeId": "node_1794153721421_giai_o_n_4_data_binding_c",
+        "targetNodeId": "node_1794153748277_4_3_enterprise_validation",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_1794153724617_giai_o_n_5_dynamic_policy_derives_from_node_1794153751507_5_1_field_level_rbac_ui_d_1794153751507",
+        "sourceNodeId": "node_1794153724617_giai_o_n_5_dynamic_policy",
+        "targetNodeId": "node_1794153751507_5_1_field_level_rbac_ui_d",
+        "type": "derives_from",
+        "label": "derives_from"
+      },
+      {
+        "id": "edge_node_1794153724617_giai_o_n_5_dynamic_policy_derives_from_node_1794153754784_5_2_backend_policy_enforc_1794153754784",
+        "sourceNodeId": "node_1794153724617_giai_o_n_5_dynamic_policy",
+        "targetNodeId": "node_1794153754784_5_2_backend_policy_enforc",
+        "type": "derives_from",
+        "label": "derives_from"
+      }
+    ]
+  },
+  {
     "id": "sphere_autonomous_research",
     "title": "Autonomous AI Discoveries & Papers",
     "description": "Các tài liệu nghiên cứu chuyên sâu do AI Agent tự động khám phá và tổng hợp theo chuẩn IEEE.",

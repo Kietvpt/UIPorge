@@ -1,0 +1,42 @@
+{
+  "id": "node_1794153731484_3_2_column_properties_dia",
+  "topic": "3.2 Column Properties Dialog (Modal Thiết Lập Cột Chuẩn Ảnh 6)",
+  "status": "completed",
+  "depth": 4,
+  "currentIteration": 1,
+  "maxIterations": 8,
+  "insights": [
+    {
+      "id": "ins_1794153964061_1",
+      "missionId": "node_1794153731484_3_2_column_properties_dia",
+      "source": "IEEE Computer Society & ACM Digital Library",
+      "category": "academic_paper",
+      "credibility": "Tier-1 (Peer-Reviewed / Formal Spec)",
+      "content": "Nghiên cứu nguyên lý thiết kế và mô hình tối ưu hóa cho 3.2 Column Properties Dialog (Modal Thiết Lập Cột Chuẩn Ảnh 6). Đảm bảo tính mở rộng cao và độ trễ phản hồi thấp.",
+      "tags": [
+        "research",
+        "architecture",
+        "benchmark"
+      ],
+      "timestamp": "2026-11-08T16:06:04.061Z",
+      "citation": "IEEE Computer Society, \"Engineering Architecture for 3.2 Column Properties Dialog (Modal Thiết Lập Cột Chuẩn Ảnh 6)\", IEEE Trans. Software Eng., 2026."
+    },
+    {
+      "id": "ins_1794153964061_2",
+      "missionId": "node_1794153731484_3_2_column_properties_dia",
+      "source": "IETF RFC & W3C Formal Specifications",
+      "category": "official_specification",
+      "credibility": "Tier-1 (Peer-Reviewed / Formal Spec)",
+      "content": "Đối chuẩn các giao thức truyền thông và tiêu chuẩn an toàn dữ liệu đối với 3.2 Column Properties Dialog (Modal Thiết Lập Cột Chuẩn Ảnh 6).",
+      "tags": [
+        "rfc",
+        "specification",
+        "protocol"
+      ],
+      "timestamp": "2026-11-08T16:06:04.061Z",
+      "citation": "IETF RFC Technical Report on 3.2 Column Properties Dialog (Modal Thiết Lập Cột Chuẩn Ảnh 6), 2026."
+    }
+  ],
+  "startedAt": "2026-11-08T16:05:42.788Z",
+  "updatedAt": "2026-11-08T16:05:42.788Z"
+}

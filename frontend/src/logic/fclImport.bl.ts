@@ -11,6 +11,8 @@
  * - onEManifest, onPrintDocuments, onAccountingSync, onRunFunction: Các tác vụ nghiệp vụ trên thanh công cụ
  */
 
+import { useMasterDetailStore } from './masterDetailStore'
+
 export interface BLContext {
   componentId?: string
   pageId?: string
@@ -107,16 +109,13 @@ export function AutoPOD(context?: BLContext) {
   return { pod: port, country: 'VIETNAM', terminalCode: 'VNDTS' }
 }
 
-/** 7. Lưu hồ sơ lô hàng FCL Import */
-export function onSave(context?: BLContext) {
+/** 7. Lưu hồ sơ lô hàng FCL Import (Master-Detail Aggregate Save) */
+export async function onSave(context?: BLContext) {
   console.log('[FCL Import BL] onSave: Thực hiện kiểm tra toàn vẹn dữ liệu trước khi lưu...')
-  const mockPayload = {
-    jobNo: 'FCLI-26020005',
-    savedAt: new Date().toISOString(),
-    status: 'Saved',
-  }
-  console.log('[FCL Import BL] onSave: Đã lưu thành công lô hàng FCL', mockPayload)
-  return { success: true, ...mockPayload }
+  const store = useMasterDetailStore.getState()
+  const result = await store.saveAggregate()
+  console.log('[FCL Import BL] onSave hoàn tất:', result)
+  return result
 }
 
 /** 8. Khai báo E-Manifest điện tử lên Cổng thông tin một cửa quốc gia */

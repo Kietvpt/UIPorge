@@ -18,6 +18,14 @@ import { PropertyPanel } from '@/editor/PropertyPanel'
 import { ComponentRenderer } from '@/renderer/Renderer'
 import { useDragDrop, customCollisionDetection } from '@/editor/useDragDrop'
 import { useResizablePanels } from '@/editor/useResizablePanels'
+import { WorkspaceTabBar } from '@/editor/WorkspaceTabBar'
+import { FeaturePopupModal } from '@/editor/FeaturePopupModal'
+import { useDataEngine } from '@/core/engines/dataEngine'
+import {
+  SAMPLE_TERMINALS,
+  SAMPLE_SHIPPING_INFO,
+  SAMPLE_CONTAINERS,
+} from '@/samples/logistics/logisticsFixtures'
 
 export function App() {
   // ── Auth state ──
@@ -62,6 +70,13 @@ export function App() {
     setToast(msg)
     setTimeout(() => setToast(null), 3000)
   }
+
+  // ── Khởi tạo bộ dữ liệu mẫu (Test Fixtures) cho Core DataEngine ──
+  useEffect(() => {
+    useDataEngine.getState().registerDataset('Terminal', SAMPLE_TERMINALS)
+    useDataEngine.getState().registerDataset('Transaction', SAMPLE_SHIPPING_INFO)
+    useDataEngine.getState().registerDataset('Container', SAMPLE_CONTAINERS)
+  }, [])
 
   // ── Lắng nghe sự kiện Back/Forward của trình duyệt để đổi màn hình ──
   useEffect(() => {
@@ -158,6 +173,9 @@ export function App() {
           onLogout={logout}
         />
 
+        {/* ── 1.1 Workspace Multitasking Tab Bar (FeatureTab Navigation Engine) ── */}
+        <WorkspaceTabBar />
+
         {/* Toast Notification */}
         {toast && (
           <div className="fixed top-16 right-6 z-50 bg-emerald-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xl shadow-emerald-950/40 animate-in fade-in slide-in-from-top-2 duration-200">
@@ -219,6 +237,9 @@ export function App() {
             </div>
           )}
         </DragOverlay>
+
+        {/* ── 4. Feature Popup Modal (Modal Dialog Navigation Engine) ── */}
+        <FeaturePopupModal />
       </div>
     </DndContext>
   )
