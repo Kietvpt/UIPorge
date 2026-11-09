@@ -30,7 +30,6 @@ import {
 } from 'lucide-react'
 
 import { useDataEngine } from '@/core/engines/dataEngine'
-import { useNavigationEngine } from '@/core/engines/navigationEngine'
 
 // Mock dữ liệu mặc định trung lập khi bảng chưa được liên kết data
 const DEFAULT_GENERIC_ROWS: any[] = [
@@ -104,18 +103,6 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
       isMounted = false
     }
   }, [props.data, reference, props.query, props.filter, datasetFromEngine])
-
-  // Điều hướng Master-Detail (FeatureTab / FeaturePopup)
-  const detailFeatureId = (props.detailFeatureId as string) || '2'
-  const handleOpenDetailTab = (targetRow: any) => {
-    const title = targetRow.jobNo ? `Lô ${targetRow.jobNo}` : `Chi tiết #${targetRow.id}`
-    useNavigationEngine.getState().openFeature(detailFeatureId, { id: targetRow.id, ...targetRow }, 'Tab', title)
-  }
-
-  const handleOpenDetailPopup = (targetRow: any) => {
-    const title = targetRow.jobNo ? `Chi Tiết Lô Hàng: ${targetRow.jobNo}` : `Chi Tiết Bản Ghi #${targetRow.id}`
-    useNavigationEngine.getState().openFeature(detailFeatureId, { id: targetRow.id, ...targetRow }, 'Popup', title)
-  }
 
   // State tìm kiếm & sắp xếp
   const [searchTerm, setSearchTerm] = useState('')
@@ -731,9 +718,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                 <tr
                   key={row.id || rowIdx}
                   onContextMenu={(e) => handleRowContextMenu(e, row, rowIdx)}
-                  onDoubleClick={() => handleOpenDetailTab(row)}
-                  className="hover:bg-slate-800/40 transition-colors group cursor-pointer"
-                  title="Nhấp đúp chuột để mở chi tiết; Chuột phải để mở menu tác vụ"
+                  className="hover:bg-slate-800/40 transition-colors group cursor-context-menu"
                 >
                   {/* Cột STT ghim cố định ở đầu (Left: 0, z-20, bg đặc #0f172a) */}
                   <td
@@ -851,8 +836,6 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
           onInsertRowBelow={handleInsertRowBelow}
           onMoveRowUp={handleMoveRowUp}
           onMoveRowDown={handleMoveRowDown}
-          onOpenDetailTab={handleOpenDetailTab}
-          onOpenDetailPopup={handleOpenDetailPopup}
         />
       )}
     </div>

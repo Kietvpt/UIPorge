@@ -128,3 +128,26 @@ export const useNavigationEngine = create<NavigationState>()(
   }))
 )
 
+/**
+ * ⚡ Mở một Feature dưới dạng Popup Modal (Tương đương this.OpenPopup trong Core C#)
+ * Tham khảo: ComponentGroupDetailBL.cs (TMS.UI.Business.MenuBL)
+ */
+export function openPopup(featureName: string, params: Record<string, any> = {}, title?: string) {
+  useNavigationEngine.getState().openFeature(featureName, params, 'Popup', title || featureName)
+}
+
+/**
+ * ⚡ Mở một Feature dưới dạng Tab đa nhiệm (Tương đương this.OpenTab trong Core C#)
+ * Tham khảo: UserListBL.cs (TMS.UI.Business.User)
+ */
+export function openTab(featureName: string, params: Record<string, any> = {}, title?: string) {
+  useNavigationEngine.getState().openFeature(featureName, params, 'Tab', title || featureName)
+}
+
+/**
+ * ⚡ Đóng Popup hiện tại
+ */
+export function closePopup(result?: any) {
+  useNavigationEngine.getState().closePopup(result)
+}
+
