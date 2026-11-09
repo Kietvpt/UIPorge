@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDroppable } from '@dnd-kit/core'
-import { useEditorStore } from '@/store/editorStore'
+import { useEditorStore, isDetailFeature } from '@/store/editorStore'
 import { ComponentRenderer } from '@/renderer/Renderer'
 import { DraggableComponent } from './DraggableComponent'
 import { ContextMenu, MenuItem } from './ContextMenu'
@@ -55,13 +55,9 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
 
   // ── Tự động nạp dữ liệu từ SQL Server khi mở màn hình Chi Tiết Lô Hàng ──
   React.useEffect(() => {
-    const isDetailScreen =
-      activeFeature?.scriptFile === 'transactionDetail.bl.ts' ||
-      activeFeature?.route === '/fcl-import' ||
-      activeFeature?.name?.toLowerCase().includes('fcl import') ||
-      Boolean(activeFeature?.isDetail)
+    const isDetailScreen = isDetailFeature(activeFeature)
 
-    if (isDetailScreen) {
+    if (isDetailScreen && activeFeatureId) {
       let recordId = activeRecordId
       if (!recordId && typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search)
@@ -80,6 +76,9 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
             if (data && activeFeatureId) {
               useDataEngine.getState().setFormRecord(activeFeatureId, data)
               useDataEngine.getState().setFormRecord('default', data)
+              if (activeRecordId !== String(data.id || targetId)) {
+                useEditorStore.getState().setActiveRecordId(String(data.id || targetId))
+              }
             }
           })
         }

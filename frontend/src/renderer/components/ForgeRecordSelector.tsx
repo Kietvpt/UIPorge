@@ -23,8 +23,8 @@ export interface ForgeRecordSelectorProps {
 }
 
 export const ForgeRecordSelector: React.FC<ForgeRecordSelectorProps> = ({
-  label = 'Lô hàng:',
-  reference = 'Transaction',
+  label = 'Bản ghi:',
+  reference = 'Records',
   displayField = 'code',
   records: propsRecords,
   activeId: propsActiveId,
@@ -36,11 +36,11 @@ export const ForgeRecordSelector: React.FC<ForgeRecordSelectorProps> = ({
 }) => {
   const dataEngine = useDataEngine()
 
-  // Default records if none provided (matching Master's screenshot FCLT-26020005, etc.)
+  // Default generic records if none provided
   const defaultItems: RecordItem[] = [
-    { id: '1', code: 'FCLT-26020005', mblNo: 'ASHVT00002005', pol: 'SHANGHAI', pod: 'TIEN SA TERMINAL' },
-    { id: '2', code: 'FCLT-26020006', mblNo: 'ASHVT00002006', pol: 'NINGBO', pod: 'TIEN SA TERMINAL' },
-    { id: '3', code: 'FCLT-26020007', mblNo: 'ASHVT00002007', pol: 'QINGDAO', pod: 'TIEN SA TERMINAL' },
+    { id: '1', code: 'REC-001', name: 'Bản ghi mẫu 01' },
+    { id: '2', code: 'REC-002', name: 'Bản ghi mẫu 02' },
+    { id: '3', code: 'REC-003', name: 'Bản ghi mẫu 03' },
   ]
 
   const [items, setItems] = useState<RecordItem[]>(propsRecords || defaultItems)
@@ -69,12 +69,12 @@ export const ForgeRecordSelector: React.FC<ForgeRecordSelectorProps> = ({
   }
 
   const handleAdd = () => {
-    const nextIndex = items.length + 5
-    const newCode = `FCLT-2602000${nextIndex}`
+    const nextIndex = items.length + 1
+    const newCode = `REC-${String(nextIndex).padStart(3, '0')}`
     const newItem: RecordItem = {
       id: String(Date.now()),
       code: newCode,
-      mblNo: `ASHVT0000200${nextIndex}`,
+      name: `Bản ghi mới ${nextIndex}`,
     }
     const updated = [...items, newItem]
     setItems(updated)
@@ -128,7 +128,7 @@ export const ForgeRecordSelector: React.FC<ForgeRecordSelectorProps> = ({
             type="button"
             onClick={handleAdd}
             className="flex items-center gap-1 px-3 py-1 rounded text-xs font-medium border border-emerald-500/70 bg-emerald-950/40 text-emerald-400 hover:bg-emerald-900/50 hover:border-emerald-400 transition-all cursor-pointer shadow-sm"
-            title="Thêm lô hàng / chi tiết mới"
+            title="Thêm bản ghi mới"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Tạo mới</span>

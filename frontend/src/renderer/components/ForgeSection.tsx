@@ -5,7 +5,7 @@ import type { FlexConfig } from '@/types/schema'
 
 /**
  * ForgeSection: Kế thừa Section.cs & ComponentGroup.cs từ C# Core
- * - Thẻ Card có viền box-shadow sang trọng (như thẻ GENERAL - FCL IMPORT trong Ảnh 4)
+ * - Thẻ Card có viền box-shadow sang trọng và bố cục linh hoạt
  * - Mặc định: Thiết lập hệ thống lưới 12-cột ERP (grid-template-columns: repeat(12, minmax(0, 1fr)))
  *   cho phép các FormField con nhận colSpan: 2, 4, 12 xếp hàng ngang hoàn hảo!
  * - Hỗ trợ thu gọn/mở rộng (Collapsible)

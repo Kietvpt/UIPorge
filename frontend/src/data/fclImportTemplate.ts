@@ -23,8 +23,8 @@ function normalizeNode(raw: RawNode, pageId = '2', parentId: string | null = nul
     raw.order !== undefined
       ? raw.order
       : raw.props?.order !== undefined
-      ? Number(raw.props.order)
-      : defaultOrder
+        ? Number(raw.props.order)
+        : defaultOrder
 
   return {
     id: raw.id,
@@ -201,19 +201,20 @@ const RAW_TREE: RawNode[] = [
           },
           {
             id: 'fld_vendor',
-            type: 'Select',
+            type: 'SearchEntry',
             props: {
               label: 'Vendor',
               showLabel: true,
               labelPosition: 'left',
               colSpan: 4,
               value: 'VFRAC-IT',
-              options: [
-                { value: 'VFRAC-IT', label: 'VFRAC-IT VIETNAM' },
-                { value: 'TRANSLEAD', label: 'SHANGHAI TRANSLEAD' },
-              ],
+              reference: 'Terminal',
+              displayField: 'vendorName',
+              valueField: 'vendorId',
+              placeholder: 'Tra cứu đối tác (F1)...',
+              populateRule: 'Agent = AgentName',
             },
-            dataBinding: { entityName: 'Vendor', fieldName: 'CompanyInterShortName', twoWay: true },
+            dataBinding: { entityName: 'Transaction', fieldName: 'VendorName', twoWay: true },
             events: [{ id: 'ev_ven', trigger: 'change', action: 'FeeSuggestion', handlerName: 'FeeSuggestion' }],
           },
 
@@ -232,14 +233,19 @@ const RAW_TREE: RawNode[] = [
           },
           {
             id: 'fld_agent',
-            type: 'TextBox',
+            type: 'Autocomplete',
             props: {
               label: 'Agent',
               showLabel: true,
               labelPosition: 'left',
               colSpan: 4,
               value: 'SHANGHAI TRANSLEAD',
+              reference: 'Terminal',
+              displayField: 'agentName',
+              valueField: 'agentName',
+              placeholder: 'Gõ để tìm kiếm đại lý...',
             },
+            dataBinding: { entityName: 'Transaction', fieldName: 'Agent', twoWay: true },
           },
           {
             id: 'fld_pol',
@@ -560,7 +566,18 @@ const RAW_TREE: RawNode[] = [
       flexConfig: { direction: 'column', gap: '12px' },
     },
     style: { width: '100%' },
-    children: [],
+    children: [
+      {
+        id: 'grid_attachment_files',
+        type: 'FileUploadGrid',
+        props: {
+          label: 'Hồ Sơ & Chứng Từ Đính Kèm (FileUploadGrid)',
+          colSpan: 12,
+          maxSizeMB: 25,
+        },
+        style: { width: '100%' },
+      },
+    ],
   },
 
   // ── TAB 4: PROFIT (Container, tab = true, order = 1) ──

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import type { ComponentProps } from './types'
 import type { TableColumn } from '@/types/schema'
 import { HeaderContextMenu } from './grid/HeaderContextMenu'
@@ -6,6 +6,7 @@ import { RowContextMenu } from './grid/RowContextMenu'
 import { ColumnPropertiesModal } from './grid/ColumnPropertiesModal'
 import { SummaryRow } from './grid/SummaryRow'
 import { GridCellComponent } from './grid/GridCellComponent'
+import { useGridKeyboardNavigation } from './grid/useGridKeyboardNavigation'
 import {
   sortColumnsByCorePolicy,
   normalizeColumnOrders,
@@ -27,9 +28,13 @@ import {
   Copy,
   Pin,
   Filter,
+  FileDown,
+  Printer,
 } from 'lucide-react'
 
 import { useDataEngine } from '@/core/engines/dataEngine'
+import { exportGridToExcel } from '@/core/engines/excelExportEngine'
+import { printGridReport } from '@/core/engines/printReportEngine'
 import { triggerComponentEvent, executeSingleEvent } from '@/core/engines/eventRunner'
 
 // Mock dữ liệu mặc định trung lập khi bảng chưa được liên kết data
@@ -58,6 +63,11 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
   const columns: TableColumn[] = useMemo(() => {
     return sortColumnsByCorePolicy(rawColumns)
   }, [rawColumns])
+
+  // Danh sách các cột hiển thị (bỏ qua cột ẩn hidden)
+  const visibleColumns: TableColumn[] = useMemo(() => {
+    return columns.filter((col) => !col.hidden)
+  }, [columns])
 
   // Kết nối Master-Detail Store nếu bảng này thuộc hệ sinh thái Master-Detail (Ảnh 4)
   const detailGrids = useMasterDetailStore((s) => s.detailGrids)
@@ -334,12 +344,236 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     }
   }
 
-  // ⚡ Thao tác khi người dùng click chuột (Single Click) vào một dòng trên bảng
+  // ⚡ Quản lý hàng được chọn & Bảng (Hỗ trợ bàn phím điều hướng & phím tắt F1..F4 chuẩn Core GridView.cs)
   const [selectedRowId, setSelectedRowId] = useState<any>(null)
+  const [selectedRowIds, setSelectedRowIds] = useState<Set<any>>(new Set())
+  const tableRef = useRef<HTMLDivElement>(null)
 
-  const handleRowClick = (r: any, rowIdx: number) => {
+  // 🔔 Toast thông báo phản hồi tức thì cho người dùng khi nhấn phím tắt hoặc thao tác lưới
+  const showTableToast = (title: string, message: string, type: 'success' | 'warning' | 'info' = 'info') => {
+    const notif = document.createElement('div')
+    const borderClass =
+      type === 'success'
+        ? 'border-emerald-500 shadow-emerald-500/30'
+        : type === 'warning'
+        ? 'border-amber-500 shadow-amber-500/30'
+        : 'border-blue-500 shadow-blue-500/30'
+    const icon = type === 'success' ? '⚡' : type === 'warning' ? '⚠️' : 'ℹ️'
+    const iconBg =
+      type === 'success'
+        ? 'bg-emerald-600/25 text-emerald-400'
+        : type === 'warning'
+        ? 'bg-amber-600/25 text-amber-400'
+        : 'bg-blue-600/20 text-blue-400'
+
+    notif.className = `fixed bottom-6 right-6 z-50 bg-slate-900 border ${borderClass} text-white px-4 py-3 rounded-2xl shadow-2xl text-xs flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200 max-w-md pointer-events-none`
+    notif.innerHTML = `
+      <div class="w-8 h-8 rounded-xl ${iconBg} flex items-center justify-center font-bold text-base flex-shrink-0">
+        ${icon}
+      </div>
+      <div class="min-w-0">
+        <div class="font-bold text-slate-100 flex items-center gap-1.5 flex-wrap">
+          <span>${title}</span>
+        </div>
+        <div class="text-[11px] text-slate-300 mt-0.5 leading-relaxed font-mono">${message}</div>
+      </div>
+    `
+    document.body.appendChild(notif)
+    setTimeout(() => {
+      notif.classList.add('opacity-0', 'transition-opacity', 'duration-300')
+      setTimeout(() => notif.remove(), 300)
+    }, 3800)
+  }
+
+  // 🔘 Phím tắt F1: Chọn tất cả các dòng / Bỏ chọn tất cả dòng (C# Core GridView.cs:1924)
+  const handleF1 = () => {
+    if (selectedRowIds.size === processedRows.length && processedRows.length > 0) {
+      setSelectedRowIds(new Set())
+      showTableToast('F1 (Toggle All)', 'Đã bỏ chọn tất cả các dòng', 'info')
+    } else {
+      const allIds = new Set(processedRows.map((r, i) => r.id ?? r.Id ?? i))
+      setSelectedRowIds(allIds)
+      if (processedRows.length > 0) {
+        setSelectedRowId(processedRows[0].id ?? processedRows[0].Id ?? 0)
+      }
+      showTableToast('F1 (Toggle All)', `Đã chọn tất cả ${allIds.size} dòng trong bảng`, 'success')
+    }
+  }
+
+  // 🔘 Phím tắt F2: Lọc nhanh theo giá trị ô đang chọn (C# Core GridView.cs:1540)
+  const handleF2 = () => {
+    let targetColKey = focusedCell?.colKey
+    let targetRowIdx = focusedCell?.rowIndex ?? 0
+
+    if (!targetColKey && visibleColumns.length > 0) {
+      targetColKey = visibleColumns[0].key
+    }
+
+    const row = processedRows[targetRowIdx]
+    const val = row && targetColKey ? row[targetColKey] : null
+
+    if (val !== undefined && val !== null && String(val).trim() !== '' && String(val) !== '—') {
+      setColumnFilters((prev) => ({ ...prev, [targetColKey!]: String(val) }))
+      setShowColumnFilters(true)
+      const colTitle = visibleColumns.find((c) => c.key === targetColKey)?.title || targetColKey
+      showTableToast('F2 (Lọc theo ô)', `Đã lọc cột [${colTitle}] với giá trị "${val}"`, 'success')
+    } else {
+      setShowColumnFilters(true)
+      showTableToast('F2 (Lọc theo ô)', 'Vui lòng chọn hoặc click vào một ô có dữ liệu để lọc nhanh', 'warning')
+    }
+  }
+
+  // 🔘 Phím tắt F3: Tính tổng nhanh số liệu các cột số (C# Core GridView.cs:1901-1922)
+  const handleF3 = () => {
+    const targetRows = selectedRowIds.size > 0
+      ? processedRows.filter((r, i) => selectedRowIds.has(r.id ?? r.Id ?? i))
+      : processedRows
+
+    if (targetRows.length === 0) {
+      showTableToast('F3 (Tính tổng nhanh)', 'Không có bản ghi nào để tính toán', 'warning')
+      return
+    }
+
+    const numberCols = visibleColumns.filter((c) =>
+      c.componentType === 'Number' ||
+      c.precision !== undefined ||
+      ['totalgw', 'totalcbm', 'totalvgm', 'gw', 'cbm', 'vgm', 'packages', 'amount'].some((k) =>
+        c.key.toLowerCase().includes(k)
+      )
+    )
+
+    if (numberCols.length === 0) {
+      showTableToast('F3 (Tính tổng nhanh)', 'Bảng hiện tại không có cột số liệu nào (GW, CBM, VGM, v.v.)', 'warning')
+      return
+    }
+
+    const sumStrings = numberCols.map((c) => {
+      const total = targetRows.reduce((acc, r) => {
+        const v = Number(r[c.key])
+        return acc + (isNaN(v) ? 0 : v)
+      }, 0)
+      const formatted = total % 1 !== 0
+        ? total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        : total.toLocaleString('en-US')
+      return `${c.title || c.key}: ${formatted}${c.summarySuffix ? ` ${c.summarySuffix}` : ''}`
+    })
+
+    showTableToast(
+      `F3 (Tổng ${targetRows.length} dòng)`,
+      sumStrings.join(' | '),
+      'success'
+    )
+  }
+
+  // 🔘 Phím tắt F4: Thêm dòng mới vào bảng và focus ngay ô đầu tiên (C# Core GridView.cs:1689)
+  const handleF4 = () => {
+    handleAddRow()
+    const newRowIdx = processedRows.length
+    showTableToast('F4 (Thêm dòng)', `Đã thêm dòng mới số #${newRowIdx + 1}`, 'success')
+    setTimeout(() => {
+      focusCell(newRowIdx, 0)
+    }, 60)
+  }
+
+  // 📊 Xuất dữ liệu Grid ra file Excel (Core C# ButtonExcel.cs & ExcelExt.cs)
+  const handleExportExcel = () => {
+    try {
+      exportGridToExcel({
+        fileName: props.label ? String(props.label).replace(/\s+/g, '_') : 'Du_Lieu_Bang',
+        sheetName: props.label ? String(props.label).slice(0, 30) : 'Sheet1',
+        columns: visibleColumns,
+        rows: processedRows,
+        includeSummary: true,
+      })
+      showTableToast('Xuất Excel', `Đã xuất ${processedRows.length} dòng dữ liệu ra file Excel thành công`, 'success')
+    } catch (err: any) {
+      showTableToast('Lỗi xuất Excel', err?.message || 'Không thể tạo file Excel', 'warning')
+    }
+  }
+
+  // 🖨️ In ấn và Xuất báo cáo PDF trực tiếp (Core C# ButtonPdf.cs & PdfReport.cs)
+  const handlePrintReport = () => {
+    try {
+      // Tính toán dòng tổng cộng cho các cột có aggregate: 'sum' | 'count' | 'avg'
+      const summaryRowObj: Record<string, any> = {}
+      visibleColumns.forEach((c) => {
+        if (c.aggregate === 'sum') {
+          const sum = processedRows.reduce((acc, r) => acc + (Number(r[c.key]) || 0), 0)
+          summaryRowObj[c.key] = sum
+        } else if (c.aggregate === 'count') {
+          summaryRowObj[c.key] = processedRows.length
+        }
+      })
+
+      printGridReport({
+        title: props.label ? String(props.label) : 'Báo Cáo Bảng Dữ Liệu',
+        subtitle: `Dữ liệu trích xuất từ phân hệ UIForge - ${processedRows.length} bản ghi`,
+        columns: visibleColumns,
+        rows: processedRows,
+        summaryRow: Object.keys(summaryRowObj).length > 0 ? summaryRowObj : undefined,
+        metadata: {
+          'Thời điểm xuất': new Date().toLocaleString('vi-VN'),
+          'Số lượng dòng': `${processedRows.length} dòng`,
+          'Bộ lọc áp dụng': searchTerm ? `Tìm kiếm: "${searchTerm}"` : 'Tất cả dữ liệu',
+        },
+      })
+      showTableToast('In Báo Cáo', 'Đã mở cửa sổ in ấn và xuất PDF báo cáo thành công', 'info')
+    } catch (err: any) {
+      showTableToast('Lỗi In Báo Cáo', err?.message || 'Không thể tạo bản in báo cáo', 'warning')
+    }
+  }
+
+  // ⌨️ Kích hoạt Hook Điều hướng Bàn phím & Phím tắt ERP chuẩn Desktop (Core C# GridView.cs & GridViewItem.cs)
+  const {
+    focusedCell,
+    setFocusedCell,
+    focusCell,
+    handleTableContainerKeyDown,
+    handleCellKeyDown,
+  } = useGridKeyboardNavigation({
+    tableRef,
+    rows: processedRows,
+    visibleColumns,
+    selectedRowId,
+    setSelectedRowId,
+    selectedRowIds,
+    setSelectedRowIds,
+    onRowDoubleClick: (row, rowIdx) => handleRowDoubleClick(row, rowIdx),
+    onAddRow: handleF4,
+    onDeleteRow: (idx) => handleDeleteRow(idx),
+    onDuplicateRow: (idx) => handleDuplicateRow(idx),
+    onToggleAll: handleF1,
+    onFilterByCell: handleF2,
+    onQuickSum: handleF3,
+    onToggleColumnFilters: () => setShowColumnFilters((prev) => !prev),
+  })
+
+  const handleRowClick = (r: any, rowIdx: number, e?: React.MouseEvent) => {
     const rowId = r.id ?? r.Id ?? rowIdx
     setSelectedRowId(rowId)
+
+    // Xử lý chọn nhiều dòng (Multi-selection) bằng Ctrl hoặc Shift chuẩn desktop
+    if (e?.ctrlKey || e?.metaKey) {
+      setSelectedRowIds((prev) => {
+        const next = new Set(prev)
+        if (next.has(rowId)) next.delete(rowId)
+        else next.add(rowId)
+        return next
+      })
+    } else if (e?.shiftKey && selectedRowId !== null) {
+      const startIdx = processedRows.findIndex((row, i) => (row.id ?? row.Id ?? i) === selectedRowId)
+      if (startIdx !== -1) {
+        const min = Math.min(startIdx, rowIdx)
+        const max = Math.max(startIdx, rowIdx)
+        const rangeIds = new Set<any>()
+        for (let i = min; i <= max; i++) {
+          rangeIds.add(processedRows[i].id ?? processedRows[i].Id ?? i)
+        }
+        setSelectedRowIds(rangeIds)
+      }
+    } else {
+      setSelectedRowIds(new Set([rowId]))
+    }
 
     const features = useEditorStore.getState().features
     const currentFeature = features.find((f) => String(f.id) === String(node.pageId))
@@ -375,31 +609,13 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     const currentFeature = features.find((f) => String(f.id) === String(node.pageId))
     const blFileName = currentFeature?.scriptFile
 
-    // 1. Kích hoạt sự kiện 'dblclick' hoặc 'rowDblClick' được gắn trên Table node
     if (node.events && node.events.length > 0) {
       triggerComponentEvent(node.events, 'dblclick', node.props.label || 'Bảng dữ liệu', blFileName, {
         row: r,
         rowIndex: rowIdx,
+        id: r.id ?? r.Id,
         action: 'dblclick',
       })
-      triggerComponentEvent(node.events, 'rowDblClick', node.props.label || 'Bảng dữ liệu', blFileName, {
-        row: r,
-        rowIndex: rowIdx,
-        action: 'rowDblClick',
-      })
-    }
-
-    // 2. Nếu bảng có actionClick mặc định (như openDetail), kích hoạt luôn cho double-click
-    const defaultActionEvent = node.events?.find(
-      (e) => e.trigger === 'actionClick' || e.trigger === 'dblclick' || e.trigger === 'rowDblClick'
-    )
-    if (defaultActionEvent) {
-      executeSingleEvent(
-        defaultActionEvent,
-        node.props.label || 'Bảng dữ liệu',
-        blFileName,
-        { row: r, rowIndex: rowIdx, action: defaultActionEvent.action || defaultActionEvent.handlerName }
-      )
     }
   }
 
@@ -696,8 +912,6 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } =
     style || {}
 
-  const visibleColumns = columns.filter((col) => !col.hidden)
-
   return (
     <div
       className="w-full flex flex-col rounded-lg border border-slate-700/80 bg-slate-900 shadow-xl overflow-hidden text-slate-200 relative"
@@ -770,28 +984,100 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
 
-          {/* Phím tắt F1..F4 chuẩn ERP (Ảnh 4) */}
+          {/* Nút Xuất Excel chuẩn Core C# ButtonExcel.cs & ExcelExt.cs */}
+          <button
+            type="button"
+            onClick={handleExportExcel}
+            title="Xuất toàn bộ dữ liệu bảng ra file Excel (.xls)"
+            className="flex items-center gap-1.5 h-7 px-2.5 rounded-md border border-slate-700 bg-slate-800 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/60 hover:bg-slate-800/90 transition-all text-xs font-medium cursor-pointer shadow-sm active:scale-95"
+          >
+            <FileDown className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden md:inline">Xuất Excel</span>
+          </button>
+
+          {/* Nút In Báo Cáo / PDF chuẩn Core C# ButtonPdf.cs & PdfReport.cs */}
+          <button
+            type="button"
+            onClick={handlePrintReport}
+            title="In báo cáo / Xuất PDF trực tiếp dữ liệu bảng"
+            className="flex items-center gap-1.5 h-7 px-2.5 rounded-md border border-slate-700 bg-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/60 hover:bg-slate-800/90 transition-all text-xs font-medium cursor-pointer shadow-sm active:scale-95"
+          >
+            <Printer className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden md:inline">In / PDF</span>
+          </button>
+
+          {/* Phím tắt F1..F6 chuẩn ERP (Ảnh 4 & C# Core GridView.cs) */}
           <div className="hidden xl:flex items-center gap-1 pl-1 border-l border-slate-800 text-[10px] font-mono text-slate-400">
-            <span className="px-1.5 py-0.5 rounded bg-slate-800/60 border border-slate-700 cursor-pointer hover:text-emerald-400">F1</span>
-            <span className="px-1.5 py-0.5 rounded bg-slate-800/60 border border-slate-700 cursor-pointer hover:text-emerald-400">F2</span>
-            <span className="px-1.5 py-0.5 rounded bg-slate-800/60 border border-slate-700 cursor-pointer hover:text-emerald-400">F3</span>
-            <span className="px-1.5 py-0.5 rounded bg-slate-800/60 border border-slate-700 cursor-pointer hover:text-emerald-400">F4</span>
+            <button
+              type="button"
+              onClick={handleF1}
+              title="F1: Chọn tất cả / Bỏ chọn tất cả dòng (Toggle All)"
+              className="px-2 py-0.5 rounded bg-slate-800/80 hover:bg-emerald-600/30 text-slate-300 hover:text-emerald-300 border border-slate-700/80 hover:border-emerald-500/60 transition-all font-bold cursor-pointer shadow-sm active:scale-95"
+            >
+              F1
+            </button>
+            <button
+              type="button"
+              onClick={handleF2}
+              title="F2: Lọc nhanh theo giá trị ô đang chọn (Filter by Cell)"
+              className="px-2 py-0.5 rounded bg-slate-800/80 hover:bg-emerald-600/30 text-slate-300 hover:text-emerald-300 border border-slate-700/80 hover:border-emerald-500/60 transition-all font-bold cursor-pointer shadow-sm active:scale-95"
+            >
+              F2
+            </button>
+            <button
+              type="button"
+              onClick={handleF3}
+              title="F3: Tính tổng nhanh số liệu (GW, CBM, VGM) các dòng chọn"
+              className="px-2 py-0.5 rounded bg-slate-800/80 hover:bg-emerald-600/30 text-slate-300 hover:text-emerald-300 border border-slate-700/80 hover:border-emerald-500/60 transition-all font-bold cursor-pointer shadow-sm active:scale-95"
+            >
+              F3
+            </button>
+            <button
+              type="button"
+              onClick={handleF4}
+              title="F4: Thêm dòng mới vào bảng (Add Row)"
+              className="px-2 py-0.5 rounded bg-slate-800/80 hover:bg-emerald-600/30 text-slate-300 hover:text-emerald-300 border border-slate-700/80 hover:border-emerald-500/60 transition-all font-bold cursor-pointer shadow-sm active:scale-95"
+            >
+              F4
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowColumnFilters((prev) => !prev)}
+              title="F6: Bật / Tắt bộ lọc từng cột (Toggle Column Filters)"
+              className="px-2 py-0.5 rounded bg-slate-800/80 hover:bg-emerald-600/30 text-slate-300 hover:text-emerald-300 border border-slate-700/80 hover:border-emerald-500/60 transition-all font-bold cursor-pointer shadow-sm active:scale-95"
+            >
+              F6
+            </button>
           </div>
         </div>
       </div>
 
       {/* ── NỘI DUNG LƯỚI BẢNG (TABLE CANVAS) ── */}
-      <div className="w-full overflow-x-auto select-none relative">
+      <div
+        ref={tableRef}
+        tabIndex={0}
+        onKeyDown={handleTableContainerKeyDown}
+        className="w-full overflow-x-auto select-none relative focus:outline-none"
+      >
         <table className="w-full text-left text-xs border-collapse">
           {/* THEAD */}
           <thead className="bg-[#0b1329] text-slate-300 font-semibold tracking-wider border-b border-emerald-500/40 uppercase">
             <tr>
               {/* Cột STT + Thao tác ghim cố định ở đầu table (Left: 0, z-30, bg đặc) */}
               <th
-                className="px-2 py-2.5 text-center text-slate-400 font-mono text-[11px] sticky left-0 z-30 bg-[#0b1329] border-r border-slate-800/90 shadow-[2px_0_5px_rgba(0,0,0,0.3)]"
+                onClick={handleF1}
+                className="px-2 py-2.5 text-center text-slate-400 font-mono text-[11px] sticky left-0 z-30 bg-[#0b1329] border-r border-slate-800/90 shadow-[2px_0_5px_rgba(0,0,0,0.3)] cursor-pointer hover:bg-slate-800 transition-colors select-none"
                 style={{ width: `${STT_COL_WIDTH}px`, minWidth: `${STT_COL_WIDTH}px` }}
+                title="Click hoặc nhấn F1 để Chọn tất cả / Bỏ chọn dòng"
               >
-                #
+                <span className="flex items-center justify-center gap-1">
+                  <input
+                    type="checkbox"
+                    readOnly
+                    checked={processedRows.length > 0 && selectedRowIds.size === processedRows.length}
+                    className="w-3.5 h-3.5 rounded border-slate-700 bg-slate-800 text-emerald-500 cursor-pointer pointer-events-none"
+                  />
+                </span>
               </th>
 
               {/* Các cột dữ liệu (Các cột Frozen đã được đưa lên đầu table) */}
@@ -918,26 +1204,47 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
               processedRows.map((row, rowIdx) => (
                 <tr
                   key={row.id || rowIdx}
-                  onClick={() => handleRowClick(row, rowIdx)}
+                  data-row-index={rowIdx}
+                  onClick={(e) => handleRowClick(row, rowIdx, e)}
                   onDoubleClick={() => handleRowDoubleClick(row, rowIdx)}
                   onContextMenu={(e) => handleRowContextMenu(e, row, rowIdx)}
                   className={`transition-colors group cursor-pointer ${
-                    selectedRowId === (row.id ?? row.Id ?? rowIdx)
+                    selectedRowId === (row.id ?? row.Id ?? rowIdx) || selectedRowIds.has(row.id ?? row.Id ?? rowIdx)
                       ? 'bg-blue-600/25 hover:bg-blue-600/35 border-l-2 border-l-blue-400'
                       : 'hover:bg-slate-800/40'
                   }`}
                 >
-                  {/* Cột STT ghim cố định ở đầu (Left: 0, z-20, bg đặc #0f172a) */}
+                  {/* Cột STT ghim cố định ở đầu (Left: 0, z-20, bg đặc #0f172a, click chọn dòng) */}
                   <td
-                    className="px-2 py-1 text-center font-mono text-[11px] sticky left-0 z-20 bg-[#0f172a] border-r border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] group-hover:bg-slate-800/90 text-slate-400 select-none"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      const rowId = row.id ?? row.Id ?? rowIdx
+                      setSelectedRowIds((prev) => {
+                        const next = new Set(prev)
+                        if (next.has(rowId)) next.delete(rowId)
+                        else next.add(rowId)
+                        return next
+                      })
+                      setSelectedRowId(rowId)
+                    }}
+                    className={`px-2 py-1 text-center font-mono text-[11px] sticky left-0 z-20 border-r border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] text-slate-400 select-none cursor-pointer ${
+                      selectedRowIds.has(row.id ?? row.Id ?? rowIdx)
+                        ? 'bg-blue-900/60 text-blue-200 font-bold'
+                        : 'bg-[#0f172a] group-hover:bg-slate-800/90'
+                    }`}
                     style={{ width: `${STT_COL_WIDTH}px`, minWidth: `${STT_COL_WIDTH}px` }}
-                    title="Chuột phải để mở menu thao tác: Sao chép dòng, Xóa dòng, Chèn dòng..."
+                    title="Click chọn dòng | Chuột phải mở menu thao tác"
                   >
-                    <span>{rowIdx + 1}</span>
+                    <span className="flex items-center justify-center gap-1.5">
+                      {selectedRowIds.has(row.id ?? row.Id ?? rowIdx) ? (
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                      ) : null}
+                      <span>{rowIdx + 1}</span>
+                    </span>
                   </td>
 
                   {/* Render Từng Ô (Mỗi Ô Là Một Interactive Grid Component) */}
-                  {visibleColumns.map((col) => {
+                  {visibleColumns.map((col, colIdx) => {
                     const isFrozen = Boolean(col.frozen || col.sticky === 'left')
                     const leftOffset = isFrozen && leftOffsets[col.key] !== undefined ? leftOffsets[col.key] : undefined
                     const isLastFrozen = col.key === lastFrozenKey
@@ -971,9 +1278,15 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                           value={cellVal}
                           row={row}
                           rowIndex={rowIdx}
+                          columnIndex={colIdx}
                           error={cellError}
                           onChange={(newVal) => handleCellChange(row.id ?? rowIdx, col.key, newVal)}
                           onActionClick={(actionKey) => handleCellAction(actionKey, row, col)}
+                          onKeyDown={handleCellKeyDown}
+                          onFocus={(rIdx, cIdx, cKey) => {
+                            setSelectedRowId(row.id ?? row.Id ?? rIdx)
+                            setFocusedCell({ rowIndex: rIdx, colIndex: cIdx, colKey: cKey })
+                          }}
                         />
                       </td>
                     )

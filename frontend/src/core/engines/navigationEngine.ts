@@ -38,6 +38,7 @@ interface NavigationState {
   ) => void
   closeTab: (tabId: string) => void
   setActiveTab: (tabId: string) => void
+  setTabDirty: (tabIdOrFeatureId: string, isDirty: boolean) => void
   closePopup: (result?: any) => void
 }
 
@@ -46,6 +47,17 @@ export const useNavigationEngine = create<NavigationState>()(
     openTabs: [],
     activeTabId: null,
     activePopup: null,
+
+    // Đánh dấu trạng thái bẩn (isDirty) cho tab khi dữ liệu form thay đổi
+    setTabDirty: (tabIdOrFeatureId: string, isDirty: boolean) => {
+      set((state) => ({
+        openTabs: state.openTabs.map((t) =>
+          t.id === tabIdOrFeatureId || t.featureId === tabIdOrFeatureId
+            ? { ...t, isDirty }
+            : t
+        ),
+      }))
+    },
 
     // 🚀 Mở một Feature theo chuẩn FeatureTab hoặc FeaturePopup (chỉ đạo của Master)
     openFeature: (

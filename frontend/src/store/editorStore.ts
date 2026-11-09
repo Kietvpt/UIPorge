@@ -91,7 +91,34 @@ export function getSavedRecordId(): string | null {
   }
 }
 
-export function saveActiveFeatureIdToUrl(id: string, recordId?: string | number | null) {
+/**
+ * 🏷️ Kiểm tra một Feature có phải là màn hình Chi tiết (Detail/Form) hay không
+ */
+export function isDetailFeature(feat: FeaturePage | null | undefined): boolean {
+  if (!feat) return false
+  return Boolean(
+    feat.isDetail ||
+    feat.route === '/fcl-import' ||
+    feat.route?.includes('detail') ||
+    feat.scriptFile?.toLowerCase().includes('detail') ||
+    feat.name?.toLowerCase().includes('fcl import') ||
+    feat.name?.toLowerCase().includes('chi tiết')
+  )
+}
+
+/**
+ * 📋 Kiểm tra một Feature có phải là màn hình Danh sách (List/Grid) hay không
+ */
+export function isListFeature(feat: FeaturePage | null | undefined): boolean {
+  if (!feat) return false
+  return !isDetailFeature(feat)
+}
+
+export function saveActiveFeatureIdToUrl(
+  id: string,
+  recordId?: string | number | null,
+  featureList?: FeaturePage[]
+) {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem('uiforge_active_feature_id', id)
@@ -99,20 +126,11 @@ export function saveActiveFeatureIdToUrl(id: string, recordId?: string | number 
     url.searchParams.set('feature', id)
 
     // Xác định xem feature đích có phải màn hình danh sách hay không
-    let isListScreen = false
-    try {
-      const features = useEditorStore.getState()?.features || []
-      const feat = features.find((f) => String(f.id) === String(id) || f.route === `/${id}` || f.route === id)
-      isListScreen = Boolean(
-        feat?.route === '/transactions' ||
-        feat?.scriptFile === 'transactionList.bl.ts' ||
-        feat?.scriptFile?.includes('transactionList') ||
-        feat?.name?.toLowerCase().includes('danh sách') ||
-        (feat && !feat.isDetail && feat.route !== '/fcl-import')
-      )
-    } catch {}
+    const features = featureList || useEditorStore.getState()?.features || []
+    const feat = features.find((f) => String(f.id) === String(id) || f.route === `/${id}` || f.route === id)
+    const isList = feat ? isListFeature(feat) : (id === '6' || id === '1' || id === '3')
 
-    if (isListScreen || recordId === null || recordId === '') {
+    if (isList || recordId === null || recordId === '') {
       url.searchParams.delete('id')
       try {
         localStorage.removeItem('uiforge_active_transaction_id')
@@ -145,20 +163,14 @@ export const useEditorStore = create<EditorState>()(
       },
 
       setActiveFeature: (id, recordId) => {
-        saveActiveFeatureIdToUrl(id, recordId)
-
-        let finalRecId: string | null = null
         const features = get().features || []
         const feat = features.find((f) => String(f.id) === String(id) || f.route === `/${id}` || f.route === id)
-        const isListScreen = Boolean(
-          feat?.route === '/transactions' ||
-          feat?.scriptFile === 'transactionList.bl.ts' ||
-          feat?.scriptFile?.includes('transactionList') ||
-          feat?.name?.toLowerCase().includes('danh sách') ||
-          (feat && !feat.isDetail && feat.route !== '/fcl-import')
-        )
+        const isList = feat ? isListFeature(feat) : (id === '6' || id === '1' || id === '3')
 
-        if (isListScreen || recordId === null || recordId === '') {
+        saveActiveFeatureIdToUrl(id, isList ? null : recordId, features)
+
+        let finalRecId: string | null = null
+        if (isList || recordId === null || recordId === '') {
           finalRecId = null
         } else if (recordId !== undefined && recordId !== null) {
           finalRecId = String(recordId)
@@ -197,15 +209,9 @@ export const useEditorStore = create<EditorState>()(
           features.find((f) => !f.hidden && !f.isDetail) ||
           features[0]
 
-        const isListScreen = Boolean(
-          target?.route === '/transactions' ||
-          target?.scriptFile?.includes('transactionList') ||
-          target?.name?.toLowerCase().includes('danh sách') ||
-          (!target?.isDetail && target?.route !== '/fcl-import')
-        )
-
-        const recId = isListScreen ? null : getSavedRecordId()
-        saveActiveFeatureIdToUrl(target.id, recId)
+        const isList = isListFeature(target)
+        const recId = isList ? null : getSavedRecordId()
+        saveActiveFeatureIdToUrl(target.id, recId, features)
         set({
           features,
           activeFeatureId: target.id,

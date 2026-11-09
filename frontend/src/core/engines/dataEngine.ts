@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { useEditorStore } from '@/store/editorStore'
+import { useNavigationEngine } from './navigationEngine'
 import type { ComponentNode } from '@/types/schema'
 
 export interface SelectOption {
@@ -19,8 +20,8 @@ const EMPTY_ARRAY: any[] = []
 
 /**
  * ⚡ Phân tích chuỗi quy tắc Populate Field từ Core C# (Ảnh Modal: Populate field)
- * Ví dụ: "Transaction.VendorId = Terminal.VendorId, Transaction.Agent = Terminal.AgentName"
- * Hoặc: "Vendor = VendorName, Agent = AgentName, Price = UnitPrice"
+ * Ví dụ: "Order.PartnerId = MasterData.PartnerId, Order.Contact = MasterData.ContactName"
+ * Hoặc: "Partner = PartnerName, Agent = AgentName, Price = UnitPrice"
  */
 export function parsePopulateRules(rawString?: string): PopulateRule[] {
   if (!rawString || typeof rawString !== 'string') return []
@@ -34,7 +35,7 @@ export function parsePopulateRules(rawString?: string): PopulateRule[] {
       const targetRaw = parts[0].trim()
       const targetField = targetRaw.includes('.') ? targetRaw.split('.').pop()! : targetRaw
 
-      // Lấy tên trường nguồn (bỏ qua tên entity nếu có: "Terminal.VendorId" -> "VendorId")
+      // Lấy tên trường nguồn (bỏ qua tên entity nếu có: "MasterData.PartnerId" -> "PartnerId")
       const sourceRaw = parts[1].trim()
       const sourceField = sourceRaw.includes('.') ? sourceRaw.split('.').pop()! : sourceRaw
 
@@ -53,61 +54,33 @@ export function extractFieldValue(
   fieldName: string,
   fallback: any = undefined
 ) {
-  // Tìm kiếm form ưu tiên: formId -> 'default' -> '2' -> tất cả các form còn lại trong state
+  // Tìm kiếm form ưu tiên: formId -> 'default' -> các form còn lại trong state
   const candidateForms = [
     state.formRecords[formId],
     state.formRecords['default'],
-    state.formRecords['2'],
-    state.formRecords['TransactionDetail'],
     ...Object.values(state.formRecords),
   ].filter(Boolean)
 
   if (candidateForms.length === 0) return fallback
 
-  const cleanFieldName = fieldName.toLowerCase().replace(/^fld_/, '')
-
-  // Mapping các alias tương đương giữa C# Entity và Form UIForge
-  const aliasMap: Record<string, string[]> = {
-    jobno: ['jobno', 'job_no'],
-    mblno: ['mblno', 'mbl_no'],
-    shipmentdate: ['shipmentdate', 'sdate', 'shipment_date'],
-    mblissueddate: ['mblissueddate', 'mbl_issued_date'],
-    mbltype: ['mbltype', 'mbl_type'],
-    vendor: ['vendorname', 'vendorid', 'vendor', 'vendor_name'],
-    vendorname: ['vendorname', 'vendor', 'vendor_name'],
-    slines: ['slines', 'shippingline', 's_lines'],
-    pol: ['polid', 'pol', 'pol_id'],
-    pod: ['podid', 'pod', 'pod_id'],
-    commodity: ['commodity', 'commodityname', 'commodity_name'],
-    commodityname: ['commodity', 'commodityname', 'commodity_name'],
-    totalgw: ['totalgw', 'total_gw', 'gw'],
-    totalcbm: ['totalcbm', 'total_cbm', 'cbm'],
-    totalvgm: ['totalvgm', 'total_vgm', 'vgm'],
-    totalpackages: ['totalpackages', 'total_packages', 'tpackages'],
-    packagetype: ['packagetype', 'package_type', 'ptype'],
-    pono: ['pono', 'po_no'],
-    service: ['service'],
-    pterm: ['pterm', 'p_term'],
-    opic: ['opic', 'op_ic'],
-    eta: ['eta'],
-    notes: ['notes'],
-  }
-
-  const searchKeys = [
-    fieldName,
-    cleanFieldName,
-    ...(aliasMap[cleanFieldName] || []),
-  ]
+  const clean = fieldName.replace(/^fld_/, '').replace(/[_\-\s]/g, '').toLowerCase()
 
   for (const form of candidateForms) {
-    if (!form) continue
-    for (const key of searchKeys) {
-      if (form[key] !== undefined) return form[key]
-      const found = Object.keys(form).find(
-        (k) => k.toLowerCase().replace(/^fld_/, '') === key.toLowerCase()
-      )
-      if (found && form[found] !== undefined) {
-        return form[found]
+    if (!form || typeof form !== 'object') continue
+
+    // 1. Khớp chính xác tên trường
+    if (form[fieldName] !== undefined && form[fieldName] !== null) return form[fieldName]
+
+    // 2. Khớp sau khi loại bỏ tiền tố fld_
+    const rawKey = fieldName.replace(/^fld_/, '')
+    if (form[rawKey] !== undefined && form[rawKey] !== null) return form[rawKey]
+
+    // 3. Khớp không phân biệt hoa thường và ký tự phân cách (chuẩn hóa generic 100%)
+    for (const [k, v] of Object.entries(form)) {
+      if (v === undefined || v === null) continue
+      const normK = k.replace(/^fld_/, '').replace(/[_\-\s]/g, '').toLowerCase()
+      if (normK === clean) {
+        return v
       }
     }
   }
@@ -116,7 +89,7 @@ export function extractFieldValue(
 }
 
 interface DataEngineState {
-  // Kho lưu trữ dữ liệu các bảng/entity nghiệp vụ (datasets['Terminal'], datasets['Transaction']...)
+  // Kho lưu trữ dữ liệu các bảng/entity danh mục (datasets['MasterData'], datasets['Document']...)
   datasets: Record<string, any[]>
 
   // Lưu trữ dữ liệu bản ghi đang nhập liệu trên từng Form (formRecords[formId][fieldName])
@@ -174,13 +147,64 @@ interface DataEngineState {
   selectedRecords: Record<string, any>
   setSelectedRecord: (entityName: string, record: any) => void
   getSelectedRecord: (entityName: string) => any
+
+  // 14. Quản lý trạng thái thay đổi dữ liệu (Dirty Tracking chuẩn Core C# EditForm.cs)
+  originalFormRecords: Record<string, Record<string, any>>
+  isFormDirty: (formId: string) => boolean
+  markFormClean: (formId: string) => void
 }
 
 export const useDataEngine = create<DataEngineState>()(
   devtools((set, get) => ({
     datasets: {},
     formRecords: {},
+    originalFormRecords: {},
     selectedRecords: {},
+
+    // Quản lý Dirty Tracking
+    isFormDirty: (formId: string) => {
+      const state = get()
+      const current = state.formRecords[formId] || state.formRecords['default'] || {}
+      const original = state.originalFormRecords[formId] || state.originalFormRecords['default']
+
+      if (!original) return false
+
+      const ignoredPrefixes = ['btn_', 'sec_', 'tab_', 'lbl_']
+      const checkedKeys = new Set<string>()
+
+      for (const [k, v] of Object.entries(current)) {
+        if (!k || ignoredPrefixes.some((p) => k.startsWith(p))) continue
+        const clean = k.replace(/^fld_/, '').toLowerCase()
+        if (checkedKeys.has(clean)) continue
+        checkedKeys.add(clean)
+
+        const origVal = original[k] ?? original[clean] ?? original[k.replace(/^fld_/, '')]
+        const normCurrent = v === '' || v === undefined ? null : v
+        const normOrig = origVal === '' || origVal === undefined ? null : origVal
+
+        if (String(normCurrent ?? '') !== String(normOrig ?? '')) {
+          return true
+        }
+      }
+
+      return false
+    },
+
+    markFormClean: (formId: string) => {
+      set((state) => {
+        const current = state.formRecords[formId] || state.formRecords['default'] || {}
+        return {
+          originalFormRecords: {
+            ...state.originalFormRecords,
+            [formId]: { ...current },
+            default: { ...current },
+          },
+        }
+      })
+      try {
+        useNavigationEngine.getState().setTabDirty(formId, false)
+      } catch {}
+    },
 
     // Lưu trữ bản ghi đang chọn
     setSelectedRecord: (entityName: string, record: any) => {
@@ -197,7 +221,7 @@ export const useDataEngine = create<DataEngineState>()(
       return get().selectedRecords[entityName]
     },
 
-    // 1. Đăng ký dataset cho một Entity (ví dụ nạp danh mục Terminal, Customer...)
+    // 1. Đăng ký dataset cho một Entity (ví dụ nạp danh mục MasterData, Products...)
     registerDataset: (entityName: string, items: any[]) => {
       set((state) => ({
         datasets: {
@@ -235,11 +259,19 @@ export const useDataEngine = create<DataEngineState>()(
 
         const currentForm = state.formRecords[formId] || {}
         const defaultForm = state.formRecords['default'] || {}
+        const updatedCurrent = updateForm(currentForm)
+        const updatedDefault = updateForm(defaultForm)
+
+        // Tự động đồng bộ cờ isDirty lên NavigationEngine cho tab tương ứng
+        try {
+          useNavigationEngine.getState().setTabDirty(formId, true)
+        } catch {}
+
         return {
           formRecords: {
             ...state.formRecords,
-            [formId]: updateForm(currentForm),
-            default: updateForm(defaultForm),
+            [formId]: updatedCurrent,
+            default: updatedDefault,
           },
         }
       })
@@ -267,8 +299,11 @@ export const useDataEngine = create<DataEngineState>()(
             ...state.formRecords,
             [formId]: normalized,
             default: normalized,
-            ...(formId === 'default' ? { '4': normalized, '2': normalized, 'TransactionDetail': normalized } : {}),
-            ...(formId === '4' ? { default: normalized, 'TransactionDetail': normalized } : {}),
+          },
+          originalFormRecords: {
+            ...state.originalFormRecords,
+            [formId]: { ...normalized },
+            default: { ...normalized },
           },
         }
       })
@@ -281,8 +316,11 @@ export const useDataEngine = create<DataEngineState>()(
       const def = records['default'] || {}
       let merged: Record<string, any> = { ...def, ...target }
 
-      // Nếu chưa có JobNo hoặc rỗng, kích hoạt thu thập trực tiếp từ các component trên màn hình
-      if (!merged.jobNo && !merged.JobNo) {
+      // Nếu chưa có dữ liệu hợp lệ, kích hoạt thu thập trực tiếp từ các component trên màn hình
+      const hasAnyData = Object.keys(merged).some(
+        (k) => k !== 'id' && k !== 'Id' && merged[k] !== undefined && merged[k] !== ''
+      )
+      if (!hasAnyData) {
         const collected = get().collectScreenData(formId)
         merged = { ...collected, ...merged }
       }
@@ -416,11 +454,12 @@ export const useDataEngine = create<DataEngineState>()(
         return { success: false, message: 'Thiếu thông tin Entity hoặc dữ liệu bản ghi' }
       }
       let targetId = record.id || record.Id
-      // Nếu chưa có ID nhưng có JobNo, kiểm tra đối chiếu trong dataset đã nạp
-      if ((!targetId || targetId === 'new' || Number(targetId) <= 0) && (record.jobNo || record.JobNo)) {
+      // Nếu chưa có ID nhưng có mã duy nhất (code / key), kiểm tra đối chiếu trong dataset đã nạp
+      const uniqueCode = record.code || record.Code || record.recordCode || record.RecordCode || record.key || record.Key
+      if ((!targetId || targetId === 'new' || Number(targetId) <= 0) && uniqueCode) {
         const currentList = get().datasets[entityName]
         if (Array.isArray(currentList)) {
-          const match = currentList.find((t) => (t.jobNo || t.JobNo) === (record.jobNo || record.JobNo))
+          const match = currentList.find((t) => (t.code || t.Code || t.recordCode || t.RecordCode || t.key || t.Key) === uniqueCode)
           if (match) {
             targetId = match.id || match.Id
           }
@@ -439,7 +478,7 @@ export const useDataEngine = create<DataEngineState>()(
         const sanitized: Record<string, any> = { ...record }
         for (const [k, v] of Object.entries(sanitized)) {
           if (v === '') {
-            if (/date|eta|atd|ata|etd/i.test(k) || /^(id|total|gw|cbm|vgm|typeid|package)/i.test(k)) {
+            if (/date|time/i.test(k) || /^(id|qty|quantity|amount|total|price|count|precision|number|order)/i.test(k) || /gw|cbm|vgm|package/i.test(k)) {
               sanitized[k] = null
             }
           } else if (typeof v === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(v.trim())) {
@@ -477,21 +516,14 @@ export const useDataEngine = create<DataEngineState>()(
           const data = await res.json()
           const realId = data.id || data.Id || numericId
 
-          // Cập nhật URL & LocalStorage để khi F5 vẫn giữ đúng bản ghi vừa lưu
-          if (typeof window !== 'undefined') {
-            const currentUrl = new URL(window.location.href)
-            currentUrl.searchParams.set('id', String(realId))
-            window.history.replaceState(null, '', currentUrl.toString())
-            try {
-              localStorage.setItem('uiforge_active_transaction_id', String(realId))
-            } catch {}
-          }
           useEditorStore.getState().setActiveRecordId(String(realId))
 
           if (formId) {
             get().setFormRecord(formId, data)
+            get().markFormClean(formId)
           }
           get().setFormRecord('default', data)
+          get().markFormClean('default')
           // Cập nhật lại trong dataset nếu có
           const currentDataset = get().datasets[entityName]
           if (currentDataset && Array.isArray(currentDataset)) {
@@ -555,7 +587,7 @@ export const useDataEngine = create<DataEngineState>()(
       const targetFeature =
         features.find((f) => String(f.id) === String(featureIdOrFormId)) ||
         features.find((f) => String(f.id) === String(activeFeatureId)) ||
-        features.find((f) => f.name.toLowerCase().includes('fcl') || f.route?.includes('fcl')) ||
+        features.find((f) => f.isDetail) ||
         features[0]
 
       const collected: Record<string, any> = {}
@@ -618,26 +650,13 @@ export const useDataEngine = create<DataEngineState>()(
       // Dữ liệu người dùng đã nhập (activeForm) phải đè lên giá trị mặc định của template (collected)
       const finalRecord = { ...collected, ...activeForm }
 
-      // Lấy ID từ URL hoặc LocalStorage nếu form chưa có
+      // Lấy ID từ URL nếu form chưa có
       if (!finalRecord.id && !finalRecord.Id && typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search)
-        const idFromUrl = urlParams.get('id') || localStorage.getItem('uiforge_active_transaction_id')
+        const idFromUrl = urlParams.get('id')
         if (idFromUrl && idFromUrl !== 'new' && Number(idFromUrl) > 0) {
           finalRecord.id = Number(idFromUrl)
           finalRecord.Id = Number(idFromUrl)
-        }
-      }
-
-      // Tự động đối chiếu ID từ dataset 'Transaction' nếu có
-      const jobNoVal = finalRecord.jobNo || finalRecord.JobNo
-      if (jobNoVal && !finalRecord.id && !finalRecord.Id) {
-        const transList = state.datasets['Transaction']
-        if (Array.isArray(transList)) {
-          const match = transList.find((t) => (t.jobNo || t.JobNo) === jobNoVal)
-          if (match) {
-            finalRecord.id = match.id || match.Id
-            finalRecord.Id = match.id || match.Id
-          }
         }
       }
 

@@ -19,6 +19,9 @@ export type ComponentType =
   | 'Divider'
   | 'Textarea'
   | 'RecordSelector'
+  | 'SearchEntry'
+  | 'FileUploadGrid'
+  | 'Autocomplete'
 
 export type EventTrigger = 'onClick' | 'onChange' | 'onSubmit' | 'onFocus' | 'onBlur' | 'click' | 'change' | 'focus' | 'blur' | 'dblclick'
 export type EventAction = 'navigate' | 'callApi' | 'showModal' | 'hideModal' | 'setState' | 'custom' | (string & {})

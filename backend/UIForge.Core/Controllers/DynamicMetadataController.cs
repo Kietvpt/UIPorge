@@ -330,6 +330,91 @@ namespace UIForge.Core.Controllers
             return Ok(new { success = true, message = $"Đã xóa mềm bản ghi #{id} ({entityName}) trong cơ sở dữ liệu thành công" });
         }
 
+        /// <summary>
+        /// 🔒 GET /api/core/data/{entityName}/check-unique?field=Code&value=ABC&excludeId=123
+        /// Kiểm tra tính duy nhất (Unique Constraint) của bất kỳ trường nào trong bất kỳ bảng nào (100% Generic).
+        /// </summary>
+        [HttpGet("data/{entityName}/check-unique")]
+        public async Task<IActionResult> CheckUnique(
+            string entityName,
+            [FromQuery] string field,
+            [FromQuery] string value,
+            [FromQuery] int? excludeId = null)
+        {
+            if (string.IsNullOrWhiteSpace(field) || string.IsNullOrWhiteSpace(value))
+            {
+                return BadRequest(new { isUnique = false, message = "Tên trường và giá trị không được để trống." });
+            }
+
+            var entityType = ResolveEntityType(entityName);
+            if (entityType == null)
+            {
+                return NotFound(new { isUnique = false, message = $"Thực thể '{entityName}' không tồn tại." });
+            }
+
+            var clrType = entityType.ClrType;
+            var isBaseEntity = typeof(BaseEntity).IsAssignableFrom(clrType);
+
+            var queryMethod = typeof(DbContext).GetMethod(nameof(DbContext.Set), Type.EmptyTypes)?
+                .MakeGenericMethod(clrType);
+            if (queryMethod?.Invoke(_dbContext, null) is not IQueryable queryable)
+            {
+                return BadRequest(new { isUnique = false, message = $"Không thể truy vấn thực thể '{entityName}'" });
+            }
+
+            var toListAsyncMethod = typeof(EntityFrameworkQueryableExtensions)
+                .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .First(m => m.Name == nameof(EntityFrameworkQueryableExtensions.ToListAsync) && m.GetParameters().Length == 2)
+                .MakeGenericMethod(clrType);
+
+            var task = (Task)toListAsyncMethod.Invoke(null, new object[] { queryable, CancellationToken.None })!;
+            await task.ConfigureAwait(false);
+            var resultProp = task.GetType().GetProperty("Result");
+            var rawList = (IEnumerable)resultProp!.GetValue(task)!;
+
+            var cleanVal = value.Trim();
+            bool isDuplicate = false;
+
+            var prop = clrType.GetProperty(field, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            var idProp = clrType.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+            if (prop == null)
+            {
+                return BadRequest(new { isUnique = false, message = $"Trường '{field}' không tồn tại trong thực thể '{entityName}'." });
+            }
+
+            foreach (var item in rawList)
+            {
+                if (isBaseEntity && item is BaseEntity b && !b.Active)
+                    continue;
+
+                if (excludeId.HasValue && idProp != null)
+                {
+                    var idVal = idProp.GetValue(item);
+                    if (idVal != null && Convert.ToInt32(idVal) == excludeId.Value)
+                        continue;
+                }
+
+                var itemVal = prop.GetValue(item)?.ToString();
+                if (string.Equals(itemVal?.Trim(), cleanVal, StringComparison.OrdinalIgnoreCase))
+                {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+
+            return Ok(new
+            {
+                isUnique = !isDuplicate,
+                entityName,
+                field,
+                value = cleanVal,
+                message = isDuplicate
+                    ? $"Giá trị '{cleanVal}' đã tồn tại trong danh mục {entityName}."
+                    : $"Giá trị '{cleanVal}' hợp lệ và chưa tồn tại."
+            });
+        }
+
         private IEntityType? ResolveEntityType(string entityName)
         {
             var clean = entityName.Trim();

@@ -16,6 +16,9 @@ import {
   ForgeSection,
   ForgeTabStack,
   ForgeRecordSelector,
+  ForgeSearchEntry,
+  ForgeFileUploadGrid,
+  ForgeAutocomplete,
 } from './components'
 import { groupNodesByTabStack } from './tabStackUtils'
 import { useEditorStore } from '@/store/editorStore'
@@ -236,6 +239,12 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             style={node.style as any}
           />
         )
+      case 'SearchEntry':
+        return <ForgeSearchEntry node={node} isEditing={isEditing} />
+      case 'FileUploadGrid':
+        return <ForgeFileUploadGrid node={node} isEditing={isEditing} />
+      case 'Autocomplete':
+        return <ForgeAutocomplete node={node} isEditing={isEditing} />
       default:
         return (
           <div className="p-3 bg-red-950/40 border border-red-800 rounded text-red-300 text-xs">

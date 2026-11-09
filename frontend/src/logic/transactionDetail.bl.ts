@@ -1,5 +1,5 @@
 import { useDataEngine } from '@/core/engines/dataEngine'
-import { useEditorStore } from '@/store/editorStore'
+import { useEditorStore, saveActiveFeatureIdToUrl, isDetailFeature } from '@/store/editorStore'
 import { TransactionItem } from './transactionList.bl'
 
 export class TransactionDetailBL {
@@ -47,14 +47,13 @@ export class TransactionDetailBL {
         dataEngine.setFormRecord(activeId, data)
         dataEngine.setFormRecord('4', data)
 
-        // Lưu ID vào URL & LocalStorage
-        if (typeof window !== 'undefined' && data?.id) {
-          const currentUrl = new URL(window.location.href)
-          currentUrl.searchParams.set('id', String(data.id))
-          window.history.replaceState(null, '', currentUrl.toString())
-          try {
-            localStorage.setItem('uiforge_active_transaction_id', String(data.id))
-          } catch {}
+        // Lưu ID vào URL & LocalStorage CHỈ KHI đang ở màn hình Chi tiết (Detail)
+        const curStore = useEditorStore.getState()
+        const currentFeat = curStore.features.find((f) => String(f.id) === String(activeId))
+        const isDetail = isDetailFeature(currentFeat)
+
+        if (isDetail && typeof window !== 'undefined' && data?.id) {
+          saveActiveFeatureIdToUrl(activeId, String(data.id), curStore.features)
         }
         return data
       }
@@ -125,6 +124,13 @@ export class TransactionDetailBL {
     // Nếu chưa có JobNo, dùng Core collectScreenData để thu thập toàn bộ dữ liệu từ màn hình hiện tại
     if (!formRecord || (!formRecord.jobNo && !formRecord.JobNo)) {
       formRecord = dataEngine.collectScreenData(formId)
+    }
+
+    // 💡 Kiểm tra Dirty Tracking chuẩn Core C# EditForm.cs: nếu chưa đổi gì thì không gửi request vô ích
+    const targetId = formRecord?.id || formRecord?.Id
+    if (targetId && targetId !== 'new' && !dataEngine.isFormDirty(formId)) {
+      console.log('[TransactionDetailBL] Form chưa bị thay đổi (Not Dirty). Bỏ qua lưu.')
+      return { success: true, message: 'Dữ liệu chưa được thay đổi' }
     }
 
     const jobNo = formRecord?.jobNo || formRecord?.JobNo

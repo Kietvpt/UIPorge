@@ -1,24 +1,22 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace UIForge.API.Controllers
+namespace UIForge.API.Modules.Logistics.Controllers
 {
+    /// <summary>
+    /// 🚢 Bộ kiểm tra nghiệp vụ Logistics (Sample Test Bench Validation)
+    /// Đặt đúng trong Modules/Logistics để đảm bảo Core hoàn toàn độc lập và không dính nghiệp vụ.
+    /// </summary>
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/logistics/validation")]
     [AllowAnonymous]
-    public class ValidationController : ControllerBase
+    public class LogisticsValidationController : ControllerBase
     {
         public class ContainerCheckRequest
         {
             public string ContainerNo { get; set; } = string.Empty;
-        }
-
-        public class UniqueCheckRequest
-        {
-            public string EntityName { get; set; } = string.Empty;
-            public string FieldName { get; set; } = string.Empty;
-            public string Value { get; set; } = string.Empty;
-            public string? ExcludeId { get; set; }
         }
 
         /// <summary>
@@ -88,40 +86,6 @@ namespace UIForge.API.Controllers
                 message = isValid
                     ? $"Số container [{clean}] hợp lệ chuẩn quốc tế ISO 6346."
                     : $"Số container [{clean}] sai Check Digit: Tính toán là [{calculated}] nhưng nhập là [{actual}]."
-            });
-        }
-
-        /// <summary>
-        /// Kiểm tra tính duy nhất (Unique) của dữ liệu (JobNo, ContainerNo, SealNo...)
-        /// </summary>
-        [HttpPost("check-unique")]
-        public IActionResult CheckUnique([FromBody] UniqueCheckRequest request)
-        {
-            var clean = request.Value.Trim().ToUpperInvariant();
-            
-            // Danh sách các mã giả lập đã tồn tại trong CSDL để test
-            var existingJobs = new HashSet<string> { "FCLI-26010001", "FCLI-26010002" };
-            var existingContainers = new HashSet<string> { "MSKU9988776", "CMAU1122334" };
-
-            bool isDuplicate = false;
-            if (request.FieldName.Equals("JobNo", StringComparison.OrdinalIgnoreCase) && existingJobs.Contains(clean))
-            {
-                isDuplicate = true;
-            }
-            else if (request.FieldName.Equals("ContainerNo", StringComparison.OrdinalIgnoreCase) && existingContainers.Contains(clean))
-            {
-                isDuplicate = true;
-            }
-
-            return Ok(new
-            {
-                isUnique = !isDuplicate,
-                entityName = request.EntityName,
-                fieldName = request.FieldName,
-                value = clean,
-                message = isDuplicate
-                    ? $"Giá trị [{clean}] đã tồn tại trong hệ thống. Vui lòng nhập mã khác."
-                    : $"Giá trị [{clean}] hợp lệ và chưa tồn tại trong hệ thống."
             });
         }
     }

@@ -1151,6 +1151,64 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
               </div>
             )}
 
+            {selectedNode.type === 'SearchEntry' && (
+              <div className="space-y-3 p-3 bg-slate-950/60 border border-slate-800 rounded-lg">
+                <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">
+                  Cấu hình Tra cứu đa cột (SearchEntry)
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                    Bảng danh mục tra cứu (Reference Dataset)
+                  </label>
+                  <input
+                    type="text"
+                    value={(selectedNode.props.reference as string) || ''}
+                    placeholder="VD: MasterData, Customers, Products..."
+                    onChange={(e) => updateComponentProps(selectedNode.id, { reference: e.target.value })}
+                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-cyan-300 font-mono text-xs"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                      Cột hiển thị (Display)
+                    </label>
+                    <input
+                      type="text"
+                      value={(selectedNode.props.displayField as string) || ''}
+                      placeholder="VD: name"
+                      onChange={(e) => updateComponentProps(selectedNode.id, { displayField: e.target.value })}
+                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 font-mono text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                      Cột giá trị (Value)
+                    </label>
+                    <input
+                      type="text"
+                      value={(selectedNode.props.valueField as string) || ''}
+                      placeholder="VD: code / id"
+                      onChange={(e) => updateComponentProps(selectedNode.id, { valueField: e.target.value })}
+                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 font-mono text-xs"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                    Placeholder
+                  </label>
+                  <input
+                    type="text"
+                    value={(selectedNode.props.placeholder as string) || ''}
+                    placeholder="Tra cứu danh mục (F1)..."
+                    onChange={(e) => updateComponentProps(selectedNode.id, { placeholder: e.target.value })}
+                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs"
+                  />
+                </div>
+              </div>
+            )}
+
             {selectedNode.type === 'Textarea' && (
               <div>
                 <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">

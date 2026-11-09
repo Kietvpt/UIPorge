@@ -22,6 +22,9 @@ export { ColumnPropertiesModal } from '@/renderer/components/grid/ColumnProperti
 export { HeaderContextMenu } from '@/renderer/components/grid/HeaderContextMenu'
 export { RowContextMenu } from '@/renderer/components/grid/RowContextMenu'
 export { SummaryRow } from '@/renderer/components/grid/SummaryRow'
+export { useGridKeyboardNavigation } from '@/renderer/components/grid/useGridKeyboardNavigation'
+export { exportGridToExcel } from './engines/excelExportEngine'
+export { printGridReport } from './engines/printReportEngine'
 
 // 3. Core Framework Engines
 export { useDataEngine } from './engines/dataEngine'

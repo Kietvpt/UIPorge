@@ -75,7 +75,9 @@ export class TransactionListBL {
    */
   openTransactionDetail(rowOrContext: any, mode: 'tab' | 'popup' = 'tab') {
     const row = rowOrContext?.row || rowOrContext?.value || rowOrContext?.params || (typeof rowOrContext === 'object' ? rowOrContext : {})
-    const id = row.id || row.Id || rowOrContext?.id || rowOrContext?.Id || 1
+    const id = row.id !== undefined ? row.id : (row.Id !== undefined ? row.Id : (rowOrContext?.id ?? rowOrContext?.Id))
+    if (id === undefined || id === null) return
+
     const jobNo = row.jobNo || row.JobNo || `Lô #${id}`
     const targetPageId = getDetailFeatureId()
 
@@ -86,7 +88,7 @@ export class TransactionListBL {
     if (mode === 'popup') {
       openPopup(targetPageId, { id, jobNo, row }, `Chi tiết: ${jobNo}`)
     } else {
-      openTab(targetPageId, { id, jobNo, row }, `Lô hàng: ${jobNo}`)
+      openTab(targetPageId, { id, jobNo, row }, `Lô: ${jobNo}`)
     }
 
     if (id && id !== 'new') {
@@ -131,7 +133,10 @@ export const transactionListBL = TransactionListBL.getInstance()
  */
 export function openTransactionDetail(context?: any) {
   const row = context?.row || context?.value || context?.params || (typeof context === 'object' ? context : {})
-  const id = row.id || row.Id || context?.id || context?.Id || 1
+  const id = row.id !== undefined ? row.id : (row.Id !== undefined ? row.Id : (context?.id ?? context?.Id))
+  if (id === undefined || id === null) {
+    return { success: false, message: 'Không tìm thấy ID bản ghi' }
+  }
   const jobNo = row.jobNo || row.JobNo || `Lô #${id}`
   const targetPageId = getDetailFeatureId()
 
