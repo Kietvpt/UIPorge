@@ -44,12 +44,17 @@ export const useNavigationEngine = create<NavigationState>()(
   devtools((set, get) => ({
     openTabs: [
       {
+        id: 'tab_trans_list',
+        featureId: 'TransactionList',
+        title: 'Danh Sách Lô Hàng (SQL Server)',
+      },
+      {
         id: 'tab_home',
         featureId: '2', // Mặc định mở feature chính
-        title: 'FCL Import (Logistics ERP)',
+        title: 'FCL Import (Designer)',
       },
     ],
-    activeTabId: 'tab_home',
+    activeTabId: 'tab_trans_list',
     activePopup: null,
 
     // 🚀 Mở một Feature theo chuẩn FeatureTab hoặc FeaturePopup (chỉ đạo của Master)
@@ -149,5 +154,12 @@ export function openTab(featureName: string, params: Record<string, any> = {}, t
  */
 export function closePopup(result?: any) {
   useNavigationEngine.getState().closePopup(result)
+}
+
+/**
+ * ⚡ Đóng Tab hiện tại
+ */
+export function closeTab(tabId: string) {
+  useNavigationEngine.getState().closeTab(tabId)
 }
 

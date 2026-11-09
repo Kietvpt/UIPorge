@@ -19,10 +19,34 @@ namespace UIForge.API.Data
         public DbSet<Project> Projects => Set<Project>();
         public DbSet<Page> Pages => Set<Page>();
         public DbSet<UIComponent> Components => Set<UIComponent>();
+        public DbSet<TransactionEntity> Transactions => Set<TransactionEntity>();
+        public DbSet<TerminalEntity> Terminals => Set<TerminalEntity>();
+        public DbSet<ContainerEntity> Containers => Set<ContainerEntity>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<TransactionEntity>(entity =>
+            {
+                entity.ToTable("Transactions");
+                entity.Property(e => e.TotalGw).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.TotalCbm).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.TotalVgm).HasColumnType("decimal(18,2)");
+            });
+
+            modelBuilder.Entity<TerminalEntity>(entity =>
+            {
+                entity.ToTable("Terminals");
+            });
+
+            modelBuilder.Entity<ContainerEntity>(entity =>
+            {
+                entity.ToTable("Containers");
+                entity.Property(e => e.Gw).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Cbm).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Vgm).HasColumnType("decimal(18,2)");
+            });
 
             // Project -> Pages (1-n, xóa project xóa luôn pages)
             modelBuilder.Entity<Project>()

@@ -2,26 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using UIForge.API.Data;
 using UIForge.API.Models.Entities;
 
 namespace UIForge.API.Controllers
 {
     /// <summary>
     /// 🌐 DynamicMetadataController: Bộ máy quản trị Danh bạ Thực thể (Entity Metadata)
-    /// và Cung cấp API Dữ liệu Chung (Generic Entity Data Engine) cho UIForge.
-    /// 
-    /// CHỨC NĂNG CỐT LÕI:
-    /// 1. Tự động đồng bộ Model giữa Backend (.NET) và Frontend (UI Studio).
-    ///    Khi Backend bổ sung hoặc chỉnh sửa Entity, Frontend tự động nhận biết danh sách bảng và cột.
-    /// 2. Cung cấp API truy vấn dữ liệu theo chuẩn OData ($filter, $select, $orderby).
-    /// 3. Tuân thủ triệt để nguyên tắc BaseEntity (Soft Delete với Active = true, Audit Trail).
+    /// và Cung cấp API Dữ liệu Chung (Generic Entity Data Engine) cho UIForge kết nối trực tiếp SQL Server.
     /// </summary>
     [ApiController]
     [Route("api/core")]
     public class DynamicMetadataController : ControllerBase
     {
+        private readonly AppDbContext _dbContext;
+
+        public DynamicMetadataController(AppDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
         public class ColumnMetadataDto
         {
             public string Name { get; set; } = string.Empty;
@@ -41,112 +45,23 @@ namespace UIForge.API.Controllers
             public List<ColumnMetadataDto> Columns { get; set; } = new();
         }
 
-        // ── KHO DỮ LIỆU MẪU IN-MEMORY DÀNH CHO DEMO KIỂM THỬ THỰC TẾ ──
-        private static readonly List<TransactionEntity> _sampleTransactions = new()
-        {
-            new TransactionEntity
-            {
-                Id = 1,
-                JobNo = "FCLI-26020005",
-                TypeId = 1, // FCL Import
-                ShipmentDate = new DateTime(2026, 2, 2),
-                MblNo = "ASHVT00002005",
-                MblIssuedDate = new DateTime(2026, 1, 25),
-                MblType = "SURRENDERED",
-                VendorId = "VFRAC-IT",
-                VendorName = "VFRAC-IT VIETNAM",
-                SLines = "SITC",
-                Agent = "SHANGHAI TRANSLEAD",
-                PolId = "CNSGH",
-                PodId = "VNDTS",
-                Service = "CY/CY",
-                Opic = "NGO PHAN THI LY",
-                Eta = new DateTime(2026, 2, 3),
-                PTerm = "COLLECT",
-                Commodity = "Linh kiện điện tử phụ trợ",
-                TotalPackages = 12,
-                PackageType = "PALLETS",
-                TotalGw = 1085m,
-                TotalCbm = 25.00m,
-                TotalVgm = 0m,
-                PoNo = "PO-2026-8899",
-                Notes = "Lô hàng FCL nhập khẩu theo chỉ thị của khách hàng Foxlink Đà Nẵng.",
-                Active = true,
-                CreatedDate = DateTime.UtcNow,
-                CreatedBy = "admin"
-            },
-            new TransactionEntity
-            {
-                Id = 2,
-                JobNo = "FCLI-26020006",
-                TypeId = 1, // FCL Import
-                ShipmentDate = new DateTime(2026, 2, 5),
-                MblNo = "ASHVT00002006",
-                MblIssuedDate = new DateTime(2026, 1, 28),
-                MblType = "ORIGINAL",
-                VendorId = "TRANSLEAD",
-                VendorName = "SHANGHAI TRANSLEAD",
-                SLines = "ONE",
-                Agent = "OCEAN NETWORK EXPRESS JAPAN",
-                PolId = "KRPUS",
-                PodId = "VNSGN",
-                Service = "CY/CY",
-                Opic = "HO THI MAI",
-                Eta = new DateTime(2026, 2, 8),
-                PTerm = "PREPAID",
-                Commodity = "Nguyên phụ liệu may mặc",
-                TotalPackages = 450,
-                PackageType = "CARTONS",
-                TotalGw = 3450m,
-                TotalCbm = 42.50m,
-                TotalVgm = 3450m,
-                PoNo = "PO-2026-9011",
-                Notes = "Hàng đi cảng Cát Lái, kiểm tra thông quan trước khi giải phóng hàng.",
-                Active = true,
-                CreatedDate = DateTime.UtcNow,
-                CreatedBy = "admin"
-            },
-            new TransactionEntity
-            {
-                Id = 3,
-                JobNo = "LCLI-26020001",
-                TypeId = 2, // LCL Import
-                ShipmentDate = new DateTime(2026, 2, 6),
-                MblNo = "SITC2602009",
-                Active = true,
-                CreatedDate = DateTime.UtcNow,
-                CreatedBy = "admin"
-            }
-        };
-
-        private static readonly List<TerminalEntity> _sampleTerminals = new()
-        {
-            new TerminalEntity { Id = 1, Code = "CNSGH", FullName = "SHANGHAI / CNSGH", Country = "CHINA", VendorId = "VFRAC-IT", VendorName = "VFRAC-IT VIETNAM", AgentName = "SHANGHAI TRANSLEAD", Active = true },
-            new TerminalEntity { Id = 2, Code = "KRPUS", FullName = "BUSAN / KRPUS", Country = "KOREA", VendorId = "TRANSLEAD", VendorName = "SHANGHAI TRANSLEAD", AgentName = "OCEAN NETWORK EXPRESS JAPAN", Active = true },
-            new TerminalEntity { Id = 3, Code = "SGSIN", FullName = "SINGAPORE / SGSIN", Country = "SINGAPORE", VendorId = "VFRAC-IT", VendorName = "VFRAC-IT VIETNAM", AgentName = "SITC LOGISTICS SINGAPORE", Active = true },
-            new TerminalEntity { Id = 4, Code = "CNNGB", FullName = "NINGBO / CNNGB", Country = "CHINA", VendorId = "TRANSLEAD", VendorName = "KMTC VIETNAM CO., LTD", AgentName = "KMTC INCHEON", Active = true },
-            new TerminalEntity { Id = 5, Code = "VNDTS", FullName = "TIEN SA TERMINAL / VNDTS", Country = "VIETNAM", VendorId = "VFRAC-IT", VendorName = "CẢNG ĐÀ NẴNG", AgentName = "TIEN SA LOGISTICS", Active = true },
-            new TerminalEntity { Id = 6, Code = "VNSGN", FullName = "CAT LAI / VNSGN", Country = "VIETNAM", VendorId = "TRANSLEAD", VendorName = "TÂN CẢNG SÀI GÒN", AgentName = "SAIGON NEWPORT", Active = true },
-            new TerminalEntity { Id = 7, Code = "VNHPH", FullName = "HAI PHONG / VNHPH", Country = "VIETNAM", VendorId = "VFRAC-IT", VendorName = "CẢNG HẢI PHÒNG", AgentName = "HAI PHONG PORT AUTHORITY", Active = true }
-        };
-
         /// <summary>
         /// 🔍 GET /api/core/metadata/entities
-        /// Quét Reflection các Entity kế thừa BaseEntity để trả về danh bạ Bảng và Cột cho UI Designer.
+        /// Trả về danh sách tất cả các Entity kế thừa BaseEntity được đăng ký trong hệ thống
         /// </summary>
         [HttpGet("metadata/entities")]
-        public IActionResult GetEntityMetadataCatalog()
+        public IActionResult GetRegisteredEntities()
         {
-            var entityTypes = new List<(string Name, string DisplayName, string TableName, Type Type)>
-            {
-                ("Transaction", "Lô Hàng (Transactions)", "Transactions", typeof(TransactionEntity)),
-                ("Terminal", "Cảng Biển / Ga Hàng Không (Terminals)", "Terminals", typeof(TerminalEntity)),
-                ("Container", "Danh Mục Container (Containers)", "Containers", typeof(ContainerEntity))
-            };
-
             var catalogs = new List<EntityMetadataDto>();
 
-            foreach (var (name, displayName, tableName, type) in entityTypes)
+            var entityTypes = new (Type Type, string Name, string DisplayName, string TableName)[]
+            {
+                (typeof(TransactionEntity), "Transaction", "Lô Hàng (Transactions)", "Transactions"),
+                (typeof(TerminalEntity), "Terminal", "Cảng Biển / Ga Hàng Không (Terminals)", "Terminals"),
+                (typeof(ContainerEntity), "Container", "Danh Mục Container (Containers)", "Containers"),
+            };
+
+            foreach (var (type, name, displayName, tableName) in entityTypes)
             {
                 var columns = new List<ColumnMetadataDto>();
                 var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -191,10 +106,10 @@ namespace UIForge.API.Controllers
 
         /// <summary>
         /// 📊 GET /api/core/data/{entityName}?$filter=...
-        /// Truy vấn dữ liệu tổng quát cho các Component (Gridview, Dropdown, Form) với hỗ trợ OData.
+        /// Truy vấn dữ liệu từ SQL Server cho Gridview, Dropdown, Form với hỗ trợ OData.
         /// </summary>
         [HttpGet("data/{entityName}")]
-        public IActionResult QueryEntityData(
+        public async Task<IActionResult> QueryEntityData(
             string entityName,
             [FromQuery] string? filter = null,
             [FromQuery(Name = "$filter")] string? odataFilter = null)
@@ -204,25 +119,43 @@ namespace UIForge.API.Controllers
 
             if (target is "transaction" or "transactions")
             {
-                var query = _sampleTransactions.Where(t => t.Active).AsQueryable();
+                var query = _dbContext.Transactions.Where(t => t.Active).AsQueryable();
 
-                // Lọc cơ bản theo TypeId (ví dụ: TypeId eq 1 cho FCL Import)
+                // Lọc cơ bản theo TypeId (TypeId eq 1 cho FCL Import, TypeId eq 2 cho LCL)
                 if (filterExpr.Contains("TypeId eq 1", StringComparison.OrdinalIgnoreCase) || filterExpr.Contains("typeid=1", StringComparison.OrdinalIgnoreCase))
                 {
                     query = query.Where(t => t.TypeId == 1);
                 }
-                else if (filterExpr.Contains("TypeId eq 2", StringComparison.OrdinalIgnoreCase))
+                else if (filterExpr.Contains("TypeId eq 2", StringComparison.OrdinalIgnoreCase) || filterExpr.Contains("typeid=2", StringComparison.OrdinalIgnoreCase))
                 {
                     query = query.Where(t => t.TypeId == 2);
                 }
 
-                return Ok(query.ToList());
+                // Lọc theo JobNo nếu có
+                if (filterExpr.Contains("JobNo eq", StringComparison.OrdinalIgnoreCase))
+                {
+                    var match = System.Text.RegularExpressions.Regex.Match(filterExpr, @"JobNo\s+eq\s+'([^']+)'", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    if (match.Success)
+                    {
+                        var jNo = match.Groups[1].Value;
+                        query = query.Where(t => t.JobNo == jNo);
+                    }
+                }
+
+                var list = await query.OrderByDescending(t => t.Id).ToListAsync();
+                return Ok(list);
             }
 
             if (target is "terminal" or "terminals")
             {
-                var query = _sampleTerminals.Where(t => t.Active).AsQueryable();
-                return Ok(query.ToList());
+                var list = await _dbContext.Terminals.Where(t => t.Active).OrderBy(t => t.Code).ToListAsync();
+                return Ok(list);
+            }
+
+            if (target is "container" or "containers")
+            {
+                var list = await _dbContext.Containers.Where(c => c.Active).OrderBy(c => c.Id).ToListAsync();
+                return Ok(list);
             }
 
             return Ok(new List<object>());
@@ -230,22 +163,29 @@ namespace UIForge.API.Controllers
 
         /// <summary>
         /// 🎯 GET /api/core/data/{entityName}/{id}
-        /// Lấy chi tiết một bản ghi theo Id phục vụ hiển thị màn hình TransactionDetailBL
+        /// Lấy chi tiết một bản ghi theo Id từ SQL Server
         /// </summary>
         [HttpGet("data/{entityName}/{id}")]
-        public IActionResult GetEntityById(string entityName, int id)
+        public async Task<IActionResult> GetEntityById(string entityName, int id)
         {
             var target = entityName.ToLowerInvariant();
             if (target is "transaction" or "transactions")
             {
-                var record = _sampleTransactions.FirstOrDefault(t => t.Id == id && t.Active);
+                var record = await _dbContext.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.Active);
                 if (record == null) return NotFound(new { message = $"Không tìm thấy bản ghi {entityName} #{id}" });
                 return Ok(record);
             }
 
             if (target is "terminal" or "terminals")
             {
-                var record = _sampleTerminals.FirstOrDefault(t => t.Id == id && t.Active);
+                var record = await _dbContext.Terminals.FirstOrDefaultAsync(t => t.Id == id && t.Active);
+                if (record == null) return NotFound(new { message = $"Không tìm thấy bản ghi {entityName} #{id}" });
+                return Ok(record);
+            }
+
+            if (target is "container" or "containers")
+            {
+                var record = await _dbContext.Containers.FirstOrDefaultAsync(c => c.Id == id && c.Active);
                 if (record == null) return NotFound(new { message = $"Không tìm thấy bản ghi {entityName} #{id}" });
                 return Ok(record);
             }
@@ -254,22 +194,172 @@ namespace UIForge.API.Controllers
         }
 
         /// <summary>
-        /// 🗑️ DELETE /api/core/data/{entityName}/{id}
-        /// Thực hiện Xóa mềm (Soft Delete) bằng cách đặt Active = false
+        /// ➕ POST /api/core/data/transaction
+        /// Thêm mới bản ghi Transaction vào SQL Server
         /// </summary>
-        [HttpDelete("data/{entityName}/{id}")]
-        public IActionResult SoftDeleteEntity(string entityName, int id)
+        [HttpPost("data/transaction")]
+        public async Task<IActionResult> CreateTransaction([FromBody] TransactionEntity entity)
+        {
+            if (entity == null) return BadRequest(new { message = "Dữ liệu bản ghi không hợp lệ" });
+
+            entity.Id = 0;
+            entity.Active = true;
+            entity.CreatedDate = DateTime.UtcNow;
+            entity.CreatedBy = User.Identity?.Name ?? "system";
+
+            _dbContext.Transactions.Add(entity);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(entity);
+        }
+
+        /// <summary>
+        /// ✏️ PUT /api/core/data/transaction/{id}
+        /// Cập nhật bản ghi Transaction trong SQL Server
+        /// </summary>
+        [HttpPut("data/transaction/{id}")]
+        public async Task<IActionResult> UpdateTransaction(int id, [FromBody] TransactionEntity updated)
+        {
+            var existing = await _dbContext.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.Active);
+            if (existing == null) return NotFound(new { message = $"Không tìm thấy bản ghi #{id}" });
+
+            // Cập nhật các trường nghiệp vụ
+            existing.JobNo = updated.JobNo;
+            existing.TypeId = updated.TypeId;
+            existing.ShipmentDate = updated.ShipmentDate;
+            existing.MblNo = updated.MblNo;
+            existing.MblIssuedDate = updated.MblIssuedDate;
+            existing.MblType = updated.MblType;
+            existing.VendorId = updated.VendorId;
+            existing.VendorName = updated.VendorName;
+            existing.SLines = updated.SLines;
+            existing.Agent = updated.Agent;
+            existing.PolId = updated.PolId;
+            existing.PodId = updated.PodId;
+            existing.Service = updated.Service;
+            existing.Opic = updated.Opic;
+            existing.Eta = updated.Eta;
+            existing.PTerm = updated.PTerm;
+            existing.Commodity = updated.Commodity;
+            existing.TotalPackages = updated.TotalPackages;
+            existing.PackageType = updated.PackageType;
+            existing.TotalGw = updated.TotalGw;
+            existing.TotalCbm = updated.TotalCbm;
+            existing.TotalVgm = updated.TotalVgm;
+            existing.PoNo = updated.PoNo;
+            existing.Notes = updated.Notes;
+
+            existing.UpdatedDate = DateTime.UtcNow;
+            existing.UpdatedBy = User.Identity?.Name ?? "system";
+
+            await _dbContext.SaveChangesAsync();
+            return Ok(existing);
+        }
+
+        /// <summary>
+        /// ➕ POST /api/core/data/{entityName}
+        /// Thêm mới bản ghi vào SQL Server (Generic)
+        /// </summary>
+        [HttpPost("data/{entityName}")]
+        public async Task<IActionResult> CreateEntity(string entityName, [FromBody] System.Text.Json.JsonElement payload)
         {
             var target = entityName.ToLowerInvariant();
             if (target is "transaction" or "transactions")
             {
-                var record = _sampleTransactions.FirstOrDefault(t => t.Id == id);
+                var entity = System.Text.Json.JsonSerializer.Deserialize<TransactionEntity>(payload.GetRawText(), new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (entity == null) return BadRequest(new { message = "Dữ liệu bản ghi không hợp lệ" });
+
+                entity.Active = true;
+                entity.CreatedDate = DateTime.UtcNow;
+                entity.CreatedBy = User.Identity?.Name ?? "system";
+
+                _dbContext.Transactions.Add(entity);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(entity);
+            }
+
+            return BadRequest(new { message = $"Chưa hỗ trợ tạo mới cho entity {entityName}" });
+        }
+
+        /// <summary>
+        /// ✏️ PUT /api/core/data/{entityName}/{id}
+        /// Cập nhật bản ghi trong SQL Server
+        /// </summary>
+        [HttpPut("data/{entityName}/{id}")]
+        public async Task<IActionResult> UpdateEntity(string entityName, int id, [FromBody] System.Text.Json.JsonElement payload)
+        {
+            var target = entityName.ToLowerInvariant();
+            if (target is "transaction" or "transactions")
+            {
+                var existing = await _dbContext.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.Active);
+                if (existing == null) return NotFound(new { message = $"Không tìm thấy bản ghi #{id}" });
+
+                var updated = System.Text.Json.JsonSerializer.Deserialize<TransactionEntity>(payload.GetRawText(), new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (updated == null) return BadRequest(new { message = "Dữ liệu cập nhật không hợp lệ" });
+
+                // Cập nhật các trường nghiệp vụ
+                existing.JobNo = updated.JobNo;
+                existing.TypeId = updated.TypeId;
+                existing.ShipmentDate = updated.ShipmentDate;
+                existing.MblNo = updated.MblNo;
+                existing.MblIssuedDate = updated.MblIssuedDate;
+                existing.MblType = updated.MblType;
+                existing.VendorId = updated.VendorId;
+                existing.VendorName = updated.VendorName;
+                existing.SLines = updated.SLines;
+                existing.Agent = updated.Agent;
+                existing.PolId = updated.PolId;
+                existing.PodId = updated.PodId;
+                existing.Service = updated.Service;
+                existing.Opic = updated.Opic;
+                existing.Eta = updated.Eta;
+                existing.PTerm = updated.PTerm;
+                existing.Commodity = updated.Commodity;
+                existing.TotalPackages = updated.TotalPackages;
+                existing.PackageType = updated.PackageType;
+                existing.TotalGw = updated.TotalGw;
+                existing.TotalCbm = updated.TotalCbm;
+                existing.TotalVgm = updated.TotalVgm;
+                existing.PoNo = updated.PoNo;
+                existing.Notes = updated.Notes;
+
+                existing.UpdatedDate = DateTime.UtcNow;
+                existing.UpdatedBy = User.Identity?.Name ?? "system";
+
+                await _dbContext.SaveChangesAsync();
+                return Ok(existing);
+            }
+
+            return BadRequest(new { message = $"Chưa hỗ trợ cập nhật cho entity {entityName}" });
+        }
+
+        /// <summary>
+        /// 🗑️ DELETE /api/core/data/{entityName}/{id}
+        /// Thực hiện Xóa mềm (Soft Delete) trong SQL Server bằng cách đặt Active = false
+        /// </summary>
+        [HttpDelete("data/{entityName}/{id}")]
+        public async Task<IActionResult> SoftDeleteEntity(string entityName, int id)
+        {
+            var target = entityName.ToLowerInvariant();
+            if (target is "transaction" or "transactions")
+            {
+                var record = await _dbContext.Transactions.FirstOrDefaultAsync(t => t.Id == id);
                 if (record != null)
                 {
                     record.Active = false;
                     record.UpdatedDate = DateTime.UtcNow;
                     record.UpdatedBy = User.Identity?.Name ?? "system";
-                    return Ok(new { success = true, message = $"Đã xóa mềm bản ghi #{id} thành công" });
+                    await _dbContext.SaveChangesAsync();
+                    return Ok(new { success = true, message = $"Đã xóa mềm bản ghi #{id} trong cơ sở dữ liệu thành công" });
                 }
             }
 

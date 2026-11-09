@@ -21,11 +21,9 @@ import { useResizablePanels } from '@/editor/useResizablePanels'
 import { WorkspaceTabBar } from '@/editor/WorkspaceTabBar'
 import { FeaturePopupModal } from '@/editor/FeaturePopupModal'
 import { useDataEngine } from '@/core/engines/dataEngine'
-import {
-  SAMPLE_TERMINALS,
-  SAMPLE_SHIPPING_INFO,
-  SAMPLE_CONTAINERS,
-} from '@/samples/logistics/logisticsFixtures'
+import { useNavigationEngine } from '@/core/engines/navigationEngine'
+import { TransactionListView } from '@/views/TransactionListView'
+import { TransactionDetailView } from '@/views/TransactionDetailView'
 
 export function App() {
   // ── Auth state ──
@@ -50,6 +48,10 @@ export function App() {
   // Người dùng thường (User) luôn ở chế độ xem, không được chỉnh sửa
   const effectivePreview = isPreview || !isDev
 
+  // ── Tab & View Navigation ──
+  const currentTab = useNavigationEngine((s) => s.openTabs.find((t) => t.id === s.activeTabId))
+  const isLiveView = currentTab?.featureId === 'TransactionList' || currentTab?.featureId === 'TransactionDetail'
+
   // ── Drag & Drop Management ──
   // ── Resizable Left and Right Panels ──
   const { leftWidth, rightWidth, startLeftResize, startRightResize } = useResizablePanels()
@@ -71,11 +73,22 @@ export function App() {
     setTimeout(() => setToast(null), 3000)
   }
 
-  // ── Khởi tạo bộ dữ liệu mẫu (Test Fixtures) cho Core DataEngine ──
+  // ── Nạp dữ liệu thực tế từ SQL Server Database vào Core DataEngine ──
   useEffect(() => {
-    useDataEngine.getState().registerDataset('Terminal', SAMPLE_TERMINALS)
-    useDataEngine.getState().registerDataset('Transaction', SAMPLE_SHIPPING_INFO)
-    useDataEngine.getState().registerDataset('Container', SAMPLE_CONTAINERS)
+    fetch('http://localhost:5048/api/core/data/Terminal')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => useDataEngine.getState().registerDataset('Terminal', data))
+      .catch(() => {})
+
+    fetch('http://localhost:5048/api/core/data/Transaction')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => useDataEngine.getState().registerDataset('Transaction', data))
+      .catch(() => {})
+
+    fetch('http://localhost:5048/api/core/data/Container')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => useDataEngine.getState().registerDataset('Container', data))
+      .catch(() => {})
   }, [])
 
   // ── Lắng nghe sự kiện Back/Forward của trình duyệt để đổi màn hình ──
@@ -197,10 +210,22 @@ export function App() {
             <div className="w-0.5 h-8 bg-slate-700 group-hover:bg-white rounded-full transition-colors" />
           </div>
 
-          {/* Màn hình làm việc của Feature */}
+          {/* Màn hình làm việc của Feature hoặc Live View */}
           {isLoading ? (
             <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">
               Đang tải dữ liệu từ server...
+            </div>
+          ) : currentTab?.featureId === 'TransactionList' ? (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <TransactionListView />
+            </div>
+          ) : currentTab?.featureId === 'TransactionDetail' ? (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <TransactionDetailView
+                id={currentTab.params?.id}
+                jobNo={currentTab.params?.jobNo}
+                tabId={currentTab.id}
+              />
             </div>
           ) : (
             <FeatureCanvas
@@ -211,7 +236,7 @@ export function App() {
           )}
 
           {/* Thanh kéo co giãn bên phải (Right Splitter) */}
-          {!effectivePreview && showRightPanel && (
+          {!effectivePreview && !isLiveView && showRightPanel && (
             <div
               onMouseDown={startRightResize}
               className="w-1.5 hover:w-2 bg-transparent hover:bg-blue-500/80 active:bg-blue-500 cursor-col-resize transition-all duration-75 relative group z-20 shrink-0 select-none flex items-center justify-center"
@@ -222,7 +247,7 @@ export function App() {
           )}
 
           {/* Thanh quản lý bên phải: Quản lý kích thước, flex/grid, css, sự kiện */}
-          {!effectivePreview && showRightPanel && <PropertyPanel width={rightWidth} />}
+          {!effectivePreview && !isLiveView && showRightPanel && <PropertyPanel width={rightWidth} />}
         </div>
 
         {/* ── 3. Drag Overlay (Floating Ghost Preview) ── */}

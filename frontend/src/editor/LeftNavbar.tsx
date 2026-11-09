@@ -2,6 +2,7 @@ import { deletePage } from '@/api/pagesApi'
 import React, { useState } from 'react'
 import { useEditorStore } from '@/store/editorStore'
 import { ContextMenu, MenuItem } from './ContextMenu'
+import { openTab } from '@/core/engines/navigationEngine'
 import {
   LayoutDashboard,
   Layers,
@@ -9,6 +10,8 @@ import {
   Trash2,
   Edit2,
   FolderPlus,
+  Ship,
+  PlusCircle,
 } from 'lucide-react'
 
 interface LeftNavbarProps {
@@ -127,8 +130,36 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
         style={{ width: width ? `${width}px` : undefined }}
         className="w-64 border-r border-slate-800 bg-slate-900/90 flex flex-col shrink-0 select-none relative"
       >
+        {/* Quick Links to Live Business Screens */}
+        <div className="p-3 pb-0 space-y-1">
+          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 pb-1">
+            Nghiệp Vụ Live (SQL Server)
+          </div>
+          <button
+            type="button"
+            onClick={() => openTab('TransactionList', {}, 'Danh Sách Lô Hàng')}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold bg-blue-950/60 hover:bg-blue-900/80 text-blue-300 border border-blue-800/60 transition-all cursor-pointer text-left"
+          >
+            <Ship className="w-4 h-4 text-blue-400 shrink-0" />
+            <span className="truncate">Danh Sách Lô Hàng (DB)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => openTab('TransactionDetail', { id: 'new' }, 'Thêm Mới Lô Hàng')}
+            className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all cursor-pointer text-left"
+          >
+            <PlusCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span className="truncate">+ Thêm Mới Lô Hàng</span>
+          </button>
+        </div>
+
+        <div className="mx-3 my-2 border-t border-slate-800" />
+
         {/* Feature List (Chuột phải vào nền để thêm mới) */}
-        <nav className="p-3 space-y-1.5 overflow-y-auto flex-1">
+        <nav className="p-3 pt-0 space-y-1.5 overflow-y-auto flex-1">
+          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 pb-1">
+            Màn Hình Thiết Kế (Designer)
+          </div>
           {features.map((feature, idx) => {
             const isActive = feature.id === activeFeatureId
             return (
