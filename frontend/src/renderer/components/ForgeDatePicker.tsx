@@ -3,7 +3,7 @@ import type { ComponentProps } from './types'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { triggerComponentEvent } from '@/logic/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
-import { useDataEngine } from '@/core/engines/dataEngine'
+import { useDataEngine, extractFieldValue } from '@/core/engines/dataEngine'
 import { FormFieldWrapper } from './FormFieldWrapper'
 
 /**
@@ -24,7 +24,7 @@ export const ForgeDatePicker: React.FC<ComponentProps> = ({ node, isEditing }) =
   // Lấy giá trị qua Generic DataEngine
   const formId = String(node.parentId || activeFeatureId || 'defaultForm')
   const fieldName = String(node.dataBinding?.fieldName || node.props.name || node.id)
-  const engineVal = useDataEngine((s) => s.getFieldValue(formId, fieldName, undefined))
+  const engineVal = useDataEngine((s) => extractFieldValue(s, formId, fieldName, undefined))
   const setFieldValue = useDataEngine((s) => s.setFieldValue)
 
   const currentValue = engineVal !== undefined ? engineVal : (props.value ?? '')

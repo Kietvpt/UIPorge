@@ -71,7 +71,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
   // Dữ liệu dòng (ưu tiên props.data, dataset theo Reference, hoặc fallback generic)
   const reference = (props.reference as string) || (node.dataBinding?.entityName as string)
-  const datasetFromEngine = useDataEngine((s) => reference ? s.getDataset(reference) : undefined)
+  const datasetFromEngine = useDataEngine((s) => (reference ? s.datasets[reference] : undefined))
 
   const [rows, setRows] = useState<any[]>(() => {
     if (props.data && Array.isArray(props.data)) {
@@ -86,12 +86,11 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
   // Dữ liệu hiển thị thời gian thực
   const activeRows = (props.data && Array.isArray(props.data)) ? props.data : (datasetFromEngine && Array.isArray(datasetFromEngine)) ? datasetFromEngine : rows
 
-  // Đồng bộ rows khi props.data thay đổi, hoặc tự động query theo Reference
+  // Tự động query theo Reference nếu không có props.data và chưa nạp trong engine
   useEffect(() => {
-    if (props.data && Array.isArray(props.data)) {
-      setRows(props.data)
-      return
-    }
+    if (props.data && Array.isArray(props.data)) return
+    if (datasetFromEngine && Array.isArray(datasetFromEngine) && datasetFromEngine.length > 0) return
+
     let isMounted = true
     if (reference) {
       const query = (props.query as string) || (props.filter as string) || ''
@@ -104,7 +103,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     return () => {
       isMounted = false
     }
-  }, [props.data, reference, props.query, props.filter])
+  }, [props.data, reference, props.query, props.filter, datasetFromEngine])
 
   // Điều hướng Master-Detail (FeatureTab / FeaturePopup)
   const detailFeatureId = (props.detailFeatureId as string) || '2'

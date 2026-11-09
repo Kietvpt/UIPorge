@@ -13,6 +13,8 @@ export interface PopulateRule {
   sourceField: string
 }
 
+const EMPTY_ARRAY: any[] = []
+
 /**
  * ⚡ Phân tích chuỗi quy tắc Populate Field từ Core C# (Ảnh Modal: Populate field)
  * Ví dụ: "Transaction.VendorId = Terminal.VendorId, Transaction.Agent = Terminal.AgentName"
@@ -41,6 +43,28 @@ export function parsePopulateRules(rawString?: string): PopulateRule[] {
   }
 
   return rules
+}
+
+export function extractFieldValue(
+  state: { formRecords: Record<string, Record<string, any>> },
+  formId: string,
+  fieldName: string,
+  fallback: any = undefined
+) {
+  const form = state.formRecords[formId]
+  if (!form) return fallback
+  if (form[fieldName] !== undefined) return form[fieldName]
+
+  const normalizedKey = fieldName.toLowerCase().replace(/^fld_/, '')
+  const foundKey = Object.keys(form).find(
+    (k) =>
+      k.toLowerCase() === fieldName.toLowerCase() ||
+      k.toLowerCase().replace(/^fld_/, '') === normalizedKey
+  )
+  if (foundKey && form[foundKey] !== undefined) {
+    return form[foundKey]
+  }
+  return fallback
 }
 
 interface DataEngineState {
@@ -100,7 +124,7 @@ export const useDataEngine = create<DataEngineState>()(
 
     // 2. Lấy dataset của Entity
     getDataset: (entityName: string) => {
-      return get().datasets[entityName] || []
+      return get().datasets[entityName] || EMPTY_ARRAY
     },
 
     // 3. Gán giá trị 1 trường trên Form (Two-Way Binding)
@@ -121,21 +145,7 @@ export const useDataEngine = create<DataEngineState>()(
 
     // 4. Lấy giá trị 1 trường trên Form (với Fallback thông minh)
     getFieldValue: (formId: string, fieldName: string, fallback: any = '') => {
-      const form = get().formRecords[formId]
-      if (!form) return fallback
-      if (form[fieldName] !== undefined) return form[fieldName]
-
-      // Match không phân biệt hoa thường và tiền tố fld_
-      const normalizedKey = fieldName.toLowerCase().replace(/^fld_/, '')
-      const foundKey = Object.keys(form).find(
-        (k) =>
-          k.toLowerCase() === fieldName.toLowerCase() ||
-          k.toLowerCase().replace(/^fld_/, '') === normalizedKey
-      )
-      if (foundKey && form[foundKey] !== undefined) {
-        return form[foundKey]
-      }
-      return fallback
+      return extractFieldValue(get(), formId, fieldName, fallback)
     },
 
     // 5. Gán trọn vẹn bản ghi

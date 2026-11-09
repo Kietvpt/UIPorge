@@ -3,7 +3,7 @@ import type { ComponentProps } from './types'
 import { ChevronDown } from 'lucide-react'
 import { triggerComponentEvent } from '@/logic/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
-import { useDataEngine, SelectOption } from '@/core/engines/dataEngine'
+import { useDataEngine, SelectOption, extractFieldValue } from '@/core/engines/dataEngine'
 import { FormFieldWrapper } from './FormFieldWrapper'
 
 /**
@@ -25,7 +25,7 @@ export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
   // Lấy giá trị qua Generic DataEngine
   const formId = String(node.parentId || activeFeatureId || 'defaultForm')
   const fieldName = String(node.dataBinding?.fieldName || node.props.name || node.id)
-  const engineVal = useDataEngine((s) => s.getFieldValue(formId, fieldName, undefined))
+  const engineVal = useDataEngine((s) => extractFieldValue(s, formId, fieldName, undefined))
   const setFieldValue = useDataEngine((s) => s.setFieldValue)
   const applyPopulate = useDataEngine((s) => s.applyPopulate)
   const queryReference = useDataEngine((s) => s.queryReference)
