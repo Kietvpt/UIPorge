@@ -23,8 +23,9 @@ import {
   ChevronDown,
   GripVertical,
 } from 'lucide-react'
-import { getFunctionsForBlFile, addFunctionToBlFile } from '@/logic/blRegistry'
-import { executeSingleEvent } from '@/logic/eventRunner'
+import { getFunctionsForBlFile, addFunctionToBlFile } from '@/core/engines/blRegistry'
+import { executeSingleEvent } from '@/core/engines/eventRunner'
+import { UnifiedEventEditor } from './events/UnifiedEventEditor'
 import { parseRawCss, formatStyleToCss } from './cssParser'
 import { ColumnPropertiesModal } from '@/renderer/components/grid/ColumnPropertiesModal'
 import { ComponentPropertiesModal } from './ComponentPropertiesModal'
@@ -53,6 +54,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
   const [selectedColumnIndex, setSelectedColumnIndex] = useState<number | null>(null)
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false)
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false)
+  const [listDragIdx, setListDragIdx] = useState<number | null>(null)
+  const [listDragOverIdx, setListDragOverIdx] = useState<number | null>(null)
 
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
@@ -1148,6 +1151,64 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
               </div>
             )}
 
+            {selectedNode.type === 'SearchEntry' && (
+              <div className="space-y-3 p-3 bg-slate-950/60 border border-slate-800 rounded-lg">
+                <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">
+                  Cấu hình Tra cứu đa cột (SearchEntry)
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                    Bảng danh mục tra cứu (Reference Dataset)
+                  </label>
+                  <input
+                    type="text"
+                    value={(selectedNode.props.reference as string) || ''}
+                    placeholder="VD: MasterData, Customers, Products..."
+                    onChange={(e) => updateComponentProps(selectedNode.id, { reference: e.target.value })}
+                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-cyan-300 font-mono text-xs"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                      Cột hiển thị (Display)
+                    </label>
+                    <input
+                      type="text"
+                      value={(selectedNode.props.displayField as string) || ''}
+                      placeholder="VD: name"
+                      onChange={(e) => updateComponentProps(selectedNode.id, { displayField: e.target.value })}
+                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 font-mono text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                      Cột giá trị (Value)
+                    </label>
+                    <input
+                      type="text"
+                      value={(selectedNode.props.valueField as string) || ''}
+                      placeholder="VD: code / id"
+                      onChange={(e) => updateComponentProps(selectedNode.id, { valueField: e.target.value })}
+                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 font-mono text-xs"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                    Placeholder
+                  </label>
+                  <input
+                    type="text"
+                    value={(selectedNode.props.placeholder as string) || ''}
+                    placeholder="Tra cứu danh mục (F1)..."
+                    onChange={(e) => updateComponentProps(selectedNode.id, { placeholder: e.target.value })}
+                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs"
+                  />
+                </div>
+              </div>
+            )}
+
             {selectedNode.type === 'Textarea' && (
               <div>
                 <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
@@ -1195,9 +1256,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
             {selectedNode.type === 'Table' && (() => {
               const rawCols = (selectedNode.props.columns as TableColumn[]) || []
               const selectedCol = selectedColumnIndex !== null ? rawCols[selectedColumnIndex] : null
-
-              const [listDragIdx, setListDragIdx] = useState<number | null>(null)
-              const [listDragOverIdx, setListDragOverIdx] = useState<number | null>(null)
 
               const updateColumn = (idx: number, patch: Partial<TableColumn>) => {
                 const updated = rawCols.map((c, i) => (i === idx ? { ...c, ...patch } : c))
@@ -1523,6 +1581,35 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                           <span>Sắp xếp</span>
                         </label>
                       </div>
+
+                      {/* Sự kiện gắn trên cột (Quick Event Info) */}
+                      <div className="p-2.5 bg-slate-900/90 border border-slate-800 rounded-lg space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                            <Zap className="w-3 h-3 text-amber-400" />
+                            <span>Sự Kiện Cột ({Array.isArray(selectedCol.events) ? selectedCol.events.length : selectedCol.action ? 1 : 0})</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setIsColumnModalOpen(true)}
+                            className="text-[10px] text-emerald-400 hover:text-emerald-300 font-semibold cursor-pointer flex items-center gap-0.5"
+                          >
+                            <span>Cấu hình chi tiết</span>
+                            <span>&rarr;</span>
+                          </button>
+                        </div>
+                        <div className="text-[11px] text-slate-300 font-mono">
+                          {Array.isArray(selectedCol.events) && selectedCol.events.length > 0 ? (
+                            <span className="text-emerald-300">
+                              {selectedCol.events.map((e) => `${e.trigger} ➔ ${e.handlerName || e.action}()`).join(', ')}
+                            </span>
+                          ) : selectedCol.action ? (
+                            <span className="text-emerald-300">click ➔ {selectedCol.action}()</span>
+                          ) : (
+                            <span className="text-slate-500 italic">Chưa gắn sự kiện</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -1642,190 +1729,20 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
         )}
 
         {/* ── TAB 4: EVENTS (ĐA SỰ KIỆN & TEST RUNNER) ── */}
-        {effectiveTab === 'events' && (() => {
-          const blFile = activeFeature?.scriptFile || 'fclImport.bl.ts'
-          const availableFns = getFunctionsForBlFile(blFile)
-          const eventsList = selectedNode.events || []
-
-          const triggerOptions = [
-            { value: 'click', label: 'Bấm chuột (click)' },
-            { value: 'dblclick', label: 'Nhấp đúp chuột (dblclick)' },
-            { value: 'change', label: 'Thay đổi giá trị (change)' },
-            { value: 'focus', label: 'Khi chọn ô (focus)' },
-            { value: 'blur', label: 'Khi rời ô (blur)' },
-          ]
-
-          const handleAddEvent = () => {
-            const defaultFn = availableFns[0] || 'AutoFillVendor'
-            const newEvent = {
-              id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-              trigger: 'click',
-              handlerName: defaultFn,
-              action: 'custom',
-            }
-            updateComponentEvents(selectedNode.id, [...eventsList, newEvent])
-          }
-
-          const handleUpdateEvent = (idx: number, patch: Partial<any>) => {
-            const next = eventsList.map((item, i) => (i === idx ? { ...item, ...patch } : item))
-            updateComponentEvents(selectedNode.id, next)
-          }
-
-          const handleRemoveEvent = (idx: number) => {
-            const next = eventsList.filter((_, i) => i !== idx)
-            updateComponentEvents(selectedNode.id, next)
-          }
-
-          const handleAddNewFunctionToBl = () => {
-            if (!newBlFnInput.trim()) return
-            addFunctionToBlFile(blFile, newBlFnInput.trim())
-            setNewBlFnInput('')
-            setBlFnVer((v) => v + 1)
-          }
-
-          return (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                    Danh Sách Sự Kiện ({eventsList.length})
-                  </h3>
-                  <p className="text-[10px] text-slate-400">File BL: <span className="font-mono text-emerald-400">{blFile}</span></p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleAddEvent}
-                  className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer shadow-md shadow-blue-600/20"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>+ Thêm Sự Kiện</span>
-                </button>
-              </div>
-
-              {/* Form thêm nhanh hàm mới vào BL file */}
-              <div className="p-2.5 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1.5">
-                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <FileCode className="w-3 h-3 text-cyan-400" />
-                  <span>Khai Báo Hàm Mới Trong {blFile}</span>
-                </label>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="text"
-                    value={newBlFnInput}
-                    onChange={(e) => setNewBlFnInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault()
-                        handleAddNewFunctionToBl()
-                      }
-                    }}
-                    placeholder="ví dụ: CheckMBL, AutoFillVendor..."
-                    className="flex-1 px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 font-mono text-xs focus:outline-none focus:border-cyan-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddNewFunctionToBl}
-                    className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                  >
-                    <PlusCircle className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>Lưu Hàm</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Danh sách các sự kiện đã cấu hình */}
-              {eventsList.length > 0 ? (
-                <div className="space-y-3">
-                  {eventsList.map((ev, idx) => (
-                    <div
-                      key={ev.id || idx}
-                      className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-2.5 shadow-sm"
-                    >
-                      <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
-                        <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
-                          Sự Kiện #{idx + 1}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveEvent(idx)}
-                          className="text-slate-500 hover:text-red-400 p-1 rounded transition-colors"
-                          title="Xóa sự kiện này"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                            Loại Trigger
-                          </label>
-                          <select
-                            value={ev.trigger || 'click'}
-                            onChange={(e) => handleUpdateEvent(idx, { trigger: e.target.value })}
-                            className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
-                          >
-                            {triggerOptions.map((opt) => (
-                              <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                            Hàm Xử Lý (BL Function)
-                          </label>
-                          <select
-                            value={ev.handlerName || availableFns[0] || ''}
-                            onChange={(e) => handleUpdateEvent(idx, { handlerName: e.target.value })}
-                            className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-cyan-300 font-mono text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
-                          >
-                            {availableFns.map((fn) => (
-                              <option key={fn} value={fn}>
-                                {fn}()
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-
-                      {/* Nút chạy thử sự kiện ngay lập tức */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          executeSingleEvent(
-                            ev,
-                            selectedNode.props.label || selectedNode.type,
-                            blFile,
-                            {
-                              componentId: selectedNode.id,
-                              pageId: activeFeatureId,
-                              trigger: ev.trigger,
-                            }
-                          )
-                        }}
-                        className="w-full mt-2 py-1.5 px-3 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm hover:text-emerald-300 active:scale-[0.99]"
-                        title="Bấm để kích hoạt và chạy hàm BL này ngay lập tức"
-                      >
-                        <Play className="w-3.5 h-3.5 fill-emerald-400" />
-                        <span>▶ Chạy Thử Sự Kiện Này</span>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-6 border border-dashed border-slate-800 rounded-xl text-center text-slate-500 space-y-1">
-                  <p className="text-xs">Component này chưa gắn sự kiện nào.</p>
-                  <p className="text-[10px] text-slate-600">
-                    Bấm nút <strong>"+ Thêm Sự Kiện"</strong> ở trên để thêm sự kiện (click, change...) và hàm tương ứng.
-                  </p>
-                </div>
-              )}
-            </div>
-          )
-        })()}
+        {effectiveTab === 'events' && (
+          <UnifiedEventEditor
+            events={selectedNode.events || []}
+            onChange={(newEvents) => updateComponentEvents(selectedNode.id, newEvents)}
+            scriptFile={activeFeature?.scriptFile || 'transactionList.bl.ts'}
+            componentName={selectedNode.props.label || selectedNode.type}
+            componentId={selectedNode.id}
+            contextExtra={{
+              pageId: activeFeatureId,
+              nodeId: selectedNode.id,
+              type: selectedNode.type,
+            }}
+          />
+        )}
 
         {/* ── TAB 5: DATA BINDING (LIÊN KẾT THỰC THỂ) ── */}
         {effectiveTab === 'data' && (() => {

@@ -5,8 +5,8 @@ import { Search, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 
 /**
  * ForgeAdvancedGrid: Kế thừa GridView.cs & GridPolicy.cs từ C# Core
- * - Hỗ trợ Cột cố định (Sticky / Frozen Columns) với backdrop-blur (như JobNo trong Ảnh 3)
- * - Dòng tổng kết (Summary Footer Row) tính Sum / Avg / Count (như Total 1,085 GW, 25 CBM trong Ảnh 4)
+ * - Hỗ trợ Cột cố định (Sticky / Frozen Columns) với backdrop-blur
+ * - Dòng tổng kết (Summary Footer Row) tính Sum / Avg / Count
  * - Thanh tìm kiếm từ khóa lọc tức thì
  * - Sắp xếp cột linh hoạt và phân trang
  */
@@ -15,23 +15,23 @@ export const ForgeAdvancedGrid: React.FC<ComponentProps> = ({ node }) => {
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
 
   const defaultColumns: TableColumn[] = [
-    { key: 'jobNo', title: 'Job No.', width: '130px', sticky: 'left', sortable: true },
-    { key: 'pol', title: 'POL', width: '150px', sortable: true },
-    { key: 'pod', title: 'POD', width: '150px', sortable: true },
-    { key: 'etd', title: 'ETD', width: '110px', format: 'date_dmy', sortable: true },
-    { key: 'packages', title: 'Số Kiện', width: '90px', align: 'right', aggregate: 'sum', sortable: true },
-    { key: 'gw', title: 'GW (KGS)', width: '110px', align: 'right', aggregate: 'sum', sortable: true },
-    { key: 'cbm', title: 'CBM', width: '100px', align: 'right', aggregate: 'sum', sortable: true },
+    { key: 'code', title: 'Mã số', width: '130px', sticky: 'left', sortable: true },
+    { key: 'name', title: 'Tên mục', width: '180px', sortable: true },
+    { key: 'category', title: 'Phân loại', width: '140px', sortable: true },
+    { key: 'docDate', title: 'Ngày tạo', width: '110px', format: 'date_dmy', sortable: true },
+    { key: 'quantity', title: 'Số lượng', width: '100px', align: 'right', aggregate: 'sum', sortable: true },
+    { key: 'price', title: 'Đơn giá', width: '120px', align: 'right', aggregate: 'sum', sortable: true },
+    { key: 'amount', title: 'Thành tiền', width: '130px', align: 'right', aggregate: 'sum', sortable: true },
     { key: 'status', title: 'Trạng thái', width: '130px', align: 'center' },
   ]
 
   const columns: TableColumn[] = props.columns && props.columns.length > 0 ? props.columns : defaultColumns
 
   const mockRows = [
-    { id: '1', jobNo: 'FCL-26020005', pol: 'SHANGHAI / CNSGH', pod: 'TIEN SA / VNDTS', etd: '26/01/2026', packages: 12, gw: 1085, cbm: 25.0, status: 'Hoàn thành' },
-    { id: '2', jobNo: 'FCL-26020006', pol: 'BUSAN / KRPUS', pod: 'CAT LAI / VNSGN', etd: '28/01/2026', packages: 25, gw: 3450, cbm: 42.5, status: 'Đang vận chuyển' },
-    { id: '3', jobNo: 'FCL-26020007', pol: 'SINGAPORE / SGSIN', pod: 'HAI PHONG / VNHPH', etd: '02/02/2026', packages: 8, gw: 820, cbm: 14.2, status: 'Chờ duyệt' },
-    { id: '4', jobNo: 'FCL-26020008', pol: 'NINGBO / CNNGB', pod: 'TIEN SA / VNDTS', etd: '05/02/2026', packages: 40, gw: 5200, cbm: 68.0, status: 'Hoàn thành' },
+    { id: '1', code: 'REC-001', name: 'Mục dữ liệu A1', category: 'Loại 1', docDate: '26/01/2026', quantity: 12, price: 100, amount: 1200, status: 'Hoàn thành' },
+    { id: '2', code: 'REC-002', name: 'Mục dữ liệu B2', category: 'Loại 2', docDate: '28/01/2026', quantity: 25, price: 150, amount: 3750, status: 'Đang xử lý' },
+    { id: '3', code: 'REC-003', name: 'Mục dữ liệu C3', category: 'Loại 1', docDate: '02/02/2026', quantity: 8, price: 80, amount: 640, status: 'Chờ duyệt' },
+    { id: '4', code: 'REC-004', name: 'Mục dữ liệu D4', category: 'Loại 3', docDate: '05/02/2026', quantity: 40, price: 200, amount: 8000, status: 'Hoàn thành' },
   ]
 
   const [search, setSearch] = useState('')

@@ -18,6 +18,10 @@ export type ComponentType =
   | 'Image'
   | 'Divider'
   | 'Textarea'
+  | 'RecordSelector'
+  | 'SearchEntry'
+  | 'FileUploadGrid'
+  | 'Autocomplete'
 
 export type EventTrigger = 'onClick' | 'onChange' | 'onSubmit' | 'onFocus' | 'onBlur' | 'click' | 'change' | 'focus' | 'blur' | 'dblclick'
 export type EventAction = 'navigate' | 'callApi' | 'showModal' | 'hideModal' | 'setState' | 'custom' | (string & {})
@@ -138,11 +142,15 @@ export interface TableColumn extends Partial<import('./gridPolicy').GridColumnPo
   sticky?: 'left' | 'right' | 'none' // tương ứng Frozen trong GridPolicy
   frozen?: boolean
   aggregate?: 'sum' | 'avg' | 'count' | 'min' | 'max' | 'none' // tương ứng Summary trong GridPolicy
+  summaryType?: 'sum' | 'avg' | 'count' | 'min' | 'max' | 'none' | string
   aggregateColSpan?: number // tương ứng SummaryColSpan trong GridPolicy
   summaryPrefix?: string
   summarySuffix?: string
   align?: 'left' | 'center' | 'right' // tương ứng TextAlign trong GridPolicy
   format?: 'currency_vnd' | 'currency_usd' | 'date_dmy' | 'number' | string // tương ứng FormatCell
+  formatCell?: string
+  action?: string
+  events?: ComponentEvent[] | string
   precision?: number // tương ứng Precision trong GridPolicy
   componentType?: 'TextBox' | 'Number' | 'DatePicker' | 'Select' | 'Dropdown' | 'Checkbox' | 'Button' | 'Label' | 'Link' | 'Textarea' // tương ứng Component trong GridPolicy
   options?: SelectOption[] // cho dropdown
@@ -259,6 +267,8 @@ export interface FeaturePage {
   scriptFile?: string
   components: ComponentNode[]
   layoutConfig?: FeatureLayoutConfig
+  hidden?: boolean
+  isDetail?: boolean
   createdAt?: string
   updatedAt?: string
 }

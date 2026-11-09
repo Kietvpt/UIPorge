@@ -1,9 +1,13 @@
+using System;
+using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using UIForge.API.Data;
-using UIForge.API.Services;
+using UIForge.Core.Data;
+using UIForge.Core.Extensions;
+using UIForge.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 //    -> UIPorge_BetaV1, UIPorge_BetaV2... (mặc định BetaV1)
 // ============================================================
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddSingleton<TenantDbContextFactory>();
-builder.Services.AddSingleton<JwtTokenService>();
 
 builder.Services.AddScoped(sp =>
 {
@@ -28,6 +30,11 @@ builder.Services.AddScoped(sp =>
         .Options;
     return new AppDbContext(options);
 });
+
+// ============================================================
+// 🚀 Đăng ký thư viện UIForge.Core (NuGet Package)
+// ============================================================
+builder.Services.AddUIForgeCore<AppDbContext>(builder.Configuration);
 
 // ============================================================
 // 2. JWT Authentication & Role-based Authorization (Dev / User)
@@ -49,8 +56,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
-// 3. Controllers & JSON options
+// 3. Controllers & JSON options (Kèm Controller từ thư viện UIForge.Core)
 builder.Services.AddControllers()
+    .AddApplicationPart(typeof(UIForge.Core.Controllers.DynamicMetadataController).Assembly)
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
@@ -91,11 +99,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Tự tạo database của branch mặc định (kèm seed data) nếu chưa có.
-// Các branch khác sẽ được tạo lúc login lần đầu.
 try
 {
     var factory = app.Services.GetRequiredService<TenantDbContextFactory>();
-    await using var db = factory.Create(null);
+    await using var db = factory.CreateCustom<AppDbContext>(null, opts => new AppDbContext(opts));
     await db.Database.EnsureCreatedAsync();
     Console.WriteLine("[DB] Default branch database is ready.");
 

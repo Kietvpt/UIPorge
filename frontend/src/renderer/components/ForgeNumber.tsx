@@ -1,8 +1,8 @@
 import React from 'react'
 import type { ComponentProps } from './types'
-import { triggerComponentEvent } from '@/logic/eventRunner'
+import { triggerComponentEvent } from '@/core/engines/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
-import { useDataEngine } from '@/core/engines/dataEngine'
+import { useDataEngine, extractFieldValue } from '@/core/engines/dataEngine'
 import { FormFieldWrapper } from './FormFieldWrapper'
 
 /**
@@ -22,9 +22,9 @@ export const ForgeNumber: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
 
   // Lấy giá trị qua Generic DataEngine
-  const formId = String(node.parentId || activeFeatureId || 'defaultForm')
+  const formId = String(node.pageId || activeFeatureId || 'default')
   const fieldName = String(node.dataBinding?.fieldName || node.props.name || node.id)
-  const engineVal = useDataEngine((s) => s.getFieldValue(formId, fieldName, undefined))
+  const engineVal = useDataEngine((s) => extractFieldValue(s, formId, fieldName, undefined))
   const setFieldValue = useDataEngine((s) => s.setFieldValue)
 
   const precision = props.precision !== undefined ? Number(props.precision) : 0

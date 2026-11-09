@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import type { ComponentProps } from './types'
-import { triggerComponentEvent } from '@/logic/eventRunner'
+import { triggerComponentEvent } from '@/core/engines/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
 import { FormFieldWrapper } from './FormFieldWrapper'
 

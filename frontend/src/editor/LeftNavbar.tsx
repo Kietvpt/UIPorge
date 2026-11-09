@@ -1,6 +1,7 @@
 import { deletePage } from '@/api/pagesApi'
 import React, { useState } from 'react'
 import { useEditorStore } from '@/store/editorStore'
+import { useNavigationEngine } from '@/core/engines/navigationEngine'
 import { ContextMenu, MenuItem } from './ContextMenu'
 import {
   LayoutDashboard,
@@ -9,6 +10,7 @@ import {
   Trash2,
   Edit2,
   FolderPlus,
+  Ship,
 } from 'lucide-react'
 
 interface LeftNavbarProps {
@@ -22,6 +24,9 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
   const addFeature = useEditorStore((s) => s.addFeature)
   const renameFeature = useEditorStore((s) => s.renameFeature)
   const deleteFeature = useEditorStore((s) => s.deleteFeature)
+
+  // Chỉ hiển thị các Feature không bị ẩn (các màn hình Detail như FCL Import sẽ chỉ mở khi được gọi)
+  const visibleFeatures = features.filter((f) => !f.hidden && !f.isDetail)
 
   // Context Menu State
   const [contextMenu, setContextMenu] = useState<{
@@ -129,12 +134,15 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
       >
         {/* Feature List (Chuột phải vào nền để thêm mới) */}
         <nav className="p-3 space-y-1.5 overflow-y-auto flex-1">
-          {features.map((feature, idx) => {
+          {visibleFeatures.map((feature, idx) => {
             const isActive = feature.id === activeFeatureId
             return (
               <div
                 key={feature.id}
-                onClick={() => setActiveFeature(feature.id)}
+                onClick={() => {
+                  setActiveFeature(feature.id, null)
+                  useNavigationEngine.getState().openFeature(feature.id, {}, 'Tab', feature.name)
+                }}
                 onContextMenu={(e) => handleItemContextMenu(e, feature.id)}
                 className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
                   isActive

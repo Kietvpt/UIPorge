@@ -5,8 +5,11 @@ import {
   Shield,
   X,
   Sliders,
+  Zap,
 } from 'lucide-react'
-import type { TableColumn } from '@/types/schema'
+import type { TableColumn, ComponentEvent } from '@/types/schema'
+import { useEditorStore } from '@/store/editorStore'
+import { UnifiedEventEditor } from '@/editor/events/UnifiedEventEditor'
 
 export interface ColumnPropertiesModalProps {
   isOpen: boolean
@@ -22,10 +25,33 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
   onSave,
 }) => {
   const [formData, setFormData] = useState<TableColumn | null>(null)
-  const [activeBottomTab, setActiveBottomTab] = useState<'info' | 'permissions'>('info')
+  const [activeBottomTab, setActiveBottomTab] = useState<'info' | 'events' | 'permissions'>('info')
+  const activeFeature = useEditorStore((s) => s.features.find((f) => f.id === s.activeFeatureId))
 
   useEffect(() => {
     if (column) {
+      let parsedEvents: ComponentEvent[] = []
+      if (Array.isArray(column.events)) {
+        parsedEvents = [...column.events]
+      } else if (typeof column.events === 'string' && column.events.trim()) {
+        try {
+          const raw = JSON.parse(column.events)
+          if (Array.isArray(raw)) parsedEvents = raw
+        } catch {}
+      }
+
+      // Tự động đồng bộ nếu cột có action (ví dụ: action = 'openTransactionDetail')
+      if (parsedEvents.length === 0 && column.action) {
+        parsedEvents = [
+          {
+            id: `evt-${column.key}-action`,
+            trigger: column.componentType === 'Button' ? 'click' : 'dblclick',
+            handlerName: column.action,
+            action: column.action,
+          },
+        ]
+      }
+
       setFormData({
         ...column,
         code: column.code || `GP${Math.floor(100000 + Math.random() * 900000)}`,
@@ -42,11 +68,14 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
         hasFilter: column.hasFilter ?? true,
         advancedSearch: column.advancedSearch ?? true,
         formatCell: column.formatCell || (column.format as string) || '{Name}',
+        events: parsedEvents,
       })
     }
   }, [column])
 
   if (!isOpen || !formData) return null
+
+  const columnEvents: ComponentEvent[] = Array.isArray(formData.events) ? formData.events : []
 
   const handleChange = (field: keyof TableColumn, value: any) => {
     setFormData((prev) => {
@@ -355,14 +384,36 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
               </div>
 
               <div>
-                <label className="text-[10px] text-slate-400 block mb-0.5">Events</label>
-                <input
-                  type="text"
-                  placeholder='["change":"CheckPackageType"]'
-                  value={formData.events || ''}
-                  onChange={(e) => handleChange('events', e.target.value)}
-                  className="w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 font-mono text-[11px] focus:border-emerald-500 focus:outline-none"
-                />
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[10px] text-slate-400 block font-semibold">Events (Sự Kiện Cột)</label>
+                  <button
+                    type="button"
+                    onClick={() => setActiveBottomTab('events')}
+                    className="text-[10px] text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <Zap className="w-3 h-3 text-amber-400" />
+                    <span>{columnEvents.length > 0 ? `Cấu hình (${columnEvents.length})` : '+ Thêm Sự Kiện'}</span>
+                  </button>
+                </div>
+                <div
+                  onClick={() => setActiveBottomTab('events')}
+                  className="w-full px-2.5 py-1.5 rounded bg-[#0b1329] border border-slate-700 hover:border-emerald-500/70 text-slate-200 text-xs flex items-center justify-between cursor-pointer transition-all shadow-inner group"
+                  title="Nhấn để mở Tab cấu hình sự kiện cho cột này"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+                    {columnEvents.length > 0 ? (
+                      <span className="text-emerald-300 font-mono text-[11px] truncate">
+                        {columnEvents.map((ev) => `${ev.trigger} ➔ ${ev.handlerName || ev.action}()`).join(', ')}
+                      </span>
+                    ) : (
+                      <span className="text-slate-500 italic text-[11px]">Chưa cấu hình sự kiện</span>
+                    )}
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono shrink-0 group-hover:bg-emerald-950 group-hover:text-emerald-300 transition-colors">
+                    {columnEvents.length} event{columnEvents.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
@@ -417,6 +468,23 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
                 }`}
               >
                 THÔNG TIN KHÁC
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveBottomTab('events')}
+                className={`px-5 py-2.5 border-b-2 transition-colors flex items-center gap-1.5 ${
+                  activeBottomTab === 'events'
+                    ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                <span>SỰ KIỆN (EVENTS)</span>
+                {columnEvents.length > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">
+                    {columnEvents.length}
+                  </span>
+                )}
               </button>
               <button
                 type="button"
@@ -656,6 +724,37 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
                     <span className="text-slate-300">HideGrid</span>
                   </label>
                 </div>
+              </div>
+            )}
+
+            {activeBottomTab === 'events' && (
+              <div className="p-4 bg-slate-950/60 max-h-[380px] overflow-y-auto">
+                <UnifiedEventEditor
+                  events={columnEvents}
+                  onChange={(newEvents) => {
+                    handleChange('events', newEvents)
+                    const clickEv = newEvents.find((e) => e.trigger === 'click' || e.trigger === 'actionClick')
+                    if (clickEv) {
+                      handleChange('action', clickEv.handlerName || clickEv.action)
+                    }
+                  }}
+                  scriptFile={activeFeature?.scriptFile || 'transactionList.bl.ts'}
+                  componentName={`Cột [${formData.title || formData.key}]`}
+                  componentId={formData.key}
+                  availableTriggers={[
+                    { value: 'click', label: 'Bấm chuột / Nút thao tác (click)' },
+                    { value: 'dblclick', label: 'Nhấp đúp chuột vào ô (dblclick)' },
+                    { value: 'actionClick', label: 'Hành động ô (actionClick)' },
+                    { value: 'change', label: 'Thay đổi giá trị ô (change)' },
+                    { value: 'focus', label: 'Khi chọn ô (focus)' },
+                    { value: 'blur', label: 'Khi rời ô (blur)' },
+                  ]}
+                  contextExtra={{
+                    columnKey: formData.key,
+                    columnTitle: formData.title,
+                    row: { [formData.key]: 'Mẫu kiểm thử' },
+                  }}
+                />
               </div>
             )}
 

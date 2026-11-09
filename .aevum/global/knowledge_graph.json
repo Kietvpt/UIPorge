@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastTransactionId": "tx_edge_1792758189258_xs4p9",
+  "lastTransactionId": "tx_edge_1794227162424_151by",
   "nodes": [
     {
       "id": "aevum://ltm/kael/1792758189240",
@@ -20,6 +20,103 @@
           "sync"
         ]
       }
+    },
+    {
+      "id": "aevum://ltm/an/1794223988604",
+      "type": "DIRECTIVE_CONSTRAINT",
+      "label": "[LTM] BỘ QUY TẮC PHÁT TRIỂN & VẬN HÀNH DỰ ÁN UIFORGE ...",
+      "properties": {
+        "description": "BỘ QUY TẮC PHÁT TRIỂN & VẬN HÀNH DỰ ÁN UIFORGE (AEVUM CORE):\n1. QUY TẮC THAM KHẢO CORE CŨ: Khi phân tích, chỉnh sửa hay làm bất kỳ chức năng mới nào, bắt buộc phải tham khảo lại source code của Core C# cũ (TMS.UI, TMS.Core, GridView, ComponentGroupDetailBL, UserListBL, BaseEntity, PopulateField, GridPolicy...). Hiểu rõ cách thức hoạt động và nghiệp vụ chuẩn của Core cũ để ánh xạ chính xác sang UIForge.\n2. TÁCH BIỆT TUYỆT ĐỐI CORE VÀ NGHIỆP VỤ: Core UIForge cung cấp môi trường UI Builder đa nghiệp vụ, tuyệt đối không chứa logic nghiệp vụ đặc thù (như logistics, FCL, container...) trong các component của Core. Toàn bộ logic nghiệp vụ phải được đặt trong các file BL (*.bl.ts) và được kích hoạt qua hệ thống Event của component.\n3. LƯU TRỮ ĐỘNG TRONG DATABASE: Dữ liệu liên quan đến component, feature, layout và grid policy phải được lưu vào Database SQL Server. Không khai báo cứng initialFeatures hay dữ liệu mẫu trong editorStore.ts.\n4. THỐNG NHẤT FORMAT SỰ KIỆN: Mọi component và cột bảng phải có tab Event để xem/chỉnh sửa, dùng chung format ComponentEvent (trigger, handlerName, action, payload). Mọi tương tác mở detail, save, delete... đều đi qua Event Runner gọi hàm BL.\n5. ĐỒNG BỘ TRẠNG THÁI URL VÀ TAB: Màn hình danh sách không được giữ tham số id (xóa id khỏi URL và localStorage). Màn hình chi tiết và các tab đa nhiệm phải đồng bộ chính xác record ID tương ứng khi chuyển đổi hoặc mở bản ghi.\n6. VỆ SINH MÃ NGUỒN: Xóa toàn bộ file script tạm thời (.sql, .py) sau khi kiểm tra xong, bảo toàn cấu trúc tài liệu và comment.",
+        "author": "Master",
+        "date": "2026-11-09T11:33:08.604Z",
+        "validFrom": "2026-11-09T11:33:08.604Z",
+        "salienceScore": 10,
+        "status": "ACTIVE",
+        "tags": [
+          "rules",
+          "core_uiforge",
+          "best_practices",
+          "guidelines",
+          "legacy_core"
+        ]
+      }
+    },
+    {
+      "id": "aevum://ltm/an/1794225073711",
+      "type": "SEMANTIC_RULE",
+      "label": "[LTM] ĐỊNH HƯỚNG CỐT LÕI CỦA DỰ ÁN UIFORGE:\n1. BẢN CH...",
+      "properties": {
+        "description": "ĐỊNH HƯỚNG CỐT LÕI CỦA DỰ ÁN UIFORGE:\n1. BẢN CHẤT: UIForge là Web Application Visual Framework & Low-Code/Pro-Code Engine dành cho doanh nghiệp, kế thừa và phát triển từ hệ thống Core C# cũ (thay thế Bridge.NET bằng React + TypeScript + ASP.NET Core 8).\n2. NHIỆM VỤ CHÍNH: Xây dựng nền tảng Core UIForge hoàn chỉnh, mạnh mẽ, đa năng (Core Engines: dataEngine, navigationEngine, eventRunner, ForgeTable/GridPolicy, Form Controls, Security, Reports).\n3. VAI TRÒ CỦA LOGIC NGHIỆP VỤ: Các chức năng nghiệp vụ cụ thể (như Logistics, FCL Import, Khách hàng, Doanh thu...) CHỈ LÀ MẪU THỬ NGHIỆM (Test Benches / Proof of Concept) để kiểm thử, chứng minh và hoàn thiện năng lực của Core UIForge, KHÔNG PHẢI là đích đến cuối cùng của dự án.\n4. NGUYÊN TẮC: Luôn tập trung nâng cấp năng lực của Core, không để logic nghiệp vụ làm loãng hoặc dính vào Core. Mọi nghiệp vụ phải chạy trên nền tảng Core qua Event và BL.",
+        "author": "Master",
+        "date": "2026-11-09T11:51:13.711Z",
+        "validFrom": "2026-11-09T11:51:13.711Z",
+        "salienceScore": 10,
+        "status": "ACTIVE",
+        "tags": [
+          "uiforge_vision",
+          "core_mission",
+          "architecture",
+          "directive"
+        ]
+      }
+    },
+    {
+      "id": "aevum://ltm/an/1794225345057",
+      "type": "SEMANTIC_RULE",
+      "label": "[LTM] MÔ HÌNH ĐÓNG GÓI 2 THƯ VIỆN ĐỘC LẬP CỦA UIFORGE...",
+      "properties": {
+        "description": "MÔ HÌNH ĐÓNG GÓI 2 THƯ VIỆN ĐỘC LẬP CỦA UIFORGE:\n1. FRONTEND PACKAGE (@uiforge/core - NPM Package):\n   - Đóng gói cài đặt qua npm/yarn vào bất kỳ ứng dụng React/Vite/Next.js nào.\n   - Chứa: Toàn bộ Generic Components trung lập (ForgeTable, ForgeTextBox, ForgeSelect...), Visual Canvas Designer, và các Core Runtime Engines (dataEngine, navigationEngine, eventRunner).\n   - Tuyệt đối trung lập với mọi nghiệp vụ (Domain-Agnostic), không chứa code logic ngành nghề nào.\n2. BACKEND PACKAGE (UIForge.Core - NuGet Package cho ASP.NET Core .NET 8):\n   - Cài đặt qua `dotnet add package UIForge.Core` vào bất kỳ WebAPI .NET 8 nào.\n   - Cung cấp: BaseEntity chuẩn (Id, Active soft-delete, Audit dates/users), DynamicODataController, Generic REST CRUD, MetadataDiscoveryService (Reflection entity metadata), và bộ Schema bảng Core bắt buộc (Features, Components, ComponentGroups, GridPolicies, FeaturePolicies).\n\nBỘ QUY TẮC DÀNH CHO LẬP TRÌNH VIÊN SỬ DỤNG CORE UIFORGE:\n- Mọi bảng nghiệp vụ chỉ cần kế thừa BaseEntity.\n- Toàn bộ logic nghiệp vụ viết độc lập trong *.bl.ts, không đụng vào Core package.\n- Kết nối giao diện với BL qua hệ thống ComponentEvent (Event Runner).\n- Sử dụng tiện ích dataEngine và navigationEngine để thao tác dữ liệu và chuyển màn hình siêu tốc.",
+        "author": "Master",
+        "date": "2026-11-09T11:55:45.057Z",
+        "validFrom": "2026-11-09T11:55:45.057Z",
+        "salienceScore": 10,
+        "status": "ACTIVE",
+        "tags": [
+          "uiforge_packages",
+          "npm_nuget",
+          "developer_guide",
+          "architecture_manifesto"
+        ]
+      }
+    },
+    {
+      "id": "aevum://ltm/an/1794226131012",
+      "type": "DIRECTIVE_CONSTRAINT",
+      "label": "[LTM] Kế hoạch tái cấu trúc UIForge thành 2 thư viện ...",
+      "properties": {
+        "description": "Kế hoạch tái cấu trúc UIForge thành 2 thư viện độc lập: 1. Frontend Library (@uiforge/core - NPM) chứa toàn bộ Components, Engines, Renderer, Editor. 2. Backend Library (UIForge.Core - NuGet) chứa BaseEntity, Generic DynamicMetadataController, PagesController, Core Services. Toàn bộ logic Logistics/ERP (FCL Import, Transaction Detail, *.bl.ts, LogisticsEntities) chỉ đóng vai trò Host Demo / Sample Test Bench, tuyệt đối không nằm trong Core libraries.",
+        "author": "Master",
+        "date": "2026-11-09T12:08:51.013Z",
+        "validFrom": "2026-11-09T12:08:51.013Z",
+        "salienceScore": 10,
+        "status": "ACTIVE",
+        "tags": [
+          "architecture",
+          "restructure",
+          "library_separation",
+          "uiforge_core"
+        ]
+      }
+    },
+    {
+      "id": "aevum://ltm/an/1794227162399",
+      "type": "EPISODIC_EVENT",
+      "label": "[LTM] Đã hoàn thành xuất sắc Giai đoạn 1 & 2 tái cấu ...",
+      "properties": {
+        "description": "Đã hoàn thành xuất sắc Giai đoạn 1 & 2 tái cấu trúc UIForge: 1. Backend: Tạo thành công thư viện NuGet UIForge.Core (.NET 8 Class Library) sinh file UIForge.Core.1.0.0.nupkg; UIForge.API chỉ đóng vai trò Web Host tham chiếu UIForge.Core. 2. Frontend: Di chuyển toàn bộ Core Engines sang src/core/engines/, cô lập các file *.bl.ts nghiệp vụ thành Host Sample Demo, tạo entry-point src/core/index.ts cho thư viện @uiforge/core và cấu hình lệnh build:lib xuất ra dist-lib/uiforge-core.es.js & dist-lib/uiforge-core.cjs.js trong 627ms. Hệ thống đang chạy 100% ổn định.",
+        "author": "Master",
+        "date": "2026-11-09T12:26:02.399Z",
+        "validFrom": "2026-11-09T12:26:02.399Z",
+        "salienceScore": 10,
+        "status": "ACTIVE",
+        "tags": [
+          "milestone",
+          "restructure",
+          "uiforge_core",
+          "nuget",
+          "npm"
+        ]
+      }
     }
   ],
   "edges": [
@@ -31,6 +128,56 @@
     {
       "source": "aevum://ltm/kael/1792758189240",
       "target": "aevum://persona/kael",
+      "type": "appliesTo"
+    },
+    {
+      "source": "aevum://entity/master",
+      "target": "aevum://ltm/an/1794223988604",
+      "type": "teaches"
+    },
+    {
+      "source": "aevum://ltm/an/1794223988604",
+      "target": "aevum://persona/an",
+      "type": "appliesTo"
+    },
+    {
+      "source": "aevum://entity/master",
+      "target": "aevum://ltm/an/1794225073711",
+      "type": "teaches"
+    },
+    {
+      "source": "aevum://ltm/an/1794225073711",
+      "target": "aevum://persona/an",
+      "type": "appliesTo"
+    },
+    {
+      "source": "aevum://entity/master",
+      "target": "aevum://ltm/an/1794225345057",
+      "type": "teaches"
+    },
+    {
+      "source": "aevum://ltm/an/1794225345057",
+      "target": "aevum://persona/an",
+      "type": "appliesTo"
+    },
+    {
+      "source": "aevum://entity/master",
+      "target": "aevum://ltm/an/1794226131012",
+      "type": "teaches"
+    },
+    {
+      "source": "aevum://ltm/an/1794226131012",
+      "target": "aevum://persona/an",
+      "type": "appliesTo"
+    },
+    {
+      "source": "aevum://entity/master",
+      "target": "aevum://ltm/an/1794227162399",
+      "type": "teaches"
+    },
+    {
+      "source": "aevum://ltm/an/1794227162399",
+      "target": "aevum://persona/an",
       "type": "appliesTo"
     }
   ]

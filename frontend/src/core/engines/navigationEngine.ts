@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import { useEditorStore } from '@/store/editorStore'
 
 export type FeatureDisplayMode = 'Tab' | 'Popup'
 
@@ -37,20 +38,26 @@ interface NavigationState {
   ) => void
   closeTab: (tabId: string) => void
   setActiveTab: (tabId: string) => void
+  setTabDirty: (tabIdOrFeatureId: string, isDirty: boolean) => void
   closePopup: (result?: any) => void
 }
 
 export const useNavigationEngine = create<NavigationState>()(
   devtools((set, get) => ({
-    openTabs: [
-      {
-        id: 'tab_home',
-        featureId: '2', // Mặc định mở feature chính
-        title: 'FCL Import (Logistics ERP)',
-      },
-    ],
-    activeTabId: 'tab_home',
+    openTabs: [],
+    activeTabId: null,
     activePopup: null,
+
+    // Đánh dấu trạng thái bẩn (isDirty) cho tab khi dữ liệu form thay đổi
+    setTabDirty: (tabIdOrFeatureId: string, isDirty: boolean) => {
+      set((state) => ({
+        openTabs: state.openTabs.map((t) =>
+          t.id === tabIdOrFeatureId || t.featureId === tabIdOrFeatureId
+            ? { ...t, isDirty }
+            : t
+        ),
+      }))
+    },
 
     // 🚀 Mở một Feature theo chuẩn FeatureTab hoặc FeaturePopup (chỉ đạo của Master)
     openFeature: (
@@ -72,7 +79,9 @@ export const useNavigationEngine = create<NavigationState>()(
       } else {
         // Mở dạng Tab đa nhiệm
         const tabs = get().openTabs
-        const existingTab = tabs.find((t) => t.featureId === featureId && t.params?.id === params?.id)
+        const existingTab = tabs.find(
+          (t) => t.featureId === featureId && String(t.params?.id ?? '') === String(params?.id ?? '')
+        )
 
         if (existingTab) {
           // Nếu tab này đã mở rồi thì chỉ cần active
@@ -91,6 +100,9 @@ export const useNavigationEngine = create<NavigationState>()(
             activeTabId: newTabId,
           })
         }
+
+        // Tự động đồng bộ Active Feature & RecordId trong EditorStore và URL
+        useEditorStore.getState().setActiveFeature(featureId, params?.id ?? null)
       }
     },
 
@@ -127,4 +139,34 @@ export const useNavigationEngine = create<NavigationState>()(
     },
   }))
 )
+
+/**
+ * ⚡ Mở một Feature dưới dạng Popup Modal (Tương đương this.OpenPopup trong Core C#)
+ * Tham khảo: ComponentGroupDetailBL.cs (TMS.UI.Business.MenuBL)
+ */
+export function openPopup(featureName: string, params: Record<string, any> = {}, title?: string) {
+  useNavigationEngine.getState().openFeature(featureName, params, 'Popup', title || featureName)
+}
+
+/**
+ * ⚡ Mở một Feature dưới dạng Tab đa nhiệm (Tương đương this.OpenTab trong Core C#)
+ * Tham khảo: UserListBL.cs (TMS.UI.Business.User)
+ */
+export function openTab(featureName: string, params: Record<string, any> = {}, title?: string) {
+  useNavigationEngine.getState().openFeature(featureName, params, 'Tab', title || featureName)
+}
+
+/**
+ * ⚡ Đóng Popup hiện tại
+ */
+export function closePopup(result?: any) {
+  useNavigationEngine.getState().closePopup(result)
+}
+
+/**
+ * ⚡ Đóng Tab hiện tại
+ */
+export function closeTab(tabId: string) {
+  useNavigationEngine.getState().closeTab(tabId)
+}
 

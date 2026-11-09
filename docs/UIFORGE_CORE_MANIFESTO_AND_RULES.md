@@ -90,3 +90,47 @@ public abstract class BaseEntity
 * Màn hình **FCL Import** (và toàn bộ dữ liệu Logistics) chỉ là **1 Bài Test Mẫu (Sample App / Test Fixture)** để kiểm tra độ tin cậy của Core Engine.
 * Mọi Business Logic đặc thù của Logistics (tính phí THC, kiểm tra M-B/L, check container ISO 6346) **bắt buộc phải nằm trong thư mục của ứng dụng mẫu (`samples/Logistics.Demo/` hoặc `fclImport.bl.ts`)**, tuyệt đối không được viết vào bên trong các Component dùng chung của Core (`ForgeTextBox`, `ForgeTable`, `ForgeSelect`...).
 
+---
+
+## 7. QUY TẮC BẤT BIẾN: PHÂN ĐỊNH TRÁCH NHIỆM GIỮA CORE ENGINE VÀ BUSINESS LOGIC (BL)
+
+> [!IMPORTANT]
+> **TÔN CHỈ THIẾT KẾ:** Core UIForge là khung hạ tầng (Framework & Environment) phục vụ xây dựng ứng dụng cho **ĐA NGÀNH NGHỀ, ĐA NGHIỆP VỤ**. Mọi logic nghiệp vụ bắt buộc phải được đóng gói độc lập trong các file `.bl.ts`.
+
+### 7.1. Trách Nhiệm Của Core UIForge (Core Responsibilities)
+Core UIForge chỉ cung cấp:
+1. **Môi trường & Bộ Component dùng chung (Domain-Agnostic Components)**:
+   - Các linh kiện trung lập: `ForgeTable`, `ForgeTextBox`, `ForgeSelect`, `ForgeDatePicker`, `ForgeTabs`, `ForgeModal`, `ForgeRecordSelector`...
+   - Canvas Designer cho phép kéo thả, sắp xếp, cấu hình thuộc tính và phân quyền.
+2. **Hệ thống Động cơ Cốt lõi & Tiện ích Dữ liệu (Core Engines & Utility APIs)**:
+   - Tương tự như kiến trúc `EditForm` / `TabEditor` / `PopupEditor` trong Core C# cũ (`TMS.UI`), Core cung cấp các hàm tiện ích giúp kỹ sư viết BL lấy dữ liệu từ màn hình và thao tác dữ liệu cực nhanh:
+     - **Lấy dữ liệu từ Form / Component**: `dataEngine.getFormRecord(formId)`, `dataEngine.getFieldValue(formId, fieldName)`.
+     - **Ghi dữ liệu lên Form / Component**: `dataEngine.setFormRecord(formId, data)`, `dataEngine.setFieldValue(formId, fieldName, value)`.
+     - **Tự động điền dữ liệu theo Metadata (Cascading / Populate)**: `dataEngine.applyPopulate(formId, rule, sourceItem)`.
+     - **Thực thi CRUD chuẩn OData cực nhanh**:
+       - `dataEngine.saveRecord(entityName, record)`: Tự động phân loại POST (thêm mới) / PUT (cập nhật) vào SQL Server Database.
+       - `dataEngine.deleteRecord(entityName, id)`: Xóa bản ghi (hoặc soft-delete) theo chuẩn REST API.
+       - `dataEngine.queryEntity(entityName, filter)`: Truy vấn danh sách bản ghi.
+     - **Điều hướng màn hình & Cửa sổ**: `navigationEngine.openTab(featureId, params, title)`, `navigationEngine.openPopup(...)`, `navigationEngine.closeTab(...)`.
+     - **Xác thực dữ liệu (Validation Engine)**: Kiểm tra tính hợp lệ bắt buộc, định dạng số, ngày tháng, regex.
+
+### 7.2. Trách Nhiệm Của Business Logic (`*.bl.ts`)
+1. Toàn bộ logic rẽ nhánh, tính toán, kiểm tra nghiệp vụ đặc thù (Logistics, Kế toán, Nhân sự, Y tế, Bán hàng...) **chỉ được viết trong các file Business Logic (`*.bl.ts`)** tương ứng với từng Feature.
+2. File BL là nơi thực thi các hàm nghiệp vụ, ví dụ:
+   - `openTransactionDetail(context)`: Mở chi tiết lô hàng theo dòng được chọn.
+   - `AutoFillVendor(context)`: Điền vendor theo hãng tàu.
+   - `CheckPackageType(context)`: Kiểm tra loại kiện.
+   - `calculateFreightFee(context)`: Tính cước vận chuyển.
+3. Trong các hàm này, kỹ sư BL gọi các hàm tiện ích của Core (`dataEngine`, `navigationEngine`) để lấy dữ liệu từ màn hình, tính toán logic và lưu lại vào database.
+
+### 7.3. Cầu Nối Duy Nhất: Component Events (`ComponentEvent`)
+1. **Core kết nối với BL DUY NHẤT thông qua hệ thống Sự kiện (Event System)**:
+   - Cấu trúc chuẩn thống nhất: `{ id, trigger, handlerName, action, params }`.
+   - Các loại trigger: `click`, `dblclick`, `actionClick`, `change`, `focus`, `blur`.
+2. Core **không bao giờ gọi trực tiếp hay hardcode tên hàm BL** bên trong mã nguồn Component của Core.
+3. Khi người dùng tương tác trên UI (bấm nút, nhấp đúp chuột vào bảng, thay đổi giá trị dropdown...), Core Component chỉ phát sinh sự kiện (`executeSingleEvent` / `triggerComponentEvent`), chuyển giao context (`row`, `value`, `formId`) cho file `.bl.ts` xử lý.
+
+### 7.4. Điều Cấm Tuyệt Đối (Strictly Prohibited - Zero Domain Leaks)
+1. **NGHIÊM CẤM** viết bất kỳ hàm xử lý nghiệp vụ, điều kiện rẽ nhánh nghiệp vụ, hay câu truy vấn dữ liệu cứng của một ngành nghề nào vào bên trong các thành phần của Core (`ForgeTable`, `Renderer`, `PropertyPanel`, `ColumnPropertiesModal`, `NavigationEngine`, v.v.).
+2. **NGHIÊM CẤM** hardcode các từ khóa, tên bảng, tên cột nghiệp vụ (như `fcl-import`, `jobNo`, `mblNo`, `vendorName`, `patientId`, `invoiceNo`...) vào trong component Core. Mọi tham chiếu đều phải thông qua cấu hình động (`node.props`, `column.key`, `entityName`).
+

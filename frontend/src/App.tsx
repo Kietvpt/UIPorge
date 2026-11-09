@@ -21,11 +21,7 @@ import { useResizablePanels } from '@/editor/useResizablePanels'
 import { WorkspaceTabBar } from '@/editor/WorkspaceTabBar'
 import { FeaturePopupModal } from '@/editor/FeaturePopupModal'
 import { useDataEngine } from '@/core/engines/dataEngine'
-import {
-  SAMPLE_TERMINALS,
-  SAMPLE_SHIPPING_INFO,
-  SAMPLE_CONTAINERS,
-} from '@/samples/logistics/logisticsFixtures'
+import { useNavigationEngine } from '@/core/engines/navigationEngine'
 
 export function App() {
   // ── Auth state ──
@@ -50,6 +46,9 @@ export function App() {
   // Người dùng thường (User) luôn ở chế độ xem, không được chỉnh sửa
   const effectivePreview = isPreview || !isDev
 
+  // ── Tab & View Navigation ──
+  const currentTab = useNavigationEngine((s) => s.openTabs.find((t) => t.id === s.activeTabId))
+
   // ── Drag & Drop Management ──
   // ── Resizable Left and Right Panels ──
   const { leftWidth, rightWidth, startLeftResize, startRightResize } = useResizablePanels()
@@ -71,11 +70,22 @@ export function App() {
     setTimeout(() => setToast(null), 3000)
   }
 
-  // ── Khởi tạo bộ dữ liệu mẫu (Test Fixtures) cho Core DataEngine ──
+  // ── Nạp dữ liệu thực tế từ SQL Server Database vào Core DataEngine ──
   useEffect(() => {
-    useDataEngine.getState().registerDataset('Terminal', SAMPLE_TERMINALS)
-    useDataEngine.getState().registerDataset('Transaction', SAMPLE_SHIPPING_INFO)
-    useDataEngine.getState().registerDataset('Container', SAMPLE_CONTAINERS)
+    fetch('http://localhost:5048/api/core/data/Terminal')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => useDataEngine.getState().registerDataset('Terminal', data))
+      .catch(() => {})
+
+    fetch('http://localhost:5048/api/core/data/Transaction')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => useDataEngine.getState().registerDataset('Transaction', data))
+      .catch(() => {})
+
+    fetch('http://localhost:5048/api/core/data/Container')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => useDataEngine.getState().registerDataset('Container', data))
+      .catch(() => {})
   }, [])
 
   // ── Lắng nghe sự kiện Back/Forward của trình duyệt để đổi màn hình ──
@@ -83,8 +93,9 @@ export function App() {
     const handlePopState = () => {
       const urlParams = new URLSearchParams(window.location.search)
       const pageId = urlParams.get('feature') || urlParams.get('page')
+      const recId = urlParams.get('id')
       if (pageId) {
-        setActiveFeature(pageId)
+        setActiveFeature(pageId, recId)
       }
     }
     window.addEventListener('popstate', handlePopState)
@@ -100,11 +111,27 @@ export function App() {
       .then((pages) => {
         if (cancelled) return
         if (pages.length > 0) {
-          setFeatures(pages.map(apiPageToFeature))
+          const loadedFeatures = pages.map(apiPageToFeature)
+          setFeatures(loadedFeatures)
+
+          // Đồng bộ tab mở trên WorkspaceTabBar nếu chưa có tab nào
+          const navEngine = useNavigationEngine.getState()
+          if (navEngine.openTabs.length === 0) {
+            const activeId = useEditorStore.getState().activeFeatureId
+            const activePage =
+              loadedFeatures.find((f) => f.id === activeId) ||
+              loadedFeatures.find((f) => !f.hidden && !f.isDetail) ||
+              loadedFeatures[0]
+            if (activePage) {
+              const urlParams = new URLSearchParams(window.location.search)
+              const recId = urlParams.get('id')
+              navEngine.openFeature(activePage.id, recId ? { id: recId } : {}, 'Tab', activePage.name)
+            }
+          }
         }
       })
       .catch(() => {
-        if (!cancelled) showToast('⚠ Không tải được dữ liệu từ server — đang dùng dữ liệu cục bộ.')
+        if (!cancelled) showToast('⚠ Không tải được danh mục màn hình từ server.')
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false)
@@ -197,7 +224,7 @@ export function App() {
             <div className="w-0.5 h-8 bg-slate-700 group-hover:bg-white rounded-full transition-colors" />
           </div>
 
-          {/* Màn hình làm việc của Feature */}
+          {/* Màn hình làm việc của Feature qua FeatureCanvas */}
           {isLoading ? (
             <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">
               Đang tải dữ liệu từ server...

@@ -1,0 +1,24 @@
+using System;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace UIForge.Core.Services
+{
+    /// <summary>
+    /// Hash mật khẩu SHA256 + salt tĩnh chuẩn của UIForge Core.
+    /// </summary>
+    public static class PasswordHasher
+    {
+        private const string Salt = "UIForge::StaticSalt::v1::";
+
+        public static string Hash(string password)
+        {
+            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(Salt + password));
+            return Convert.ToHexString(bytes).ToLowerInvariant();
+        }
+
+        public static bool Verify(string password, string hash)
+            => string.Equals(Hash(password), hash, StringComparison.OrdinalIgnoreCase);
+    }
+}
+

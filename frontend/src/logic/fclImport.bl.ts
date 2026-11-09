@@ -11,7 +11,8 @@
  * - onEManifest, onPrintDocuments, onAccountingSync, onRunFunction: Các tác vụ nghiệp vụ trên thanh công cụ
  */
 
-import { useMasterDetailStore } from './masterDetailStore'
+import { useMasterDetailStore } from '@/store/masterDetailStore'
+import { openPopup, openTab } from '@/core/engines/navigationEngine'
 
 export interface BLContext {
   componentId?: string
@@ -159,5 +160,19 @@ export function onRunFunction(context?: BLContext) {
 
 export function HelloWorld(context?: BLContext) {
   console.log('HelloWorld')
+}
+
+/** 12. Mở chi tiết Lô hàng dưới dạng Popup (Chuẩn C# Core EditComponent trong ComponentGroupDetailBL.cs) */
+export function openTransactionDetailPopup(context?: BLContext) {
+  const row = context?.value || context?.row || {}
+  const title = row.jobNo ? `Chi Tiết Lô Hàng: ${row.jobNo}` : 'Chi Tiết Lô Hàng'
+  openPopup('2', row, title)
+}
+
+/** 13. Mở chi tiết Lô hàng dưới dạng Tab đa nhiệm (Chuẩn C# Core trong UserListBL.cs) */
+export function openTransactionDetailTab(context?: BLContext) {
+  const row = context?.value || context?.row || {}
+  const title = row.jobNo ? `Lô ${row.jobNo}` : 'Chi Tiết Lô'
+  openTab('2', row, title)
 }
 
