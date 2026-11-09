@@ -53,6 +53,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
   const [selectedColumnIndex, setSelectedColumnIndex] = useState<number | null>(null)
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false)
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false)
+  const [listDragIdx, setListDragIdx] = useState<number | null>(null)
+  const [listDragOverIdx, setListDragOverIdx] = useState<number | null>(null)
 
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
@@ -1195,9 +1197,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
             {selectedNode.type === 'Table' && (() => {
               const rawCols = (selectedNode.props.columns as TableColumn[]) || []
               const selectedCol = selectedColumnIndex !== null ? rawCols[selectedColumnIndex] : null
-
-              const [listDragIdx, setListDragIdx] = useState<number | null>(null)
-              const [listDragOverIdx, setListDragOverIdx] = useState<number | null>(null)
 
               const updateColumn = (idx: number, patch: Partial<TableColumn>) => {
                 const updated = rawCols.map((c, i) => (i === idx ? { ...c, ...patch } : c))
