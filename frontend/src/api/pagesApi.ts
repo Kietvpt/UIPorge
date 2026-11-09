@@ -75,6 +75,8 @@ export function apiPageToFeature(p: ApiPage): FeaturePage {
     scriptFile,
     layoutConfig: p.layoutConfig || { direction: 'column', gap: '16px', wrap: 'wrap' },
     components: normalizeTree(p.components || []),
+    hidden: (p as any).hidden ?? (p.layoutConfig as any)?.hidden ?? (strId === '2' ? true : undefined),
+    isDetail: (p as any).isDetail ?? (p.layoutConfig as any)?.isDetail ?? (strId === '2' ? true : undefined),
     createdAt: p.createdAt,
     updatedAt: p.updatedAt,
   }

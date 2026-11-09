@@ -146,12 +146,82 @@ const initialFeatures: FeaturePage[] = [
     ],
   },
   {
+    id: 'transaction_list',
+    name: 'Danh Sách Lô Hàng',
+    icon: 'Layers',
+    route: '/transactions',
+    description: 'Danh sách các lô hàng (Transactions) truy vấn trực tiếp từ SQL Server Database',
+    scriptFile: 'transactionList.bl.ts',
+    layoutConfig: {
+      direction: 'column',
+      gap: '16px',
+      wrap: 'nowrap',
+    },
+    components: [
+      {
+        id: 'sec_trans_list',
+        type: 'Section',
+        parentId: null,
+        pageId: 'transaction_list',
+        props: {
+          title: 'DANH SÁCH LÔ HÀNG (TRANSACTIONS - SQL SERVER)',
+          label: 'DANH SÁCH LÔ HÀNG (TRANSACTIONS - SQL SERVER)',
+          collapsible: false,
+          boxShadow: true,
+        },
+        style: {
+          width: '100%',
+        },
+        events: [],
+        children: [
+          {
+            id: 'grid_transactions',
+            type: 'Table',
+            parentId: 'sec_trans_list',
+            pageId: 'transaction_list',
+            props: {
+              reference: 'Transaction',
+              label: 'Bảng Danh Sách Lô Hàng',
+              columns: [
+                { key: 'jobNo', title: 'JOB NO.', width: '140px', sortable: true, frozen: true, sticky: 'left', order: 1 },
+                { key: 'mblNo', title: 'M B/L NO.', width: '150px', sortable: true, order: 2 },
+                { key: 'shipmentDate', title: 'NGÀY LẬP', width: '120px', sortable: true, componentType: 'DatePicker', order: 3 },
+                { key: 'vendorName', title: 'HÃNG TÀU / VENDOR', width: '200px', sortable: true, order: 4 },
+                { key: 'polId', title: 'POL (CẢNG ĐI)', width: '110px', sortable: true, order: 5 },
+                { key: 'podId', title: 'POD (CẢNG ĐẾN)', width: '110px', sortable: true, order: 6 },
+                { key: 'commodity', title: 'MẶT HÀNG', width: '220px', sortable: true, order: 7 },
+                { key: 'totalGw', title: 'TỔNG GW (KGS)', width: '120px', align: 'right', aggregate: 'sum', summarySuffix: 'KGS', order: 8 },
+                { key: 'totalCbm', title: 'TỔNG CBM', width: '100px', align: 'right', aggregate: 'sum', summarySuffix: 'CBM', order: 9 },
+                { key: 'btn_detail', title: 'THAO TÁC', width: '110px', componentType: 'Button', formatCell: 'Chi Tiết', action: 'openTransactionDetail', order: 10 },
+              ],
+            },
+            style: {
+              width: '100%',
+            },
+            events: [
+              {
+                id: 'ev_grid_click',
+                trigger: 'actionClick',
+                action: 'openTransactionDetail',
+                handlerName: 'openTransactionDetail',
+              },
+            ],
+            order: 1,
+          },
+        ],
+        order: 1,
+      },
+    ],
+  },
+  {
     id: '2',
     name: 'FCL Import (Logistics ERP)',
     icon: 'Ship',
     route: '/fcl-import',
-    description: 'Màn hình quản lý lô hàng FCL chuyển đổi từ C# Core (Tái hiện chuẩn xác 100% Ảnh 4)',
+    description: 'Màn hình chi tiết lô hàng FCL chuyển đổi từ C# Core (Chỉ mở khi được gọi từ GridView hoặc Tab/Popup)',
     scriptFile: 'fclImport.bl.ts',
+    hidden: true,
+    isDetail: true,
     layoutConfig: {
       direction: 'column',
       gap: '16px',
@@ -191,8 +261,8 @@ export const useEditorStore = create<EditorState>()(
   devtools(
     (set) => ({
       features: initialFeatures,
-      activeFeatureId: getSavedFeatureId() || initialFeatures[0].id,
-      selection: { componentId: null, pageId: getSavedFeatureId() || initialFeatures[0].id },
+      activeFeatureId: getSavedFeatureId() || 'transaction_list',
+      selection: { componentId: null, pageId: getSavedFeatureId() || 'transaction_list' },
       history: [initialFeatures],
       historyIndex: 0,
 

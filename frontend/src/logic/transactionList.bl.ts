@@ -64,9 +64,9 @@ export class TransactionListBL {
     const jobNo = row.jobNo || row.JobNo || `Lô #${id}`
 
     if (mode === 'popup') {
-      openPopup('TransactionDetail', { id, jobNo, row }, `Chi tiết: ${jobNo}`)
+      openPopup('2', { id, jobNo, row }, `Chi tiết: ${jobNo}`)
     } else {
-      openTab('TransactionDetail', { id, jobNo, row }, `Lô hàng: ${jobNo}`)
+      openTab('2', { id, jobNo, row }, `Lô hàng: ${jobNo}`)
     }
   }
 
@@ -75,9 +75,9 @@ export class TransactionListBL {
    */
   openNewTransaction(mode: 'tab' | 'popup' = 'tab') {
     if (mode === 'popup') {
-      openPopup('TransactionDetail', { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
+      openPopup('2', { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
     } else {
-      openTab('TransactionDetail', { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
+      openTab('2', { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
     }
   }
 
@@ -102,3 +102,24 @@ export class TransactionListBL {
 }
 
 export const transactionListBL = TransactionListBL.getInstance()
+
+/**
+ * ⚡ Hàm xuất cho Event Runner UIForge kích hoạt trực tiếp từ Grid Event
+ */
+export function openTransactionDetail(context?: any) {
+  const row = context?.row || context?.value || context?.params || {}
+  const id = row.id || row.Id || context?.id || 1
+  const jobNo = row.jobNo || row.JobNo || `Lô #${id}`
+
+  useDataEngine.getState().setFormRecord('default', row)
+  useDataEngine.getState().setFormRecord('2', row)
+
+  openTab('2', { id, jobNo, row }, `Lô: ${jobNo}`)
+  return { success: true, message: `Mở chi tiết ${jobNo}` }
+}
+
+export function openNewTransaction() {
+  openTab('2', { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
+  return { success: true, message: 'Mở form thêm mới lô hàng' }
+}
+

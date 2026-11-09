@@ -51,19 +51,65 @@ export function extractFieldValue(
   fieldName: string,
   fallback: any = undefined
 ) {
-  const form = state.formRecords[formId]
-  if (!form) return fallback
-  if (form[fieldName] !== undefined) return form[fieldName]
+  // Tìm kiếm form ưu tiên: formId -> 'default' -> '2' -> tất cả các form còn lại trong state
+  const candidateForms = [
+    state.formRecords[formId],
+    state.formRecords['default'],
+    state.formRecords['2'],
+    state.formRecords['TransactionDetail'],
+    ...Object.values(state.formRecords),
+  ].filter(Boolean)
 
-  const normalizedKey = fieldName.toLowerCase().replace(/^fld_/, '')
-  const foundKey = Object.keys(form).find(
-    (k) =>
-      k.toLowerCase() === fieldName.toLowerCase() ||
-      k.toLowerCase().replace(/^fld_/, '') === normalizedKey
-  )
-  if (foundKey && form[foundKey] !== undefined) {
-    return form[foundKey]
+  if (candidateForms.length === 0) return fallback
+
+  const cleanFieldName = fieldName.toLowerCase().replace(/^fld_/, '')
+
+  // Mapping các alias tương đương giữa C# Entity và Form UIForge
+  const aliasMap: Record<string, string[]> = {
+    jobno: ['jobno', 'job_no'],
+    mblno: ['mblno', 'mbl_no'],
+    shipmentdate: ['shipmentdate', 'sdate', 'shipment_date'],
+    mblissueddate: ['mblissueddate', 'mbl_issued_date'],
+    mbltype: ['mbltype', 'mbl_type'],
+    vendor: ['vendorname', 'vendorid', 'vendor', 'vendor_name'],
+    vendorname: ['vendorname', 'vendor', 'vendor_name'],
+    slines: ['slines', 'shippingline', 's_lines'],
+    pol: ['polid', 'pol', 'pol_id'],
+    pod: ['podid', 'pod', 'pod_id'],
+    commodity: ['commodity', 'commodityname', 'commodity_name'],
+    commodityname: ['commodity', 'commodityname', 'commodity_name'],
+    totalgw: ['totalgw', 'total_gw', 'gw'],
+    totalcbm: ['totalcbm', 'total_cbm', 'cbm'],
+    totalvgm: ['totalvgm', 'total_vgm', 'vgm'],
+    totalpackages: ['totalpackages', 'total_packages', 'tpackages'],
+    packagetype: ['packagetype', 'package_type', 'ptype'],
+    pono: ['pono', 'po_no'],
+    service: ['service'],
+    pterm: ['pterm', 'p_term'],
+    opic: ['opic', 'op_ic'],
+    eta: ['eta'],
+    notes: ['notes'],
   }
+
+  const searchKeys = [
+    fieldName,
+    cleanFieldName,
+    ...(aliasMap[cleanFieldName] || []),
+  ]
+
+  for (const form of candidateForms) {
+    if (!form) continue
+    for (const key of searchKeys) {
+      if (form[key] !== undefined) return form[key]
+      const found = Object.keys(form).find(
+        (k) => k.toLowerCase().replace(/^fld_/, '') === key.toLowerCase()
+      )
+      if (found && form[found] !== undefined) {
+        return form[found]
+      }
+    }
+  }
+
   return fallback
 }
 
@@ -154,6 +200,9 @@ export const useDataEngine = create<DataEngineState>()(
         formRecords: {
           ...state.formRecords,
           [formId]: { ...record },
+          // Đồng bộ luôn dạng default và '2' để các màn hình con/cha đều đọc được
+          ...(formId === 'default' ? { '2': { ...record }, 'TransactionDetail': { ...record } } : {}),
+          ...(formId === '2' ? { 'default': { ...record }, 'TransactionDetail': { ...record } } : {}),
         },
       }))
     },

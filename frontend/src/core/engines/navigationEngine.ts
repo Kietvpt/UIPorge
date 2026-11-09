@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import { useEditorStore } from '@/store/editorStore'
 
 export type FeatureDisplayMode = 'Tab' | 'Popup'
 
@@ -45,13 +46,8 @@ export const useNavigationEngine = create<NavigationState>()(
     openTabs: [
       {
         id: 'tab_trans_list',
-        featureId: 'TransactionList',
-        title: 'Danh Sách Lô Hàng (SQL Server)',
-      },
-      {
-        id: 'tab_home',
-        featureId: '2', // Mặc định mở feature chính
-        title: 'FCL Import (Designer)',
+        featureId: 'transaction_list',
+        title: 'Danh Sách Lô Hàng',
       },
     ],
     activeTabId: 'tab_trans_list',
@@ -96,6 +92,9 @@ export const useNavigationEngine = create<NavigationState>()(
             activeTabId: newTabId,
           })
         }
+
+        // Tự động đồng bộ Active Feature trong EditorStore
+        useEditorStore.getState().setActiveFeature(featureId)
       }
     },
 

@@ -2,6 +2,8 @@ import type { ComponentEvent } from '@/types/schema'
 import * as customerBL from './customerManagement.bl'
 import * as dashboardBL from './dashboard.bl'
 import * as fclImportBL from './fclImport.bl'
+import * as transactionListBL from './transactionList.bl'
+import * as transactionDetailBL from './transactionDetail.bl'
 
 // Map các module BL tĩnh được import vào ứng dụng
 const BL_MODULES: Record<string, Record<string, any>> = {
@@ -14,6 +16,12 @@ const BL_MODULES: Record<string, Record<string, any>> = {
   'fclImport.bl.ts': fclImportBL,
   'fclImport.bl': fclImportBL,
   'fclImport': fclImportBL,
+  'transactionList.bl.ts': transactionListBL,
+  'transactionList.bl': transactionListBL,
+  'transactionList': transactionListBL,
+  'transactionDetail.bl.ts': transactionDetailBL,
+  'transactionDetail.bl': transactionDetailBL,
+  'transactionDetail': transactionDetailBL,
 }
 
 /**

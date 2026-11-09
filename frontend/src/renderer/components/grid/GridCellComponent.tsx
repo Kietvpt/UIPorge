@@ -49,15 +49,16 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
 
   // ── 2. BUTTON COMPONENT ──
   if (column.componentType === 'Button') {
+    const buttonText = column.formatCell || (column.title && column.title !== 'THAO TÁC' ? column.title : 'Chi Tiết') || value || 'Thao tác'
     return (
       <div className="w-full flex items-center justify-center py-0.5">
         <button
           type="button"
           disabled={column.disabled}
           onClick={() => onActionClick && onActionClick(column.key, row)}
-          className="px-2.5 py-1 rounded bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 text-[11px] font-semibold transition-colors disabled:opacity-50"
+          className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 hover:text-white border border-blue-500/40 text-[11px] font-semibold transition-colors disabled:opacity-50 cursor-pointer shadow-sm hover:shadow-blue-500/20"
         >
-          {column.title || value || 'Thao tác'}
+          {buttonText}
         </button>
       </div>
     )

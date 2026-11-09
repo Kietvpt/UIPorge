@@ -22,8 +22,6 @@ import { WorkspaceTabBar } from '@/editor/WorkspaceTabBar'
 import { FeaturePopupModal } from '@/editor/FeaturePopupModal'
 import { useDataEngine } from '@/core/engines/dataEngine'
 import { useNavigationEngine } from '@/core/engines/navigationEngine'
-import { TransactionListView } from '@/views/TransactionListView'
-import { TransactionDetailView } from '@/views/TransactionDetailView'
 
 export function App() {
   // ── Auth state ──
@@ -50,7 +48,6 @@ export function App() {
 
   // ── Tab & View Navigation ──
   const currentTab = useNavigationEngine((s) => s.openTabs.find((t) => t.id === s.activeTabId))
-  const isLiveView = currentTab?.featureId === 'TransactionList' || currentTab?.featureId === 'TransactionDetail'
 
   // ── Drag & Drop Management ──
   // ── Resizable Left and Right Panels ──
@@ -210,22 +207,10 @@ export function App() {
             <div className="w-0.5 h-8 bg-slate-700 group-hover:bg-white rounded-full transition-colors" />
           </div>
 
-          {/* Màn hình làm việc của Feature hoặc Live View */}
+          {/* Màn hình làm việc của Feature qua FeatureCanvas */}
           {isLoading ? (
             <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">
               Đang tải dữ liệu từ server...
-            </div>
-          ) : currentTab?.featureId === 'TransactionList' ? (
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <TransactionListView />
-            </div>
-          ) : currentTab?.featureId === 'TransactionDetail' ? (
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <TransactionDetailView
-                id={currentTab.params?.id}
-                jobNo={currentTab.params?.jobNo}
-                tabId={currentTab.id}
-              />
             </div>
           ) : (
             <FeatureCanvas
@@ -236,7 +221,7 @@ export function App() {
           )}
 
           {/* Thanh kéo co giãn bên phải (Right Splitter) */}
-          {!effectivePreview && !isLiveView && showRightPanel && (
+          {!effectivePreview && showRightPanel && (
             <div
               onMouseDown={startRightResize}
               className="w-1.5 hover:w-2 bg-transparent hover:bg-blue-500/80 active:bg-blue-500 cursor-col-resize transition-all duration-75 relative group z-20 shrink-0 select-none flex items-center justify-center"
@@ -247,7 +232,7 @@ export function App() {
           )}
 
           {/* Thanh quản lý bên phải: Quản lý kích thước, flex/grid, css, sự kiện */}
-          {!effectivePreview && !isLiveView && showRightPanel && <PropertyPanel width={rightWidth} />}
+          {!effectivePreview && showRightPanel && <PropertyPanel width={rightWidth} />}
         </div>
 
         {/* ── 3. Drag Overlay (Floating Ghost Preview) ── */}

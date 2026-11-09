@@ -152,3 +152,4 @@ export class TransactionDetailBL {
 }
 
 export const transactionDetailBL = TransactionDetailBL.getInstance()
+

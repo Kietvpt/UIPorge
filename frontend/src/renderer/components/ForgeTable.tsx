@@ -30,6 +30,8 @@ import {
 } from 'lucide-react'
 
 import { useDataEngine } from '@/core/engines/dataEngine'
+import { openTab } from '@/core/engines/navigationEngine'
+import { triggerComponentEvent } from '@/logic/eventRunner'
 
 // Mock dữ liệu mặc định trung lập khi bảng chưa được liên kết data
 const DEFAULT_GENERIC_ROWS: any[] = [
@@ -236,6 +238,34 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
         return match ? { ...r, [colKey]: newVal } : r
       })
       commitRows(updated)
+    }
+  }
+
+  // ⚡ Thao tác khi bấm nút hoặc double click vào dòng (Mở FCL Import - Chi tiết lô hàng)
+  const handleActionClick = (actionKey: string, r: any, col?: TableColumn) => {
+    // Nạp dữ liệu vào form của DataEngine
+    useDataEngine.getState().setFormRecord('default', r)
+    useDataEngine.getState().setFormRecord('2', r)
+    useDataEngine.getState().setFormRecord('TransactionDetail', r)
+
+    const id = r.id || r.Id || 1
+    const jobNo = r.jobNo || r.JobNo || `Lô #${id}`
+
+    // Mở Tab FCL Import (Feature '2')
+    openTab('2', { id, jobNo, row: r }, `Lô: ${jobNo}`)
+    useEditorStore.getState().setActiveFeature('2')
+
+    // Kích hoạt Event nếu có
+    const features = useEditorStore.getState().features
+    const currentFeature = features.find((f) => String(f.id) === String(node.pageId))
+    const blFileName = currentFeature?.scriptFile
+
+    if (node.events && node.events.length > 0) {
+      triggerComponentEvent(node.events, 'actionClick', node.props.label || 'Bảng dữ liệu', blFileName, {
+        action: col?.action || actionKey,
+        row: r,
+        colKey: col?.key,
+      })
     }
   }
 
@@ -717,6 +747,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
               processedRows.map((row, rowIdx) => (
                 <tr
                   key={row.id || rowIdx}
+                  onDoubleClick={() => handleActionClick('openTransactionDetail', row)}
                   onContextMenu={(e) => handleRowContextMenu(e, row, rowIdx)}
                   className="hover:bg-slate-800/40 transition-colors group cursor-context-menu"
                 >
@@ -770,6 +801,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                           rowIndex={rowIdx}
                           error={cellError}
                           onChange={(newVal) => handleCellChange(row.id ?? rowIdx, col.key, newVal)}
+                          onActionClick={(actionKey) => handleActionClick(actionKey, row, col)}
                         />
                       </td>
                     )

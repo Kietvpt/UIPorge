@@ -3,8 +3,6 @@ import { createPortal } from 'react-dom'
 import { useNavigationEngine } from '@/core/engines/navigationEngine'
 import { useEditorStore } from '@/store/editorStore'
 import { ComponentRenderer } from '@/renderer/Renderer'
-import { TransactionDetailView } from '@/views/TransactionDetailView'
-import { TransactionListView } from '@/views/TransactionListView'
 import {
   X,
   Maximize2,
@@ -103,11 +101,7 @@ export const FeaturePopupModal: React.FC = () => {
           )}
 
           {/* Render các components của Feature nếu có */}
-          {activePopup.featureId === 'TransactionDetail' ? (
-            <TransactionDetailView id={params.id} jobNo={params.jobNo} />
-          ) : activePopup.featureId === 'TransactionList' ? (
-            <TransactionListView />
-          ) : targetFeature && targetFeature.components.length > 0 ? (
+          {targetFeature && targetFeature.components.length > 0 ? (
             <div className="space-y-3">
               {targetFeature.components.map((comp) => (
                 <ComponentRenderer
