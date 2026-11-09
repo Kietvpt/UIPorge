@@ -30,8 +30,7 @@ import {
 } from 'lucide-react'
 
 import { useDataEngine } from '@/core/engines/dataEngine'
-import { openTab } from '@/core/engines/navigationEngine'
-import { triggerComponentEvent } from '@/logic/eventRunner'
+import { triggerComponentEvent, executeSingleEvent } from '@/logic/eventRunner'
 
 // Mock dữ liệu mặc định trung lập khi bảng chưa được liên kết data
 const DEFAULT_GENERIC_ROWS: any[] = [
@@ -241,38 +240,67 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     }
   }
 
-  // ⚡ Thao tác khi bấm nút hoặc double click vào dòng (Mở FCL Import - Chi tiết lô hàng)
-  const handleActionClick = (actionKey: string, r: any, col?: TableColumn) => {
-    // 1. Nạp dữ liệu vào form của DataEngine
-    useDataEngine.getState().setFormRecord('default', r)
-    useDataEngine.getState().setFormRecord('TransactionDetail', r)
-
-    const id = r.id || r.Id || 1
-    const jobNo = r.jobNo || r.JobNo || `Lô #${id}`
-
-    // 2. Tìm trang chi tiết FCL Import từ danh mục database
+  // ⚡ Thao tác khi người dùng click vào nút hoặc link trong một ô của bảng (chuẩn Core Event Delegation)
+  const handleCellAction = (actionKey: string, r: any, col?: TableColumn) => {
     const features = useEditorStore.getState().features
-    const detailFeature = features.find(
-      (f) => f.route === '/fcl-import' || f.isDetail || f.name.toLowerCase().includes('fcl import')
-    )
-    const targetPageId = detailFeature ? detailFeature.id : '4'
+    const currentFeature = features.find((f) => String(f.id) === String(node.pageId))
+    const blFileName = currentFeature?.scriptFile
+    const actionName = col?.action || actionKey
 
-    useDataEngine.getState().setFormRecord(targetPageId, r)
+    // 1. Kích hoạt trực tiếp action được cấu hình trên cột (col.action) qua Event Runner
+    if (actionName) {
+      executeSingleEvent(
+        { id: `col_act_${col?.key || actionKey}`, trigger: 'actionClick', action: actionName, handlerName: actionName },
+        node.props.label || 'Bảng dữ liệu',
+        blFileName,
+        { row: r, col, column: col, action: actionName, value: r[col?.key || ''] }
+      )
+    }
 
-    // 3. Mở Tab FCL Import
-    openTab(targetPageId, { id, jobNo, row: r }, `Lô: ${jobNo}`)
-    useEditorStore.getState().setActiveFeature(targetPageId)
+    // 2. Kích hoạt các sự kiện trigger = 'actionClick' được gắn trên Table node
+    if (node.events && node.events.length > 0) {
+      triggerComponentEvent(node.events, 'actionClick', node.props.label || 'Bảng dữ liệu', blFileName, {
+        action: actionName,
+        row: r,
+        col,
+        column: col,
+        colKey: col?.key,
+        value: r[col?.key || ''],
+      })
+    }
+  }
 
-    // 4. Kích hoạt Event nếu có
+  // ⚡ Thao tác khi người dùng nhấp đúp chuột (Double Click) vào một dòng trên bảng
+  const handleRowDoubleClick = (r: any, rowIdx: number) => {
+    const features = useEditorStore.getState().features
     const currentFeature = features.find((f) => String(f.id) === String(node.pageId))
     const blFileName = currentFeature?.scriptFile
 
+    // 1. Kích hoạt sự kiện 'dblclick' hoặc 'rowDblClick' được gắn trên Table node
     if (node.events && node.events.length > 0) {
-      triggerComponentEvent(node.events, 'actionClick', node.props.label || 'Bảng dữ liệu', blFileName, {
-        action: col?.action || actionKey,
+      triggerComponentEvent(node.events, 'dblclick', node.props.label || 'Bảng dữ liệu', blFileName, {
         row: r,
-        colKey: col?.key,
+        rowIndex: rowIdx,
+        action: 'dblclick',
       })
+      triggerComponentEvent(node.events, 'rowDblClick', node.props.label || 'Bảng dữ liệu', blFileName, {
+        row: r,
+        rowIndex: rowIdx,
+        action: 'rowDblClick',
+      })
+    }
+
+    // 2. Nếu bảng có actionClick mặc định (như openDetail), kích hoạt luôn cho double-click
+    const defaultActionEvent = node.events?.find(
+      (e) => e.trigger === 'actionClick' || e.trigger === 'dblclick' || e.trigger === 'rowDblClick'
+    )
+    if (defaultActionEvent) {
+      executeSingleEvent(
+        defaultActionEvent,
+        node.props.label || 'Bảng dữ liệu',
+        blFileName,
+        { row: r, rowIndex: rowIdx, action: defaultActionEvent.action || defaultActionEvent.handlerName }
+      )
     }
   }
 
@@ -754,7 +782,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
               processedRows.map((row, rowIdx) => (
                 <tr
                   key={row.id || rowIdx}
-                  onDoubleClick={() => handleActionClick('openTransactionDetail', row)}
+                  onDoubleClick={() => handleRowDoubleClick(row, rowIdx)}
                   onContextMenu={(e) => handleRowContextMenu(e, row, rowIdx)}
                   className="hover:bg-slate-800/40 transition-colors group cursor-context-menu"
                 >
@@ -781,10 +809,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                         ? 'text-center'
                         : 'text-left'
 
-                    const cellError =
-                      validationErrors[`${node.id}_${row.id}_${col.key}`] ||
-                      (col.key === 'containerNo' ? validationErrors[`${node.id}_${row.id}_containerNo`] : undefined) ||
-                      ((col.key === 'etd' || col.key === 'eta') ? validationErrors[`${node.id}_${row.id}_etd_eta`] : undefined)
+                    const cellError = validationErrors[`${node.id}_${row.id}_${col.key}`]
 
                     return (
                       <td
@@ -808,7 +833,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                           rowIndex={rowIdx}
                           error={cellError}
                           onChange={(newVal) => handleCellChange(row.id ?? rowIdx, col.key, newVal)}
-                          onActionClick={(actionKey) => handleActionClick(actionKey, row, col)}
+                          onActionClick={(actionKey) => handleCellAction(actionKey, row, col)}
                         />
                       </td>
                     )

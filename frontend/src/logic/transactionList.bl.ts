@@ -134,6 +134,8 @@ export function openTransactionDetail(context?: any) {
   return { success: true, message: `Mở chi tiết ${jobNo}` }
 }
 
+export const onRowDblClick = openTransactionDetail
+
 export function openNewTransaction() {
   const targetPageId = getDetailFeatureId()
   openTab(targetPageId, { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')

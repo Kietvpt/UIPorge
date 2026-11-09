@@ -49,7 +49,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
 
   // ── 2. BUTTON COMPONENT ──
   if (column.componentType === 'Button') {
-    const buttonText = column.formatCell || (column.title && column.title !== 'THAO TÁC' ? column.title : 'Chi Tiết') || value || 'Thao tác'
+    const buttonText = column.formatCell || column.title || value || 'Action'
     return (
       <div className="w-full flex items-center justify-center py-0.5">
         <button
