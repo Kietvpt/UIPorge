@@ -15,6 +15,7 @@ import {
   ForgeModal,
   ForgeSection,
   ForgeTabStack,
+  ForgeRecordSelector,
 } from './components'
 import { groupNodesByTabStack } from './tabStackUtils'
 import { useEditorStore } from '@/store/editorStore'
@@ -223,6 +224,18 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         return <ForgeDivider node={node} isEditing={isEditing} />
       case 'Modal':
         return <ForgeModal node={node} isEditing={isEditing} />
+      case 'RecordSelector':
+        return (
+          <ForgeRecordSelector
+            label={(node.props?.label as string) ?? 'Lô hàng:'}
+            reference={(node.props?.reference as string) ?? 'Transaction'}
+            displayField={(node.props?.displayField as string) ?? 'code'}
+            records={node.props?.records as any}
+            activeId={node.props?.activeId as any}
+            canAdd={node.props?.canAdd !== false}
+            style={node.style as any}
+          />
+        )
       default:
         return (
           <div className="p-3 bg-red-950/40 border border-red-800 rounded text-red-300 text-xs">

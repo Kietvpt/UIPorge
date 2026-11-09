@@ -19,6 +19,7 @@ import {
   Maximize2,
   AlignLeft,
   FolderKanban,
+  Tag,
 } from 'lucide-react'
 
 export interface ComponentDefinition {
@@ -40,6 +41,26 @@ export const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
       title: 'GENERAL - FCL IMPORT',
       collapsible: true,
       boxShadow: true,
+    },
+    defaultStyle: { width: '100%' },
+  },
+  {
+    type: 'RecordSelector',
+    name: 'Danh Sách Lô Hàng / Record Selector',
+    description: 'Thanh chọn danh sách bản ghi con dạng Tag Badges (Lô hàng: [ FCLT-26020005 ] ... [+ Tạo mới])',
+    icon: Tag,
+    defaultProps: {
+      label: 'Lô hàng:',
+      reference: 'Transaction',
+      displayField: 'code',
+      records: [
+        { id: '1', code: 'FCLT-26020005', mblNo: 'ASHVT00002005' },
+        { id: '2', code: 'FCLT-26020006', mblNo: 'ASHVT00002006' },
+        { id: '3', code: 'FCLT-26020007', mblNo: 'ASHVT00002007' },
+      ],
+      activeId: '1',
+      canAdd: true,
+      colSpan: 12,
     },
     defaultStyle: { width: '100%' },
   },

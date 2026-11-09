@@ -18,6 +18,7 @@ export type ComponentType =
   | 'Image'
   | 'Divider'
   | 'Textarea'
+  | 'RecordSelector'
 
 export type EventTrigger = 'onClick' | 'onChange' | 'onSubmit' | 'onFocus' | 'onBlur' | 'click' | 'change' | 'focus' | 'blur' | 'dblclick'
 export type EventAction = 'navigate' | 'callApi' | 'showModal' | 'hideModal' | 'setState' | 'custom' | (string & {})
