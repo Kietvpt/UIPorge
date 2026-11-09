@@ -243,20 +243,27 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
   // ⚡ Thao tác khi bấm nút hoặc double click vào dòng (Mở FCL Import - Chi tiết lô hàng)
   const handleActionClick = (actionKey: string, r: any, col?: TableColumn) => {
-    // Nạp dữ liệu vào form của DataEngine
+    // 1. Nạp dữ liệu vào form của DataEngine
     useDataEngine.getState().setFormRecord('default', r)
-    useDataEngine.getState().setFormRecord('2', r)
     useDataEngine.getState().setFormRecord('TransactionDetail', r)
 
     const id = r.id || r.Id || 1
     const jobNo = r.jobNo || r.JobNo || `Lô #${id}`
 
-    // Mở Tab FCL Import (Feature '2')
-    openTab('2', { id, jobNo, row: r }, `Lô: ${jobNo}`)
-    useEditorStore.getState().setActiveFeature('2')
-
-    // Kích hoạt Event nếu có
+    // 2. Tìm trang chi tiết FCL Import từ danh mục database
     const features = useEditorStore.getState().features
+    const detailFeature = features.find(
+      (f) => f.route === '/fcl-import' || f.isDetail || f.name.toLowerCase().includes('fcl import')
+    )
+    const targetPageId = detailFeature ? detailFeature.id : '4'
+
+    useDataEngine.getState().setFormRecord(targetPageId, r)
+
+    // 3. Mở Tab FCL Import
+    openTab(targetPageId, { id, jobNo, row: r }, `Lô: ${jobNo}`)
+    useEditorStore.getState().setActiveFeature(targetPageId)
+
+    // 4. Kích hoạt Event nếu có
     const currentFeature = features.find((f) => String(f.id) === String(node.pageId))
     const blFileName = currentFeature?.scriptFile
 

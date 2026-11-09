@@ -12,7 +12,6 @@ import type {
   ValidationConfig,
   ComponentPermissionConfig,
 } from '@/types/schema'
-import { FCL_IMPORT_PAGE_TREE } from '@/data/fclImportTemplate'
 
 interface EditorState {
   // All features in the system
@@ -63,174 +62,7 @@ interface EditorState {
 
 const MAX_HISTORY = 40
 
-const initialFeatures: FeaturePage[] = [
-  {
-    id: '1',
-    name: 'Tổng quan hệ thống',
-    icon: 'LayoutDashboard',
-    route: '/dashboard',
-    description: 'Bảng điều khiển và thống kê chung',
-    scriptFile: 'dashboard.bl.ts',
-    layoutConfig: {
-      direction: 'column',
-      gap: '16px',
-      wrap: 'wrap',
-    },
-    components: [
-      {
-        id: 'box-stats',
-        type: 'Container',
-        parentId: null,
-        pageId: '1',
-        props: {
-          layoutMode: 'grid',
-          gridConfig: { columns: 3, gap: '16px' },
-        },
-        style: {
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-          gap: '16px',
-          width: '100%',
-          padding: '16px',
-          backgroundColor: '#1e293b',
-          borderRadius: '12px',
-          border: '1px solid #334155',
-        },
-        events: [],
-        children: [
-          {
-            id: 'stat-1',
-            type: 'Container',
-            parentId: 'box-stats',
-            pageId: '1',
-            props: { layoutMode: 'flex', flexConfig: { direction: 'column', wrap: 'nowrap', justify: 'flex-start', align: 'flex-start', gap: '4px' } },
-            style: { padding: '16px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' },
-            events: [],
-            children: [
-              { id: 'lbl-stat-1', type: 'Label', parentId: 'stat-1', pageId: '1', props: { label: 'Doanh thu hôm nay' }, style: { color: '#94a3b8', fontSize: '12px' }, events: [], order: 1 },
-              { id: 'lbl-stat-val-1', type: 'Label', parentId: 'stat-1', pageId: '1', props: { label: '₫ 128,450,000' }, style: { color: '#38bdf8', fontSize: '20px', fontWeight: 'bold' }, events: [], order: 2 },
-            ],
-            order: 1,
-          },
-          {
-            id: 'stat-2',
-            type: 'Container',
-            parentId: 'box-stats',
-            pageId: '1',
-            props: { layoutMode: 'flex', flexConfig: { direction: 'column', wrap: 'nowrap', justify: 'flex-start', align: 'flex-start', gap: '4px' } },
-            style: { padding: '16px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' },
-            events: [],
-            children: [
-              { id: 'lbl-stat-2', type: 'Label', parentId: 'stat-2', pageId: '1', props: { label: 'Đơn hàng mới' }, style: { color: '#94a3b8', fontSize: '12px' }, events: [], order: 1 },
-              { id: 'lbl-stat-val-2', type: 'Label', parentId: 'stat-2', pageId: '1', props: { label: '1,429 đơn' }, style: { color: '#4ade80', fontSize: '20px', fontWeight: 'bold' }, events: [], order: 2 },
-            ],
-            order: 2,
-          },
-          {
-            id: 'stat-3',
-            type: 'Container',
-            parentId: 'box-stats',
-            pageId: '1',
-            props: { layoutMode: 'flex', flexConfig: { direction: 'column', wrap: 'nowrap', justify: 'flex-start', align: 'flex-start', gap: '4px' } },
-            style: { padding: '16px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' },
-            events: [],
-            children: [
-              { id: 'lbl-stat-3', type: 'Label', parentId: 'stat-3', pageId: '1', props: { label: 'Tỉ lệ hoàn tất' }, style: { color: '#94a3b8', fontSize: '12px' }, events: [], order: 1 },
-              { id: 'lbl-stat-val-3', type: 'Label', parentId: 'stat-3', pageId: '1', props: { label: '98.6%' }, style: { color: '#facc15', fontSize: '20px', fontWeight: 'bold' }, events: [], order: 2 },
-            ],
-            order: 3,
-          },
-        ],
-        order: 1,
-      },
-    ],
-  },
-  {
-    id: 'transaction_list',
-    name: 'Danh Sách Lô Hàng',
-    icon: 'Layers',
-    route: '/transactions',
-    description: 'Danh sách các lô hàng (Transactions) truy vấn trực tiếp từ SQL Server Database',
-    scriptFile: 'transactionList.bl.ts',
-    layoutConfig: {
-      direction: 'column',
-      gap: '16px',
-      wrap: 'nowrap',
-    },
-    components: [
-      {
-        id: 'sec_trans_list',
-        type: 'Section',
-        parentId: null,
-        pageId: 'transaction_list',
-        props: {
-          title: 'DANH SÁCH LÔ HÀNG (TRANSACTIONS - SQL SERVER)',
-          label: 'DANH SÁCH LÔ HÀNG (TRANSACTIONS - SQL SERVER)',
-          collapsible: false,
-          boxShadow: true,
-        },
-        style: {
-          width: '100%',
-        },
-        events: [],
-        children: [
-          {
-            id: 'grid_transactions',
-            type: 'Table',
-            parentId: 'sec_trans_list',
-            pageId: 'transaction_list',
-            props: {
-              reference: 'Transaction',
-              label: 'Bảng Danh Sách Lô Hàng',
-              columns: [
-                { key: 'jobNo', title: 'JOB NO.', width: '140px', sortable: true, frozen: true, sticky: 'left', order: 1 },
-                { key: 'mblNo', title: 'M B/L NO.', width: '150px', sortable: true, order: 2 },
-                { key: 'shipmentDate', title: 'NGÀY LẬP', width: '120px', sortable: true, componentType: 'DatePicker', order: 3 },
-                { key: 'vendorName', title: 'HÃNG TÀU / VENDOR', width: '200px', sortable: true, order: 4 },
-                { key: 'polId', title: 'POL (CẢNG ĐI)', width: '110px', sortable: true, order: 5 },
-                { key: 'podId', title: 'POD (CẢNG ĐẾN)', width: '110px', sortable: true, order: 6 },
-                { key: 'commodity', title: 'MẶT HÀNG', width: '220px', sortable: true, order: 7 },
-                { key: 'totalGw', title: 'TỔNG GW (KGS)', width: '120px', align: 'right', aggregate: 'sum', summarySuffix: 'KGS', order: 8 },
-                { key: 'totalCbm', title: 'TỔNG CBM', width: '100px', align: 'right', aggregate: 'sum', summarySuffix: 'CBM', order: 9 },
-                { key: 'btn_detail', title: 'THAO TÁC', width: '110px', componentType: 'Button', formatCell: 'Chi Tiết', action: 'openTransactionDetail', order: 10 },
-              ],
-            },
-            style: {
-              width: '100%',
-            },
-            events: [
-              {
-                id: 'ev_grid_click',
-                trigger: 'actionClick',
-                action: 'openTransactionDetail',
-                handlerName: 'openTransactionDetail',
-              },
-            ],
-            order: 1,
-          },
-        ],
-        order: 1,
-      },
-    ],
-  },
-  {
-    id: '2',
-    name: 'FCL Import (Logistics ERP)',
-    icon: 'Ship',
-    route: '/fcl-import',
-    description: 'Màn hình chi tiết lô hàng FCL chuyển đổi từ C# Core (Chỉ mở khi được gọi từ GridView hoặc Tab/Popup)',
-    scriptFile: 'fclImport.bl.ts',
-    hidden: true,
-    isDetail: true,
-    layoutConfig: {
-      direction: 'column',
-      gap: '16px',
-      wrap: 'nowrap',
-    },
-    components: FCL_IMPORT_PAGE_TREE,
-  },
-]
-
+const initialFeatures: FeaturePage[] = []
 
 // ── URL & LocalStorage Persistence Helpers ──
 export function getSavedFeatureId(): string | null {
@@ -260,10 +92,10 @@ export function saveActiveFeatureIdToUrl(id: string) {
 export const useEditorStore = create<EditorState>()(
   devtools(
     (set) => ({
-      features: initialFeatures,
-      activeFeatureId: getSavedFeatureId() || 'transaction_list',
-      selection: { componentId: null, pageId: getSavedFeatureId() || 'transaction_list' },
-      history: [initialFeatures],
+      features: [],
+      activeFeatureId: getSavedFeatureId() || '',
+      selection: { componentId: null, pageId: getSavedFeatureId() || '' },
+      history: [[]],
       historyIndex: 0,
 
       setActiveFeature: (id) => {
@@ -275,9 +107,28 @@ export const useEditorStore = create<EditorState>()(
       },
 
       setFeatures: (features) => {
-        if (!features.length) return
+        if (!features.length) {
+          set({
+            features: [],
+            activeFeatureId: '',
+            selection: { componentId: null, pageId: '' },
+            history: [[]],
+            historyIndex: 0,
+          })
+          return
+        }
         const savedId = getSavedFeatureId()
-        const target = (savedId && features.find((f) => f.id === savedId || f.route === `/${savedId}` || f.route === savedId)) || features[0]
+        // Ưu tiên chọn:
+        // 1. Feature đã lưu trong URL/LocalStorage nếu còn tồn tại
+        // 2. Feature /transactions (Danh Sách Lô Hàng)
+        // 3. Feature hiển thị đầu tiên (không bị ẩn / không phải detail)
+        // 4. Feature đầu tiên
+        const target =
+          (savedId && features.find((f) => f.id === savedId || f.route === `/${savedId}` || f.route === savedId)) ||
+          features.find((f) => f.route === '/transactions' || f.name.includes('Lô Hàng')) ||
+          features.find((f) => !f.hidden && !f.isDetail) ||
+          features[0]
+
         saveActiveFeatureIdToUrl(target.id)
         set({
           features,
@@ -289,63 +140,63 @@ export const useEditorStore = create<EditorState>()(
       },
 
       addFeature: (name, icon = 'Layers') => {
-        const id = `feat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
-        const newFeature: FeaturePage = {
-          id,
-          name: name.trim() || 'Tính năng mới',
-          icon,
-          route: `/${id}`,
-          scriptFile: '',
-          layoutConfig: {
-            direction: 'column',
-            gap: '16px',
-            wrap: 'wrap',
-          },
-          components: [],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+  const id = `feat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
+  const newFeature: FeaturePage = {
+    id,
+    name: name.trim() || 'Tính năng mới',
+    icon,
+    route: `/${id}`,
+    scriptFile: '',
+    layoutConfig: {
+      direction: 'column',
+      gap: '16px',
+      wrap: 'wrap',
+    },
+    components: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+
+  saveActiveFeatureIdToUrl(id)
+  set((s) => {
+    const nextFeatures = [...s.features, newFeature]
+    return {
+      ...recordHistory(s, nextFeatures),
+      activeFeatureId: id,
+      selection: { componentId: null, pageId: id },
+    }
+  })
+  return id
+},
+
+  renameFeature: (id, name) => {
+    set((s) => {
+      const next = s.features.map((f) => (f.id === id ? { ...f, name } : f))
+      return recordHistory(s, next)
+    })
+  },
+
+    updateFeatureId: (oldId, newId) => {
+      set((s) => {
+        const next = s.features.map((f) =>
+          f.id === oldId
+            ? {
+              ...f,
+              id: newId,
+              route: f.route === `/${oldId}` ? `/${newId}` : f.route,
+              components: f.components.map((c) => ({ ...c, pageId: newId })),
+            }
+            : f
+        )
+        const updatedActiveId = s.activeFeatureId === oldId ? newId : s.activeFeatureId
+        saveActiveFeatureIdToUrl(updatedActiveId)
+        return {
+          features: next,
+          activeFeatureId: updatedActiveId,
+          selection: s.selection.pageId === oldId ? { ...s.selection, pageId: newId } : s.selection,
         }
-
-        saveActiveFeatureIdToUrl(id)
-        set((s) => {
-          const nextFeatures = [...s.features, newFeature]
-          return {
-            ...recordHistory(s, nextFeatures),
-            activeFeatureId: id,
-            selection: { componentId: null, pageId: id },
-          }
-        })
-        return id
-      },
-
-      renameFeature: (id, name) => {
-        set((s) => {
-          const next = s.features.map((f) => (f.id === id ? { ...f, name } : f))
-          return recordHistory(s, next)
-        })
-      },
-
-      updateFeatureId: (oldId, newId) => {
-        set((s) => {
-          const next = s.features.map((f) =>
-            f.id === oldId
-              ? {
-                  ...f,
-                  id: newId,
-                  route: f.route === `/${oldId}` ? `/${newId}` : f.route,
-                  components: f.components.map((c) => ({ ...c, pageId: newId })),
-                }
-              : f
-          )
-          const updatedActiveId = s.activeFeatureId === oldId ? newId : s.activeFeatureId
-          saveActiveFeatureIdToUrl(updatedActiveId)
-          return {
-            features: next,
-            activeFeatureId: updatedActiveId,
-            selection: s.selection.pageId === oldId ? { ...s.selection, pageId: newId } : s.selection,
-          }
-        })
-      },
+      })
+    },
 
       deleteFeature: (id) => {
         set((s) => {
@@ -361,259 +212,259 @@ export const useEditorStore = create<EditorState>()(
         })
       },
 
-      updateFeatureLayout: (id, layoutConfig) => {
-        set((s) => {
-          const next = s.features.map((f) => {
-            if (f.id !== id) return f
-            return {
-              ...f,
-              layoutConfig: {
-                ...(f.layoutConfig || { direction: 'column', gap: '16px', wrap: 'wrap' }),
-                ...layoutConfig,
+        updateFeatureLayout: (id, layoutConfig) => {
+          set((s) => {
+            const next = s.features.map((f) => {
+              if (f.id !== id) return f
+              return {
+                ...f,
+                layoutConfig: {
+                  ...(f.layoutConfig || { direction: 'column', gap: '16px', wrap: 'wrap' }),
+                  ...layoutConfig,
+                },
+              }
+            })
+            return recordHistory(s, next)
+          })
+        },
+
+          updateFeatureScriptFile: (id, scriptFile) => {
+            set((s) => {
+              const next = s.features.map((f) => (f.id === id ? { ...f, scriptFile: scriptFile.trim() } : f))
+              return recordHistory(s, next)
+            })
+          },
+
+            selectComponent: (componentId) => {
+              set((s) => ({
+                selection: { ...s.selection, componentId },
+              }))
+            },
+
+              addComponent: (component, parentId = null, targetIndex?: number) => {
+                set((s) => {
+                  const currentFeature = s.features.find((f) => f.id === s.activeFeatureId)
+                  if (!currentFeature) return {}
+
+                  let updatedComponents: ComponentNode[]
+                  if (parentId) {
+                    if (targetIndex !== undefined) {
+                      updatedComponents = insertNodeInParent(currentFeature.components, parentId, component, targetIndex)
+                    } else {
+                      updatedComponents = addNodeToParent(currentFeature.components, parentId, component)
+                    }
+                  } else {
+                    if (targetIndex !== undefined) {
+                      const rootNodes = [...currentFeature.components]
+                      rootNodes.splice(targetIndex, 0, component)
+                      updatedComponents = rootNodes.map((n, i) => ({ ...n, order: i + 1 }))
+                    } else {
+                      updatedComponents = [...currentFeature.components, component]
+                    }
+                  }
+
+                  const nextFeatures = s.features.map((f) =>
+                    f.id === s.activeFeatureId ? { ...f, components: updatedComponents } : f
+                  )
+                  return {
+                    ...recordHistory(s, nextFeatures),
+                    selection: { ...s.selection, componentId: component.id },
+                  }
+                })
               },
-            }
-          })
-          return recordHistory(s, next)
-        })
-      },
 
-      updateFeatureScriptFile: (id, scriptFile) => {
-        set((s) => {
-          const next = s.features.map((f) => (f.id === id ? { ...f, scriptFile: scriptFile.trim() } : f))
-          return recordHistory(s, next)
-        })
-      },
+                updateComponentProps: (componentId, props) => {
+                  set((s) => {
+                    const next = s.features.map((f) => {
+                      if (f.id !== s.activeFeatureId) return f
+                      return {
+                        ...f,
+                        components: updateNodeInList(f.components, componentId, (n) => ({
+                          ...n,
+                          props: { ...n.props, ...props },
+                        })),
+                      }
+                    })
+                    return recordHistory(s, next)
+                  })
+                },
 
-      selectComponent: (componentId) => {
-        set((s) => ({
-          selection: { ...s.selection, componentId },
-        }))
-      },
+                  updateComponentStyle: (componentId, style) => {
+                    set((s) => {
+                      const next = s.features.map((f) => {
+                        if (f.id !== s.activeFeatureId) return f
+                        return {
+                          ...f,
+                          components: updateNodeInList(f.components, componentId, (n) => ({
+                            ...n,
+                            style: { ...n.style, ...style },
+                          })),
+                        }
+                      })
+                      return recordHistory(s, next)
+                    })
+                  },
 
-      addComponent: (component, parentId = null, targetIndex?: number) => {
-        set((s) => {
-          const currentFeature = s.features.find((f) => f.id === s.activeFeatureId)
-          if (!currentFeature) return {}
+                    updateComponentEvents: (componentId, events) => {
+                      set((s) => {
+                        const next = s.features.map((f) => {
+                          if (f.id !== s.activeFeatureId) return f
+                          return {
+                            ...f,
+                            components: updateNodeInList(f.components, componentId, (n) => ({
+                              ...n,
+                              events,
+                            })),
+                          }
+                        })
+                        return recordHistory(s, next)
+                      })
+                    },
 
-          let updatedComponents: ComponentNode[]
-          if (parentId) {
-            if (targetIndex !== undefined) {
-              updatedComponents = insertNodeInParent(currentFeature.components, parentId, component, targetIndex)
-            } else {
-              updatedComponents = addNodeToParent(currentFeature.components, parentId, component)
-            }
-          } else {
-            if (targetIndex !== undefined) {
-              const rootNodes = [...currentFeature.components]
-              rootNodes.splice(targetIndex, 0, component)
-              updatedComponents = rootNodes.map((n, i) => ({ ...n, order: i + 1 }))
-            } else {
-              updatedComponents = [...currentFeature.components, component]
-            }
-          }
+                      updateComponentDataBinding: (componentId, dataBinding) => {
+                        set((s) => {
+                          const next = s.features.map((f) => {
+                            if (f.id !== s.activeFeatureId) return f
+                            return {
+                              ...f,
+                              components: updateNodeInList(f.components, componentId, (n) => ({
+                                ...n,
+                                dataBinding: { ...n.dataBinding, ...dataBinding },
+                              })),
+                            }
+                          })
+                          return recordHistory(s, next)
+                        })
+                      },
 
-          const nextFeatures = s.features.map((f) =>
-            f.id === s.activeFeatureId ? { ...f, components: updatedComponents } : f
-          )
-          return {
-            ...recordHistory(s, nextFeatures),
-            selection: { ...s.selection, componentId: component.id },
-          }
-        })
-      },
+                        updateComponentValidation: (componentId, validation) => {
+                          set((s) => {
+                            const next = s.features.map((f) => {
+                              if (f.id !== s.activeFeatureId) return f
+                              return {
+                                ...f,
+                                components: updateNodeInList(f.components, componentId, (n) => ({
+                                  ...n,
+                                  validation: { ...n.validation, ...validation },
+                                })),
+                              }
+                            })
+                            return recordHistory(s, next)
+                          })
+                        },
 
-      updateComponentProps: (componentId, props) => {
-        set((s) => {
-          const next = s.features.map((f) => {
-            if (f.id !== s.activeFeatureId) return f
-            return {
-              ...f,
-              components: updateNodeInList(f.components, componentId, (n) => ({
-                ...n,
-                props: { ...n.props, ...props },
-              })),
-            }
-          })
-          return recordHistory(s, next)
-        })
-      },
+                          updateComponentPermissions: (componentId, permissions) => {
+                            set((s) => {
+                              const next = s.features.map((f) => {
+                                if (f.id !== s.activeFeatureId) return f
+                                return {
+                                  ...f,
+                                  components: updateNodeInList(f.components, componentId, (n) => ({
+                                    ...n,
+                                    permissions: { ...n.permissions, ...permissions },
+                                  })),
+                                }
+                              })
+                              return recordHistory(s, next)
+                            })
+                          },
 
-      updateComponentStyle: (componentId, style) => {
-        set((s) => {
-          const next = s.features.map((f) => {
-            if (f.id !== s.activeFeatureId) return f
-            return {
-              ...f,
-              components: updateNodeInList(f.components, componentId, (n) => ({
-                ...n,
-                style: { ...n.style, ...style },
-              })),
-            }
-          })
-          return recordHistory(s, next)
-        })
-      },
+                            updateComponentOrder: (componentId, order) => {
+                              set((s) => {
+                                const next = s.features.map((f) => {
+                                  if (f.id !== s.activeFeatureId) return f
+                                  return {
+                                    ...f,
+                                    components: updateNodeInList(f.components, componentId, (n) => ({
+                                      ...n,
+                                      order,
+                                      props: { ...n.props, order },
+                                    })),
+                                  }
+                                })
+                                return recordHistory(s, next)
+                              })
+                            },
 
-      updateComponentEvents: (componentId, events) => {
-        set((s) => {
-          const next = s.features.map((f) => {
-            if (f.id !== s.activeFeatureId) return f
-            return {
-              ...f,
-              components: updateNodeInList(f.components, componentId, (n) => ({
-                ...n,
-                events,
-              })),
-            }
-          })
-          return recordHistory(s, next)
-        })
-      },
+                              removeComponent: (componentId) => {
+                                set((s) => {
+                                  const next = s.features.map((f) => {
+                                    if (f.id !== s.activeFeatureId) return f
+                                    return {
+                                      ...f,
+                                      components: removeNodeFromList(f.components, componentId),
+                                    }
+                                  })
+                                  return {
+                                    ...recordHistory(s, next),
+                                    selection: { ...s.selection, componentId: null },
+                                  }
+                                })
+                              },
 
-      updateComponentDataBinding: (componentId, dataBinding) => {
-        set((s) => {
-          const next = s.features.map((f) => {
-            if (f.id !== s.activeFeatureId) return f
-            return {
-              ...f,
-              components: updateNodeInList(f.components, componentId, (n) => ({
-                ...n,
-                dataBinding: { ...n.dataBinding, ...dataBinding },
-              })),
-            }
-          })
-          return recordHistory(s, next)
-        })
-      },
+                                moveComponent: (dragId, newParentId, newIndex) => {
+                                  set((s) => {
+                                    const currentFeature = s.features.find((f) => f.id === s.activeFeatureId)
+                                    if (!currentFeature) return {}
 
-      updateComponentValidation: (componentId, validation) => {
-        set((s) => {
-          const next = s.features.map((f) => {
-            if (f.id !== s.activeFeatureId) return f
-            return {
-              ...f,
-              components: updateNodeInList(f.components, componentId, (n) => ({
-                ...n,
-                validation: { ...n.validation, ...validation },
-              })),
-            }
-          })
-          return recordHistory(s, next)
-        })
-      },
+                                    // Extract the dragged node (remove from current position)
+                                    const extracted = extractNode(currentFeature.components, dragId)
+                                    if (!extracted) return {}
+                                    const [movedNode, treeWithout] = extracted
 
-      updateComponentPermissions: (componentId, permissions) => {
-        set((s) => {
-          const next = s.features.map((f) => {
-            if (f.id !== s.activeFeatureId) return f
-            return {
-              ...f,
-              components: updateNodeInList(f.components, componentId, (n) => ({
-                ...n,
-                permissions: { ...n.permissions, ...permissions },
-              })),
-            }
-          })
-          return recordHistory(s, next)
-        })
-      },
+                                    // Update parentId on the moved node
+                                    const updatedNode: ComponentNode = { ...movedNode, parentId: newParentId }
 
-      updateComponentOrder: (componentId, order) => {
-        set((s) => {
-          const next = s.features.map((f) => {
-            if (f.id !== s.activeFeatureId) return f
-            return {
-              ...f,
-              components: updateNodeInList(f.components, componentId, (n) => ({
-                ...n,
-                order,
-                props: { ...n.props, order },
-              })),
-            }
-          })
-          return recordHistory(s, next)
-        })
-      },
+                                    // Insert at target position
+                                    let updatedComponents: ComponentNode[]
+                                    if (newParentId === null) {
+                                      // Root-level: work on flat root list, reorder, then merge children back
+                                      const rootNodes = treeWithout.filter((c) => !c.parentId)
+                                      rootNodes.splice(newIndex, 0, updatedNode)
+                                      const withOrder = rootNodes.map((n, i) => ({ ...n, order: i + 1 }))
+                                      const childNodes = treeWithout.filter((c) => c.parentId)
+                                      updatedComponents = [...withOrder, ...childNodes]
+                                    } else {
+                                      updatedComponents = insertNodeInParent(treeWithout, newParentId, updatedNode, newIndex)
+                                    }
 
-      removeComponent: (componentId) => {
-        set((s) => {
-          const next = s.features.map((f) => {
-            if (f.id !== s.activeFeatureId) return f
-            return {
-              ...f,
-              components: removeNodeFromList(f.components, componentId),
-            }
-          })
-          return {
-            ...recordHistory(s, next),
-            selection: { ...s.selection, componentId: null },
-          }
-        })
-      },
+                                    const nextFeatures = s.features.map((f) =>
+                                      f.id === s.activeFeatureId ? { ...f, components: updatedComponents } : f
+                                    )
+                                    return recordHistory(s, nextFeatures)
+                                  })
+                                },
 
-      moveComponent: (dragId, newParentId, newIndex) => {
-        set((s) => {
-          const currentFeature = s.features.find((f) => f.id === s.activeFeatureId)
-          if (!currentFeature) return {}
+                                  distributeSiblingWidths: (componentId, primaryWidthPercent) => {
+                                    set((s) => {
+                                      const next = s.features.map((f) => {
+                                        if (f.id !== s.activeFeatureId) return f
+                                        return {
+                                          ...f,
+                                          components: updateSiblingList(f.components, componentId, primaryWidthPercent),
+                                        }
+                                      })
+                                      return recordHistory(s, next)
+                                    })
+                                  },
 
-          // Extract the dragged node (remove from current position)
-          const extracted = extractNode(currentFeature.components, dragId)
-          if (!extracted) return {}
-          const [movedNode, treeWithout] = extracted
+                                    undo: () => {
+                                      set((s) => {
+                                        if (s.historyIndex <= 0) return {}
+                                        const newIndex = s.historyIndex - 1
+                                        return { historyIndex: newIndex, features: s.history[newIndex] }
+                                      })
+                                    },
 
-          // Update parentId on the moved node
-          const updatedNode: ComponentNode = { ...movedNode, parentId: newParentId }
-
-          // Insert at target position
-          let updatedComponents: ComponentNode[]
-          if (newParentId === null) {
-            // Root-level: work on flat root list, reorder, then merge children back
-            const rootNodes = treeWithout.filter((c) => !c.parentId)
-            rootNodes.splice(newIndex, 0, updatedNode)
-            const withOrder = rootNodes.map((n, i) => ({ ...n, order: i + 1 }))
-            const childNodes = treeWithout.filter((c) => c.parentId)
-            updatedComponents = [...withOrder, ...childNodes]
-          } else {
-            updatedComponents = insertNodeInParent(treeWithout, newParentId, updatedNode, newIndex)
-          }
-
-          const nextFeatures = s.features.map((f) =>
-            f.id === s.activeFeatureId ? { ...f, components: updatedComponents } : f
-          )
-          return recordHistory(s, nextFeatures)
-        })
-      },
-
-      distributeSiblingWidths: (componentId, primaryWidthPercent) => {
-        set((s) => {
-          const next = s.features.map((f) => {
-            if (f.id !== s.activeFeatureId) return f
-            return {
-              ...f,
-              components: updateSiblingList(f.components, componentId, primaryWidthPercent),
-            }
-          })
-          return recordHistory(s, next)
-        })
-      },
-
-      undo: () => {
-        set((s) => {
-          if (s.historyIndex <= 0) return {}
-          const newIndex = s.historyIndex - 1
-          return { historyIndex: newIndex, features: s.history[newIndex] }
-        })
-      },
-
-      redo: () => {
-        set((s) => {
-          if (s.historyIndex >= s.history.length - 1) return {}
-          const newIndex = s.historyIndex + 1
-          return { historyIndex: newIndex, features: s.history[newIndex] }
-        })
-      },
+                                      redo: () => {
+                                        set((s) => {
+                                          if (s.historyIndex >= s.history.length - 1) return {}
+                                          const newIndex = s.historyIndex + 1
+                                          return { historyIndex: newIndex, features: s.history[newIndex] }
+                                        })
+                                      },
     }),
-    { name: 'UIForge/MultiFeatureStore' }
+{ name: 'UIForge/MultiFeatureStore' }
   )
 )
 

@@ -43,14 +43,8 @@ interface NavigationState {
 
 export const useNavigationEngine = create<NavigationState>()(
   devtools((set, get) => ({
-    openTabs: [
-      {
-        id: 'tab_trans_list',
-        featureId: 'transaction_list',
-        title: 'Danh Sách Lô Hàng',
-      },
-    ],
-    activeTabId: 'tab_trans_list',
+    openTabs: [],
+    activeTabId: null,
     activePopup: null,
 
     // 🚀 Mở một Feature theo chuẩn FeatureTab hoặc FeaturePopup (chỉ đạo của Master)

@@ -110,11 +110,25 @@ export function App() {
       .then((pages) => {
         if (cancelled) return
         if (pages.length > 0) {
-          setFeatures(pages.map(apiPageToFeature))
+          const loadedFeatures = pages.map(apiPageToFeature)
+          setFeatures(loadedFeatures)
+
+          // Đồng bộ tab mở trên WorkspaceTabBar nếu chưa có tab nào
+          const navEngine = useNavigationEngine.getState()
+          if (navEngine.openTabs.length === 0) {
+            const activeId = useEditorStore.getState().activeFeatureId
+            const activePage =
+              loadedFeatures.find((f) => f.id === activeId) ||
+              loadedFeatures.find((f) => !f.hidden && !f.isDetail) ||
+              loadedFeatures[0]
+            if (activePage) {
+              navEngine.openFeature(activePage.id, {}, 'Tab', activePage.name)
+            }
+          }
         }
       })
       .catch(() => {
-        if (!cancelled) showToast('⚠ Không tải được dữ liệu từ server — đang dùng dữ liệu cục bộ.')
+        if (!cancelled) showToast('⚠ Không tải được danh mục màn hình từ server.')
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false)

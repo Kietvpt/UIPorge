@@ -1,5 +1,18 @@
 import { openTab, openPopup } from '@/core/engines/navigationEngine'
 import { useDataEngine } from '@/core/engines/dataEngine'
+import { useEditorStore } from '@/store/editorStore'
+
+function getDetailFeatureId(): string {
+  try {
+    const features = useEditorStore.getState().features
+    const detail = features.find(
+      (f) => f.route === '/fcl-import' || f.isDetail || f.name.toLowerCase().includes('fcl import')
+    )
+    return detail ? detail.id : '4'
+  } catch {
+    return '4'
+  }
+}
 
 export interface TransactionItem {
   id: number
@@ -62,11 +75,12 @@ export class TransactionListBL {
   openTransactionDetail(row: TransactionItem, mode: 'tab' | 'popup' = 'tab') {
     const id = row.id || row.Id
     const jobNo = row.jobNo || row.JobNo || `Lô #${id}`
+    const targetPageId = getDetailFeatureId()
 
     if (mode === 'popup') {
-      openPopup('2', { id, jobNo, row }, `Chi tiết: ${jobNo}`)
+      openPopup(targetPageId, { id, jobNo, row }, `Chi tiết: ${jobNo}`)
     } else {
-      openTab('2', { id, jobNo, row }, `Lô hàng: ${jobNo}`)
+      openTab(targetPageId, { id, jobNo, row }, `Lô hàng: ${jobNo}`)
     }
   }
 
@@ -74,10 +88,11 @@ export class TransactionListBL {
    * ➕ Thêm mới một lô hàng (mở tab chi tiết với id = 'new')
    */
   openNewTransaction(mode: 'tab' | 'popup' = 'tab') {
+    const targetPageId = getDetailFeatureId()
     if (mode === 'popup') {
-      openPopup('2', { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
+      openPopup(targetPageId, { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
     } else {
-      openTab('2', { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
+      openTab(targetPageId, { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
     }
   }
 
@@ -110,16 +125,18 @@ export function openTransactionDetail(context?: any) {
   const row = context?.row || context?.value || context?.params || {}
   const id = row.id || row.Id || context?.id || 1
   const jobNo = row.jobNo || row.JobNo || `Lô #${id}`
+  const targetPageId = getDetailFeatureId()
 
   useDataEngine.getState().setFormRecord('default', row)
-  useDataEngine.getState().setFormRecord('2', row)
+  useDataEngine.getState().setFormRecord(targetPageId, row)
 
-  openTab('2', { id, jobNo, row }, `Lô: ${jobNo}`)
+  openTab(targetPageId, { id, jobNo, row }, `Lô: ${jobNo}`)
   return { success: true, message: `Mở chi tiết ${jobNo}` }
 }
 
 export function openNewTransaction() {
-  openTab('2', { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
+  const targetPageId = getDetailFeatureId()
+  openTab(targetPageId, { id: 'new', jobNo: '' }, 'Thêm mới Lô hàng')
   return { success: true, message: 'Mở form thêm mới lô hàng' }
 }
 
