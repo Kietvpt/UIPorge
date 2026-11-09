@@ -14,7 +14,7 @@ import {
   moveColumn,
 } from './grid/gridPolicyUtils'
 import { useEditorStore } from '@/store/editorStore'
-import { useMasterDetailStore } from '@/logic/masterDetailStore'
+import { useMasterDetailStore } from '@/store/masterDetailStore'
 import {
   Search,
   Plus,
@@ -30,7 +30,7 @@ import {
 } from 'lucide-react'
 
 import { useDataEngine } from '@/core/engines/dataEngine'
-import { triggerComponentEvent, executeSingleEvent } from '@/logic/eventRunner'
+import { triggerComponentEvent, executeSingleEvent } from '@/core/engines/eventRunner'
 
 // Mock dữ liệu mặc định trung lập khi bảng chưa được liên kết data
 const DEFAULT_GENERIC_ROWS: any[] = [
@@ -74,6 +74,9 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
   const datasetFromEngine = useDataEngine((s) => (reference ? s.datasets[reference] : undefined))
 
   const [rows, setRows] = useState<any[]>(() => {
+    if (isMasterDetailGrid && detailGrids && detailGrids[node.id]) {
+      return detailGrids[node.id]
+    }
     if (props.data && Array.isArray(props.data)) {
       return props.data
     }
@@ -83,8 +86,36 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     return DEFAULT_GENERIC_ROWS
   })
 
-  // Dữ liệu hiển thị thời gian thực
-  const activeRows = (props.data && Array.isArray(props.data)) ? props.data : (datasetFromEngine && Array.isArray(datasetFromEngine)) ? datasetFromEngine : rows
+  // Đồng bộ khi props.data thay đổi từ bên ngoài
+  useEffect(() => {
+    if (props.data && Array.isArray(props.data) && props.data.length > 0) {
+      setRows(props.data)
+    }
+  }, [props.data])
+
+  // Đồng bộ khi dataset trong DataEngine thay đổi
+  useEffect(() => {
+    if (datasetFromEngine && Array.isArray(datasetFromEngine) && datasetFromEngine.length > 0) {
+      setRows(datasetFromEngine)
+    }
+  }, [datasetFromEngine])
+
+  // Dữ liệu hiển thị thời gian thực (ưu tiên MasterDetailStore -> rows -> dataset -> props.data)
+  const activeRows: any[] = useMemo(() => {
+    if (isMasterDetailGrid && detailGrids && detailGrids[node.id] && detailGrids[node.id].length > 0) {
+      return detailGrids[node.id]
+    }
+    if (rows && Array.isArray(rows) && rows.length > 0) {
+      return rows
+    }
+    if (datasetFromEngine && Array.isArray(datasetFromEngine) && datasetFromEngine.length > 0) {
+      return datasetFromEngine
+    }
+    if (props.data && Array.isArray(props.data)) {
+      return props.data
+    }
+    return DEFAULT_GENERIC_ROWS
+  }, [isMasterDetailGrid, detailGrids, node.id, rows, datasetFromEngine, props.data])
 
   // Tự động query theo Reference nếu không có props.data và chưa nạp trong engine
   useEffect(() => {
@@ -231,12 +262,20 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
   const handleCellChange = (rowId: any, colKey: string, newVal: any) => {
     if (isMasterDetailGrid) {
       updateGridCellInStore(node.id, rowId, colKey, newVal)
-    } else {
-      const updated = rows.map((r, i) => {
-        const match = (r.id !== undefined && r.id === rowId) || (r.id === undefined && i === rowId)
-        return match ? { ...r, [colKey]: newVal } : r
-      })
-      commitRows(updated)
+    }
+
+    const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
+      ? detailGrids[node.id]
+      : activeRows
+
+    const updated = currentList.map((r: any, i: number) => {
+      const match = (r.id !== undefined && r.id === rowId) || (r.id === undefined && i === rowId)
+      return match ? { ...r, [colKey]: newVal } : r
+    })
+    commitRows(updated)
+
+    if (reference) {
+      useDataEngine.getState().registerDataset(reference, updated)
     }
   }
 
@@ -247,8 +286,33 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     const blFileName = currentFeature?.scriptFile
     const actionName = col?.action || actionKey
 
-    // 1. Kích hoạt trực tiếp action được cấu hình trên cột (col.action) qua Event Runner
-    if (actionName) {
+    // 1. Kích hoạt sự kiện cấu hình trên cột (col.events hoặc fallback col.action) qua Event Runner
+    let executedColEvent = false
+    if (col?.events) {
+      const colEvs = Array.isArray(col.events)
+        ? col.events
+        : typeof col.events === 'string'
+          ? (() => {
+              try {
+                return JSON.parse(col.events)
+              } catch {
+                return []
+              }
+            })()
+          : []
+
+      colEvs.forEach((ev: any) => {
+        executedColEvent = true
+        executeSingleEvent(
+          ev,
+          col.title || col.key,
+          blFileName,
+          { row: r, col, column: col, action: ev.action || ev.handlerName || actionName, value: r[col?.key || ''] }
+        )
+      })
+    }
+
+    if (!executedColEvent && actionName) {
       executeSingleEvent(
         { id: `col_act_${col?.key || actionKey}`, trigger: 'actionClick', action: actionName, handlerName: actionName },
         node.props.label || 'Bảng dữ liệu',
@@ -266,6 +330,41 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
         column: col,
         colKey: col?.key,
         value: r[col?.key || ''],
+      })
+    }
+  }
+
+  // ⚡ Thao tác khi người dùng click chuột (Single Click) vào một dòng trên bảng
+  const [selectedRowId, setSelectedRowId] = useState<any>(null)
+
+  const handleRowClick = (r: any, rowIdx: number) => {
+    const rowId = r.id ?? r.Id ?? rowIdx
+    setSelectedRowId(rowId)
+
+    const features = useEditorStore.getState().features
+    const currentFeature = features.find((f) => String(f.id) === String(node.pageId))
+    const blFileName = currentFeature?.scriptFile
+
+    if (reference) {
+      useDataEngine.getState().setSelectedRecord(reference, r)
+    }
+
+    // Kích hoạt sự kiện 'rowClick' hoặc 'click' trên Table node
+    if (node.events && node.events.length > 0) {
+      triggerComponentEvent(node.events, 'rowClick', node.props.label || 'Bảng dữ liệu', blFileName, {
+        row: r,
+        rowIndex: rowIdx,
+        action: 'rowClick',
+      })
+      triggerComponentEvent(node.events, 'click', node.props.label || 'Bảng dữ liệu', blFileName, {
+        row: r,
+        rowIndex: rowIdx,
+        action: 'click',
+      })
+      triggerComponentEvent(node.events, 'select', node.props.label || 'Bảng dữ liệu', blFileName, {
+        row: r,
+        rowIndex: rowIdx,
+        action: 'select',
       })
     }
   }
@@ -308,16 +407,23 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
   const handleAddRow = () => {
     if (isMasterDetailGrid) {
       addGridRowInStore(node.id)
-    } else {
-      const newId = rows.length > 0 ? Math.max(...rows.map((r) => Number(r.id) || 0)) + 1 : 1
-      const newRow: any = { id: newId }
-      columns.forEach((col) => {
-        if (col.componentType === 'Number') newRow[col.key] = 0
-        else if (col.componentType === 'Checkbox') newRow[col.key] = false
-        else if (col.componentType === 'DatePicker') newRow[col.key] = '08/11/2026'
-        else newRow[col.key] = ''
-      })
-      commitRows([...rows, newRow])
+    }
+    const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
+      ? detailGrids[node.id]
+      : activeRows
+
+    const newId = currentList.length > 0 ? Math.max(...currentList.map((r: any) => Number(r.id) || 0)) + 1 : 1
+    const newRow: any = { id: newId }
+    columns.forEach((col) => {
+      if (col.componentType === 'Number') newRow[col.key] = 0
+      else if (col.componentType === 'Checkbox') newRow[col.key] = false
+      else if (col.componentType === 'DatePicker') newRow[col.key] = '08/11/2026'
+      else newRow[col.key] = ''
+    })
+    const updated = [...currentList, newRow]
+    commitRows(updated)
+    if (reference) {
+      useDataEngine.getState().registerDataset(reference, updated)
     }
   }
 
@@ -325,13 +431,19 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
   const handleDuplicateRow = (rowIdx: number) => {
     if (isMasterDetailGrid) {
       duplicateGridRowInStore(node.id, rowIdx)
-    } else {
-      const target = rows[rowIdx]
-      const newId = Math.max(...rows.map((r) => Number(r.id) || 0)) + 1
-      const cloned = { ...target, id: newId }
-      const updated = [...rows]
-      updated.splice(rowIdx + 1, 0, cloned)
-      commitRows(updated)
+    }
+    const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
+      ? detailGrids[node.id]
+      : activeRows
+
+    const target = currentList[rowIdx]
+    const newId = Math.max(...currentList.map((r: any) => Number(r.id) || 0)) + 1
+    const cloned = { ...target, id: newId }
+    const updated = [...currentList]
+    updated.splice(rowIdx + 1, 0, cloned)
+    commitRows(updated)
+    if (reference) {
+      useDataEngine.getState().registerDataset(reference, updated)
     }
   }
 
@@ -339,12 +451,18 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
   const handleDeleteRow = (rowIdx: number) => {
     if (isMasterDetailGrid) {
       deleteGridRowInStore(node.id, rowIdx)
-    } else {
-      if (rows.length <= 1) {
-        if (!confirm('Bạn có chắc muốn xóa dòng cuối cùng này không?')) return
-      }
-      const updated = rows.filter((_, idx) => idx !== rowIdx)
-      commitRows(updated)
+    }
+    const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
+      ? detailGrids[node.id]
+      : activeRows
+
+    if (currentList.length <= 1) {
+      if (!confirm('Bạn có chắc muốn xóa dòng cuối cùng này không?')) return
+    }
+    const updated = currentList.filter((_: any, idx: number) => idx !== rowIdx)
+    commitRows(updated)
+    if (reference) {
+      useDataEngine.getState().registerDataset(reference, updated)
     }
   }
 
@@ -367,7 +485,11 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
   // Chèn dòng mới bên dưới
   const handleInsertRowBelow = (rowIdx: number) => {
-    const newId = rows.length > 0 ? Math.max(...rows.map((r) => Number(r.id) || 0)) + 1 : 1
+    const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
+      ? detailGrids[node.id]
+      : activeRows
+
+    const newId = currentList.length > 0 ? Math.max(...currentList.map((r: any) => Number(r.id) || 0)) + 1 : 1
     const newRow: any = { id: newId }
     columns.forEach((col) => {
       if (col.componentType === 'Number') newRow[col.key] = 0
@@ -375,27 +497,44 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
       else if (col.componentType === 'DatePicker') newRow[col.key] = ''
       else newRow[col.key] = ''
     })
-    const updated = [...rows]
+    const updated = [...currentList]
     updated.splice(rowIdx + 1, 0, newRow)
     commitRows(updated)
+    if (reference) {
+      useDataEngine.getState().registerDataset(reference, updated)
+    }
   }
 
   // Chuyển dòng lên trên
   const handleMoveRowUp = (rowIdx: number) => {
     if (rowIdx <= 0) return
-    const updated = [...rows]
+    const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
+      ? detailGrids[node.id]
+      : activeRows
+
+    const updated = [...currentList]
     const [moved] = updated.splice(rowIdx, 1)
     updated.splice(rowIdx - 1, 0, moved)
     commitRows(updated)
+    if (reference) {
+      useDataEngine.getState().registerDataset(reference, updated)
+    }
   }
 
   // Chuyển dòng xuống dưới
   const handleMoveRowDown = (rowIdx: number) => {
-    if (rowIdx >= rows.length - 1) return
-    const updated = [...rows]
+    const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
+      ? detailGrids[node.id]
+      : activeRows
+
+    if (rowIdx >= currentList.length - 1) return
+    const updated = [...currentList]
     const [moved] = updated.splice(rowIdx, 1)
     updated.splice(rowIdx + 1, 0, moved)
     commitRows(updated)
+    if (reference) {
+      useDataEngine.getState().registerDataset(reference, updated)
+    }
   }
 
   // Xử lý kéo thả cột (Drag & Drop Reorder Columns)
@@ -599,11 +738,10 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
             type="button"
             onClick={() => setShowColumnFilters((prev) => !prev)}
             title="Bật/Tắt dòng lọc nhanh tại từng cột (FilterLocal)"
-            className={`flex items-center gap-1 h-7 px-2 rounded-md border text-xs font-medium transition-colors ${
-              showColumnFilters
-                ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300'
-                : 'border-slate-700 bg-slate-800 text-slate-400 hover:text-slate-200'
-            }`}
+            className={`flex items-center gap-1 h-7 px-2 rounded-md border text-xs font-medium transition-colors ${showColumnFilters
+              ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300'
+              : 'border-slate-700 bg-slate-800 text-slate-400 hover:text-slate-200'
+              }`}
           >
             <Filter className="w-3.5 h-3.5" />
             <span className="text-[11px] hidden sm:inline">Lọc Cột</span>
@@ -676,8 +814,8 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                   col.align === 'right'
                     ? 'text-right'
                     : col.align === 'center'
-                    ? 'text-center'
-                    : 'text-left'
+                      ? 'text-center'
+                      : 'text-left'
 
                 return (
                   <th
@@ -690,11 +828,10 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                     onDragEnd={handleColDragEnd}
                     onContextMenu={(e) => handleHeaderContextMenu(e, col, idx)}
                     onClick={() => handleHeaderClick(col)}
-                    className={`group px-3 py-2.5 cursor-grab active:cursor-grabbing select-none transition-all hover:bg-slate-800/60 ${alignClass} ${
-                      isFrozen
-                        ? `sticky z-20 bg-[#0b1329] ${isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : 'border-r border-slate-800/90'}`
-                        : 'border-r border-slate-800/90'
-                    } ${isBeingDragged ? 'opacity-30 bg-slate-800/80' : ''} ${dropIndicatorClass}`}
+                    className={`group px-3 py-2.5 cursor-grab active:cursor-grabbing select-none transition-all hover:bg-slate-800/60 ${alignClass} ${isFrozen
+                      ? `sticky z-20 bg-[#0b1329] ${isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : 'border-r border-slate-800/90'}`
+                      : 'border-r border-slate-800/90'
+                      } ${isBeingDragged ? 'opacity-30 bg-slate-800/80' : ''} ${dropIndicatorClass}`}
                     style={{
                       width: col.width,
                       minWidth: col.minWidth || col.width || '100px',
@@ -746,9 +883,8 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                   return (
                     <th
                       key={`filter_${col.key}`}
-                      className={`px-1.5 py-1 border-r border-slate-800 ${
-                        isFrozen ? `sticky z-20 bg-[#080d1a] ${isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : ''}` : ''
-                      }`}
+                      className={`px-1.5 py-1 border-r border-slate-800 ${isFrozen ? `sticky z-20 bg-[#080d1a] ${isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : ''}` : ''
+                        }`}
                       style={{
                         left: leftOffset !== undefined ? `${leftOffset}px` : undefined,
                       }}
@@ -782,9 +918,14 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
               processedRows.map((row, rowIdx) => (
                 <tr
                   key={row.id || rowIdx}
+                  onClick={() => handleRowClick(row, rowIdx)}
                   onDoubleClick={() => handleRowDoubleClick(row, rowIdx)}
                   onContextMenu={(e) => handleRowContextMenu(e, row, rowIdx)}
-                  className="hover:bg-slate-800/40 transition-colors group cursor-context-menu"
+                  className={`transition-colors group cursor-pointer ${
+                    selectedRowId === (row.id ?? row.Id ?? rowIdx)
+                      ? 'bg-blue-600/25 hover:bg-blue-600/35 border-l-2 border-l-blue-400'
+                      : 'hover:bg-slate-800/40'
+                  }`}
                 >
                   {/* Cột STT ghim cố định ở đầu (Left: 0, z-20, bg đặc #0f172a) */}
                   <td
@@ -806,19 +947,18 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                       col.align === 'right'
                         ? 'text-right'
                         : col.align === 'center'
-                        ? 'text-center'
-                        : 'text-left'
+                          ? 'text-center'
+                          : 'text-left'
 
                     const cellError = validationErrors[`${node.id}_${row.id}_${col.key}`]
 
                     return (
                       <td
                         key={col.key}
-                        className={`px-2 py-1 whitespace-nowrap transition-colors ${alignClass} ${
-                          isFrozen
-                            ? `sticky z-10 bg-[#0f172a] group-hover:bg-slate-800/90 ${isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : 'border-r border-slate-800/60'}`
-                            : 'border-r border-slate-800/60'
-                        }`}
+                        className={`px-2 py-1 whitespace-nowrap transition-colors ${alignClass} ${isFrozen
+                          ? `sticky z-10 bg-[#0f172a] group-hover:bg-slate-800/90 ${isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : 'border-r border-slate-800/60'}`
+                          : 'border-r border-slate-800/60'
+                          }`}
                         style={{
                           width: col.width,
                           minWidth: col.minWidth || col.width || '100px',

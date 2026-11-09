@@ -1,6 +1,6 @@
 import React from 'react'
 import type { ComponentProps } from './types'
-import { triggerComponentEvent } from '@/logic/eventRunner'
+import { triggerComponentEvent } from '@/core/engines/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
 
 // Button Component

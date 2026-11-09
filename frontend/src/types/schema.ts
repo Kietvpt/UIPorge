@@ -147,6 +147,7 @@ export interface TableColumn extends Partial<import('./gridPolicy').GridColumnPo
   format?: 'currency_vnd' | 'currency_usd' | 'date_dmy' | 'number' | string // tương ứng FormatCell
   formatCell?: string
   action?: string
+  events?: ComponentEvent[] | string
   precision?: number // tương ứng Precision trong GridPolicy
   componentType?: 'TextBox' | 'Number' | 'DatePicker' | 'Select' | 'Dropdown' | 'Checkbox' | 'Button' | 'Label' | 'Link' | 'Textarea' // tương ứng Component trong GridPolicy
   options?: SelectOption[] // cho dropdown

@@ -67,7 +67,9 @@ export const useNavigationEngine = create<NavigationState>()(
       } else {
         // Mở dạng Tab đa nhiệm
         const tabs = get().openTabs
-        const existingTab = tabs.find((t) => t.featureId === featureId && t.params?.id === params?.id)
+        const existingTab = tabs.find(
+          (t) => t.featureId === featureId && String(t.params?.id ?? '') === String(params?.id ?? '')
+        )
 
         if (existingTab) {
           // Nếu tab này đã mở rồi thì chỉ cần active
@@ -87,8 +89,8 @@ export const useNavigationEngine = create<NavigationState>()(
           })
         }
 
-        // Tự động đồng bộ Active Feature trong EditorStore
-        useEditorStore.getState().setActiveFeature(featureId)
+        // Tự động đồng bộ Active Feature & RecordId trong EditorStore và URL
+        useEditorStore.getState().setActiveFeature(featureId, params?.id ?? null)
       }
     },
 

@@ -11,7 +11,7 @@
  * - onEManifest, onPrintDocuments, onAccountingSync, onRunFunction: Các tác vụ nghiệp vụ trên thanh công cụ
  */
 
-import { useMasterDetailStore } from './masterDetailStore'
+import { useMasterDetailStore } from '@/store/masterDetailStore'
 import { openPopup, openTab } from '@/core/engines/navigationEngine'
 
 export interface BLContext {

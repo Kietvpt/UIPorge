@@ -1,0 +1,18 @@
+using System.Text.Json;
+
+namespace UIForge.Core.DTOs
+{
+    public class SavePageDto
+    {
+        public string? Id { get; set; }
+        public int? ProjectId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Route { get; set; } = "/";
+        public string? Icon { get; set; }
+        public string? ScriptFile { get; set; }
+        public string LayoutTemplateId { get; set; } = "sidebar-left";
+        public JsonElement? LayoutConfig { get; set; }
+        public JsonElement Components { get; set; }
+    }
+}
+

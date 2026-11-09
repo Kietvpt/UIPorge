@@ -21,7 +21,8 @@ export const WorkspaceTabBar: React.FC = () => {
 
   const handleSelectTab = (tabId: string, featureId: string) => {
     setActiveTab(tabId)
-    setActiveFeature(featureId)
+    const tab = openTabs.find((t) => t.id === tabId)
+    setActiveFeature(featureId, tab?.params?.id ?? null)
   }
 
   const handleCloseTab = (e: React.MouseEvent, tabId: string) => {
@@ -33,7 +34,7 @@ export const WorkspaceTabBar: React.FC = () => {
         (t) => t.id === useNavigationEngine.getState().activeTabId
       )
       if (nextActiveTab) {
-        setActiveFeature(nextActiveTab.featureId)
+        setActiveFeature(nextActiveTab.featureId, nextActiveTab.params?.id ?? null)
       }
     }, 50)
   }

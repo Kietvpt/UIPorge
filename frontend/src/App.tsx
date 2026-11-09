@@ -93,8 +93,9 @@ export function App() {
     const handlePopState = () => {
       const urlParams = new URLSearchParams(window.location.search)
       const pageId = urlParams.get('feature') || urlParams.get('page')
+      const recId = urlParams.get('id')
       if (pageId) {
-        setActiveFeature(pageId)
+        setActiveFeature(pageId, recId)
       }
     }
     window.addEventListener('popstate', handlePopState)
@@ -122,7 +123,9 @@ export function App() {
               loadedFeatures.find((f) => !f.hidden && !f.isDetail) ||
               loadedFeatures[0]
             if (activePage) {
-              navEngine.openFeature(activePage.id, {}, 'Tab', activePage.name)
+              const urlParams = new URLSearchParams(window.location.search)
+              const recId = urlParams.get('id')
+              navEngine.openFeature(activePage.id, recId ? { id: recId } : {}, 'Tab', activePage.name)
             }
           }
         }

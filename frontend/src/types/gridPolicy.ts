@@ -63,7 +63,7 @@ export interface GridColumnPolicy {
   componentType?: ColumnComponentType;  // Component (Dropdown, TextBox, DatePicker...)
   precision?: number;                   // Precision
   align?: ColumnAlign;                  // TextAlign ('left' | 'center' | 'right')
-  events?: string;                      // vd: ["change":"CheckPackageType"]
+  events?: string | any[];              // vd: [{ trigger: 'click', handlerName: 'openTransactionDetail' }]
   cssClass?: string;
   cascadeField?: string;                // Cascade
   sumColSpan?: number;

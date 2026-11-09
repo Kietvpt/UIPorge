@@ -1,4 +1,5 @@
 import { useDataEngine } from '@/core/engines/dataEngine'
+import { useEditorStore } from '@/store/editorStore'
 import { TransactionItem } from './transactionList.bl'
 
 export class TransactionDetailBL {
@@ -41,7 +42,20 @@ export class TransactionDetailBL {
       const res = await fetch(`http://localhost:5048/api/core/data/Transaction/${id}`)
       if (res.ok) {
         const data: TransactionItem = await res.json()
+        const activeId = useEditorStore.getState().activeFeatureId || '4'
         dataEngine.setFormRecord('default', data)
+        dataEngine.setFormRecord(activeId, data)
+        dataEngine.setFormRecord('4', data)
+
+        // Lưu ID vào URL & LocalStorage
+        if (typeof window !== 'undefined' && data?.id) {
+          const currentUrl = new URL(window.location.href)
+          currentUrl.searchParams.set('id', String(data.id))
+          window.history.replaceState(null, '', currentUrl.toString())
+          try {
+            localStorage.setItem('uiforge_active_transaction_id', String(data.id))
+          } catch {}
+        }
         return data
       }
     } catch (err) {
@@ -100,56 +114,93 @@ export class TransactionDetailBL {
   }
 
   /**
-   * 💾 Lưu dữ liệu vào SQL Server Database (POST hoặc PUT)
+   * 💾 Lưu dữ liệu vào SQL Server Database qua Core DataEngine (POST hoặc PUT)
+   * Tương thích cả khi gọi trực tiếp từ BL hay gọi từ eventRunner (nhận tham số context hoặc formId)
    */
-  async save(formId = 'default'): Promise<{ success: boolean; data?: any; message: string }> {
+  async save(formIdInput: any = 'default'): Promise<{ success: boolean; data?: any; message: string }> {
+    const formId = typeof formIdInput === 'string' ? formIdInput : (formIdInput?.formId || formIdInput?.pageId || 'default')
     const dataEngine = useDataEngine.getState()
-    const formRecord = dataEngine.getFormRecord(formId)
+    let formRecord = dataEngine.getFormRecord(formId)
 
-    if (!formRecord.jobNo && !formRecord.JobNo) {
-      return { success: false, message: 'Vui lòng nhập Job No. cho lô hàng' }
+    // Nếu chưa có JobNo, dùng Core collectScreenData để thu thập toàn bộ dữ liệu từ màn hình hiện tại
+    if (!formRecord || (!formRecord.jobNo && !formRecord.JobNo)) {
+      formRecord = dataEngine.collectScreenData(formId)
     }
 
-    const id = formRecord.id || formRecord.Id
-
-    try {
-      if (id && id !== 'new' && Number(id) > 0) {
-        // Cập nhật PUT
-        const res = await fetch(`http://localhost:5048/api/core/data/Transaction/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formRecord),
-        })
-
-        if (res.ok) {
-          const updated = await res.json()
-          dataEngine.setFormRecord(formId, updated)
-          return { success: true, data: updated, message: `Đã cập nhật thành công lô hàng #${id} vào Database SQL Server!` }
-        } else {
-          return { success: false, message: `Lỗi cập nhật HTTP ${res.status}` }
-        }
-      } else {
-        // Thêm mới POST
-        const res = await fetch('http://localhost:5048/api/core/data/Transaction', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formRecord),
-        })
-
-        if (res.ok) {
-          const created = await res.json()
-          dataEngine.setFormRecord(formId, created)
-          return { success: true, data: created, message: `Đã tạo mới thành công lô hàng vào Database SQL Server!` }
-        } else {
-          return { success: false, message: `Lỗi tạo mới HTTP ${res.status}` }
-        }
-      }
-    } catch (err: any) {
-      console.error('[TransactionDetailBL] Lỗi lưu vào database:', err)
-      return { success: false, message: err?.message || 'Lỗi kết nối tới Backend' }
+    const jobNo = formRecord?.jobNo || formRecord?.JobNo
+    console.log('[TransactionDetailBL] Dữ liệu Form nhận được để lưu:', { jobNo, formId, formRecord })
+    if (!jobNo) {
+      return { success: false, message: 'Vui lòng nhập Job No. cho lô hàng trước khi lưu' }
     }
+
+    return await dataEngine.saveRecord('Transaction', formRecord, formId)
+  }
+
+  /**
+   * 🗑️ Xóa bản ghi qua Core DataEngine
+   */
+  async delete(idInput: any): Promise<{ success: boolean; message: string }> {
+    const id = typeof idInput === 'object' ? (idInput?.id || idInput?.Id) : idInput
+    if (!id) {
+      return { success: false, message: 'Thiếu ID bản ghi cần xóa' }
+    }
+    return await useDataEngine.getState().deleteRecord('Transaction', id)
   }
 }
 
 export const transactionDetailBL = TransactionDetailBL.getInstance()
+
+/**
+ * ⚡ Các hàm xuất chuẩn ở top-level cho UIForge Event Runner kích hoạt trực tiếp từ Event của component
+ */
+
+/**
+ * 💾 Lưu dữ liệu (được nút "Lưu Dữ Liệu" gọi trực tiếp qua sự kiện click)
+ */
+export async function save(context?: any) {
+  return await transactionDetailBL.save(context)
+}
+
+/**
+ * Bí danh cho save
+ */
+export const saveTransaction = save
+
+/**
+ * 📥 Nạp chi tiết bản ghi theo ID
+ */
+export async function loadDetail(contextOrId?: any) {
+  const id = typeof contextOrId === 'object' ? (contextOrId?.id || contextOrId?.selectedRow?.id || 'new') : (contextOrId || 'new')
+  return await transactionDetailBL.loadDetail(id)
+}
+
+/**
+ * Bí danh khởi tạo dữ liệu
+ */
+export const initDetailData = loadDetail
+
+/**
+ * 🗑️ Xóa bản ghi
+ */
+export async function deleteRecord(contextOrId?: any) {
+  return await transactionDetailBL.delete(contextOrId)
+}
+
+export const deleteTransaction = deleteRecord
+
+/**
+ * 🚪 Đóng màn hình chi tiết, quay lại danh sách
+ */
+export function closeDetail() {
+  const { features, setActiveFeature } = useEditorStore.getState()
+  const listFeat = features.find(
+    (f) =>
+      f.route === '/transactions' ||
+      f.name.toLowerCase().includes('danh sách') ||
+      f.scriptFile?.includes('transactionList')
+  )
+  const targetId = listFeat ? listFeat.id : '6'
+  setActiveFeature(targetId, null)
+  return { success: true, message: 'Đã đóng màn hình chi tiết, quay lại danh sách' }
+}
 

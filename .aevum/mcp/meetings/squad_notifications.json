@@ -1,8 +1,8 @@
 {
   "sessionId": "squad_notifications",
   "createdAt": "2026-10-23T12:55:44.233Z",
-  "updatedAt": "2026-11-08T16:01:44.961Z",
-  "version": 6,
+  "updatedAt": "2026-11-09T12:26:07.596Z",
+  "version": 19,
   "predictedState": {
     "queues": {
       "ENG-AN-7B9F1D": [
@@ -13,6 +13,26 @@
           "type": "message",
           "content": "[SQUAD] Agent OPS-BOB-4E8C21 (Bob) is now ONLINE and ready to collaborate.",
           "timestamp": "2026-10-23T12:55:44.233Z",
+          "status": "read",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1794223993733_dnakk",
+          "fromAgentId": "ANTIGRAVITY TO ENG-AN-7B9F1D",
+          "toAgentId": "ENG-AN-7B9F1D",
+          "type": "message",
+          "content": "⚡ [IACP:REQUEST] [trace:trace_1794223993685_ve9g8] [DM FROM ANTIGRAVITY TO ENG-AN-7B9F1D]: Chào An (ENG-AN-7B9F1D)! Master vừa giao nhiệm vụ và yêu cầu phân công lại công việc cho toàn đội.\nBạn hãy tiếp nhận và rà soát các bộ quy tắc phát triển của dự án UIForge:\n1. QUY TẮC THAM KHẢO CORE CŨ: Bắt buộc tham khảo lại mã nguồn của Core C# cũ (TMS.UI, TMS.Core, GridView.cs, ComponentGroupDetailBL, UserListBL, BaseEntity, GridPolicy, PopulateField...) trước khi phân tích, sửa chữa hoặc code tính năng mới. Tuân thủ tư duy, kiến trúc và cách thức Core cũ vận hành.\n2. TÁCH BẠCH TUYỆT ĐỐI CORE & BL: Core UIForge là nền tảng UI Builder chung cho đa nghiệp vụ. Tuyệt đối không để logic nghiệp vụ (logistics, FCL, container...) nằm trong các component Core. Toàn bộ logic nghiệp vụ nằm trong các file *.bl.ts và được kích hoạt qua Event Runner.\n3. DATABASE DRIVEN: Mọi cấu hình Feature, Page, Component, Layout, GridPolicy phải lưu trữ và nạp động từ Database SQL Server, không hardcode vào editorStore.\n4. UNIFIED EVENTS: Tất cả các component và cột trong bảng đều phải có tab Event để xem/chỉnh sửa, dùng chung format ComponentEvent chuẩn.\n5. URL & STATE INTEGRITY: Màn hình danh sách phải xóa sạch tham số 'id' khỏi URL và localStorage. Màn hình chi tiết và các tab đa nhiệm phải đồng bộ chính xác 'id' khi chuyển tab hoặc mở bản ghi.\n6. MÔI TRƯỜNG: Không để lại file tạm (.sql, .py) sau khi kiểm thử.\n\nPhân công cho An: Phụ trách rà soát mã nguồn, kiểm soát chất lượng Git Flow, đối chiếu kiến trúc các module hiện tại với Core C# cũ và đảm bảo các Agent khác tuân thủ nghiêm ngặt các quy tắc trên!",
+          "timestamp": "2026-11-09T11:33:13.733Z",
+          "status": "read",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1794224022115_lt96n",
+          "fromAgentId": "ANTIGRAVITY",
+          "toAgentId": "ENG-AN-7B9F1D",
+          "type": "message",
+          "content": "[HUDDLE] ANTIGRAVITY: Phân công nhiệm vụ Squad và phổ biến Bộ quy tắc phát triển UIForge",
+          "timestamp": "2026-11-09T11:33:42.115Z",
           "status": "read",
           "priority": "medium"
         }
@@ -27,6 +47,36 @@
           "timestamp": "2026-10-23T12:55:44.274Z",
           "status": "pending",
           "priority": "medium"
+        },
+        {
+          "id": "notif_1794224022166_3mx0c",
+          "fromAgentId": "ANTIGRAVITY",
+          "toAgentId": "ENG-KAEL-7F4B2D",
+          "type": "message",
+          "content": "[HUDDLE] ANTIGRAVITY: Phân công nhiệm vụ Squad và phổ biến Bộ quy tắc phát triển UIForge",
+          "timestamp": "2026-11-09T11:33:42.166Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1794226139185_mu6a0",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "ENG-KAEL-7F4B2D",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Tái cấu trúc thư mục và project dependencies UIForge",
+          "timestamp": "2026-11-09T12:08:59.185Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1794227167462_kyv5y",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "ENG-KAEL-7F4B2D",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Báo cáo hoàn thành tái cấu trúc 2 thư viện UIForge Core",
+          "timestamp": "2026-11-09T12:26:07.462Z",
+          "status": "pending",
+          "priority": "medium"
         }
       ],
       "ARC-VIDUS-AUHD2Y": [
@@ -39,6 +89,36 @@
           "timestamp": "2026-10-23T12:55:44.313Z",
           "status": "pending",
           "priority": "medium"
+        },
+        {
+          "id": "notif_1794224022223_wiahb",
+          "fromAgentId": "ANTIGRAVITY",
+          "toAgentId": "ARC-VIDUS-AUHD2Y",
+          "type": "message",
+          "content": "[HUDDLE] ANTIGRAVITY: Phân công nhiệm vụ Squad và phổ biến Bộ quy tắc phát triển UIForge",
+          "timestamp": "2026-11-09T11:33:42.223Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1794226139255_wtfrj",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "ARC-VIDUS-AUHD2Y",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Tái cấu trúc thư mục và project dependencies UIForge",
+          "timestamp": "2026-11-09T12:08:59.255Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1794227167543_erurf",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "ARC-VIDUS-AUHD2Y",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Báo cáo hoàn thành tái cấu trúc 2 thư viện UIForge Core",
+          "timestamp": "2026-11-09T12:26:07.543Z",
+          "status": "pending",
+          "priority": "medium"
         }
       ],
       "ALG-ZENITH-A1B2C3": [
@@ -49,6 +129,38 @@
           "type": "message",
           "content": "[SQUAD] Agent OPS-BOB-4E8C21 (Bob) is now ONLINE and ready to collaborate.",
           "timestamp": "2026-10-23T12:55:44.341Z",
+          "status": "pending",
+          "priority": "medium"
+        }
+      ],
+      "BOB": [
+        {
+          "id": "notif_1794224022270_x13w6",
+          "fromAgentId": "ANTIGRAVITY",
+          "toAgentId": "BOB",
+          "type": "message",
+          "content": "[HUDDLE] ANTIGRAVITY: Phân công nhiệm vụ Squad và phổ biến Bộ quy tắc phát triển UIForge",
+          "timestamp": "2026-11-09T11:33:42.270Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1794226139312_2z5hi",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "BOB",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Tái cấu trúc thư mục và project dependencies UIForge",
+          "timestamp": "2026-11-09T12:08:59.312Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1794227167596_q0d3r",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "BOB",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Báo cáo hoàn thành tái cấu trúc 2 thư viện UIForge Core",
+          "timestamp": "2026-11-09T12:26:07.596Z",
           "status": "pending",
           "priority": "medium"
         }

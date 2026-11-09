@@ -1,6 +1,7 @@
 import { deletePage } from '@/api/pagesApi'
 import React, { useState } from 'react'
 import { useEditorStore } from '@/store/editorStore'
+import { useNavigationEngine } from '@/core/engines/navigationEngine'
 import { ContextMenu, MenuItem } from './ContextMenu'
 import {
   LayoutDashboard,
@@ -138,7 +139,10 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
             return (
               <div
                 key={feature.id}
-                onClick={() => setActiveFeature(feature.id)}
+                onClick={() => {
+                  setActiveFeature(feature.id, null)
+                  useNavigationEngine.getState().openFeature(feature.id, {}, 'Tab', feature.name)
+                }}
                 onContextMenu={(e) => handleItemContextMenu(e, feature.id)}
                 className={`group flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
                   isActive

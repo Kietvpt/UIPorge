@@ -17,6 +17,7 @@ interface EditorState {
   // All features in the system
   features: FeaturePage[]
   activeFeatureId: string
+  activeRecordId: string | null
 
   // Selection
   selection: EditorSelection
@@ -26,7 +27,8 @@ interface EditorState {
   historyIndex: number
 
   // Actions for Features
-  setActiveFeature: (id: string) => void
+  setActiveFeature: (id: string, recordId?: string | number | null) => void
+  setActiveRecordId: (recordId: string | null) => void
   addFeature: (name: string, icon?: string) => string
   renameFeature: (id: string, name: string) => void
   deleteFeature: (id: string) => void
@@ -77,12 +79,51 @@ export function getSavedFeatureId(): string | null {
   }
 }
 
-export function saveActiveFeatureIdToUrl(id: string) {
+export function getSavedRecordId(): string | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const urlParams = new URLSearchParams(window.location.search)
+    const fromUrl = urlParams.get('id')
+    if (fromUrl) return fromUrl
+    return localStorage.getItem('uiforge_active_transaction_id')
+  } catch {
+    return null
+  }
+}
+
+export function saveActiveFeatureIdToUrl(id: string, recordId?: string | number | null) {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem('uiforge_active_feature_id', id)
     const url = new URL(window.location.href)
     url.searchParams.set('feature', id)
+
+    // Xác định xem feature đích có phải màn hình danh sách hay không
+    let isListScreen = false
+    try {
+      const features = useEditorStore.getState()?.features || []
+      const feat = features.find((f) => String(f.id) === String(id) || f.route === `/${id}` || f.route === id)
+      isListScreen = Boolean(
+        feat?.route === '/transactions' ||
+        feat?.scriptFile === 'transactionList.bl.ts' ||
+        feat?.scriptFile?.includes('transactionList') ||
+        feat?.name?.toLowerCase().includes('danh sách') ||
+        (feat && !feat.isDetail && feat.route !== '/fcl-import')
+      )
+    } catch {}
+
+    if (isListScreen || recordId === null || recordId === '') {
+      url.searchParams.delete('id')
+      try {
+        localStorage.removeItem('uiforge_active_transaction_id')
+      } catch {}
+    } else if (recordId !== undefined && recordId !== null) {
+      url.searchParams.set('id', String(recordId))
+      try {
+        localStorage.setItem('uiforge_active_transaction_id', String(recordId))
+      } catch {}
+    }
+
     window.history.replaceState(null, '', url.toString())
   } catch {
     // Ignore in unsupported environments
@@ -91,17 +132,43 @@ export function saveActiveFeatureIdToUrl(id: string) {
 
 export const useEditorStore = create<EditorState>()(
   devtools(
-    (set) => ({
+    (set, get) => ({
       features: [],
       activeFeatureId: getSavedFeatureId() || '',
+      activeRecordId: getSavedRecordId(),
       selection: { componentId: null, pageId: getSavedFeatureId() || '' },
       history: [[]],
       historyIndex: 0,
 
-      setActiveFeature: (id) => {
-        saveActiveFeatureIdToUrl(id)
+      setActiveRecordId: (recordId) => {
+        set({ activeRecordId: recordId ? String(recordId) : null })
+      },
+
+      setActiveFeature: (id, recordId) => {
+        saveActiveFeatureIdToUrl(id, recordId)
+
+        let finalRecId: string | null = null
+        const features = get().features || []
+        const feat = features.find((f) => String(f.id) === String(id) || f.route === `/${id}` || f.route === id)
+        const isListScreen = Boolean(
+          feat?.route === '/transactions' ||
+          feat?.scriptFile === 'transactionList.bl.ts' ||
+          feat?.scriptFile?.includes('transactionList') ||
+          feat?.name?.toLowerCase().includes('danh sách') ||
+          (feat && !feat.isDetail && feat.route !== '/fcl-import')
+        )
+
+        if (isListScreen || recordId === null || recordId === '') {
+          finalRecId = null
+        } else if (recordId !== undefined && recordId !== null) {
+          finalRecId = String(recordId)
+        } else {
+          finalRecId = getSavedRecordId()
+        }
+
         set((s) => ({
           activeFeatureId: id,
+          activeRecordId: finalRecId,
           selection: { componentId: null, pageId: id },
         }))
       },
@@ -111,6 +178,7 @@ export const useEditorStore = create<EditorState>()(
           set({
             features: [],
             activeFeatureId: '',
+            activeRecordId: null,
             selection: { componentId: null, pageId: '' },
             history: [[]],
             historyIndex: 0,
@@ -129,10 +197,19 @@ export const useEditorStore = create<EditorState>()(
           features.find((f) => !f.hidden && !f.isDetail) ||
           features[0]
 
-        saveActiveFeatureIdToUrl(target.id)
+        const isListScreen = Boolean(
+          target?.route === '/transactions' ||
+          target?.scriptFile?.includes('transactionList') ||
+          target?.name?.toLowerCase().includes('danh sách') ||
+          (!target?.isDetail && target?.route !== '/fcl-import')
+        )
+
+        const recId = isListScreen ? null : getSavedRecordId()
+        saveActiveFeatureIdToUrl(target.id, recId)
         set({
           features,
           activeFeatureId: target.id,
+          activeRecordId: recId,
           selection: { componentId: null, pageId: target.id },
           history: [features],
           historyIndex: 0,
@@ -157,7 +234,7 @@ export const useEditorStore = create<EditorState>()(
     updatedAt: new Date().toISOString(),
   }
 
-  saveActiveFeatureIdToUrl(id)
+  saveActiveFeatureIdToUrl(id, null)
   set((s) => {
     const nextFeatures = [...s.features, newFeature]
     return {
@@ -203,7 +280,7 @@ export const useEditorStore = create<EditorState>()(
           if (s.features.length <= 1) return {}
           const next = s.features.filter((f) => f.id !== id)
           const newActiveId = s.activeFeatureId === id ? next[0].id : s.activeFeatureId
-          saveActiveFeatureIdToUrl(newActiveId)
+          saveActiveFeatureIdToUrl(newActiveId, null)
           return {
             ...recordHistory(s, next),
             activeFeatureId: newActiveId,

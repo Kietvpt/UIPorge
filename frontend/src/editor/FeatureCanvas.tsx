@@ -6,6 +6,8 @@ import { DraggableComponent } from './DraggableComponent'
 import { ContextMenu, MenuItem } from './ContextMenu'
 import { groupNodesByTabStack } from '@/renderer/tabStackUtils'
 import { ForgeTabStack } from '@/renderer/components'
+import { resolveBlModule } from '@/core/engines/eventRunner'
+import { useDataEngine } from '@/core/engines/dataEngine'
 import type { ComponentNode, ComponentType } from '@/types/schema'
 import {
   Box,
@@ -36,6 +38,7 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
 }) => {
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
+  const activeRecordId = useEditorStore((s) => s.activeRecordId)
   const addComponent = useEditorStore((s) => s.addComponent)
   const selectComponent = useEditorStore((s) => s.selectComponent)
   const removeComponent = useEditorStore((s) => s.removeComponent)
@@ -49,6 +52,40 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
     gap: '16px',
     wrap: 'wrap',
   }
+
+  // ── Tự động nạp dữ liệu từ SQL Server khi mở màn hình Chi Tiết Lô Hàng ──
+  React.useEffect(() => {
+    const isDetailScreen =
+      activeFeature?.scriptFile === 'transactionDetail.bl.ts' ||
+      activeFeature?.route === '/fcl-import' ||
+      activeFeature?.name?.toLowerCase().includes('fcl import') ||
+      Boolean(activeFeature?.isDetail)
+
+    if (isDetailScreen) {
+      let recordId = activeRecordId
+      if (!recordId && typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search)
+        recordId = urlParams.get('id')
+      }
+      const targetId = recordId || '1'
+      const curRecord = useDataEngine.getState().formRecords[activeFeatureId]
+      const curId = curRecord?.id || curRecord?.Id
+
+      // Nếu chưa có dữ liệu hoặc ID hiện tại khác với ID từ URL/Store -> Nạp ngay từ SQL Server
+      if (String(curId) !== String(targetId)) {
+        const { module: blMod } = resolveBlModule(activeFeature?.scriptFile)
+        const loadDetailFn = blMod?.loadDetail || blMod?.transactionDetailBL?.loadDetail
+        if (typeof loadDetailFn === 'function') {
+          loadDetailFn(targetId).then((data: any) => {
+            if (data && activeFeatureId) {
+              useDataEngine.getState().setFormRecord(activeFeatureId, data)
+              useDataEngine.getState().setFormRecord('default', data)
+            }
+          })
+        }
+      }
+    }
+  }, [activeFeatureId, activeRecordId, activeFeature?.scriptFile, activeFeature?.route, activeFeature?.name, activeFeature?.isDetail])
 
   // Canvas root droppable target
   const { setNodeRef: setCanvasRootRef, isOver: isCanvasRootOver } = useDroppable({

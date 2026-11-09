@@ -40,6 +40,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
           type="checkbox"
           checked={Boolean(value)}
           disabled={column.disabled || !isEditable}
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => onChange(e.target.checked)}
           className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
         />
@@ -55,7 +56,10 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
         <button
           type="button"
           disabled={column.disabled}
-          onClick={() => onActionClick && onActionClick(column.key, row)}
+          onClick={(e) => {
+            e.stopPropagation()
+            if (onActionClick) onActionClick(column.key, row)
+          }}
           className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 hover:text-white border border-blue-500/40 text-[11px] font-semibold transition-colors disabled:opacity-50 cursor-pointer shadow-sm hover:shadow-blue-500/20"
         >
           {buttonText}
@@ -71,6 +75,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
         href="#"
         onClick={(e) => {
           e.preventDefault()
+          e.stopPropagation()
           onActionClick && onActionClick(column.key, row)
         }}
         className="text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 font-medium truncate"
@@ -131,6 +136,24 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
           { value: 'NOMINATED', label: 'NOMINATED' },
           { value: 'FREEHAND', label: 'FREEHAND' },
         ]
+      } else if (column.key === 'pod') {
+        options = [
+          { value: 'VNSGN', label: 'HO CHI MINH / VNSGN' },
+          { value: 'VNDAD', label: 'DA NANG / VNDAD' },
+          { value: 'VNHPH', label: 'HAI PHONG / VNHPH' },
+          { value: 'SGSIN', label: 'SINGAPORE / SGSIN' },
+          { value: 'KRPUS', label: 'BUSAN / KRPUS' },
+          { value: 'CNSGH', label: 'SHANGHAI / CNSGH' },
+        ]
+      } else if (column.key === 'pol') {
+        options = [
+          { value: 'CNSGH', label: 'SHANGHAI / CNSGH' },
+          { value: 'KRPUS', label: 'BUSAN / KRPUS' },
+          { value: 'SGSIN', label: 'SINGAPORE / SGSIN' },
+          { value: 'VNSGN', label: 'HO CHI MINH / VNSGN' },
+          { value: 'VNDAD', label: 'DA NANG / VNDAD' },
+          { value: 'VNHPH', label: 'HAI PHONG / VNHPH' },
+        ]
       }
     }
 
@@ -139,6 +162,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
         value={value ?? ''}
         disabled={column.disabled}
         title={error || undefined}
+        onClick={(e) => e.stopPropagation()}
         onChange={(e) => onChange(e.target.value)}
         className={`w-full h-7 px-2 py-0.5 rounded bg-slate-900/80 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 text-xs border ${errorBorderClass} focus:outline-none transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
       >
@@ -161,6 +185,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
           value={displayValue}
           placeholder="DD/MM/YYYY"
           disabled={column.disabled}
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => onChange(e.target.value)}
           className={`w-full h-7 pl-2.5 pr-7 py-0.5 rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 font-mono text-xs border ${errorBorderClass} focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed`}
         />
@@ -179,6 +204,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
         disabled={column.disabled}
         title={error || undefined}
         step={column.precision && column.precision > 0 ? Math.pow(10, -column.precision) : 1}
+        onClick={(e) => e.stopPropagation()}
         onChange={(e) => {
           const raw = e.target.value
           onChange(raw === '' ? '' : Number(raw))
@@ -197,6 +223,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
         disabled={column.disabled}
         title={error || undefined}
         rows={1}
+        onClick={(e) => e.stopPropagation()}
         onChange={(e) => {
           const val = column.upperCase ? e.target.value.toUpperCase() : e.target.value
           onChange(val)
@@ -221,6 +248,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
       placeholder={column.title ? `Nhập ${column.title}...` : 'Nhập dữ liệu...'}
       disabled={column.disabled}
       title={error || undefined}
+      onClick={(e) => e.stopPropagation()}
       onChange={(e) => {
         const val = column.upperCase ? e.target.value.toUpperCase() : e.target.value
         onChange(val)
