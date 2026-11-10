@@ -145,8 +145,8 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
         typeof p.events === 'string'
           ? p.events
           : p.events
-          ? JSON.stringify(p.events)
-          : '{"change":"AutoPOL"}'
+            ? JSON.stringify(p.events)
+            : '{"change":"AutoPOL"}'
       )
       setStyleVal((p.style as string) || '')
       setChildStyle((p.childStyle as string) || '')
@@ -213,20 +213,20 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
       setDispDateTimeField(Boolean(p.showDateTimeField))
 
       // Code blocks
-      if (p.dataSource || p.dataSourceFilter) {
-        setDataSourceCode(String(p.dataSource || p.dataSourceFilter))
+      if (p.dataSource || p.dataSourceFilter || b.dataSource) {
+        setDataSourceCode(String(p.dataSource || p.dataSourceFilter || b.dataSource))
       }
-      if (p.formatEntity) {
-        setFormatEntityCode(String(p.formatEntity))
+      if (p.formatEntity || b.formatEntity) {
+        setFormatEntityCode(String(p.formatEntity || b.formatEntity))
       }
       if (p.migration) {
         setMigrationCode(String(p.migration))
       }
-      if (p.formatData) {
-        setFormatDataCode(String(p.formatData))
+      if (p.formatData || b.formatData) {
+        setFormatDataCode(String(p.formatData || b.formatData))
       }
-      if (p.query) {
-        setQueryCode(String(p.query))
+      if (p.query || b.query) {
+        setQueryCode(String(p.query || b.query))
       }
     }
   }, [node])
@@ -327,13 +327,22 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
       formatEntity: formatEntityCode,
       migration: migrationCode,
       formatData: formatDataCode,
-      query: queryCode,
+      query: dataSourceCode,
     }
 
     const updatedBinding = {
       ...(node.dataBinding || {}),
-      entityName: reference || node.dataBinding?.entityName || group || 'General',
+      entityName: reference || refName || node.dataBinding?.entityName || group || 'General',
+      refName: refName || reference || node.dataBinding?.refName || '',
       fieldName: fieldName || node.id,
+      query: dataSourceCode,
+      dataSource: dataSourceCode,
+      sqlWhere,
+      selectField,
+      populateField,
+      idField,
+      formatData: formatDataCode,
+      formatEntity: formatEntityCode,
       twoWay: true,
     }
 
@@ -406,33 +415,30 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
           <button
             type="button"
             onClick={() => setActiveTab('info')}
-            className={`py-2 border-b-2 transition-colors cursor-pointer ${
-              activeTab === 'info'
+            className={`py-2 border-b-2 transition-colors cursor-pointer ${activeTab === 'info'
                 ? 'border-teal-400 text-teal-300'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
+              }`}
           >
             THÔNG TIN CHUNG
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('permissions')}
-            className={`py-2 border-b-2 transition-colors cursor-pointer ${
-              activeTab === 'permissions'
+            className={`py-2 border-b-2 transition-colors cursor-pointer ${activeTab === 'permissions'
                 ? 'border-teal-400 text-teal-300'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
+              }`}
           >
             QUYỀN HẠN
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('report')}
-            className={`py-2 border-b-2 transition-colors cursor-pointer ${
-              activeTab === 'report'
+            className={`py-2 border-b-2 transition-colors cursor-pointer ${activeTab === 'report'
                 ? 'border-teal-400 text-teal-300'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
+              }`}
           >
             REPORT
           </button>
@@ -573,14 +579,14 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
                       />
                     </div>
                     <div>
-                      <label className="text-slate-400 block mb-0.5 text-[11px]">Events</label>
-                      <input
-                        type="text"
-                        value={events}
-                        onChange={(e) => setEvents(e.target.value)}
-                        placeholder='{"change":"AutoPOL"}'
-                        className="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-amber-300 font-mono focus:border-teal-500 focus:outline-none"
-                      />
+                      <label className="text-slate-400 block mb-0.5 text-[11px] flex items-center justify-between">
+                        <span>Events</span>
+                        <span className="text-[9px] text-cyan-400 font-mono">Đã chuyển sang Tab Events</span>
+                      </label>
+                      <div className="w-full px-2 py-1 bg-slate-900/60 border border-slate-800 rounded text-slate-400 text-[11px] italic flex items-center justify-between">
+                        <span className="truncate">Cấu hình trực quan tại Tab Events</span>
+                        <span className="text-[10px] text-cyan-400 font-mono">⚡ Visual</span>
+                      </div>
                     </div>
                     <div>
                       <label className="text-slate-400 block mb-0.5 text-[11px]">Style</label>
@@ -1044,25 +1050,6 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
                         className="w-full py-1 px-2.5 bg-transparent text-amber-300 focus:outline-none resize-y"
                       />
                     </div>
-                  </div>
-                </div>
-
-                {/* Hàng Code 3: QUERY */}
-                <div className="bg-[#070d18] border border-slate-800 rounded p-2.5">
-                  <div className="text-[11px] font-bold text-teal-400 mb-1 tracking-wider uppercase">
-                    QUERY
-                  </div>
-                  <div className="flex bg-[#030712] border border-slate-900 rounded font-mono text-[11px]">
-                    <div className="py-1 px-2 text-slate-600 select-none border-r border-slate-900 text-right">
-                      1
-                    </div>
-                    <textarea
-                      rows={2}
-                      value={queryCode}
-                      onChange={(e) => setQueryCode(e.target.value)}
-                      placeholder="SQL/OData Raw Query..."
-                      className="w-full py-1 px-2.5 bg-transparent text-emerald-300 focus:outline-none resize-y"
-                    />
                   </div>
                 </div>
               </div>

@@ -33,13 +33,44 @@ export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const currentValue = engineVal !== undefined ? engineVal : (props.value ?? '')
   const [dynamicOptions, setDynamicOptions] = useState<SelectOption[]>([])
 
+  // ── CẤU HÌNH REFERENCE, QUERY & POPULATE CHUẨN CORE C# (GuiInfo.cs) ──
+  const reference =
+    (props.reference as string) ||
+    (props.refName as string) ||
+    (node.dataBinding?.refName as string) ||
+    (node.dataBinding?.entityName as string) ||
+    ''
+
+  const query =
+    (props.query as string) ||
+    (node.dataBinding?.query as string) ||
+    (props.dataSource as string) ||
+    (node.dataBinding?.dataSource as string) ||
+    (props.sqlWhere as string) ||
+    (node.dataBinding?.sqlWhere as string) ||
+    ''
+
+  const idField =
+    (props.idField as string) ||
+    (node.dataBinding?.idField as string) ||
+    'id'
+
+  const textField =
+    (props.textField as string) ||
+    (props.selectField as string) ||
+    (node.dataBinding?.selectField as string) ||
+    (props.fieldName as string) ||
+    (node.dataBinding?.fieldName as string) ||
+    'name'
+
+  const populateRule =
+    (props.populateField as string) ||
+    (node.dataBinding?.populateField as string) ||
+    ''
+
   // Tải danh sách Options từ Reference (OData) nếu được cấu hình
   useEffect(() => {
     let isMounted = true
-    const reference = props.reference as string | undefined
-    const query = props.query as string | undefined
-    const idField = (props.idField as string) || 'id'
-    const textField = (props.textField as string) || (props.fieldName as string) || 'name'
 
     if (reference) {
       queryReference(reference, query, idField, textField).then((res) => {
@@ -51,7 +82,7 @@ export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
     return () => {
       isMounted = false
     }
-  }, [props.reference, props.query, props.idField, props.textField, queryReference])
+  }, [reference, query, idField, textField, queryReference])
 
   // Sử dụng dynamicOptions nếu có, ngược lại dùng props.options tĩnh
   const options: SelectOption[] =
@@ -80,11 +111,10 @@ export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
         <select
           disabled={props.disabled}
           value={currentValue}
-          className={`w-full px-3 py-1.5 pr-8 bg-slate-900 border rounded-lg text-xs text-slate-100 transition-all appearance-none cursor-pointer disabled:opacity-50 ${
-            hasError
+          className={`w-full px-3 py-1.5 pr-8 bg-slate-900 border rounded-lg text-xs text-slate-100 transition-all appearance-none cursor-pointer disabled:opacity-50 ${hasError
               ? 'border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none'
               : 'border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
-          }`}
+            }`}
           onChange={(e) => {
             const nextVal = e.target.value
             setFieldValue(formId, fieldName, nextVal)
@@ -94,8 +124,8 @@ export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
             const rawItem = matchedOpt?.rawItem || matchedOpt
 
             // Thực thi cơ chế Populate Field chuẩn Core C# (Ảnh Modal: Populate field)
-            if (props.populateField && typeof props.populateField === 'string') {
-              applyPopulate(formId, props.populateField, rawItem)
+            if (populateRule && typeof populateRule === 'string') {
+              applyPopulate(formId, populateRule, rawItem)
             }
 
             if (!isEditing) {

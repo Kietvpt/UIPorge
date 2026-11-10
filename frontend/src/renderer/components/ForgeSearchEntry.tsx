@@ -36,11 +36,32 @@ export const ForgeSearchEntry: React.FC<ComponentProps> = ({ node, isEditing }) 
   const displayVal = engineVal !== undefined ? engineVal : (props.value ?? '')
   const hasError = Boolean(props.validationError)
 
-  // Cấu hình Tra cứu
-  const reference = String(props.reference || node.dataBinding?.entityName || '')
-  const displayField = String(props.displayField || 'code')
-  const valueField = String(props.valueField || 'code')
-  const populateRule = String(props.populateRule || '')
+  // Cấu hình Tra cứu chuẩn Core C# (SearchEntry.cs & GuiInfo.cs)
+  const reference = String(
+    props.reference ||
+    props.refName ||
+    node.dataBinding?.refName ||
+    node.dataBinding?.entityName ||
+    ''
+  )
+  const displayField = String(
+    props.displayField ||
+    props.selectField ||
+    node.dataBinding?.selectField ||
+    'code'
+  )
+  const valueField = String(
+    props.valueField ||
+    props.idField ||
+    node.dataBinding?.idField ||
+    'code'
+  )
+  const populateRule = String(
+    props.populateRule ||
+    props.populateField ||
+    node.dataBinding?.populateField ||
+    ''
+  )
 
   const handleOpenSearch = () => {
     if (props.disabled || isEditing) return

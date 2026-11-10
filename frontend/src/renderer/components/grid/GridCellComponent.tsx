@@ -177,13 +177,14 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
   if (column.componentType === 'Select' || (column.componentType as string) === 'Dropdown') {
     // 100% Generic & Domain-Agnostic:
     // 1. Ưu tiên options được cấu hình trong Column Metadata (column.options)
-    // 2. Tra cứu động từ DataEngine nếu cột có cấu hình reference (dataset liên kết)
+    // 2. Tra cứu động từ DataEngine nếu cột có cấu hình reference / refName (dataset liên kết)
     let options = column.options || []
-    if (options.length === 0 && (column as any).reference) {
-      const refDataset = useDataEngine.getState().getDataset((column as any).reference)
+    const refTarget = (column as any).reference || (column as any).refName
+    if (options.length === 0 && refTarget) {
+      const refDataset = useDataEngine.getState().getDataset(refTarget)
       if (Array.isArray(refDataset) && refDataset.length > 0) {
-        const valKey = (column as any).valueField || 'code' || 'id'
-        const labelKey = (column as any).displayField || 'name' || 'code'
+        const valKey = (column as any).valueField || (column as any).idField || 'code' || 'id'
+        const labelKey = (column as any).displayField || (column as any).selectField || 'name' || 'code'
         options = refDataset.map((item: any) => ({
           value: String(item[valKey] ?? item.code ?? item.id ?? ''),
           label: String(item[labelKey] ?? item.name ?? item[valKey] ?? ''),

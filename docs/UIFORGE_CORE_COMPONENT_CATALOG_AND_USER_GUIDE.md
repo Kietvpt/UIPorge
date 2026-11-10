@@ -59,7 +59,8 @@ Các Component trong UIForge được thiết kế theo các nguyên tắc nền
 | `label` | `string` | `"BẢNG DỮ LIỆU"` | Tiêu đề hiển thị trên thanh công cụ của bảng |
 | `columns` | `TableColumn[]` | `[]` | Mảng định nghĩa danh sách cột (Xem cấu trúc `TableColumn` bên dưới) |
 | `data` | `any[]` | `[]` | Dữ liệu các dòng nạp vào bảng khi dùng dạng tĩnh |
-| `reference` | `string` | `undefined` | Tên Dataset / Entity trong `dataEngine` để bảng tự động nạp dữ liệu động |
+| `reference` / `refName` | `string` | `undefined` | Tên Dataset / Entity trong `dataEngine` / Backend để bảng tự động truy vấn dữ liệu động |
+| `query` / `sqlWhere` / `dataSource` | `string` | `undefined` | Chuỗi truy vấn OData (VD: `Active eq true&$orderby=Id desc`) hoặc điều kiện lọc SQL nạp dữ liệu cho bảng |
 | `canAdd` | `boolean` | `true` | Cho phép thêm dòng mới (`+ Thêm dòng` hoặc phím `F2`) |
 | `canDelete` | `boolean` | `true` | Cho phép xóa dòng đang chọn (Nút xóa hoặc phím `F4`) |
 | `canDuplicate`| `boolean` | `true` | Cho phép nhân bản dòng đang chọn (phím `F3`) |
@@ -232,20 +233,29 @@ export interface TableColumn {
 
 ## III. QUY CHUẨN ĐẶT TÊN & LIÊN KẾT DỮ LIỆU (DATA BINDING CONVENTION)
 
-Để Component tự động kết nối dữ liệu 2 chiều với Database mà không cần viết code thủ công:
-1. Trong thuộc tính Component, khai báo `dataBinding`:
-   ```json
-   {
-     "entityName": "Document",
-     "fieldName": "DocumentNumber",
-     "twoWay": true
-   }
-   ```
-2. Quy tắc tự động điền (`populateRule`):
-   ```
-   TargetField1 = SourceField1, TargetField2 = SourceField2
-   ```
-   *Ví dụ:* `PartnerName = name, TaxCode = taxId, Phone = phoneNumber`.
+Hệ thống UIForge hỗ trợ đầy đủ các tham số liên kết dữ liệu và cấu hình Core C# kế thừa từ hệ thống gốc (`GuiInfo.cs`, `GridView.cs`, `Select2.cs`, `SearchEntry.cs`).
+
+### 1. Nguyên Tắc "Đúng Người Đúng Việc" Theo Từng Loại Component
+
+Tab **Data** trên thanh `PropertyPanel` được thiết kế ngữ cảnh thông minh:
+- **Bảng Dữ Liệu (`Table` / `GridView`)**: Chỉ hiển thị `Reference / RefName`, `DATASOURCE` (Query OData), và `SqlWhere`. Không hiển thị `FieldName`, `PopulateField`, hay `Formatter`.
+- **Tra Cứu Danh Mục (`Select` / `Dropdown` / `SearchEntry` / `Autocomplete`)**: Hiển thị `FieldName` (**nhập tay tự do**), `Reference / RefName`, `DATASOURCE` (bộ lọc danh mục), `PopulateField` (tự động điền), `SelectField` & `IdField`, `FormatData`.
+- **Ô Nhập Liệu (`TextBox` / `Number` / `DatePicker` / `Checkbox` / `Textarea`)**: Hiển thị `FieldName` (**nhập tay tự do**), `Two-Way Binding`, `Formatter` / `FormatData`.
+- **Khung Bố Cục (`Section` / `Container` / `Button`)**: Hiển thị thông báo nhẹ và nút mở Modal nếu cần cấu hình nâng cao.
+
+### 2. Ý nghĩa và hướng dẫn sử dụng các tham số cốt lõi
+
+| Tham số trên giao diện | Mã thuộc tính | Mô tả và quy cách sử dụng |
+| :--- | :--- | :--- |
+| **Nguồn Dữ Liệu (DATASOURCE)** | `dataSource` / `dataSourceFilter` | **Hợp nhất từ Query và DataSource**. Chứa câu lệnh truy vấn OData (VD: `?$filter=Active eq true&$orderby=Id desc`) hoặc hàm JS trả về chuỗi lọc bản ghi. |
+| **Đối Tượng Tham Chiếu (Reference / RefName)** | `refName` / `reference` | Tên bảng hoặc Entity trong Database / Backend API mà component sẽ truy vấn nạp dữ liệu (VD: `Transaction`, `Terminal`, `Customer`). |
+| **Trường Dữ Liệu (Field Name)** | `fieldName` | Tên trường trên Form/Model. **Được nhập tay tự do** (kèm gợi ý datalist nếu có). Không ép buộc select. Bảng GridView danh sách chính không cần trường này. |
+| **Tự Động Điền (Populate Field)** | `populateField` | **Chỉ dùng cho Dropdown / SearchEntry / Autocomplete**. Quy tắc điền tự động nhiều trường khi chọn một mục: `TargetField1 = SourceField1, TargetField2 = SourceField2`. GridView không dùng trường này. |
+| **Điều Kiện Lọc SQL (SqlWhere)** | `sqlWhere` | Điều kiện mệnh đề `WHERE` của SQL trực tiếp (tương thích Core C# `GuiInfo.SqlWhere`). |
+| **Khóa Chính (IdField)** | `idField` | Tên trường khóa chính làm giá trị nhận dạng (mặc định: `id` hoặc `Id`). |
+| **Cột Chọn (SelectField)** | `selectField` | Tên trường làm nhãn hiển thị trong danh sách lựa chọn (mặc định: `name` hoặc `code`). |
+| **Chuỗi Định Dạng (FormatData)** | `formatData` | Mẫu hiển thị chuỗi dữ liệu (VD: `{ShortName}` hoặc `{Code} - {Name}`). |
+| **Nút "🔍 Mở Toàn Bộ Thông Số Core"** | Modal Core C# | Nút bấm mở hộp thoại đầy đủ toàn bộ hơn 30 thuộc tính chuẩn Core C#. |
 
 ---
 

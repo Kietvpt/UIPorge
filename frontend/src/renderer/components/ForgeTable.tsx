@@ -79,8 +79,24 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
   const isMasterDetailGrid = Boolean(detailGrids && detailGrids[node.id])
 
-  // Dữ liệu dòng (ưu tiên props.data, dataset theo Reference, hoặc fallback generic)
-  const reference = (props.reference as string) || (node.dataBinding?.entityName as string)
+  // ── THAM CHIẾU ENTITY VÀ TRUY VẤN ODATA/SQL CHUẨN CORE C# (GridView.cs & GuiInfo.cs) ──
+  const reference =
+    (props.reference as string) ||
+    (props.refName as string) ||
+    (node.dataBinding?.refName as string) ||
+    (node.dataBinding?.entityName as string) ||
+    ''
+
+  const query =
+    (props.query as string) ||
+    (node.dataBinding?.query as string) ||
+    (props.dataSource as string) ||
+    (node.dataBinding?.dataSource as string) ||
+    (props.sqlWhere as string) ||
+    (node.dataBinding?.sqlWhere as string) ||
+    (props.filter as string) ||
+    ''
+
   const datasetFromEngine = useDataEngine((s) => (reference ? s.datasets[reference] : undefined))
 
   const [rows, setRows] = useState<any[]>(() => {
@@ -127,14 +143,12 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     return DEFAULT_GENERIC_ROWS
   }, [isMasterDetailGrid, detailGrids, node.id, rows, datasetFromEngine, props.data])
 
-  // Tự động query theo Reference nếu không có props.data và chưa nạp trong engine
+  // Tự động query theo Reference & Query khi reference hoặc query thay đổi
   useEffect(() => {
-    if (props.data && Array.isArray(props.data)) return
-    if (datasetFromEngine && Array.isArray(datasetFromEngine) && datasetFromEngine.length > 0) return
+    if (props.data && Array.isArray(props.data) && props.data.length > 0) return
 
     let isMounted = true
     if (reference) {
-      const query = (props.query as string) || (props.filter as string) || ''
       useDataEngine.getState().queryEntity(reference, query).then((items) => {
         if (isMounted && items && items.length > 0) {
           setRows(items)
@@ -144,7 +158,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     return () => {
       isMounted = false
     }
-  }, [props.data, reference, props.query, props.filter, datasetFromEngine])
+  }, [reference, query, props.data])
 
   // State tìm kiếm & sắp xếp
   const [searchTerm, setSearchTerm] = useState('')
@@ -520,6 +534,19 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
       showTableToast('In Báo Cáo', 'Đã mở cửa sổ in ấn và xuất PDF báo cáo thành công', 'info')
     } catch (err: any) {
       showTableToast('Lỗi In Báo Cáo', err?.message || 'Không thể tạo bản in báo cáo', 'warning')
+    }
+  }
+
+  // 🔄 Làm mới dữ liệu từ server và xóa bộ lọc tìm kiếm
+  const handleRefresh = async () => {
+    setSearchTerm('')
+    setColumnFilters({})
+    if (reference) {
+      const items = await useDataEngine.getState().queryEntity(reference, query)
+      if (items && items.length > 0) {
+        setRows(items)
+        showTableToast('Làm mới dữ liệu', `Đã tải lại ${items.length} bản ghi từ máy chủ`, 'info')
+      }
     }
   }
 
@@ -974,12 +1001,9 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
           <button
             type="button"
-            onClick={() => {
-              setSearchTerm('')
-              setColumnFilters({})
-            }}
-            title="Làm mới bộ lọc"
-            className="h-7 w-7 flex items-center justify-center rounded-md border border-slate-700 bg-slate-800 text-slate-400 hover:text-slate-100 transition-colors"
+            onClick={handleRefresh}
+            title="Làm mới dữ liệu & Đặt lại bộ lọc (Refresh)"
+            className="h-7 w-7 flex items-center justify-center rounded-md border border-slate-700 bg-slate-800 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/60 hover:bg-slate-800/90 transition-all cursor-pointer shadow-sm active:scale-95"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>

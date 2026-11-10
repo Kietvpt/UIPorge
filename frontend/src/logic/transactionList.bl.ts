@@ -56,21 +56,6 @@ export class TransactionListBL {
   }
 
   /**
-   * 🚢 Tải danh sách lô hàng từ Backend SQL Server theo OData filter (mặc định TypeId eq 1 cho FCL Import)
-   */
-  async loadTransactions(filter = 'TypeId eq 1'): Promise<TransactionItem[]> {
-    try {
-      const dataEngine = useDataEngine.getState()
-      const data = await dataEngine.queryEntity('Transaction', filter)
-      dataEngine.registerDataset('Transaction', data)
-      return data
-    } catch (err) {
-      console.error('[TransactionListBL] Lỗi tải danh sách Transaction từ SQL Server:', err)
-      return []
-    }
-  }
-
-  /**
    * 🔍 Mở màn hình chi tiết lô hàng (Tab hoặc Popup theo chuẩn Core C# ComponentGroupDetailBL)
    */
   openTransactionDetail(rowOrContext: any, mode: 'tab' | 'popup' = 'tab') {
@@ -119,7 +104,7 @@ export class TransactionListBL {
   async deleteTransaction(id: number | string): Promise<boolean> {
     const res = await useDataEngine.getState().deleteRecord('Transaction', id)
     if (res.success) {
-      await this.loadTransactions()
+      // await this.loadTransactions()
       return true
     }
     return false

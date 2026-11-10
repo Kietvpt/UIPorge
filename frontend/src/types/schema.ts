@@ -171,10 +171,28 @@ export interface SelectOption {
 // ============================================================
 
 export interface DataBindingConfig {
-  /** Tên thực thể liên kết, ví dụ: 'Customer', 'Order', 'Product' */
+  /** Tên thực thể liên kết, ví dụ: 'Customer', 'Order', 'Product', 'Terminal' */
   entityName?: string
+  /** Tên thực thể tham chiếu (Reference / RefName trong Core C#) */
+  refName?: string
   /** Tên trường dữ liệu trong Entity, ví dụ: 'FullName', 'TaxCode', 'Price' */
   fieldName?: string
+  /** Câu lệnh Query / OData Query / SQL Query để nạp dữ liệu động (Ảnh 2 Core C#) */
+  query?: string
+  /** Biểu thức nguồn dữ liệu (DataSource / OData Filter Expression, VD: '?$filter=Active eq true') */
+  dataSource?: string
+  /** Điều kiện lọc SQL bổ sung (SqlWhere) */
+  sqlWhere?: string
+  /** Danh sách cột chọn (SelectField / SqlSelect) */
+  selectField?: string
+  /** Quy tắc tự động gán dữ liệu sang các trường khác (PopulateField) */
+  populateField?: string
+  /** Tên trường khóa chính (IdField), mặc định là 'Id' */
+  idField?: string
+  /** Chuỗi định dạng hiển thị dữ liệu (FormatData, ví dụ: '{ShortName}') */
+  formatData?: string
+  /** Hàm biểu thức format JavaScript (FormatEntity) */
+  formatEntity?: string
   /** ID của nguồn dữ liệu liên kết nếu có */
   dataSourceId?: string
   /** Cho phép binding 2 chiều (Two-way data binding) */
