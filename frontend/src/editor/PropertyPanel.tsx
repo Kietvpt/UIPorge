@@ -40,6 +40,7 @@ import type {
   ComponentNode,
   TableColumn,
   FlexConfig,
+  DropdownColumnConfig,
 } from '@/types/schema'
 import { MOCK_ENTITY_CATALOGS } from '@/data/mockEntityCatalog'
 import { fetchEntityMetadata, EntityMetadata } from '@/core/services/metadataService'
@@ -50,7 +51,7 @@ interface PropertyPanelProps {
 
 export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
   const [activeTab, setActiveTab] = useState<
-    'layout' | 'children' | 'props' | 'styles' | 'events' | 'data' | 'validation' | 'permissions'
+    'layout' | 'children' | 'props' | 'styles' | 'events' | 'data' | 'validation' | 'permissions' | 'columns'
   >('layout')
   const [selectedColumnIndex, setSelectedColumnIndex] = useState<number | null>(null)
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false)
@@ -290,7 +291,22 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
     selectedNode.type === 'Container' ||
     selectedNode.type === 'Section' ||
     selectedNode.type === 'Tabs'
-  const effectiveTab = !isContainer && (activeTab === 'layout' || activeTab === 'children') ? 'props' : activeTab
+  const isLookupNode =
+    selectedNode.type === 'Select' ||
+    (selectedNode.type as string) === 'Dropdown' ||
+    selectedNode.type === 'Autocomplete' ||
+    selectedNode.type === 'SearchEntry'
+  const dropdownColumns: DropdownColumnConfig[] =
+    (selectedNode.props.dropdownColumns as DropdownColumnConfig[]) ||
+    selectedNode.dataBinding?.dropdownColumns ||
+    []
+
+  const effectiveTab =
+    !isContainer && (activeTab === 'layout' || activeTab === 'children')
+      ? 'props'
+      : !isLookupNode && activeTab === 'columns'
+      ? 'data'
+      : activeTab
   const layoutMode: LayoutMode = selectedNode.props.layoutMode || 'flex'
   const flexConfig: FlexConfig = (selectedNode.props.flexConfig as FlexConfig) || {
     direction: 'row',
@@ -414,6 +430,21 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
           <Database className="w-3.5 h-3.5" />
           Data
         </button>
+
+        {isLookupNode && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('columns')}
+            className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'columns'
+              ? 'border-emerald-500 text-emerald-400 bg-slate-800/40 font-bold'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            title="Cấu hình danh sách cột hiển thị trong Dropdown (Multi-Column Select)"
+          >
+            <TableIcon className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Cột Dropdown ({dropdownColumns.length})</span>
+          </button>
+        )}
 
         <button
           onClick={() => setActiveTab('validation')}
@@ -2132,7 +2163,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                     <input
                       type="text"
                       value={binding.formatData || (nodeProps.formatData as string) || ''}
-                      placeholder="VD: {ShortName} hoặc {Code} - {Name}"
+                      placeholder="VD: {Vendor.FullName} - {Vendor.Address} hoặc {ShortName}"
                       onChange={(e) => {
                         const fd = e.target.value
                         updateComponentDataBinding(selectedNode.id, { formatData: fd })
@@ -2140,6 +2171,39 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                       }}
                       className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500"
                     />
+                  </div>
+
+                  {/* Box tóm tắt Cột Hiển Thị Dropdown & nút cấu hình */}
+                  <div className="p-3 bg-emerald-950/20 border border-emerald-500/30 rounded-xl space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-emerald-300 flex items-center gap-1.5">
+                        <TableIcon className="w-3.5 h-3.5 text-emerald-400" />
+                        Cột Hiển Thị Bảng Chọn ({dropdownColumns.length} cột)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('columns')}
+                        className="text-[10px] px-2 py-0.5 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 rounded font-semibold transition-colors cursor-pointer"
+                      >
+                        Cấu hình cột →
+                      </button>
+                    </div>
+                    {dropdownColumns.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {dropdownColumns.map((col, idx) => (
+                          <span
+                            key={idx}
+                            className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300 font-mono"
+                          >
+                            {col.title} ({col.key})
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-[10px] text-slate-400 italic">
+                        Chưa cấu hình cột riêng (sẽ tự động lấy các cột mặc định của thực thể).
+                      </p>
+                    )}
                   </div>
                 </>
               )}
@@ -2241,6 +2305,329 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                   </p>
                 </div>
               )}
+            </div>
+          )
+        })()}
+
+        {/* ── TAB 5B: CỘT HIỂN THỊ DROPDOWN (MULTI-COLUMN SELECT) ── */}
+        {effectiveTab === 'columns' && isLookupNode && (() => {
+          const binding = selectedNode.dataBinding || {}
+          const nodeProps = selectedNode.props || {}
+
+          // Lấy thông tin thực thể tham chiếu
+          const combinedEntities: { name: string; displayName: string; fields: { name: string; displayName: string; dataType: string }[] }[] = []
+          liveEntities.forEach((ent) => {
+            combinedEntities.push({
+              name: ent.name,
+              displayName: ent.displayName || ent.name,
+              fields: ent.columns.map((c) => ({
+                name: c.name,
+                displayName: c.displayName || c.name,
+                dataType: c.dataType,
+              })),
+            })
+          })
+          MOCK_ENTITY_CATALOGS.forEach((m) => {
+            if (!combinedEntities.some((x) => x.name.toLowerCase() === m.name.toLowerCase())) {
+              combinedEntities.push({
+                name: m.name,
+                displayName: m.displayName,
+                fields: m.fields.map((f) => ({
+                  name: f.name,
+                  displayName: f.displayName,
+                  dataType: f.dataType,
+                })),
+              })
+            }
+          })
+
+          const refEntityName = binding.entityName || (nodeProps.reference as string) || (nodeProps.refName as string) || ''
+          const selectedEntity = combinedEntities.find((e) => e.name.toLowerCase() === refEntityName.toLowerCase())
+          const availableFields = selectedEntity ? selectedEntity.fields : []
+
+          const currentFormatData = binding.formatData || (nodeProps.formatData as string) || ''
+
+          const saveColumns = (nextCols: DropdownColumnConfig[]) => {
+            updateComponentProps(selectedNode.id, { dropdownColumns: nextCols })
+            updateComponentDataBinding(selectedNode.id, { dropdownColumns: nextCols })
+          }
+
+          const handleAddColumn = () => {
+            const nextCols: DropdownColumnConfig[] = [
+              ...dropdownColumns,
+              {
+                key: availableFields[dropdownColumns.length]?.name || `col${dropdownColumns.length + 1}`,
+                title: availableFields[dropdownColumns.length]?.displayName || `Cột ${dropdownColumns.length + 1}`,
+                width: '50%',
+                align: 'left',
+              },
+            ]
+            saveColumns(nextCols)
+          }
+
+          const handleAutoPopulateColumns = () => {
+            if (!selectedEntity || selectedEntity.fields.length === 0) return
+            const preferredNames = ['code', 'fullname', 'name', 'address', 'taxcode', 'phone', 'shortName', 'portcode', 'portname']
+            let picked = selectedEntity.fields.filter((f) =>
+              preferredNames.includes(f.name.toLowerCase())
+            )
+            if (picked.length === 0) {
+              picked = selectedEntity.fields.slice(0, 3)
+            } else {
+              picked = picked.slice(0, 4)
+            }
+            const nextCols: DropdownColumnConfig[] = picked.map((f) => ({
+              key: f.name,
+              title: f.displayName || f.name,
+              width: `${Math.floor(100 / picked.length)}%`,
+              align: 'left',
+            }))
+            saveColumns(nextCols)
+          }
+
+          const handleMoveCol = (idx: number, dir: -1 | 1) => {
+            const targetIdx = idx + dir
+            if (targetIdx < 0 || targetIdx >= dropdownColumns.length) return
+            const nextCols = [...dropdownColumns]
+            const temp = nextCols[idx]
+            nextCols[idx] = nextCols[targetIdx]
+            nextCols[targetIdx] = temp
+            saveColumns(nextCols)
+          }
+
+          return (
+            <div className="space-y-4">
+              {/* Banner giải thích */}
+              <div className="p-3 bg-emerald-950/20 border border-emerald-500/30 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                    <TableIcon className="w-4 h-4 text-emerald-400" />
+                    <span>Cột Hiển Thị Bảng Chọn Dropdown</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-emerald-400">
+                    {refEntityName ? `Ref: ${refEntityName}` : 'Chưa chọn Ref'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Thiết lập các cột xuất hiện khi bấm mở ô Select (vd: Cột Họ Tên và Cột Địa Chỉ). Dữ liệu được truy vấn từ bảng tham chiếu theo bộ lọc <span className="font-mono text-amber-300">DATASOURCE</span>.
+                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleAddColumn}
+                    className="flex-1 py-1.5 px-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Thêm Cột Mới</span>
+                  </button>
+                  {selectedEntity && (
+                    <button
+                      type="button"
+                      onClick={handleAutoPopulateColumns}
+                      className="py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      title={`Tự động lấy cột gợi ý từ thực thể ${selectedEntity.name}`}
+                    >
+                      <Zap className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Tự động nạp</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Danh sách cột đã cấu hình */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    Danh Sách Cột ({dropdownColumns.length})
+                  </label>
+                </div>
+
+                {dropdownColumns.length === 0 ? (
+                  <div className="p-4 border border-dashed border-slate-700 rounded-xl text-center space-y-1.5 bg-slate-950/40">
+                    <p className="text-xs text-slate-400">Chưa có cột nào được thiết lập.</p>
+                    <p className="text-[10px] text-slate-500">
+                      Bấm <strong>"Thêm Cột Mới"</strong> để thiết lập cột hiển thị (vd: <span className="font-mono text-cyan-300">FullName</span>, <span className="font-mono text-cyan-300">Address</span>).
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5">
+                    {dropdownColumns.map((col, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2.5 bg-slate-950/90 border border-slate-800 hover:border-slate-700 rounded-xl space-y-2"
+                      >
+                        <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                          <span className="text-[10px] font-bold text-emerald-400 font-mono">
+                            CỘT #{idx + 1}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleMoveCol(idx, -1)}
+                              disabled={idx === 0}
+                              className="p-1 text-slate-400 hover:text-slate-200 disabled:opacity-30 cursor-pointer"
+                              title="Di chuyển lên"
+                            >
+                              <ChevronUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveCol(idx, 1)}
+                              disabled={idx === dropdownColumns.length - 1}
+                              className="p-1 text-slate-400 hover:text-slate-200 disabled:opacity-30 cursor-pointer"
+                              title="Di chuyển xuống"
+                            >
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = dropdownColumns.filter((_, i) => i !== idx)
+                                saveColumns(next)
+                              }}
+                              className="p-1 text-slate-500 hover:text-red-400 cursor-pointer"
+                              title="Xóa cột"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-[10px] text-slate-400 block mb-0.5">
+                              Tên Trường (Key)
+                            </label>
+                            <input
+                              type="text"
+                              value={col.key}
+                              list={`dropdown-col-fields-${idx}`}
+                              placeholder="vd: FullName"
+                              onChange={(e) => {
+                                const next = [...dropdownColumns]
+                                next[idx] = { ...next[idx], key: e.target.value }
+                                saveColumns(next)
+                              }}
+                              className="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs font-mono text-cyan-300 focus:outline-none focus:border-emerald-500"
+                            />
+                            <datalist id={`dropdown-col-fields-${idx}`}>
+                              {availableFields.map((f) => (
+                                <option key={f.name} value={f.name}>
+                                  {f.displayName} ({f.name})
+                                </option>
+                              ))}
+                            </datalist>
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-slate-400 block mb-0.5">
+                              Tiêu Đề Cột (Title)
+                            </label>
+                            <input
+                              type="text"
+                              value={col.title}
+                              placeholder="vd: Tên nhà cung cấp"
+                              onChange={(e) => {
+                                const next = [...dropdownColumns]
+                                next[idx] = { ...next[idx], title: e.target.value }
+                                saveColumns(next)
+                              }}
+                              className="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-[10px] text-slate-400 block mb-0.5">
+                              Độ rộng (Width)
+                            </label>
+                            <input
+                              type="text"
+                              value={col.width || '50%'}
+                              placeholder="vd: 50% hoặc 180px"
+                              onChange={(e) => {
+                                const next = [...dropdownColumns]
+                                next[idx] = { ...next[idx], width: e.target.value }
+                                saveColumns(next)
+                              }}
+                              className="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-slate-400 block mb-0.5">
+                              Căn lề (Align)
+                            </label>
+                            <select
+                              value={col.align || 'left'}
+                              onChange={(e) => {
+                                const next = [...dropdownColumns]
+                                next[idx] = { ...next[idx], align: e.target.value as 'left' | 'center' | 'right' }
+                                saveColumns(next)
+                              }}
+                              className="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer"
+                            >
+                              <option value="left">Trái (Left)</option>
+                              <option value="center">Giữa (Center)</option>
+                              <option value="right">Phải (Right)</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Định dạng hiển thị FormatData sau khi chọn */}
+              <div className="p-3 bg-slate-950/90 border border-slate-800 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                    Định Dạng Hiển Thị (FormatData)
+                  </label>
+                  <span className="text-[10px] text-emerald-400 font-mono">Template</span>
+                </div>
+                <p className="text-[10px] text-slate-400">
+                  Quy định cách hiển thị trên ô Select sau khi người dùng chọn xong một dòng. Hỗ trợ tên trường trực tiếp hoặc prefix thực thể.
+                </p>
+                <input
+                  type="text"
+                  value={currentFormatData}
+                  placeholder="VD: {Vendor.FullName} - {Vendor.Address}"
+                  onChange={(e) => {
+                    const fd = e.target.value
+                    updateComponentDataBinding(selectedNode.id, { formatData: fd })
+                    updateComponentProps(selectedNode.id, { formatData: fd })
+                  }}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500"
+                />
+
+                {dropdownColumns.length > 0 && (
+                  <div className="space-y-1 pt-1">
+                    <span className="text-[10px] text-slate-500 block">Chèn nhanh vào FormatData:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {dropdownColumns.map((col, idx) => {
+                        const token = refEntityName ? `{${refEntityName}.${col.key}}` : `{${col.key}}`
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              const nextFd = currentFormatData
+                                ? `${currentFormatData} - ${token}`
+                                : token
+                              updateComponentDataBinding(selectedNode.id, { formatData: nextFd })
+                              updateComponentProps(selectedNode.id, { formatData: nextFd })
+                            }}
+                            className="px-1.5 py-0.5 bg-slate-800 hover:bg-emerald-900/40 text-emerald-300 border border-slate-700 hover:border-emerald-500/40 rounded text-[10px] font-mono cursor-pointer transition-colors"
+                          >
+                            + {token}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )
         })()}

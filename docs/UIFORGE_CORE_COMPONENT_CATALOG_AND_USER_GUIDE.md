@@ -183,19 +183,25 @@ export interface TableColumn {
   - `thousandsSeparator`: Hiển thị dấu phân cách hàng nghìn (VD: `1,000,000`).
   - `min` / `max`: Giới hạn giá trị nhỏ nhất và lớn nhất.
 
-#### 5.3. Lịch Chọn Ngày: `ForgeDatePicker` (`DatePicker`)
-- **Chức năng**: Nhập hoặc chọn ngày tháng từ Popup Lịch chuẩn định dạng `DD/MM/YYYY`.
-- **Thuộc tính chính**:
+#### 5.3. Lịch Chọn Ngày: `ForgeDatePicker` & `EnterpriseDatePicker` (`DatePicker`)
+- **Chức năng**: Nhập trực tiếp hoặc chọn ngày tháng từ Popup Lịch (Portal z-index 99999) chuẩn định dạng `DD/MM/YYYY`, đồng bộ 100% cơ chế giữa Form độc lập và ô chỉnh sửa trong `GridView`/`GridPolicy`.
+- **Thuộc tính chính & Tính năng**:
   - `format`: Định dạng ngày (mặc định `'DD/MM/YYYY'`).
   - `minDate` / `maxDate`: Giới hạn khoảng thời gian hợp lệ.
+  - Chọn nhanh Tháng / Năm qua dropdown tích hợp ngay trên Popover Lịch, nút **Hôm nay** & **Xóa ngày**.
+  - Phím tắt: `Enter` (chọn), `F4` / `Alt+Down` (mở lịch), `Esc` (đóng).
   - Hỗ trợ kiểm tra tuần tự ngày (`DateSequence`: ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc).
 
-#### 5.4. Dropdown Lựa Chọn: `ForgeSelect` (`Select`)
-- **Chức năng**: Menu thả xuống chọn 1 mục từ danh sách cố định hoặc danh mục tham chiếu.
+#### 5.4. Dropdown Đa Cột Enterprise: `ForgeSelect` & `EnterpriseSelect` (`Select` / `Dropdown`)
+- **Chức năng**: Ô chọn danh mục Enterprise nâng cao (thay thế hoàn toàn `<select>` đơn cột truyền thống), hỗ trợ hiển thị danh sách dạng **bảng nhiều cột (Multi-Column Table Popover)**, đồng bộ hoàn toàn giữa Component trên Form và Cột kiểu `Select`/`Dropdown` trong `GridPolicy`.
 - **Thuộc tính chính**:
-  - `options`: Mảng `{ value: any, label: string }`.
-  - `reference`: Tên bảng tham chiếu tự động nạp từ API.
-  - `cascadeFrom`: Tên trường cha để kích hoạt **Cascading Dropdown** (chọn Tỉnh -> nạp Huyện).
+  - `reference`: Tên bảng/thực thể tham chiếu tự động truy vấn (VD: `Vendor`, `Terminal`, `Customer`).
+  - `dataSource`: Điều kiện lọc truy vấn danh mục (hỗ trợ cả cú pháp OData `Active eq true` lẫn SQL đơn giản `active = true`).
+  - `dropdownColumns`: Mảng cấu hình các cột hiển thị khi mở popup (`{ key, title, width, align }`). Thiết lập trực quan ngay trên Tab **"Cột Dropdown"** của `PropertyPanel` hoặc Tab **"CỘT DROPDOWN"** trong `ColumnPropertiesModal`.
+  - `formatData`: Chuỗi nội suy định dạng hiển thị trên ô Select sau khi chọn xong. Hỗ trợ prefix thực thể (VD: `{Vendor.FullName} - {Vendor.Address}` hoặc `{ShortName}`).
+  - `populateField`: Tự động điền nhiều trường/cột khác trên Form hoặc dòng GridView theo quy tắc `TargetField = SourceField`.
+  - `options`: Mảng `{ value, label }` (nếu dùng danh sách tĩnh không tham chiếu API).
+  - Tìm kiếm đa cột tức thì (Quick Search Input), điều hướng phím mũi tên `↑`/`↓` + `Enter`.
 
 #### 5.5. Hộp Kiểm: `ForgeCheckbox` (`Checkbox`)
 - **Chức năng**: Bật/tắt trạng thái Boolean (Đúng / Sai, Hoạt động / Tạm dừng).
@@ -239,7 +245,7 @@ Hệ thống UIForge hỗ trợ đầy đủ các tham số liên kết dữ li�
 
 Tab **Data** trên thanh `PropertyPanel` được thiết kế ngữ cảnh thông minh:
 - **Bảng Dữ Liệu (`Table` / `GridView`)**: Chỉ hiển thị `Reference / RefName`, `DATASOURCE` (Query OData), và `SqlWhere`. Không hiển thị `FieldName`, `PopulateField`, hay `Formatter`.
-- **Tra Cứu Danh Mục (`Select` / `Dropdown` / `SearchEntry` / `Autocomplete`)**: Hiển thị `FieldName` (**nhập tay tự do**), `Reference / RefName`, `DATASOURCE` (bộ lọc danh mục), `PopulateField` (tự động điền), `SelectField` & `IdField`, `FormatData`.
+- **Tra Cứu Danh Mục (`Select` / `Dropdown` / `SearchEntry` / `Autocomplete`)**: Hiển thị `FieldName` (**nhập tay tự do**), `Reference / RefName`, `DATASOURCE` (bộ lọc danh mục như `active = true` hoặc `Active eq true`), `PopulateField` (tự động điền), `SelectField` & `IdField`, `FormatData`, và mở khóa thêm Tab **"Cột Dropdown"** để thiết lập danh sách cột đa chiều (`dropdownColumns`).
 - **Ô Nhập Liệu (`TextBox` / `Number` / `DatePicker` / `Checkbox` / `Textarea`)**: Hiển thị `FieldName` (**nhập tay tự do**), `Two-Way Binding`, `Formatter` / `FormatData`.
 - **Khung Bố Cục (`Section` / `Container` / `Button`)**: Hiển thị thông báo nhẹ và nút mở Modal nếu cần cấu hình nâng cao.
 
@@ -254,7 +260,8 @@ Tab **Data** trên thanh `PropertyPanel` được thiết kế ngữ cảnh thô
 | **Điều Kiện Lọc SQL (SqlWhere)** | `sqlWhere` | Điều kiện mệnh đề `WHERE` của SQL trực tiếp (tương thích Core C# `GuiInfo.SqlWhere`). |
 | **Khóa Chính (IdField)** | `idField` | Tên trường khóa chính làm giá trị nhận dạng (mặc định: `id` hoặc `Id`). |
 | **Cột Chọn (SelectField)** | `selectField` | Tên trường làm nhãn hiển thị trong danh sách lựa chọn (mặc định: `name` hoặc `code`). |
-| **Chuỗi Định Dạng (FormatData)** | `formatData` | Mẫu hiển thị chuỗi dữ liệu (VD: `{ShortName}` hoặc `{Code} - {Name}`). |
+| **Cột Hiển Thị Dropdown** | `dropdownColumns` | Mảng cấu hình các cột xuất hiện trong bảng chọn Multi-Column Select (VD: `FullName`, `Address`). Hỗ trợ cấu hình cho cả Component `Select` lẫn cột `Select` trong `GridPolicy`. |
+| **Chuỗi Định Dạng (FormatData)** | `formatData` | Mẫu hiển thị chuỗi dữ liệu sau khi chọn (VD: `{Vendor.FullName} - {Vendor.Address}` hoặc `{ShortName}`). Tự động giải mã prefix Entity và matching không phân biệt hoa thường. |
 | **Nút "🔍 Mở Toàn Bộ Thông Số Core"** | Modal Core C# | Nút bấm mở hộp thoại đầy đủ toàn bộ hơn 30 thuộc tính chuẩn Core C#. |
 
 ---
