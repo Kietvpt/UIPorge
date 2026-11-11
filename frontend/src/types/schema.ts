@@ -2,6 +2,8 @@
 // Core types for the UIForge component schema
 // ============================================================
 
+import type { DropdownColumnConfig } from './gridPolicy'
+
 export type ComponentType =
   | 'Button'
   | 'TextBox'
@@ -117,6 +119,15 @@ export interface ComponentProps {
   pageSize?: number
   // Select
   options?: SelectOption[]
+  dropdownColumns?: DropdownColumnConfig[]
+  formatData?: string
+  formatEntity?: string
+  reference?: string
+  refName?: string
+  dataSource?: string
+  idField?: string
+  selectField?: string
+  populateField?: string
   // Section / Container layout settings
   title?: string
   boxShadow?: boolean
@@ -128,7 +139,7 @@ export interface ComponentProps {
   [key: string]: unknown
 }
 
-export type { GridColumnPolicy, ColumnComponentType, ColumnAlign, ColumnFreeze, SummaryType } from './gridPolicy'
+export type { GridColumnPolicy, ColumnComponentType, ColumnAlign, ColumnFreeze, SummaryType, DropdownColumnConfig } from './gridPolicy'
 
 export interface TableColumn extends Partial<import('./gridPolicy').GridColumnPolicy> {
   key: string
@@ -149,6 +160,13 @@ export interface TableColumn extends Partial<import('./gridPolicy').GridColumnPo
   align?: 'left' | 'center' | 'right' // tương ứng TextAlign trong GridPolicy
   format?: 'currency_vnd' | 'currency_usd' | 'date_dmy' | 'number' | string // tương ứng FormatCell
   formatCell?: string
+  formatData?: string // Chuỗi định dạng hiển thị cho Select / Dropdown cell (vd: {Vendor.FullName} - {Vendor.Address})
+  dropdownColumns?: DropdownColumnConfig[] // Cấu hình các cột hiển thị trong popup dropdown
+  reference?: string // Bảng thực thể tham chiếu (vd: Vendor, Terminal)
+  refName?: string
+  dataSource?: string // OData filter expression (vd: Active eq true)
+  idField?: string // Trường khóa chính
+  selectField?: string // Trường hiển thị
   action?: string
   events?: ComponentEvent[] | string
   precision?: number // tương ứng Precision trong GridPolicy
@@ -164,6 +182,7 @@ export interface TableColumn extends Partial<import('./gridPolicy').GridColumnPo
 export interface SelectOption {
   value: string
   label: string
+  rawItem?: Record<string, any>
 }
 
 // ============================================================
@@ -171,10 +190,30 @@ export interface SelectOption {
 // ============================================================
 
 export interface DataBindingConfig {
-  /** Tên thực thể liên kết, ví dụ: 'Customer', 'Order', 'Product' */
+  /** Tên thực thể liên kết, ví dụ: 'Customer', 'Order', 'Product', 'Terminal' */
   entityName?: string
+  /** Tên thực thể tham chiếu (Reference / RefName trong Core C#) */
+  refName?: string
   /** Tên trường dữ liệu trong Entity, ví dụ: 'FullName', 'TaxCode', 'Price' */
   fieldName?: string
+  /** Câu lệnh Query / OData Query / SQL Query để nạp dữ liệu động (Ảnh 2 Core C#) */
+  query?: string
+  /** Biểu thức nguồn dữ liệu (DataSource / OData Filter Expression, VD: '?$filter=Active eq true') */
+  dataSource?: string
+  /** Điều kiện lọc SQL bổ sung (SqlWhere) */
+  sqlWhere?: string
+  /** Danh sách cột chọn (SelectField / SqlSelect) */
+  selectField?: string
+  /** Quy tắc tự động gán dữ liệu sang các trường khác (PopulateField) */
+  populateField?: string
+  /** Tên trường khóa chính (IdField), mặc định là 'Id' */
+  idField?: string
+  /** Chuỗi định dạng hiển thị dữ liệu (FormatData, ví dụ: '{ShortName}') */
+  formatData?: string
+  /** Cấu hình các cột hiển thị trong Multi-Column Dropdown */
+  dropdownColumns?: DropdownColumnConfig[]
+  /** Hàm biểu thức format JavaScript (FormatEntity) */
+  formatEntity?: string
   /** ID của nguồn dữ liệu liên kết nếu có */
   dataSourceId?: string
   /** Cho phép binding 2 chiều (Two-way data binding) */

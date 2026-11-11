@@ -21,6 +21,14 @@ export type SummaryType = 'none' | 'sum' | 'count' | 'avg' | 'min' | 'max';
 export interface SelectOption {
   value: string;
   label: string;
+  rawItem?: Record<string, any>;
+}
+
+export interface DropdownColumnConfig {
+  key: string;
+  title: string;
+  width?: string;
+  align?: 'left' | 'center' | 'right';
 }
 
 export interface GridColumnPolicy {
@@ -52,6 +60,8 @@ export interface GridColumnPolicy {
   reference?: string;
   groupName?: string;
   formatCell?: string;                  // vd: {Name}
+  formatData?: string;                  // vd: {FullName} - {Address}
+  dropdownColumns?: DropdownColumnConfig[]; // Danh sách cột cho Dropdown table
   formatRow?: string;
   width?: string | number;              // vd: 162px
   minWidth?: string | number;

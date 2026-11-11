@@ -2,6 +2,7 @@ import React from 'react'
 import type { TableColumn } from '@/types/schema'
 import { Calendar, ExternalLink } from 'lucide-react'
 import { useDataEngine } from '@/core/engines/dataEngine'
+import { EnterpriseDatePicker } from '../common/EnterpriseDatePicker'
 
 export interface GridCellComponentProps {
   column: TableColumn
@@ -177,13 +178,14 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
   if (column.componentType === 'Select' || (column.componentType as string) === 'Dropdown') {
     // 100% Generic & Domain-Agnostic:
     // 1. Ưu tiên options được cấu hình trong Column Metadata (column.options)
-    // 2. Tra cứu động từ DataEngine nếu cột có cấu hình reference (dataset liên kết)
+    // 2. Tra cứu động từ DataEngine nếu cột có cấu hình reference / refName (dataset liên kết)
     let options = column.options || []
-    if (options.length === 0 && (column as any).reference) {
-      const refDataset = useDataEngine.getState().getDataset((column as any).reference)
+    const refTarget = (column as any).reference || (column as any).refName
+    if (options.length === 0 && refTarget) {
+      const refDataset = useDataEngine.getState().getDataset(refTarget)
       if (Array.isArray(refDataset) && refDataset.length > 0) {
-        const valKey = (column as any).valueField || 'code' || 'id'
-        const labelKey = (column as any).displayField || 'name' || 'code'
+        const valKey = (column as any).valueField || (column as any).idField || 'code' || 'id'
+        const labelKey = (column as any).displayField || (column as any).selectField || 'name' || 'code'
         options = refDataset.map((item: any) => ({
           value: String(item[valKey] ?? item.code ?? item.id ?? ''),
           label: String(item[labelKey] ?? item.name ?? item[valKey] ?? ''),
@@ -216,20 +218,17 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
   // ── 6. DATEPICKER COMPONENT (EDITABLE) ──
   if (column.componentType === 'DatePicker' || (column.componentType as string) === 'Datepicker') {
     return (
-      <div className="relative flex items-center w-full" title={error || undefined} {...cellDataProps}>
-        <input
-          type="text"
+      <div className="w-full" title={error || undefined} {...cellDataProps}>
+        <EnterpriseDatePicker
+          isGridCell={true}
           value={displayValue}
-          placeholder="DD/MM/YYYY"
           disabled={column.disabled}
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) => onChange(e.target.value)}
+          placeholder="DD/MM/YYYY"
+          error={error || undefined}
+          onChange={(newDate) => onChange(newDate)}
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
-          {...cellDataProps}
-          className={`w-full h-7 pl-2.5 pr-7 py-0.5 rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 font-mono text-xs border ${errorBorderClass} focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed`}
         />
-        <Calendar className="w-3.5 h-3.5 text-emerald-400 absolute right-2 pointer-events-none" />
       </div>
     )
   }

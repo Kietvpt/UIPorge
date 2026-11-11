@@ -154,10 +154,12 @@ namespace UIForge.Core.Controllers
             var rawList = (IEnumerable)resultProp!.GetValue(task)!;
 
             var resultList = new List<object>();
+            bool specifiesActiveFilter = !string.IsNullOrWhiteSpace(filterExpr) &&
+                                         filterExpr.Contains("active", StringComparison.OrdinalIgnoreCase);
 
             foreach (var item in rawList)
             {
-                if (isBaseEntity && item is BaseEntity b && !b.Active)
+                if (!specifiesActiveFilter && isBaseEntity && item is BaseEntity b && !b.Active)
                     continue;
 
                 if (!string.IsNullOrWhiteSpace(filterExpr) && !MatchesFilter(item, filterExpr))
@@ -430,24 +432,37 @@ namespace UIForge.Core.Controllers
 
         private static bool MatchesFilter(object item, string filterExpr)
         {
-            var match = Regex.Match(
-                filterExpr,
-                @"(\w+)\s+(eq|ne)\s+('?[^']+'?)",
-                RegexOptions.IgnoreCase
-            );
+            if (string.IsNullOrWhiteSpace(filterExpr)) return true;
 
-            if (match.Success)
+            var parts = Regex.Split(filterExpr, @"\s+and\s+", RegexOptions.IgnoreCase);
+            foreach (var part in parts)
             {
-                var fieldName = match.Groups[1].Value;
-                var op = match.Groups[2].Value.ToLowerInvariant();
-                var rawVal = match.Groups[3].Value.Trim('\'');
+                var trimmed = part.Trim();
+                if (string.IsNullOrEmpty(trimmed)) continue;
 
-                var prop = item.GetType().GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-                if (prop != null)
+                trimmed = Regex.Replace(trimmed, @"^\$filter\s*=\s*", "", RegexOptions.IgnoreCase).Trim();
+
+                var match = Regex.Match(
+                    trimmed,
+                    @"^(\w+)(?:\s+(eq|ne)\s+|\s*(==|=|!=)\s*)('?[^']+'?)$",
+                    RegexOptions.IgnoreCase
+                );
+
+                if (match.Success)
                 {
-                    var propVal = prop.GetValue(item)?.ToString() ?? string.Empty;
-                    var equals = string.Equals(propVal, rawVal, StringComparison.OrdinalIgnoreCase);
-                    return op == "eq" ? equals : !equals;
+                    var fieldName = match.Groups[1].Value;
+                    var op = (!string.IsNullOrEmpty(match.Groups[2].Value) ? match.Groups[2].Value : match.Groups[3].Value).ToLowerInvariant();
+                    var rawVal = match.Groups[4].Value.Trim('\'', '"', ' ');
+
+                    var prop = item.GetType().GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                    if (prop != null)
+                    {
+                        var propVal = prop.GetValue(item)?.ToString() ?? string.Empty;
+                        var equals = string.Equals(propVal, rawVal, StringComparison.OrdinalIgnoreCase);
+                        bool isNeg = (op == "ne" || op == "!=");
+                        bool matched = isNeg ? !equals : equals;
+                        if (!matched) return false;
+                    }
                 }
             }
             return true;

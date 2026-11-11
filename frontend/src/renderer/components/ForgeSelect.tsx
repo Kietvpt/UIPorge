@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import type { ComponentProps } from './types'
-import { ChevronDown } from 'lucide-react'
+import type { DropdownColumnConfig, SelectOption } from '@/types/schema'
 import { triggerComponentEvent } from '@/core/engines/eventRunner'
 import { useEditorStore } from '@/store/editorStore'
-import { useDataEngine, SelectOption, extractFieldValue } from '@/core/engines/dataEngine'
+import { useDataEngine, extractFieldValue } from '@/core/engines/dataEngine'
 import { FormFieldWrapper } from './FormFieldWrapper'
+import { EnterpriseSelect } from './common/EnterpriseSelect'
 
 /**
- * 📦 ForgeSelect: Generic Dropdown Component
- * - 100% Trung lập (Domain-Agnostic): Phục vụ mọi ngành nghề.
- * - Hỗ trợ Reference & Query (OData): Tự động truy vấn danh mục theo metadata từ Database.
+ * 📦 ForgeSelect: Generic Enterprise Multi-Column Dropdown Component
+ * - 100% Trung lập (Domain-Agnostic): Phục vụ mọi ngành nghề kinh doanh.
+ * - Hỗ trợ Reference & DataSource (OData/SQL): Tự động truy vấn danh mục theo metadata từ Database.
+ * - Hỗ trợ Cột Hiển Thị Đa Cột (Dropdown Columns): Tra cứu thông tin đầy đủ, rõ ràng.
+ * - Hỗ trợ Định Dạng Hiển Thị (FormatData): Ví dụ: {Vendor.FullName} - {Vendor.Address}.
  * - Hỗ trợ Populate Field: Tự động phân tích quy tắc "TargetField = SourceField" để điền dữ liệu.
  */
 export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
@@ -27,39 +30,66 @@ export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const fieldName = String(node.dataBinding?.fieldName || node.props.name || node.id)
   const engineVal = useDataEngine((s) => extractFieldValue(s, formId, fieldName, undefined))
   const setFieldValue = useDataEngine((s) => s.setFieldValue)
-  const applyPopulate = useDataEngine((s) => s.applyPopulate)
-  const queryReference = useDataEngine((s) => s.queryReference)
 
   const currentValue = engineVal !== undefined ? engineVal : (props.value ?? '')
-  const [dynamicOptions, setDynamicOptions] = useState<SelectOption[]>([])
 
-  // Tải danh sách Options từ Reference (OData) nếu được cấu hình
-  useEffect(() => {
-    let isMounted = true
-    const reference = props.reference as string | undefined
-    const query = props.query as string | undefined
-    const idField = (props.idField as string) || 'id'
-    const textField = (props.textField as string) || (props.fieldName as string) || 'name'
+  // ── CẤU HÌNH REFERENCE, DATASOURCE, MULTI-COLUMN & POPULATE CHUẨN CORE C# ──
+  const reference =
+    (props.reference as string) ||
+    (props.refName as string) ||
+    (node.dataBinding?.refName as string) ||
+    (node.dataBinding?.entityName as string) ||
+    ''
 
-    if (reference) {
-      queryReference(reference, query, idField, textField).then((res) => {
-        if (isMounted) {
-          setDynamicOptions(res)
-        }
+  const dataSource =
+    (props.dataSource as string) ||
+    (node.dataBinding?.dataSource as string) ||
+    (props.query as string) ||
+    (node.dataBinding?.query as string) ||
+    (props.sqlWhere as string) ||
+    (node.dataBinding?.sqlWhere as string) ||
+    ''
+
+  const idField =
+    (props.idField as string) ||
+    (node.dataBinding?.idField as string) ||
+    'id'
+
+  const selectField =
+    (props.textField as string) ||
+    (props.selectField as string) ||
+    (node.dataBinding?.selectField as string) ||
+    'name'
+
+  const dropdownColumns =
+    (props.dropdownColumns as DropdownColumnConfig[]) ||
+    node.dataBinding?.dropdownColumns
+
+  const formatData =
+    (props.formatData as string) ||
+    (node.dataBinding?.formatData as string) ||
+    ''
+
+  const populateRule =
+    (props.populateField as string) ||
+    (node.dataBinding?.populateField as string) ||
+    ''
+
+  const options = (props.options as SelectOption[]) || []
+  const hasError = Boolean(props.validationError)
+
+  const handleChange = (nextVal: any, selectedItem?: any) => {
+    setFieldValue(formId, fieldName, nextVal)
+
+    if (!isEditing) {
+      triggerComponentEvent(node.events, 'change', props.label || 'Chọn mục', blFileName, {
+        componentId: node.id,
+        fieldName,
+        value: nextVal,
+        selectedItem,
       })
     }
-    return () => {
-      isMounted = false
-    }
-  }, [props.reference, props.query, props.idField, props.textField, queryReference])
-
-  // Sử dụng dynamicOptions nếu có, ngược lại dùng props.options tĩnh
-  const options: SelectOption[] =
-    dynamicOptions.length > 0
-      ? dynamicOptions
-      : (props.options as SelectOption[]) || []
-
-  const hasError = Boolean(props.validationError)
+  }
 
   return (
     <FormFieldWrapper
@@ -77,45 +107,22 @@ export const ForgeSelect: React.FC<ComponentProps> = ({ node, isEditing }) => {
       }}
     >
       <div className="relative w-full">
-        <select
-          disabled={props.disabled}
+        <EnterpriseSelect
           value={currentValue}
-          className={`w-full px-3 py-1.5 pr-8 bg-slate-900 border rounded-lg text-xs text-slate-100 transition-all appearance-none cursor-pointer disabled:opacity-50 ${
-            hasError
-              ? 'border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none'
-              : 'border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
-          }`}
-          onChange={(e) => {
-            const nextVal = e.target.value
-            setFieldValue(formId, fieldName, nextVal)
-
-            // Tìm rawItem của option được chọn để thực thi Populate
-            const matchedOpt = options.find((opt) => String(opt.value) === String(nextVal))
-            const rawItem = matchedOpt?.rawItem || matchedOpt
-
-            // Thực thi cơ chế Populate Field chuẩn Core C# (Ảnh Modal: Populate field)
-            if (props.populateField && typeof props.populateField === 'string') {
-              applyPopulate(formId, props.populateField, rawItem)
-            }
-
-            if (!isEditing) {
-              triggerComponentEvent(node.events, 'change', props.label || 'Chọn mục', blFileName, {
-                componentId: node.id,
-                fieldName,
-                value: nextVal,
-                selectedItem: rawItem,
-              })
-            }
-          }}
-        >
-          <option value="">-- Chọn --</option>
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-100 py-1">
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          onChange={handleChange}
+          options={options}
+          reference={reference}
+          dataSource={dataSource}
+          idField={idField}
+          selectField={selectField}
+          dropdownColumns={dropdownColumns}
+          formatData={formatData}
+          populateField={populateRule}
+          formId={formId}
+          placeholder={props.placeholder ? String(props.placeholder) : '— Chọn —'}
+          disabled={props.disabled}
+          error={hasError ? String(props.validationError) : undefined}
+        />
       </div>
     </FormFieldWrapper>
   )

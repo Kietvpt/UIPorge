@@ -231,9 +231,13 @@ export const useDataEngine = create<DataEngineState>()(
       }))
     },
 
-    // 2. Lấy dataset của Entity
+    // 2. Lấy dataset của Entity (hỗ trợ tìm case-insensitive)
     getDataset: (entityName: string) => {
-      return get().datasets[entityName] || EMPTY_ARRAY
+      const datasets = get().datasets
+      if (datasets[entityName]) return datasets[entityName]
+      const lower = entityName?.toLowerCase()
+      const foundKey = Object.keys(datasets).find((k) => k.toLowerCase() === lower)
+      return foundKey ? datasets[foundKey] : EMPTY_ARRAY
     },
 
     // 3. Gán giá trị 1 trường trên Form (Two-Way Binding)
@@ -410,8 +414,8 @@ export const useDataEngine = create<DataEngineState>()(
         }
       }
 
-      // 2. Fallback sang dataset đã đăng ký trong bộ nhớ Core
-      const localItems = get().datasets[entityName] || []
+      // 2. Fallback sang dataset đã đăng ký trong bộ nhớ Core (có áp dụng lọc query nếu có)
+      const localItems = filterLocalDataset(get().getDataset(entityName), query)
       return localItems.map((item: any) => {
         const val = item[idField] !== undefined ? item[idField] : item.Id || item.id || item.code
         const label =
@@ -445,7 +449,7 @@ export const useDataEngine = create<DataEngineState>()(
           // Offline fallback
         }
       }
-      return get().datasets[entityName] || []
+      return filterLocalDataset(get().getDataset(entityName), query)
     },
 
     // 10. Tiện ích lưu bản ghi chuẩn Core (tự động phân loại POST thêm mới hoặc PUT cập nhật)
@@ -688,3 +692,52 @@ export const useDataEngine = create<DataEngineState>()(
     },
   }))
 )
+
+/**
+ * Lọc danh sách local dataset theo biểu thức OData / SQL đơn giản
+ * Ví dụ: "active = true", "?$filter=Active eq true", "Active eq true and Type eq 'SEA'"
+ */
+function filterLocalDataset(items: any[], query?: string): any[] {
+  if (!query || !query.trim() || !Array.isArray(items) || items.length === 0) {
+    return items
+  }
+
+  let expr = query.trim()
+  // Trích xuất phần sau $filter= nếu có query string đầy đủ
+  const filterMatch = expr.match(/\$filter=([^&]+)/i)
+  if (filterMatch) {
+    expr = decodeURIComponent(filterMatch[1]).trim()
+  } else if (expr.startsWith('?')) {
+    // Nếu chỉ có ?$orderby=... thì không filter
+    if (!expr.toLowerCase().includes('$filter=')) return items
+  }
+
+  // Tách điều kiện theo AND
+  const parts = expr.split(/\s+and\s+/i)
+
+  return items.filter((item) => {
+    for (const part of parts) {
+      const trimmed = part.trim()
+      if (!trimmed) continue
+
+      const match = trimmed.match(/^(\w+)(?:\s+(eq|ne)\s+|\s*(==|=|!=)\s*)('?[^']+'?)$/i)
+      if (match) {
+        const fieldName = match[1]
+        const op = (match[2] || match[3] || '=').toLowerCase()
+        const rawVal = match[4].replace(/^['"\s]+|['"\s]+$/g, '')
+
+        const itemKeys = Object.keys(item)
+        const matchedKey = itemKeys.find((k) => k.toLowerCase() === fieldName.toLowerCase())
+        if (matchedKey) {
+          const itemVal = item[matchedKey] !== undefined && item[matchedKey] !== null ? String(item[matchedKey]) : ''
+          const equals = itemVal.toLowerCase() === rawVal.toLowerCase()
+          const isNeg = op === 'ne' || op === '!='
+          if (isNeg ? equals : !equals) {
+            return false
+          }
+        }
+      }
+    }
+    return true
+  })
+}

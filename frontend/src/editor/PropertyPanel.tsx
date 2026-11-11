@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useEditorStore } from '@/store/editorStore'
 import {
   Sliders,
@@ -40,8 +40,10 @@ import type {
   ComponentNode,
   TableColumn,
   FlexConfig,
+  DropdownColumnConfig,
 } from '@/types/schema'
 import { MOCK_ENTITY_CATALOGS } from '@/data/mockEntityCatalog'
+import { fetchEntityMetadata, EntityMetadata } from '@/core/services/metadataService'
 
 interface PropertyPanelProps {
   width?: number
@@ -49,11 +51,20 @@ interface PropertyPanelProps {
 
 export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
   const [activeTab, setActiveTab] = useState<
-    'layout' | 'children' | 'props' | 'styles' | 'events' | 'data' | 'validation' | 'permissions'
+    'layout' | 'children' | 'props' | 'styles' | 'events' | 'data' | 'validation' | 'permissions' | 'columns'
   >('layout')
   const [selectedColumnIndex, setSelectedColumnIndex] = useState<number | null>(null)
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false)
   const [isComponentModalOpen, setIsComponentModalOpen] = useState(false)
+  const [liveEntities, setLiveEntities] = useState<EntityMetadata[]>([])
+
+  useEffect(() => {
+    fetchEntityMetadata().then((data) => {
+      if (data && data.length > 0) {
+        setLiveEntities(data)
+      }
+    })
+  }, [])
   const [listDragIdx, setListDragIdx] = useState<number | null>(null)
   const [listDragOverIdx, setListDragOverIdx] = useState<number | null>(null)
 
@@ -280,7 +291,22 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
     selectedNode.type === 'Container' ||
     selectedNode.type === 'Section' ||
     selectedNode.type === 'Tabs'
-  const effectiveTab = !isContainer && (activeTab === 'layout' || activeTab === 'children') ? 'props' : activeTab
+  const isLookupNode =
+    selectedNode.type === 'Select' ||
+    (selectedNode.type as string) === 'Dropdown' ||
+    selectedNode.type === 'Autocomplete' ||
+    selectedNode.type === 'SearchEntry'
+  const dropdownColumns: DropdownColumnConfig[] =
+    (selectedNode.props.dropdownColumns as DropdownColumnConfig[]) ||
+    selectedNode.dataBinding?.dropdownColumns ||
+    []
+
+  const effectiveTab =
+    !isContainer && (activeTab === 'layout' || activeTab === 'children')
+      ? 'props'
+      : !isLookupNode && activeTab === 'columns'
+      ? 'data'
+      : activeTab
   const layoutMode: LayoutMode = selectedNode.props.layoutMode || 'flex'
   const flexConfig: FlexConfig = (selectedNode.props.flexConfig as FlexConfig) || {
     direction: 'row',
@@ -404,6 +430,21 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
           <Database className="w-3.5 h-3.5" />
           Data
         </button>
+
+        {isLookupNode && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('columns')}
+            className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'columns'
+              ? 'border-emerald-500 text-emerald-400 bg-slate-800/40 font-bold'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            title="Cấu hình danh sách cột hiển thị trong Dropdown (Multi-Column Select)"
+          >
+            <TableIcon className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Cột Dropdown ({dropdownColumns.length})</span>
+          </button>
+        )}
 
         <button
           onClick={() => setActiveTab('validation')}
@@ -787,61 +828,61 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                 selectedNode.props.tab ||
                 selectedNode.type === 'Tabs'
               ) && (
-                <div className="space-y-3 pt-2 border-t border-slate-800/80">
-                  <div>
-                    <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
-                      Tên Nhãn Tab (Hiển Thị Trên Thanh Tab)
-                    </label>
-                    <input
-                      type="text"
-                      value={selectedNode.props.label || ''}
-                      placeholder="e.g. MAIN INFORMATION, MASTER COST..."
-                      onChange={(e) => updateComponentProps(selectedNode.id, { label: e.target.value })}
-                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-bold text-xs focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-3 pt-2 border-t border-slate-800/80">
                     <div>
                       <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
-                        Thứ Tự (Order)
-                      </label>
-                      <input
-                        type="number"
-                        value={Number(selectedNode.order ?? selectedNode.props.order ?? 1)}
-                        onChange={(e) => {
-                          const newOrder = Number(e.target.value)
-                          updateComponentOrder(selectedNode.id, newOrder)
-                        }}
-                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-amber-400 font-mono text-xs focus:outline-none focus:border-amber-500 font-bold"
-                      />
-                      <span className="text-[9px] text-slate-500 block mt-0.5">
-                        Cùng Order sẽ Stack thành thanh Tab
-                      </span>
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
-                        Huy Hiệu (Badge)
+                        Tên Nhãn Tab (Hiển Thị Trên Thanh Tab)
                       </label>
                       <input
                         type="text"
-                        value={selectedNode.props.badge !== undefined ? String(selectedNode.props.badge) : ''}
-                        placeholder="e.g. 2, NEW..."
-                        onChange={(e) =>
-                          updateComponentProps(selectedNode.id, {
-                            badge: e.target.value || undefined,
-                          })
-                        }
-                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-emerald-500"
+                        value={selectedNode.props.label || ''}
+                        placeholder="e.g. MAIN INFORMATION, MASTER COST..."
+                        onChange={(e) => updateComponentProps(selectedNode.id, { label: e.target.value })}
+                        className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-bold text-xs focus:outline-none focus:border-emerald-500"
                       />
-                      <span className="text-[9px] text-slate-500 block mt-0.5">
-                        Số lượng / nhãn nhỏ
-                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                          Thứ Tự (Order)
+                        </label>
+                        <input
+                          type="number"
+                          value={Number(selectedNode.order ?? selectedNode.props.order ?? 1)}
+                          onChange={(e) => {
+                            const newOrder = Number(e.target.value)
+                            updateComponentOrder(selectedNode.id, newOrder)
+                          }}
+                          className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-amber-400 font-mono text-xs focus:outline-none focus:border-amber-500 font-bold"
+                        />
+                        <span className="text-[9px] text-slate-500 block mt-0.5">
+                          Cùng Order sẽ Stack thành thanh Tab
+                        </span>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
+                          Huy Hiệu (Badge)
+                        </label>
+                        <input
+                          type="text"
+                          value={selectedNode.props.badge !== undefined ? String(selectedNode.props.badge) : ''}
+                          placeholder="e.g. 2, NEW..."
+                          onChange={(e) =>
+                            updateComponentProps(selectedNode.id, {
+                              badge: e.target.value || undefined,
+                            })
+                          }
+                          className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-emerald-500"
+                        />
+                        <span className="text-[9px] text-slate-500 block mt-0.5">
+                          Số lượng / nhãn nhỏ
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           </div>
         )}
@@ -875,11 +916,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                       <div
                         key={child.id}
                         onClick={() => selectComponent(child.id)}
-                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 cursor-pointer transition-all ${
-                          isSelected
+                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 cursor-pointer transition-all ${isSelected
                             ? 'bg-blue-600/20 border-blue-500 shadow-sm'
                             : 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800 shrink-0">
@@ -1021,8 +1061,8 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                     type="checkbox"
                     checked={Boolean(
                       selectedNode.props.tab ||
-                        selectedNode.props.isTab ||
-                        selectedNode.type === 'Tabs'
+                      selectedNode.props.isTab ||
+                      selectedNode.type === 'Tabs'
                     )}
                     onChange={(e) => {
                       const checked = e.target.checked
@@ -1357,13 +1397,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                             setListDragOverIdx(null)
                           }}
                           onClick={() => setSelectedColumnIndex(idx)}
-                          className={`p-2 flex items-center justify-between cursor-pointer transition-all ${
-                            isBeingDragged ? 'opacity-30 bg-slate-800' : ''
-                          } ${
-                            isDragOver ? 'border-t-2 border-t-emerald-400 bg-emerald-500/10' : ''
-                          } ${
-                            isSelected ? 'bg-blue-600/20 text-blue-200' : 'hover:bg-slate-900 text-slate-300'
-                          }`}
+                          className={`p-2 flex items-center justify-between cursor-pointer transition-all ${isBeingDragged ? 'opacity-30 bg-slate-800' : ''
+                            } ${isDragOver ? 'border-t-2 border-t-emerald-400 bg-emerald-500/10' : ''
+                            } ${isSelected ? 'bg-blue-600/20 text-blue-200' : 'hover:bg-slate-900 text-slate-300'
+                            }`}
                         >
                           <div className="flex items-center gap-1.5 min-w-0">
                             {/* Icon kéo thả (Drag Handle) */}
@@ -1744,102 +1781,852 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
           />
         )}
 
-        {/* ── TAB 5: DATA BINDING (LIÊN KẾT THỰC THỂ) ── */}
+        {/* ── TAB 5: DATA BINDING & DATASOURCE (LIÊN KẾT THỰC THỂ & NGUỒN BẢN GHI) ── */}
         {effectiveTab === 'data' && (() => {
           const binding = selectedNode.dataBinding || {}
-          const selectedEntity = MOCK_ENTITY_CATALOGS.find((e) => e.name === binding.entityName)
+          const nodeProps = selectedNode.props || {}
+          const compType = selectedNode.type
+
+          const isTable = compType === 'Table' || (compType as string) === 'GridView' || (compType as string) === 'AdvancedGrid'
+          const isLookup = compType === 'Select' || (compType as string) === 'Dropdown' || compType === 'Autocomplete' || compType === 'SearchEntry'
+          const isInput = compType === 'TextBox' || compType === 'Number' || compType === 'DatePicker' || compType === 'Checkbox' || compType === 'Textarea'
+          const isStaticOrLayout = !isTable && !isLookup && !isInput
+
+          // Gộp danh mục entities từ cả SQL Server API (liveEntities) và Mock Catalogs
+          const combinedEntities: { name: string; displayName: string; fields: { name: string; displayName: string; dataType: string }[] }[] = []
+
+          liveEntities.forEach((ent) => {
+            combinedEntities.push({
+              name: ent.name,
+              displayName: ent.displayName || ent.name,
+              fields: ent.columns.map((c) => ({
+                name: c.name,
+                displayName: c.displayName || c.name,
+                dataType: c.dataType,
+              })),
+            })
+          })
+
+          MOCK_ENTITY_CATALOGS.forEach((m) => {
+            if (!combinedEntities.some((x) => x.name.toLowerCase() === m.name.toLowerCase())) {
+              combinedEntities.push({
+                name: m.name,
+                displayName: m.displayName,
+                fields: m.fields.map((f) => ({
+                  name: f.name,
+                  displayName: f.displayName,
+                  dataType: f.dataType,
+                })),
+              })
+            }
+          })
+
+          const currentEntityName = binding.entityName || (nodeProps.reference as string) || (nodeProps.refName as string) || ''
+          const selectedEntity = combinedEntities.find((e) => e.name.toLowerCase() === currentEntityName.toLowerCase())
           const availableFields = selectedEntity ? selectedEntity.fields : []
+
+          // Giá trị DATASOURCE hợp nhất (đồng bộ cả dataSource và query)
+          const currentDataSource =
+            binding.dataSource ||
+            (nodeProps.dataSource as string) ||
+            (nodeProps.dataSourceFilter as string) ||
+            binding.query ||
+            (nodeProps.query as string) ||
+            ''
+
+          const handleUpdateDataSource = (val: string) => {
+            updateComponentDataBinding(selectedNode.id, {
+              dataSource: val,
+              query: val,
+            })
+            updateComponentProps(selectedNode.id, {
+              dataSource: val,
+              dataSourceFilter: val,
+              query: val,
+            })
+          }
 
           return (
             <div className="space-y-4">
-              <div className="p-3 bg-blue-950/20 border border-blue-800/40 rounded-xl space-y-1">
-                <div className="text-xs font-bold text-blue-300 flex items-center gap-1.5">
-                  <Database className="w-4 h-4 text-blue-400" />
-                  <span>Liên Kết Dữ Liệu Thực Thể (Data Binding)</span>
+              {/* Box giới thiệu kèm Nút mở Component Properties Modal */}
+              <div className="p-3 bg-blue-950/20 border border-blue-800/40 rounded-xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-bold text-blue-300 flex items-center gap-1.5">
+                    <Database className="w-4 h-4 text-blue-400" />
+                    <span>Liên Kết Dữ Liệu ({compType})</span>
+                  </div>
+                  <span className="text-[10px] text-cyan-400 font-mono font-semibold">Core C# Engine</span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Liên kết component này với một trường dữ liệu trong thực thể nghiệp vụ (Entity Catalog). Dữ liệu sẽ tự động được tải và lưu trữ đồng bộ.
+                  {isTable && 'Cấu hình đối tượng thực thể truy vấn và bộ lọc DATASOURCE cho toàn bộ bảng.'}
+                  {isLookup && 'Cấu hình trường dữ liệu lưu trữ, danh mục tra cứu tham chiếu và quy tắc tự động điền (Populate).'}
+                  {isInput && 'Cấu hình trường ánh xạ dữ liệu (Field Name) và đồng bộ 2 chiều với mô hình form.'}
+                  {isStaticOrLayout && 'Thành phần giao diện/bố cục. Nhấn nút bên dưới để xem toàn bộ thông số chi tiết.'}
                 </p>
-              </div>
-
-              {/* Chọn Thực Thể (Entity) */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                  Thực Thể Dữ Liệu (Entity)
-                </label>
-                <select
-                  value={binding.entityName || ''}
-                  onChange={(e) => {
-                    const entName = e.target.value
-                    const ent = MOCK_ENTITY_CATALOGS.find((x) => x.name === entName)
-                    const firstField = ent?.fields[0]?.name || ''
-                    updateComponentDataBinding(selectedNode.id, {
-                      entityName: entName,
-                      fieldName: firstField,
-                    })
-                  }}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+                <button
+                  type="button"
+                  onClick={() => setIsComponentModalOpen(true)}
+                  className="w-full py-2 px-3 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95"
                 >
-                  <option value="">-- Chọn Thực Thể --</option>
-                  {MOCK_ENTITY_CATALOGS.map((ent) => (
-                    <option key={ent.id} value={ent.name}>
-                      {ent.displayName} ({ent.name})
-                    </option>
-                  ))}
-                </select>
+                  <Sliders className="w-4 h-4 text-emerald-400" />
+                  <span>🔍 Mở Toàn Bộ Thông Số Core (Component Properties)</span>
+                </button>
               </div>
 
-              {/* Chọn Trường Dữ Liệu (Field) */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                  Trường Dữ Liệu (Field Name)
-                </label>
-                <select
-                  disabled={!selectedEntity}
-                  value={binding.fieldName || ''}
-                  onChange={(e) => updateComponentDataBinding(selectedNode.id, { fieldName: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500 disabled:opacity-50 cursor-pointer"
-                >
-                  <option value="">-- Chọn Trường Dữ Liệu --</option>
-                  {availableFields.map((f) => (
-                    <option key={f.name} value={f.name}>
-                      {f.displayName} ({f.name}) [{f.dataType}]
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {/* ── 1. GIAO DIỆN DÀNH CHO BẢNG DỮ LIỆU (Table / GridView / AdvancedGrid) ── */}
+              {isTable && (
+                <>
+                  {/* Đối Tượng Tham Chiếu (Reference / RefName) */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Đối Tượng Tham Chiếu (Reference / RefName)
+                      </label>
+                      <span className="text-[10px] text-cyan-400 font-mono">Reference</span>
+                    </div>
+                    <select
+                      value={selectedEntity ? selectedEntity.name : ''}
+                      onChange={(e) => {
+                        const entName = e.target.value
+                        updateComponentDataBinding(selectedNode.id, {
+                          entityName: entName,
+                          refName: entName,
+                        })
+                        updateComponentProps(selectedNode.id, {
+                          reference: entName,
+                          refName: entName,
+                        })
+                      }}
+                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+                    >
+                      <option value="">-- Chọn Thực Thể Trong Database --</option>
+                      {combinedEntities.map((ent) => (
+                        <option key={ent.name} value={ent.name}>
+                          {ent.displayName} ({ent.name})
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="text"
+                      value={binding.entityName || (nodeProps.reference as string) || (nodeProps.refName as string) || ''}
+                      placeholder="Hoặc gõ tên Entity tùy ý (VD: Transaction, Shipment, Terminal)..."
+                      onChange={(e) => {
+                        const customName = e.target.value
+                        updateComponentDataBinding(selectedNode.id, {
+                          entityName: customName,
+                          refName: customName,
+                        })
+                        updateComponentProps(selectedNode.id, {
+                          reference: customName,
+                          refName: customName,
+                        })
+                      }}
+                      className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
 
-              {/* Bộ Định Dạng Dữ Liệu (Formatter) */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                  Định Dạng Dữ Liệu (Formatter)
-                </label>
-                <select
-                  value={binding.formatter || ''}
-                  onChange={(e) => updateComponentDataBinding(selectedNode.id, { formatter: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
-                >
-                  <option value="">Mặc định (Không định dạng)</option>
-                  <option value="currency_vnd">Tiền tệ VND (₫ 1,000,000)</option>
-                  <option value="currency_usd">Tiền tệ USD ($ 1,000.00)</option>
-                  <option value="date_ddmmyyyy">Ngày tháng (DD/MM/YYYY)</option>
-                  <option value="number_commas">Phân cách hàng nghìn (1,000,000)</option>
-                  <option value="uppercase">Chữ hoa (UPPERCASE)</option>
-                </select>
-              </div>
+                  {/* NGUỒN DỮ LIỆU (DATASOURCE) - ODATA QUERY DUY NHẤT */}
+                  <div className="space-y-1.5 p-3 bg-amber-950/20 border border-amber-500/30 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block flex items-center gap-1.5">
+                        <Code className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Nguồn Dữ Liệu (DATASOURCE)</span>
+                      </label>
+                      <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">
+                        OData Query
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-400">
+                      Chuỗi truy vấn OData nạp dữ liệu cho bảng (tương thích Core C# GuiInfo.DataSourceFilter).
+                    </p>
+                    <textarea
+                      rows={4}
+                      value={currentDataSource}
+                      placeholder="VD: ?$filter=Active eq true&$orderby=Id desc"
+                      onChange={(e) => handleUpdateDataSource(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-950 border border-amber-500/40 focus:border-amber-400 rounded-lg text-xs font-mono text-amber-200 focus:outline-none placeholder-slate-600 resize-y"
+                    />
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateDataSource('?$filter=Active eq true&$orderby=Id desc')}
+                        className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] text-amber-300 hover:text-amber-200 rounded font-mono border border-slate-700 transition-colors cursor-pointer"
+                      >
+                        + Lọc Active & Sort
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateDataSource('?$top=50&$orderby=Id desc')}
+                        className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] text-cyan-300 hover:text-cyan-200 rounded font-mono border border-slate-700 transition-colors cursor-pointer"
+                      >
+                        + Top 50 Mới Nhất
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateDataSource('')}
+                        className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-400 hover:text-slate-200 rounded font-mono border border-slate-700 transition-colors cursor-pointer"
+                      >
+                        Xóa
+                      </button>
+                    </div>
+                  </div>
 
-              {/* Binding 2 Chiều (Two-Way Binding) */}
-              <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
-                <div>
-                  <span className="text-slate-300 block font-semibold">Đồng bộ 2 chiều (Two-Way)</span>
-                  <span className="text-[10px] text-slate-500">Tự động cập nhật model khi người dùng gõ</span>
+                  {/* Điều Kiện Lọc SQL (SqlWhere) */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Điều Kiện Lọc SQL (SqlWhere)
+                      </label>
+                      <span className="text-[10px] text-slate-500 font-mono">SqlWhere</span>
+                    </div>
+                    <input
+                      type="text"
+                      value={binding.sqlWhere || (nodeProps.sqlWhere as string) || ''}
+                      placeholder="VD: Active = 1 AND Status = 'OPEN'"
+                      onChange={(e) => {
+                        const sw = e.target.value
+                        updateComponentDataBinding(selectedNode.id, { sqlWhere: sw })
+                        updateComponentProps(selectedNode.id, { sqlWhere: sw })
+                      }}
+                      className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* ── 2. GIAO DIỆN DÀNH CHO DROPDOWN / TRA CỨU (Select / Autocomplete / SearchEntry) ── */}
+              {isLookup && (
+                <>
+                  {/* TRƯỜNG DỮ LIỆU (Field Name) - NHẬP TAY! */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Trường Dữ Liệu Lưu Trữ (Field Name)
+                      </label>
+                      <span className="text-[10px] text-emerald-400 font-mono">Nhập tay</span>
+                    </div>
+                    <input
+                      type="text"
+                      value={binding.fieldName || (nodeProps.fieldName as string) || ''}
+                      placeholder="Nhập tên trường trên model (VD: PolId, VendorId, CustomerId)..."
+                      list="lookup-fields-list"
+                      onChange={(e) => {
+                        const f = e.target.value
+                        updateComponentDataBinding(selectedNode.id, { fieldName: f })
+                        updateComponentProps(selectedNode.id, { fieldName: f })
+                      }}
+                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500"
+                    />
+                    <datalist id="lookup-fields-list">
+                      {availableFields.map((f) => (
+                        <option key={f.name} value={f.name}>
+                          {f.displayName} ({f.name})
+                        </option>
+                      ))}
+                    </datalist>
+                  </div>
+
+                  {/* Đối Tượng Tham Chiếu (Reference / RefName) */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Đối Tượng Tham Chiếu Danh Mục (Reference / RefName)
+                      </label>
+                      <span className="text-[10px] text-cyan-400 font-mono">Reference</span>
+                    </div>
+                    <select
+                      value={selectedEntity ? selectedEntity.name : ''}
+                      onChange={(e) => {
+                        const entName = e.target.value
+                        updateComponentDataBinding(selectedNode.id, {
+                          entityName: entName,
+                          refName: entName,
+                        })
+                        updateComponentProps(selectedNode.id, {
+                          reference: entName,
+                          refName: entName,
+                        })
+                      }}
+                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+                    >
+                      <option value="">-- Chọn Thực Thể Danh Mục --</option>
+                      {combinedEntities.map((ent) => (
+                        <option key={ent.name} value={ent.name}>
+                          {ent.displayName} ({ent.name})
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="text"
+                      value={binding.entityName || (nodeProps.reference as string) || (nodeProps.refName as string) || ''}
+                      placeholder="Hoặc gõ tên Entity danh mục (VD: Terminal, Partner, Customer)..."
+                      onChange={(e) => {
+                        const customName = e.target.value
+                        updateComponentDataBinding(selectedNode.id, {
+                          entityName: customName,
+                          refName: customName,
+                        })
+                        updateComponentProps(selectedNode.id, {
+                          reference: customName,
+                          refName: customName,
+                        })
+                      }}
+                      className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+
+                  {/* NGUỒN DỮ LIỆU LỌC (DATASOURCE) */}
+                  <div className="space-y-1.5 p-3 bg-amber-950/20 border border-amber-500/30 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block flex items-center gap-1.5">
+                        <Code className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Lọc Danh Mục (DATASOURCE)</span>
+                      </label>
+                      <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">
+                        OData Query
+                      </span>
+                    </div>
+                    <textarea
+                      rows={3}
+                      value={currentDataSource}
+                      placeholder="VD: ?$filter=Active eq true"
+                      onChange={(e) => handleUpdateDataSource(e.target.value)}
+                      className="w-full px-3 py-2 bg-slate-950 border border-amber-500/40 focus:border-amber-400 rounded-lg text-xs font-mono text-amber-200 focus:outline-none placeholder-slate-600 resize-y"
+                    />
+                  </div>
+
+                  {/* TỰ ĐỘNG ĐIỀN (PopulateField) */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Tự Động Điền (Populate Field)
+                      </label>
+                      <span className="text-[10px] text-purple-400 font-mono">Populate</span>
+                    </div>
+                    <input
+                      type="text"
+                      value={binding.populateField || (nodeProps.populateRule as string) || (nodeProps.populateField as string) || ''}
+                      placeholder="VD: VendorName = Name, TaxCode = TaxId, Agent = AgentName"
+                      onChange={(e) => {
+                        const pf = e.target.value
+                        updateComponentDataBinding(selectedNode.id, { populateField: pf })
+                        updateComponentProps(selectedNode.id, { populateRule: pf, populateField: pf })
+                      }}
+                      className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-purple-300 focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+
+                  {/* Khóa chính & Cột chọn */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                        Khóa Chính (IdField)
+                      </label>
+                      <input
+                        type="text"
+                        value={binding.idField || (nodeProps.idField as string) || 'Id'}
+                        placeholder="Id"
+                        onChange={(e) => {
+                          const idf = e.target.value
+                          updateComponentDataBinding(selectedNode.id, { idField: idf })
+                          updateComponentProps(selectedNode.id, { idField: idf })
+                        }}
+                        className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-200"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                        Cột Chọn (SelectField)
+                      </label>
+                      <input
+                        type="text"
+                        value={binding.selectField || (nodeProps.selectField as string) || ''}
+                        placeholder="Name, Code"
+                        onChange={(e) => {
+                          const sf = e.target.value
+                          updateComponentDataBinding(selectedNode.id, { selectField: sf })
+                          updateComponentProps(selectedNode.id, { selectField: sf })
+                        }}
+                        className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-200"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Chuỗi Định Dạng (FormatData) */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Chuỗi Định Dạng (FormatData)
+                      </label>
+                      <span className="text-[10px] text-emerald-400 font-mono">Format</span>
+                    </div>
+                    <input
+                      type="text"
+                      value={binding.formatData || (nodeProps.formatData as string) || ''}
+                      placeholder="VD: {Vendor.FullName} - {Vendor.Address} hoặc {ShortName}"
+                      onChange={(e) => {
+                        const fd = e.target.value
+                        updateComponentDataBinding(selectedNode.id, { formatData: fd })
+                        updateComponentProps(selectedNode.id, { formatData: fd })
+                      }}
+                      className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+
+                  {/* Box tóm tắt Cột Hiển Thị Dropdown & nút cấu hình */}
+                  <div className="p-3 bg-emerald-950/20 border border-emerald-500/30 rounded-xl space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-emerald-300 flex items-center gap-1.5">
+                        <TableIcon className="w-3.5 h-3.5 text-emerald-400" />
+                        Cột Hiển Thị Bảng Chọn ({dropdownColumns.length} cột)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('columns')}
+                        className="text-[10px] px-2 py-0.5 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 rounded font-semibold transition-colors cursor-pointer"
+                      >
+                        Cấu hình cột →
+                      </button>
+                    </div>
+                    {dropdownColumns.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {dropdownColumns.map((col, idx) => (
+                          <span
+                            key={idx}
+                            className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300 font-mono"
+                          >
+                            {col.title} ({col.key})
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-[10px] text-slate-400 italic">
+                        Chưa cấu hình cột riêng (sẽ tự động lấy các cột mặc định của thực thể).
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* ── 3. GIAO DIỆN DÀNH CHO Ô NHẬP LIỆU CƠ BẢN (TextBox / Number / DatePicker / Checkbox / Textarea) ── */}
+              {isInput && (
+                <>
+                  {/* TRƯỜNG DỮ LIỆU (Field Name) - NHẬP TAY! */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Trường Dữ Liệu (Field Name)
+                      </label>
+                      <span className="text-[10px] text-emerald-400 font-mono">Nhập tay</span>
+                    </div>
+                    <input
+                      type="text"
+                      value={binding.fieldName || (nodeProps.fieldName as string) || ''}
+                      placeholder="Nhập tên trường trên model (VD: JobNo, GrossWeight, IssueDate)..."
+                      list="input-fields-list"
+                      onChange={(e) => {
+                        const f = e.target.value
+                        updateComponentDataBinding(selectedNode.id, { fieldName: f })
+                        updateComponentProps(selectedNode.id, { fieldName: f })
+                      }}
+                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500"
+                    />
+                    <datalist id="input-fields-list">
+                      {availableFields.map((f) => (
+                        <option key={f.name} value={f.name}>
+                          {f.displayName} ({f.name})
+                        </option>
+                      ))}
+                    </datalist>
+                  </div>
+
+                  {/* BỘ ĐỊNH DẠNG HIỂN THỊ (Formatter) */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Định Dạng Hiển Thị (Formatter)
+                    </label>
+                    <select
+                      value={binding.formatter || ''}
+                      onChange={(e) => updateComponentDataBinding(selectedNode.id, { formatter: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+                    >
+                      <option value="">Mặc định (Không định dạng)</option>
+                      <option value="currency_vnd">Tiền tệ VND (₫ 1,000,000)</option>
+                      <option value="currency_usd">Tiền tệ USD ($ 1,000.00)</option>
+                      <option value="date_ddmmyyyy">Ngày tháng (DD/MM/YYYY)</option>
+                      <option value="number_commas">Phân cách hàng nghìn (1,000,000)</option>
+                      <option value="uppercase">Chữ hoa (UPPERCASE)</option>
+                    </select>
+                  </div>
+
+                  {/* Chuỗi Định Dạng Template (FormatData) */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Chuỗi Định Dạng Mẫu (FormatData)
+                    </label>
+                    <input
+                      type="text"
+                      value={binding.formatData || (nodeProps.formatData as string) || ''}
+                      placeholder="VD: {0} KGS hoặc {0} USD"
+                      onChange={(e) => {
+                        const fd = e.target.value
+                        updateComponentDataBinding(selectedNode.id, { formatData: fd })
+                        updateComponentProps(selectedNode.id, { formatData: fd })
+                      }}
+                      className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+
+                  {/* BINDING 2 CHIỀU (Two-Way Binding) */}
+                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                    <div>
+                      <span className="text-slate-300 block font-semibold text-xs">Đồng bộ 2 chiều (Two-Way)</span>
+                      <span className="text-[10px] text-slate-500">Tự động cập nhật model khi người dùng gõ</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={binding.twoWay ?? true}
+                      onChange={(e) => updateComponentDataBinding(selectedNode.id, { twoWay: e.target.checked })}
+                      className="rounded bg-slate-800 border-slate-700 text-blue-600 cursor-pointer"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* ── 4. GIAO DIỆN DÀNH CHO BỐ CỤC / NÚT BẤM (Container / Section / Button / Label) ── */}
+              {isStaticOrLayout && (
+                <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-2 text-center">
+                  <Box className="w-8 h-8 text-slate-600 mx-auto" />
+                  <div className="text-xs font-semibold text-slate-300">
+                    Thành phần {selectedNode.type}
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-relaxed max-w-xs mx-auto">
+                    Thành phần này đóng vai trò bố cục hoặc thao tác giao diện, không yêu cầu liên kết dữ liệu dòng/cột. Nhấn nút "Mở Toàn Bộ Thông Số Core" bên trên nếu cần cấu hình các thuộc tính nâng cao.
+                  </p>
                 </div>
+              )}
+            </div>
+          )
+        })()}
+
+        {/* ── TAB 5B: CỘT HIỂN THỊ DROPDOWN (MULTI-COLUMN SELECT) ── */}
+        {effectiveTab === 'columns' && isLookupNode && (() => {
+          const binding = selectedNode.dataBinding || {}
+          const nodeProps = selectedNode.props || {}
+
+          // Lấy thông tin thực thể tham chiếu
+          const combinedEntities: { name: string; displayName: string; fields: { name: string; displayName: string; dataType: string }[] }[] = []
+          liveEntities.forEach((ent) => {
+            combinedEntities.push({
+              name: ent.name,
+              displayName: ent.displayName || ent.name,
+              fields: ent.columns.map((c) => ({
+                name: c.name,
+                displayName: c.displayName || c.name,
+                dataType: c.dataType,
+              })),
+            })
+          })
+          MOCK_ENTITY_CATALOGS.forEach((m) => {
+            if (!combinedEntities.some((x) => x.name.toLowerCase() === m.name.toLowerCase())) {
+              combinedEntities.push({
+                name: m.name,
+                displayName: m.displayName,
+                fields: m.fields.map((f) => ({
+                  name: f.name,
+                  displayName: f.displayName,
+                  dataType: f.dataType,
+                })),
+              })
+            }
+          })
+
+          const refEntityName = binding.entityName || (nodeProps.reference as string) || (nodeProps.refName as string) || ''
+          const selectedEntity = combinedEntities.find((e) => e.name.toLowerCase() === refEntityName.toLowerCase())
+          const availableFields = selectedEntity ? selectedEntity.fields : []
+
+          const currentFormatData = binding.formatData || (nodeProps.formatData as string) || ''
+
+          const saveColumns = (nextCols: DropdownColumnConfig[]) => {
+            updateComponentProps(selectedNode.id, { dropdownColumns: nextCols })
+            updateComponentDataBinding(selectedNode.id, { dropdownColumns: nextCols })
+          }
+
+          const handleAddColumn = () => {
+            const nextCols: DropdownColumnConfig[] = [
+              ...dropdownColumns,
+              {
+                key: availableFields[dropdownColumns.length]?.name || `col${dropdownColumns.length + 1}`,
+                title: availableFields[dropdownColumns.length]?.displayName || `Cột ${dropdownColumns.length + 1}`,
+                width: '50%',
+                align: 'left',
+              },
+            ]
+            saveColumns(nextCols)
+          }
+
+          const handleAutoPopulateColumns = () => {
+            if (!selectedEntity || selectedEntity.fields.length === 0) return
+            const preferredNames = ['code', 'fullname', 'name', 'address', 'taxcode', 'phone', 'shortName', 'portcode', 'portname']
+            let picked = selectedEntity.fields.filter((f) =>
+              preferredNames.includes(f.name.toLowerCase())
+            )
+            if (picked.length === 0) {
+              picked = selectedEntity.fields.slice(0, 3)
+            } else {
+              picked = picked.slice(0, 4)
+            }
+            const nextCols: DropdownColumnConfig[] = picked.map((f) => ({
+              key: f.name,
+              title: f.displayName || f.name,
+              width: `${Math.floor(100 / picked.length)}%`,
+              align: 'left',
+            }))
+            saveColumns(nextCols)
+          }
+
+          const handleMoveCol = (idx: number, dir: -1 | 1) => {
+            const targetIdx = idx + dir
+            if (targetIdx < 0 || targetIdx >= dropdownColumns.length) return
+            const nextCols = [...dropdownColumns]
+            const temp = nextCols[idx]
+            nextCols[idx] = nextCols[targetIdx]
+            nextCols[targetIdx] = temp
+            saveColumns(nextCols)
+          }
+
+          return (
+            <div className="space-y-4">
+              {/* Banner giải thích */}
+              <div className="p-3 bg-emerald-950/20 border border-emerald-500/30 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                    <TableIcon className="w-4 h-4 text-emerald-400" />
+                    <span>Cột Hiển Thị Bảng Chọn Dropdown</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-emerald-400">
+                    {refEntityName ? `Ref: ${refEntityName}` : 'Chưa chọn Ref'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Thiết lập các cột xuất hiện khi bấm mở ô Select (vd: Cột Họ Tên và Cột Địa Chỉ). Dữ liệu được truy vấn từ bảng tham chiếu theo bộ lọc <span className="font-mono text-amber-300">DATASOURCE</span>.
+                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleAddColumn}
+                    className="flex-1 py-1.5 px-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Thêm Cột Mới</span>
+                  </button>
+                  {selectedEntity && (
+                    <button
+                      type="button"
+                      onClick={handleAutoPopulateColumns}
+                      className="py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      title={`Tự động lấy cột gợi ý từ thực thể ${selectedEntity.name}`}
+                    >
+                      <Zap className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Tự động nạp</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Danh sách cột đã cấu hình */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    Danh Sách Cột ({dropdownColumns.length})
+                  </label>
+                </div>
+
+                {dropdownColumns.length === 0 ? (
+                  <div className="p-4 border border-dashed border-slate-700 rounded-xl text-center space-y-1.5 bg-slate-950/40">
+                    <p className="text-xs text-slate-400">Chưa có cột nào được thiết lập.</p>
+                    <p className="text-[10px] text-slate-500">
+                      Bấm <strong>"Thêm Cột Mới"</strong> để thiết lập cột hiển thị (vd: <span className="font-mono text-cyan-300">FullName</span>, <span className="font-mono text-cyan-300">Address</span>).
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5">
+                    {dropdownColumns.map((col, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2.5 bg-slate-950/90 border border-slate-800 hover:border-slate-700 rounded-xl space-y-2"
+                      >
+                        <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                          <span className="text-[10px] font-bold text-emerald-400 font-mono">
+                            CỘT #{idx + 1}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleMoveCol(idx, -1)}
+                              disabled={idx === 0}
+                              className="p-1 text-slate-400 hover:text-slate-200 disabled:opacity-30 cursor-pointer"
+                              title="Di chuyển lên"
+                            >
+                              <ChevronUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMoveCol(idx, 1)}
+                              disabled={idx === dropdownColumns.length - 1}
+                              className="p-1 text-slate-400 hover:text-slate-200 disabled:opacity-30 cursor-pointer"
+                              title="Di chuyển xuống"
+                            >
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = dropdownColumns.filter((_, i) => i !== idx)
+                                saveColumns(next)
+                              }}
+                              className="p-1 text-slate-500 hover:text-red-400 cursor-pointer"
+                              title="Xóa cột"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-[10px] text-slate-400 block mb-0.5">
+                              Tên Trường (Key)
+                            </label>
+                            <input
+                              type="text"
+                              value={col.key}
+                              list={`dropdown-col-fields-${idx}`}
+                              placeholder="vd: FullName"
+                              onChange={(e) => {
+                                const next = [...dropdownColumns]
+                                next[idx] = { ...next[idx], key: e.target.value }
+                                saveColumns(next)
+                              }}
+                              className="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs font-mono text-cyan-300 focus:outline-none focus:border-emerald-500"
+                            />
+                            <datalist id={`dropdown-col-fields-${idx}`}>
+                              {availableFields.map((f) => (
+                                <option key={f.name} value={f.name}>
+                                  {f.displayName} ({f.name})
+                                </option>
+                              ))}
+                            </datalist>
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-slate-400 block mb-0.5">
+                              Tiêu Đề Cột (Title)
+                            </label>
+                            <input
+                              type="text"
+                              value={col.title}
+                              placeholder="vd: Tên nhà cung cấp"
+                              onChange={(e) => {
+                                const next = [...dropdownColumns]
+                                next[idx] = { ...next[idx], title: e.target.value }
+                                saveColumns(next)
+                              }}
+                              className="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-[10px] text-slate-400 block mb-0.5">
+                              Độ rộng (Width)
+                            </label>
+                            <input
+                              type="text"
+                              value={col.width || '50%'}
+                              placeholder="vd: 50% hoặc 180px"
+                              onChange={(e) => {
+                                const next = [...dropdownColumns]
+                                next[idx] = { ...next[idx], width: e.target.value }
+                                saveColumns(next)
+                              }}
+                              className="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-slate-400 block mb-0.5">
+                              Căn lề (Align)
+                            </label>
+                            <select
+                              value={col.align || 'left'}
+                              onChange={(e) => {
+                                const next = [...dropdownColumns]
+                                next[idx] = { ...next[idx], align: e.target.value as 'left' | 'center' | 'right' }
+                                saveColumns(next)
+                              }}
+                              className="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer"
+                            >
+                              <option value="left">Trái (Left)</option>
+                              <option value="center">Giữa (Center)</option>
+                              <option value="right">Phải (Right)</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Định dạng hiển thị FormatData sau khi chọn */}
+              <div className="p-3 bg-slate-950/90 border border-slate-800 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                    Định Dạng Hiển Thị (FormatData)
+                  </label>
+                  <span className="text-[10px] text-emerald-400 font-mono">Template</span>
+                </div>
+                <p className="text-[10px] text-slate-400">
+                  Quy định cách hiển thị trên ô Select sau khi người dùng chọn xong một dòng. Hỗ trợ tên trường trực tiếp hoặc prefix thực thể.
+                </p>
                 <input
-                  type="checkbox"
-                  checked={binding.twoWay ?? true}
-                  onChange={(e) => updateComponentDataBinding(selectedNode.id, { twoWay: e.target.checked })}
-                  className="rounded bg-slate-800 border-slate-700 text-blue-600 cursor-pointer"
+                  type="text"
+                  value={currentFormatData}
+                  placeholder="VD: {Vendor.FullName} - {Vendor.Address}"
+                  onChange={(e) => {
+                    const fd = e.target.value
+                    updateComponentDataBinding(selectedNode.id, { formatData: fd })
+                    updateComponentProps(selectedNode.id, { formatData: fd })
+                  }}
+                  className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500"
                 />
+
+                {dropdownColumns.length > 0 && (
+                  <div className="space-y-1 pt-1">
+                    <span className="text-[10px] text-slate-500 block">Chèn nhanh vào FormatData:</span>
+                    <div className="flex flex-wrap gap-1">
+                      {dropdownColumns.map((col, idx) => {
+                        const token = refEntityName ? `{${refEntityName}.${col.key}}` : `{${col.key}}`
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              const nextFd = currentFormatData
+                                ? `${currentFormatData} - ${token}`
+                                : token
+                              updateComponentDataBinding(selectedNode.id, { formatData: nextFd })
+                              updateComponentProps(selectedNode.id, { formatData: nextFd })
+                            }}
+                            className="px-1.5 py-0.5 bg-slate-800 hover:bg-emerald-900/40 text-emerald-300 border border-slate-700 hover:border-emerald-500/40 rounded text-[10px] font-mono cursor-pointer transition-colors"
+                          >
+                            + {token}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )

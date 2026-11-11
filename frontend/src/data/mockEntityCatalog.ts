@@ -45,7 +45,9 @@ export const MOCK_ENTITY_CATALOGS: UIEntityCatalog[] = [
     description: 'Danh mục đại lý, hãng tàu, forwarder đối tác (Ảnh 1 & Vendor.cs)',
     fields: [
       { name: 'Id', displayName: 'Mã Hệ Thống (ID)', dataType: 'number', isRequired: true },
-      { name: 'CompanyLocalFullName', displayName: 'Tên Doanh Nghiệp (Tiếng Việt)', dataType: 'string', isRequired: true },
+      { name: 'Code', displayName: 'Mã Đối Tác (Code)', dataType: 'string' },
+      { name: 'FullName', displayName: 'Tên Đầy Đủ (FullName)', dataType: 'string', isRequired: true },
+      { name: 'CompanyLocalFullName', displayName: 'Tên Doanh Nghiệp (Tiếng Việt)', dataType: 'string' },
       { name: 'CompanyInterShortName', displayName: 'Tên Viết Tắt (Quốc Tế)', dataType: 'string' },
       { name: 'TaxCode', displayName: 'Mã Số Thuế (Tax Code)', dataType: 'string' },
       { name: 'Address', displayName: 'Địa Chỉ Giao Dịch', dataType: 'string' },
