@@ -66,5 +66,15 @@ namespace UIForge.API.Modules.Logistics.Entities
         public decimal Vgm { get; set; }
         public string? Description { get; set; }
     }
+
+    /// <summary>
+    /// 🏢 SAMPLE BUSINESS ENTITY: Nhà cung cấp / Đối tác (Vendors)
+    /// Ánh xạ trực tiếp tới bảng dbo.Vendors và kế thừa BaseEntity.
+    /// </summary>
+    public class VendorEntity : BaseEntity
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string? Address { get; set; }
+    }
 }
 

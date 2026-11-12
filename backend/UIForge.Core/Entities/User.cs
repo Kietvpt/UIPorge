@@ -1,21 +1,18 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace UIForge.Core.Entities
 {
-    public class User
+    public class User : BaseEntity
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string Username { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(200)]
+        [JsonIgnore]
         public string PasswordHash { get; set; } = string.Empty;
 
         [MaxLength(200)]

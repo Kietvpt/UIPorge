@@ -11,9 +11,20 @@ import {
   Code,
   Database,
   Layers,
+  Table as TableIcon,
+  Plus,
+  Trash2,
+  ChevronUp,
+  ChevronDown,
+  Zap,
 } from 'lucide-react'
-import type { ComponentNode } from '@/types/schema'
-import { fetchEntityMetadata, EntityMetadata } from '@/core/services/metadataService'
+import type { ComponentNode, DropdownColumnConfig } from '@/types/schema'
+import {
+  fetchEntityMetadata,
+  EntityMetadata,
+  buildCombinedEntityCatalog,
+  findMatchingEntity,
+} from '@/core/services/metadataService'
 
 export interface ComponentPropertiesModalProps {
   isOpen: boolean
@@ -28,8 +39,9 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
   onClose,
   onSave,
 }) => {
-  const [activeTab, setActiveTab] = useState<'info' | 'permissions' | 'report'>('info')
+  const [activeTab, setActiveTab] = useState<'info' | 'dropdownColumns' | 'permissions' | 'report'>('info')
   const [entities, setEntities] = useState<EntityMetadata[]>([])
+  const [dropdownColumns, setDropdownColumns] = useState<DropdownColumnConfig[]>([])
 
   // ── COMMON FORM STATES (Khớp 100% Ảnh Modal Component properties của Master) ──
   const [componentId, setComponentId] = useState('')
@@ -42,7 +54,7 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
   const [order, setOrder] = useState<number | string>(1)
   const [column, setColumn] = useState<number | string>(4)
   const [label, setLabel] = useState('')
-  const [events, setEvents] = useState('{"change":"AutoPOL"}')
+  const [events, setEvents] = useState('')
   const [styleVal, setStyleVal] = useState('')
   const [childStyle, setChildStyle] = useState('')
   const [validation, setValidation] = useState('')
@@ -109,15 +121,11 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
   const [dispSummary, setDispSummary] = useState(false)
   const [dispDateTimeField, setDispDateTimeField] = useState(false)
 
-  // ── CODE / QUERY EDITORS (Khớp 100% Ảnh Modal: DATASOURCE, FORMATENTITY, MIGRATION, FORMATDATA, QUERY) ──
-  const [dataSourceCode, setDataSourceCode] = useState(
-    'return "?$filter=Active eq true and TerminalType/any(a:a/TypeId in ({${1}})) &$orderby=Id desc"'
-  )
-  const [formatEntityCode, setFormatEntityCode] = useState(
-    '(x, y) => { return (x.PortCode !== null && x.PortCode !== undefined && x.PortCode !== "") ? (x.PortCode + " - " + x.Name) : x.Name; }'
-  )
+  // ── CODE / QUERY EDITORS (Khớp 100% Ảnh Modal: DATASOURCE, FORMATENTITY, MIGRATION, FORMATDATA) ──
+  const [dataSourceCode, setDataSourceCode] = useState('')
+  const [formatEntityCode, setFormatEntityCode] = useState('')
   const [migrationCode, setMigrationCode] = useState('')
-  const [formatDataCode, setFormatDataCode] = useState('{ShortName}')
+  const [formatDataCode, setFormatDataCode] = useState('')
   const [queryCode, setQueryCode] = useState('')
 
   // Load entities from metadata engine
@@ -125,62 +133,114 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
     fetchEntityMetadata().then((data) => setEntities(data))
   }, [])
 
-  // Sync state when node changes
+  // Sync state when node or modal open state changes (dùng ?? để giữ nguyên chuỗi rỗng khi người dùng đã xóa)
   useEffect(() => {
-    if (node) {
+    if (node && isOpen) {
       const p = node.props || {}
       const b = node.dataBinding || {}
 
       setComponentId(String(p.id ?? node.id))
-      setGroup((p.group as string) || 'General')
-      setReference((p.reference as string) || b.entityName || '')
+      setGroup(p.group !== undefined ? String(p.group) : 'General')
+      const initialRef =
+        p.reference !== undefined
+          ? String(p.reference)
+          : b.entityName !== undefined
+          ? String(b.entityName)
+          : p.refName !== undefined
+          ? String(p.refName)
+          : ''
+      setReference(initialRef)
       setComponentType(node.type || 'Dropdown')
       setParentId(String(p.parentId ?? ''))
-      setRefName((p.refName as string) || (p.reference as string) || b.entityName || '')
-      setFieldName(b.fieldName || (p.name as string) || (p.fieldName as string) || node.id)
+      setRefName(
+        p.refName !== undefined
+          ? String(p.refName)
+          : b.refName !== undefined
+          ? String(b.refName)
+          : initialRef
+      )
+      setFieldName(
+        b.fieldName !== undefined
+          ? String(b.fieldName)
+          : p.fieldName !== undefined
+          ? String(p.fieldName)
+          : p.name !== undefined
+          ? String(p.name)
+          : node.id
+      )
       setOrder(Number(node.order ?? p.order ?? 1))
       setColumn(Number(p.colSpan ?? p.column ?? 4))
-      setLabel((p.label as string) || '')
+      setLabel(p.label !== undefined ? String(p.label) : '')
       setEvents(
-        typeof p.events === 'string'
-          ? p.events
-          : p.events
-            ? JSON.stringify(p.events)
-            : '{"change":"AutoPOL"}'
+        p.events !== undefined
+          ? typeof p.events === 'string'
+            ? p.events
+            : JSON.stringify(p.events)
+          : ''
       )
-      setStyleVal((p.style as string) || '')
-      setChildStyle((p.childStyle as string) || '')
-      setValidation((p.validation as string) || '')
-      setSelectField((p.selectField as string) || '')
-      setPlainText((p.plainText as string) || '')
-      setCssClass((p.cssClass as string) || (p.className as string) || '')
-      setSqlSelect((p.sqlSelect as string) || '')
+      setStyleVal(p.style !== undefined ? String(p.style) : '')
+      setChildStyle(p.childStyle !== undefined ? String(p.childStyle) : '')
+      setValidation(p.validation !== undefined ? String(p.validation) : '')
+      setSelectField(
+        p.selectField !== undefined
+          ? String(p.selectField)
+          : b.selectField !== undefined
+          ? String(b.selectField)
+          : ''
+      )
+      setPlainText(p.plainText !== undefined ? String(p.plainText) : '')
+      setCssClass(
+        p.cssClass !== undefined
+          ? String(p.cssClass)
+          : p.className !== undefined
+          ? String(p.className)
+          : ''
+      )
+      setSqlSelect(p.sqlSelect !== undefined ? String(p.sqlSelect) : '')
       setOffsetVal(String(p.offset ?? ''))
-      setGroupFormat((p.groupFormat as string) || '')
-      setFormatSummary((p.formatSummary as string) || '')
-      setOrderBySummary((p.orderBySummary as string) || '')
-      setGroupEvent((p.groupEvent as string) || '')
-      setIconVal((p.icon as string) || '')
-      setSystemVal((p.system as string) || '')
-      setRefClass((p.refClass as string) || 'TMS.UI.Business.Catalogue.TerminalEditor')
-      setHotKey((p.hotKey as string) || '')
-      setDateTimeField((p.dateTimeField as string) || '')
+      setGroupFormat(p.groupFormat !== undefined ? String(p.groupFormat) : '')
+      setFormatSummary(p.formatSummary !== undefined ? String(p.formatSummary) : '')
+      setOrderBySummary(p.orderBySummary !== undefined ? String(p.orderBySummary) : '')
+      setGroupEvent(p.groupEvent !== undefined ? String(p.groupEvent) : '')
+      setIconVal(p.icon !== undefined ? String(p.icon) : '')
+      setSystemVal(p.system !== undefined ? String(p.system) : '')
+      setRefClass(p.refClass !== undefined ? String(p.refClass) : '')
+      setHotKey(p.hotKey !== undefined ? String(p.hotKey) : '')
+      setDateTimeField(p.dateTimeField !== undefined ? String(p.dateTimeField) : '')
       setAddStart(String(p.addStart ?? ''))
       setAddEnd(String(p.addEnd ?? ''))
       setBodyRowHeight(String(p.bodyRowHeight ?? ''))
-      setSqlWhere((p.sqlWhere as string) || '')
+      setSqlWhere(
+        p.sqlWhere !== undefined
+          ? String(p.sqlWhere)
+          : b.sqlWhere !== undefined
+          ? String(b.sqlWhere)
+          : ''
+      )
       setFooterHeight(String(p.footerHeight ?? ''))
-      setJoinTable((p.joinTable as string) || '')
-      setIdField((p.idField as string) || 'id')
+      setJoinTable(p.joinTable !== undefined ? String(p.joinTable) : '')
+      setIdField(
+        p.idField !== undefined
+          ? String(p.idField)
+          : b.idField !== undefined
+          ? String(b.idField)
+          : 'id'
+      )
       setHeaderHeight(String(p.headerHeight ?? ''))
-      setPopulateField((p.populateField as string) || '')
+      setPopulateField(
+        p.populateField !== undefined
+          ? String(p.populateField)
+          : b.populateField !== undefined
+          ? String(b.populateField)
+          : ''
+      )
       setPrecision(String(p.precision ?? ''))
-      setGroupBy((p.groupBy as string) || '')
-      setDisabledExp((p.disabledExp as string) || '')
-      setShowExp((p.showExp as string) || '')
+      setGroupBy(p.groupBy !== undefined ? String(p.groupBy) : '')
+      setDisabledExp(p.disabledExp !== undefined ? String(p.disabledExp) : '')
+      setShowExp(p.showExp !== undefined ? String(p.showExp) : '')
       setRowVal(String(p.row ?? ''))
-      setTemplateVal((p.template as string) || '')
-      setTemplateLockedVal((p.templateLocked as string) || '')
+      setTemplateVal(p.template !== undefined ? String(p.template) : '')
+      setTemplateLockedVal(p.templateLocked !== undefined ? String(p.templateLocked) : '')
       setDefaultVal(String(p.default ?? p.defaultValue ?? ''))
 
       // Checkboxes
@@ -212,24 +272,48 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
       setDispSummary(Boolean(p.isSummary || p.summary))
       setDispDateTimeField(Boolean(p.showDateTimeField))
 
-      // Code blocks
-      if (p.dataSource || p.dataSourceFilter || b.dataSource) {
-        setDataSourceCode(String(p.dataSource || p.dataSourceFilter || b.dataSource))
-      }
-      if (p.formatEntity || b.formatEntity) {
-        setFormatEntityCode(String(p.formatEntity || b.formatEntity))
-      }
-      if (p.migration) {
-        setMigrationCode(String(p.migration))
-      }
-      if (p.formatData || b.formatData) {
-        setFormatDataCode(String(p.formatData || b.formatData))
-      }
-      if (p.query || b.query) {
-        setQueryCode(String(p.query || b.query))
-      }
+      // Code blocks (giữ chuỗi rỗng '' nếu người dùng đã xóa trắng!)
+      const rawDs =
+        p.dataSource !== undefined
+          ? p.dataSource
+          : p.dataSourceFilter !== undefined
+          ? p.dataSourceFilter
+          : b.dataSource !== undefined
+          ? b.dataSource
+          : ''
+      setDataSourceCode(String(rawDs ?? ''))
+
+      const rawFe =
+        p.formatEntity !== undefined
+          ? p.formatEntity
+          : b.formatEntity !== undefined
+          ? b.formatEntity
+          : ''
+      setFormatEntityCode(String(rawFe ?? ''))
+
+      setMigrationCode(p.migration !== undefined ? String(p.migration) : '')
+
+      const rawFd =
+        p.formatData !== undefined
+          ? p.formatData
+          : b.formatData !== undefined
+          ? b.formatData
+          : ''
+      setFormatDataCode(String(rawFd ?? ''))
+
+      const rawQ =
+        p.query !== undefined
+          ? p.query
+          : b.query !== undefined
+          ? b.query
+          : ''
+      setQueryCode(String(rawQ ?? ''))
+
+      setDropdownColumns(
+        (p.dropdownColumns as DropdownColumnConfig[]) || b.dropdownColumns || []
+      )
     }
-  }, [node])
+  }, [node, isOpen])
 
   if (!isOpen || !node) return null
 
@@ -328,12 +412,13 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
       migration: migrationCode,
       formatData: formatDataCode,
       query: dataSourceCode,
+      dropdownColumns,
     }
 
     const updatedBinding = {
       ...(node.dataBinding || {}),
-      entityName: reference || refName || node.dataBinding?.entityName || group || 'General',
-      refName: refName || reference || node.dataBinding?.refName || '',
+      entityName: reference || refName || '',
+      refName: refName || reference || '',
       fieldName: fieldName || node.id,
       query: dataSourceCode,
       dataSource: dataSourceCode,
@@ -343,12 +428,18 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
       idField,
       formatData: formatDataCode,
       formatEntity: formatEntityCode,
+      dropdownColumns,
       twoWay: true,
     }
 
     onSave(node.id, updatedProps, updatedBinding)
     onClose()
   }
+
+  const combinedEntities = buildCombinedEntityCatalog(entities)
+  const selectedEntity = findMatchingEntity(combinedEntities, reference || refName)
+  const availableFields = selectedEntity ? selectedEntity.fields : []
+  const isSelectLike = ['Select', 'Dropdown', 'Autocomplete', 'SearchEntry'].includes(componentType)
 
   // Helper checkbox input with green tick style matching legacy Core
   const renderCheckbox = (
@@ -410,7 +501,7 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
           </div>
         </div>
 
-        {/* ── SUB-HEADER TABS (THÔNG TIN CHUNG | QUYỀN HẠN | REPORT) ── */}
+        {/* ── SUB-HEADER TABS (THÔNG TIN CHUNG | CỘT DROPDOWN | QUYỀN HẠN | REPORT) ── */}
         <div className="flex items-center border-b border-slate-800 bg-[#0a1220] px-5 gap-6 text-xs font-semibold select-none">
           <button
             type="button"
@@ -422,6 +513,24 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
           >
             THÔNG TIN CHUNG
           </button>
+          {isSelectLike && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('dropdownColumns')}
+              className={`py-2 border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${activeTab === 'dropdownColumns'
+                  ? 'border-emerald-400 text-emerald-300'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+            >
+              <TableIcon className="w-3.5 h-3.5 text-emerald-400" />
+              <span>CỘT DROPDOWN</span>
+              {dropdownColumns.length > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">
+                  {dropdownColumns.length}
+                </span>
+              )}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setActiveTab('permissions')}
@@ -477,25 +586,23 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
                       />
                     </div>
                     <div>
-                      <label className="text-slate-400 block mb-0.5 text-[11px]">Reference</label>
-                      <input
-                        type="text"
-                        value={reference}
+                      <label className="text-slate-400 block mb-0.5 text-[11px]">Reference (Chọn Thực Thể)</label>
+                      <select
+                        value={selectedEntity ? selectedEntity.name : ''}
                         onChange={(e) => {
-                          setReference(e.target.value)
-                          if (!refName) setRefName(e.target.value)
+                          const entName = e.target.value
+                          setReference(entName)
+                          setRefName(entName)
                         }}
-                        list="entity-list"
-                        placeholder="VD: Terminal, Transaction..."
-                        className="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
-                      />
-                      <datalist id="entity-list">
-                        {entities.map((e) => (
-                          <option key={e.name} value={e.name}>
-                            {e.displayName}
+                        className="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none cursor-pointer"
+                      >
+                        <option value="">-- Chọn Thực Thể Danh Mục --</option>
+                        {combinedEntities.map((ent) => (
+                          <option key={ent.name} value={ent.name}>
+                            {ent.displayName} ({ent.name})
                           </option>
                         ))}
-                      </datalist>
+                      </select>
                     </div>
 
                     {/* Hàng 2 */}
@@ -530,12 +637,16 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
                       />
                     </div>
                     <div>
-                      <label className="text-slate-400 block mb-0.5 text-[11px]">RefName</label>
+                      <label className="text-slate-400 block mb-0.5 text-[11px]">RefName (Hoặc nhập tay)</label>
                       <input
                         type="text"
                         value={refName}
-                        onChange={(e) => setRefName(e.target.value)}
-                        className="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
+                        placeholder="VD: Vendor, Terminal, Customer..."
+                        onChange={(e) => {
+                          setRefName(e.target.value)
+                          setReference(e.target.value)
+                        }}
+                        className="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-cyan-300 font-mono text-xs focus:border-teal-500 focus:outline-none"
                       />
                     </div>
 
@@ -985,8 +1096,9 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
                       <textarea
                         rows={2}
                         value={dataSourceCode}
+                        placeholder="VD: active = true hoặc ?$filter=Active eq true"
                         onChange={(e) => setDataSourceCode(e.target.value)}
-                        className="w-full py-1 px-2.5 bg-transparent text-rose-300 focus:outline-none resize-y"
+                        className="w-full py-1 px-2.5 bg-transparent text-rose-300 placeholder-slate-600 focus:outline-none resize-y"
                       />
                     </div>
                   </div>
@@ -1004,15 +1116,16 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
                       <textarea
                         rows={2}
                         value={formatEntityCode}
+                        placeholder="VD: (x, y) => { return x.PortCode ? (x.PortCode + ' - ' + x.Name) : x.Name; }"
                         onChange={(e) => setFormatEntityCode(e.target.value)}
-                        className="w-full py-1 px-2.5 bg-transparent text-cyan-300 focus:outline-none resize-y"
+                        className="w-full py-1 px-2.5 bg-transparent text-cyan-300 placeholder-slate-600 focus:outline-none resize-y"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Hàng Code 2: MIGRATION & FORMATDATA */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Hàng Code 2: MIGRATION & FORMATDATA (Ẩn FORMATDATA nếu là component Select/Dropdown vì đã nằm ở Tab Cột Dropdown) */}
+                <div className={`grid grid-cols-1 ${!isSelectLike ? 'md:grid-cols-2' : ''} gap-3`}>
                   {/* MIGRATION */}
                   <div className="bg-[#070d18] border border-slate-800 rounded p-2.5">
                     <div className="text-[11px] font-bold text-teal-400 mb-1 tracking-wider uppercase">
@@ -1027,30 +1140,232 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
                         value={migrationCode}
                         onChange={(e) => setMigrationCode(e.target.value)}
                         placeholder="Migration scripts..."
-                        className="w-full py-1 px-2.5 bg-transparent text-slate-300 focus:outline-none resize-y"
+                        className="w-full py-1 px-2.5 bg-transparent text-slate-300 placeholder-slate-600 focus:outline-none resize-y"
                       />
                     </div>
                   </div>
 
-                  {/* FORMATDATA */}
-                  <div className="bg-[#070d18] border border-slate-800 rounded p-2.5">
-                    <div className="text-[11px] font-bold text-teal-400 mb-1 tracking-wider uppercase flex items-center justify-between">
-                      <span>FORMATDATA</span>
-                      <span className="text-[10px] text-slate-500 font-mono">{'{Field}'} Interpolation</span>
-                    </div>
-                    <div className="flex bg-[#030712] border border-slate-900 rounded font-mono text-[11px]">
-                      <div className="py-1 px-2 text-slate-600 select-none border-r border-slate-900 text-right">
-                        1
+                  {/* FORMATDATA: Chỉ hiện ở đây cho component không liên quan đến Select */}
+                  {!isSelectLike && (
+                    <div className="bg-[#070d18] border border-slate-800 rounded p-2.5">
+                      <div className="text-[11px] font-bold text-teal-400 mb-1 tracking-wider uppercase flex items-center justify-between">
+                        <span>FORMATDATA</span>
+                        <span className="text-[10px] text-slate-500 font-mono">{'{Field}'} Interpolation</span>
                       </div>
-                      <textarea
-                        rows={2}
-                        value={formatDataCode}
-                        onChange={(e) => setFormatDataCode(e.target.value)}
-                        placeholder="{ShortName}"
-                        className="w-full py-1 px-2.5 bg-transparent text-amber-300 focus:outline-none resize-y"
-                      />
+                      <div className="flex bg-[#030712] border border-slate-900 rounded font-mono text-[11px]">
+                        <div className="py-1 px-2 text-slate-600 select-none border-r border-slate-900 text-right">
+                          1
+                        </div>
+                        <textarea
+                          rows={2}
+                          value={formatDataCode}
+                          onChange={(e) => setFormatDataCode(e.target.value)}
+                          placeholder="{ShortName}"
+                          className="w-full py-1 px-2.5 bg-transparent text-amber-300 placeholder-slate-600 focus:outline-none resize-y"
+                        />
+                      </div>
                     </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'dropdownColumns' && isSelectLike && (
+            <div className="space-y-4">
+              <div className="p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-lg space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                      <TableIcon className="w-4 h-4 text-emerald-400" />
+                      <span>Cấu Hình Cột Hiển Thị Bảng Chọn Dropdown (Multi-Column Select)</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Thiết lập danh sách cột và định dạng hiển thị <span className="font-mono text-emerald-300">FORMATDATA</span> cho Select.
+                    </p>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDropdownColumns([
+                          ...dropdownColumns,
+                          {
+                            key: availableFields[dropdownColumns.length]?.name || `col${dropdownColumns.length + 1}`,
+                            title: availableFields[dropdownColumns.length]?.displayName || `Cột ${dropdownColumns.length + 1}`,
+                            width: '50%',
+                            align: 'left',
+                          },
+                        ])
+                      }}
+                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Thêm Cột</span>
+                    </button>
+                    {selectedEntity && availableFields.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const preferred = ['code', 'fullname', 'name', 'address', 'taxcode', 'phone', 'shortname']
+                          let picked = availableFields.filter((f) => preferred.includes(f.name.toLowerCase()))
+                          if (picked.length === 0) picked = availableFields.slice(0, 3)
+                          else picked = picked.slice(0, 4)
+                          setDropdownColumns(
+                            picked.map((f) => ({
+                              key: f.name,
+                              title: f.displayName || f.name,
+                              width: `${Math.floor(100 / picked.length)}%`,
+                              align: 'left',
+                            }))
+                          )
+                        }}
+                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                      >
+                        <Zap className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Tự động nạp từ {selectedEntity.name}</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {dropdownColumns.length === 0 ? (
+                  <div className="p-5 border border-dashed border-slate-700 rounded-lg text-center text-xs text-slate-400">
+                    Chưa có cột nào. Nhấn <strong>"Thêm Cột"</strong> hoặc <strong>"Tự động nạp"</strong> để bắt đầu.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {dropdownColumns.map((col, idx) => (
+                      <div key={idx} className="grid grid-cols-12 gap-2 items-center p-2 bg-[#070d18] border border-slate-800 rounded">
+                        <div className="col-span-1 flex items-center justify-center gap-0.5">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={() => {
+                              const next = [...dropdownColumns]
+                              const tmp = next[idx]
+                              next[idx] = next[idx - 1]
+                              next[idx - 1] = tmp
+                              setDropdownColumns(next)
+                            }}
+                            className="p-0.5 text-slate-400 hover:text-white disabled:opacity-20"
+                          >
+                            <ChevronUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === dropdownColumns.length - 1}
+                            onClick={() => {
+                              const next = [...dropdownColumns]
+                              const tmp = next[idx]
+                              next[idx] = next[idx + 1]
+                              next[idx + 1] = tmp
+                              setDropdownColumns(next)
+                            }}
+                            className="p-0.5 text-slate-400 hover:text-white disabled:opacity-20"
+                          >
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <div className="col-span-4">
+                          <input
+                            type="text"
+                            value={col.key}
+                            placeholder="Key (vd: FullName)"
+                            onChange={(e) => {
+                              const next = [...dropdownColumns]
+                              next[idx] = { ...next[idx], key: e.target.value }
+                              setDropdownColumns(next)
+                            }}
+                            className="w-full px-2 py-1 bg-[#030712] border border-slate-700 rounded text-xs font-mono text-cyan-300"
+                          />
+                        </div>
+                        <div className="col-span-3">
+                          <input
+                            type="text"
+                            value={col.title}
+                            placeholder="Tiêu đề cột"
+                            onChange={(e) => {
+                              const next = [...dropdownColumns]
+                              next[idx] = { ...next[idx], title: e.target.value }
+                              setDropdownColumns(next)
+                            }}
+                            className="w-full px-2 py-1 bg-[#030712] border border-slate-700 rounded text-xs text-slate-100"
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <input
+                            type="text"
+                            value={col.width || '50%'}
+                            placeholder="Width"
+                            onChange={(e) => {
+                              const next = [...dropdownColumns]
+                              next[idx] = { ...next[idx], width: e.target.value }
+                              setDropdownColumns(next)
+                            }}
+                            className="w-full px-2 py-1 bg-[#030712] border border-slate-700 rounded text-xs font-mono text-slate-200"
+                          />
+                        </div>
+                        <div className="col-span-1">
+                          <select
+                            value={col.align || 'left'}
+                            onChange={(e) => {
+                              const next = [...dropdownColumns]
+                              next[idx] = { ...next[idx], align: e.target.value as 'left' | 'center' | 'right' }
+                              setDropdownColumns(next)
+                            }}
+                            className="w-full px-1 py-1 bg-[#030712] border border-slate-700 rounded text-[11px] text-slate-200"
+                          >
+                            <option value="left">Trái</option>
+                            <option value="center">Giữa</option>
+                            <option value="right">Phải</option>
+                          </select>
+                        </div>
+                        <div className="col-span-1 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setDropdownColumns(dropdownColumns.filter((_, i) => i !== idx))}
+                            className="p-1 text-slate-400 hover:text-red-400"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* FORMATDATA nằm tại đây cho Select */}
+                <div className="bg-[#070d18] border border-slate-800 rounded p-3 space-y-2">
+                  <div className="text-[11px] font-bold text-teal-400 tracking-wider uppercase flex items-center justify-between">
+                    <span>FORMATDATA (Định dạng hiển thị sau khi chọn)</span>
+                    <span className="text-[10px] text-slate-500 font-mono">{'{Entity.Field}'} Interpolation</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={formatDataCode}
+                    onChange={(e) => setFormatDataCode(e.target.value)}
+                    placeholder="VD: {Vendor.FullName} - {Vendor.Address}"
+                    className="w-full px-3 py-1.5 bg-[#030712] border border-slate-700 rounded text-xs font-mono text-amber-300 placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
+                  />
+                  {dropdownColumns.length > 0 && (
+                    <div className="flex flex-wrap gap-1 pt-1">
+                      {dropdownColumns.map((col, idx) => {
+                        const prefix = reference || refName
+                        const token = prefix ? `{${prefix}.${col.key}}` : `{${col.key}}`
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setFormatDataCode(formatDataCode ? `${formatDataCode} - ${token}` : token)}
+                            className="px-2 py-0.5 bg-slate-800 hover:bg-emerald-900/40 text-emerald-300 border border-slate-700 rounded text-[10px] font-mono cursor-pointer"
+                          >
+                            + {token}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -42,8 +42,12 @@ import type {
   FlexConfig,
   DropdownColumnConfig,
 } from '@/types/schema'
-import { MOCK_ENTITY_CATALOGS } from '@/data/mockEntityCatalog'
-import { fetchEntityMetadata, EntityMetadata } from '@/core/services/metadataService'
+import {
+  fetchEntityMetadata,
+  EntityMetadata,
+  buildCombinedEntityCatalog,
+  findMatchingEntity,
+} from '@/core/services/metadataService'
 
 interface PropertyPanelProps {
   width?: number
@@ -1792,37 +1796,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
           const isInput = compType === 'TextBox' || compType === 'Number' || compType === 'DatePicker' || compType === 'Checkbox' || compType === 'Textarea'
           const isStaticOrLayout = !isTable && !isLookup && !isInput
 
-          // Gộp danh mục entities từ cả SQL Server API (liveEntities) và Mock Catalogs
-          const combinedEntities: { name: string; displayName: string; fields: { name: string; displayName: string; dataType: string }[] }[] = []
-
-          liveEntities.forEach((ent) => {
-            combinedEntities.push({
-              name: ent.name,
-              displayName: ent.displayName || ent.name,
-              fields: ent.columns.map((c) => ({
-                name: c.name,
-                displayName: c.displayName || c.name,
-                dataType: c.dataType,
-              })),
-            })
-          })
-
-          MOCK_ENTITY_CATALOGS.forEach((m) => {
-            if (!combinedEntities.some((x) => x.name.toLowerCase() === m.name.toLowerCase())) {
-              combinedEntities.push({
-                name: m.name,
-                displayName: m.displayName,
-                fields: m.fields.map((f) => ({
-                  name: f.name,
-                  displayName: f.displayName,
-                  dataType: f.dataType,
-                })),
-              })
-            }
-          })
+          // Danh mục thực thể nghiệp vụ lấy trực tiếp từ Backend API (liveEntities)
+          const combinedEntities = buildCombinedEntityCatalog(liveEntities)
 
           const currentEntityName = binding.entityName || (nodeProps.reference as string) || (nodeProps.refName as string) || ''
-          const selectedEntity = combinedEntities.find((e) => e.name.toLowerCase() === currentEntityName.toLowerCase())
+          const selectedEntity = findMatchingEntity(combinedEntities, currentEntityName)
           const availableFields = selectedEntity ? selectedEntity.fields : []
 
           // Giá trị DATASOURCE hợp nhất (đồng bộ cả dataSource và query)
@@ -2152,40 +2130,19 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                     </div>
                   </div>
 
-                  {/* Chuỗi Định Dạng (FormatData) */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                        Chuỗi Định Dạng (FormatData)
-                      </label>
-                      <span className="text-[10px] text-emerald-400 font-mono">Format</span>
-                    </div>
-                    <input
-                      type="text"
-                      value={binding.formatData || (nodeProps.formatData as string) || ''}
-                      placeholder="VD: {Vendor.FullName} - {Vendor.Address} hoặc {ShortName}"
-                      onChange={(e) => {
-                        const fd = e.target.value
-                        updateComponentDataBinding(selectedNode.id, { formatData: fd })
-                        updateComponentProps(selectedNode.id, { formatData: fd })
-                      }}
-                      className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
-
-                  {/* Box tóm tắt Cột Hiển Thị Dropdown & nút cấu hình */}
+                  {/* Box tóm tắt Cột Hiển Thị & FormatData Dropdown -> chuyển sang Tab Cột Dropdown */}
                   <div className="p-3 bg-emerald-950/20 border border-emerald-500/30 rounded-xl space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-emerald-300 flex items-center gap-1.5">
                         <TableIcon className="w-3.5 h-3.5 text-emerald-400" />
-                        Cột Hiển Thị Bảng Chọn ({dropdownColumns.length} cột)
+                        Cột Hiển Thị & Định Dạng ({dropdownColumns.length} cột)
                       </span>
                       <button
                         type="button"
                         onClick={() => setActiveTab('columns')}
                         className="text-[10px] px-2 py-0.5 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 rounded font-semibold transition-colors cursor-pointer"
                       >
-                        Cấu hình cột →
+                        Cấu hình cột & FormatData →
                       </button>
                     </div>
                     {dropdownColumns.length > 0 ? (
@@ -2204,6 +2161,12 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                         Chưa cấu hình cột riêng (sẽ tự động lấy các cột mặc định của thực thể).
                       </p>
                     )}
+                    <div className="text-[10px] text-slate-400 pt-1 border-t border-emerald-500/20 flex items-center justify-between">
+                      <span>FormatData:</span>
+                      <span className="font-mono text-emerald-300 truncate max-w-[180px]">
+                        {(binding.formatData ?? (nodeProps.formatData as string) ?? '') || '(Mặc định theo cột tên)'}
+                      </span>
+                    </div>
                   </div>
                 </>
               )}
@@ -2314,38 +2277,14 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
           const binding = selectedNode.dataBinding || {}
           const nodeProps = selectedNode.props || {}
 
-          // Lấy thông tin thực thể tham chiếu
-          const combinedEntities: { name: string; displayName: string; fields: { name: string; displayName: string; dataType: string }[] }[] = []
-          liveEntities.forEach((ent) => {
-            combinedEntities.push({
-              name: ent.name,
-              displayName: ent.displayName || ent.name,
-              fields: ent.columns.map((c) => ({
-                name: c.name,
-                displayName: c.displayName || c.name,
-                dataType: c.dataType,
-              })),
-            })
-          })
-          MOCK_ENTITY_CATALOGS.forEach((m) => {
-            if (!combinedEntities.some((x) => x.name.toLowerCase() === m.name.toLowerCase())) {
-              combinedEntities.push({
-                name: m.name,
-                displayName: m.displayName,
-                fields: m.fields.map((f) => ({
-                  name: f.name,
-                  displayName: f.displayName,
-                  dataType: f.dataType,
-                })),
-              })
-            }
-          })
+          // Lấy thông tin thực thể tham chiếu từ Backend API
+          const combinedEntities = buildCombinedEntityCatalog(liveEntities)
 
           const refEntityName = binding.entityName || (nodeProps.reference as string) || (nodeProps.refName as string) || ''
-          const selectedEntity = combinedEntities.find((e) => e.name.toLowerCase() === refEntityName.toLowerCase())
+          const selectedEntity = findMatchingEntity(combinedEntities, refEntityName)
           const availableFields = selectedEntity ? selectedEntity.fields : []
 
-          const currentFormatData = binding.formatData || (nodeProps.formatData as string) || ''
+          const currentFormatData = binding.formatData ?? (nodeProps.formatData as string) ?? ''
 
           const saveColumns = (nextCols: DropdownColumnConfig[]) => {
             updateComponentProps(selectedNode.id, { dropdownColumns: nextCols })

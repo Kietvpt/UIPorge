@@ -7,6 +7,8 @@
  * - Hỗ trợ Dropdown chọn Reference (Bảng liên kết), FieldName (Cột dữ liệu), Populate field trong Designer.
  */
 
+import type { UIEntityCatalog } from '@/types/schema'
+
 export interface ColumnMetadata {
   name: string
   displayName: string
@@ -24,57 +26,68 @@ export interface EntityMetadata {
   columns: ColumnMetadata[]
 }
 
-// Fallback danh mục thực thể mẫu chuẩn generic khi làm việc offline
-export const FALLBACK_ENTITY_CATALOGS: EntityMetadata[] = [
-  {
-    name: 'Document',
-    displayName: 'Chứng Từ Nghiệp Vụ (Documents)',
-    tableName: 'Documents',
-    description: 'Thực thể chứng từ nghiệp vụ tổng quát',
-    columns: [
-      { name: 'Id', displayName: 'Id', dataType: 'number', isRequired: true, isPrimaryKey: true, isAuditField: false },
-      { name: 'Code', displayName: 'Mã số', dataType: 'string', isRequired: true, isPrimaryKey: false, isAuditField: false },
-      { name: 'DocDate', displayName: 'Ngày lập', dataType: 'date', isRequired: false, isPrimaryKey: false, isAuditField: false },
-      { name: 'Title', displayName: 'Tiêu đề / Tên chứng từ', dataType: 'string', isRequired: true, isPrimaryKey: false, isAuditField: false },
-      { name: 'PartnerName', displayName: 'Đối tác / Khách hàng', dataType: 'string', isRequired: false, isPrimaryKey: false, isAuditField: false },
-      { name: 'Status', displayName: 'Trạng thái', dataType: 'string', isRequired: false, isPrimaryKey: false, isAuditField: false },
-      { name: 'TotalAmount', displayName: 'Tổng tiền', dataType: 'number', isRequired: false, isPrimaryKey: false, isAuditField: false },
-      { name: 'Active', displayName: 'Kích hoạt', dataType: 'boolean', isRequired: false, isPrimaryKey: false, isAuditField: true },
-    ],
-  },
-  {
-    name: 'MasterData',
-    displayName: 'Danh Mục Dùng Chung (MasterData)',
-    tableName: 'MasterData',
-    description: 'Bảng tra cứu danh mục chuẩn hóa',
-    columns: [
-      { name: 'Id', displayName: 'Id', dataType: 'number', isRequired: true, isPrimaryKey: true, isAuditField: false },
-      { name: 'Code', displayName: 'Mã', dataType: 'string', isRequired: true, isPrimaryKey: false, isAuditField: false },
-      { name: 'Name', displayName: 'Tên danh mục', dataType: 'string', isRequired: true, isPrimaryKey: false, isAuditField: false },
-      { name: 'Description', displayName: 'Mô tả', dataType: 'string', isRequired: false, isPrimaryKey: false, isAuditField: false },
-      { name: 'Active', displayName: 'Kích hoạt', dataType: 'boolean', isRequired: false, isPrimaryKey: false, isAuditField: true },
-    ],
-  },
-]
+export interface CombinedEntityInfo {
+  name: string
+  displayName: string
+  tableName?: string
+  fields: { name: string; displayName: string; dataType: string }[]
+}
 
 let cachedMetadata: EntityMetadata[] | null = null
 
-export async function fetchEntityMetadata(): Promise<EntityMetadata[]> {
-  if (cachedMetadata) return cachedMetadata
+export async function fetchEntityMetadata(forceRefresh = false): Promise<EntityMetadata[]> {
+  if (!forceRefresh && cachedMetadata) return cachedMetadata
   try {
     const res = await fetch('http://localhost:5048/api/core/metadata/entities')
     if (res.ok) {
       const data = await res.json()
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         cachedMetadata = data
         return data
       }
     }
   } catch (err) {
-    console.warn('[MetadataService] Server offline, using fallback entity catalogs')
+    console.warn('[MetadataService] Không thể tải danh mục thực thể từ Backend API:', err)
   }
 
-  cachedMetadata = FALLBACK_ENTITY_CATALOGS
-  return FALLBACK_ENTITY_CATALOGS
+  return []
+}
+
+/**
+ * Chuẩn hóa danh mục thực thể nghiệp vụ lấy từ Backend API (Reflection DbContext).
+ */
+export function buildCombinedEntityCatalog(
+  liveEntities: EntityMetadata[],
+  _extraCatalogs: UIEntityCatalog[] = []
+): CombinedEntityInfo[] {
+  return liveEntities.map((ent) => ({
+    name: ent.name,
+    displayName: ent.displayName || ent.name,
+    tableName: ent.tableName,
+    fields: ent.columns.map((c) => ({
+      name: c.name,
+      displayName: c.displayName || c.name,
+      dataType: c.dataType,
+    })),
+  }))
+}
+
+/**
+ * Tìm kiếm thực thể khớp theo tên (hỗ trợ cả số ít/số nhiều như Vendor <-> Vendors, TableName).
+ */
+export function findMatchingEntity(
+  entities: CombinedEntityInfo[],
+  refName?: string
+): CombinedEntityInfo | undefined {
+  if (!refName || !refName.trim()) return undefined
+  const clean = refName.trim().toLowerCase()
+  const singular = clean.endsWith('s') ? clean.slice(0, -1) : clean
+
+  return entities.find(
+    (e) =>
+      e.name.toLowerCase() === clean ||
+      e.name.toLowerCase() === singular ||
+      (e.tableName && e.tableName.toLowerCase() === clean)
+  )
 }
 
