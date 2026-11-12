@@ -27,17 +27,27 @@ export { RowContextMenu } from '@/renderer/components/grid/RowContextMenu'
 export { SummaryRow } from '@/renderer/components/grid/SummaryRow'
 export { useGridKeyboardNavigation } from '@/renderer/components/grid/useGridKeyboardNavigation'
 export { exportGridToExcel } from './engines/excelExportEngine'
-export { printGridReport } from './engines/printReportEngine'
+export {
+  printGridReport,
+  downloadBackendPdfReport,
+  downloadBackendDocxReport,
+} from './engines/printReportEngine'
+export type { PrintReportOptions, BackendDocxReportOptions } from './engines/printReportEngine'
 
 // 3. Core Framework Engines
 export { useDataEngine } from './engines/dataEngine'
 export { useNavigationEngine } from './engines/navigationEngine'
+export { useRealtimeEngine } from './engines/realtimeEngine'
+export type { LockedRecordInfo, RealtimeNotification } from './engines/realtimeEngine'
+export { useGlobalHotkeys } from './hooks/useGlobalHotkeys'
+export type { GlobalHotkeysOptions } from './hooks/useGlobalHotkeys'
 export {
   registerBL,
   resolveBlModule,
   findFunctionInModule,
   executeSingleEvent,
   triggerComponentEvent,
+  invokeBLLifecycle,
 } from './engines/eventRunner'
 export {
   registerBlFunctions,
@@ -78,6 +88,8 @@ export { useAuthStore } from '@/store/authStore'
 export { useMasterDetailStore } from '@/store/masterDetailStore'
 
 // 6. Types & Contracts
+export { BaseBL, defineBL } from './contracts/BaseBL'
+export type { BaseBLContext, BaseBLLifecycle, BeforeSaveResult } from './contracts/BaseBL'
 export type {
   ComponentNode,
   ComponentType,

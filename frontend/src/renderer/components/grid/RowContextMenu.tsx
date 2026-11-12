@@ -6,6 +6,7 @@ import {
   PlusCircle,
   ArrowUp,
   ArrowDown,
+  ClipboardPaste,
 } from 'lucide-react'
 
 export interface RowContextMenuProps {
@@ -21,6 +22,7 @@ export interface RowContextMenuProps {
   onInsertRowBelow: (rowIndex: number) => void
   onMoveRowUp?: (rowIndex: number) => void
   onMoveRowDown?: (rowIndex: number) => void
+  onPasteExcel?: (rowIndex: number) => void
 }
 
 export const RowContextMenu: React.FC<RowContextMenuProps> = ({
@@ -36,6 +38,7 @@ export const RowContextMenu: React.FC<RowContextMenuProps> = ({
   onInsertRowBelow,
   onMoveRowUp,
   onMoveRowDown,
+  onPasteExcel,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -95,6 +98,21 @@ export const RowContextMenu: React.FC<RowContextMenuProps> = ({
           <Copy className="w-3.5 h-3.5 text-sky-400" />
           <span>Sao chép dòng (Duplicate)</span>
         </button>
+
+        {/* 1.1 Paste Excel Data */}
+        {onPasteExcel && (
+          <button
+            type="button"
+            className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-emerald-600/20 hover:text-emerald-300 rounded text-left transition-colors cursor-pointer"
+            onClick={() => {
+              onPasteExcel(rowIndex)
+              onClose()
+            }}
+          >
+            <ClipboardPaste className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Dán từ Excel (Ctrl+V)</span>
+          </button>
+        )}
 
         {/* 2. Insert Row Below */}
         <button

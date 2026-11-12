@@ -30,12 +30,18 @@ import {
   Filter,
   FileDown,
   Printer,
+  ClipboardPaste,
+  FolderTree,
+  ChevronRight,
+  ChevronDown,
+  Zap,
 } from 'lucide-react'
 
 import { useDataEngine } from '@/core/engines/dataEngine'
 import { exportGridToExcel } from '@/core/engines/excelExportEngine'
 import { printGridReport } from '@/core/engines/printReportEngine'
 import { triggerComponentEvent, executeSingleEvent } from '@/core/engines/eventRunner'
+import { applyExcelPaste, parseClipboardMatrix } from './grid/excelClipboardUtils'
 
 // Mock dữ liệu mặc định trung lập khi bảng chưa được liên kết data
 const DEFAULT_GENERIC_ROWS: any[] = [
@@ -276,11 +282,193 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     updateComponentProps(node.id, { data: nextRows })
   }
 
-  // Cập nhật và lưu bền vững danh sách cột (chuẩn hóa order & frozen lên đầu)
+  // ── COLLAPSIBLE GROUP-BY ROWS (TSK-4.2 & GroupGridView.cs) ──
+  const [groupByKey, setGroupByKey] = useState<string | null>((props.groupBy as string) || null)
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+
+  // Cấu trúc gom nhóm dữ liệu kèm tổng phụ (Subtotals) cho các cột số
+  interface TableRowGroup {
+    groupKey: string
+    groupLabel: string
+    rows: any[]
+    subtotals: Record<string, number>
+    startIndex: number
+  }
+
+  const rowGroups: TableRowGroup[] = useMemo(() => {
+    if (!groupByKey) return []
+    const groupsMap = new Map<string, any[]>()
+    processedRows.forEach((row) => {
+      const rawVal = row[groupByKey]
+      const keyStr = rawVal === undefined || rawVal === null || rawVal === '' ? '(Trống)' : String(rawVal)
+      if (!groupsMap.has(keyStr)) {
+        groupsMap.set(keyStr, [])
+      }
+      groupsMap.get(keyStr)!.push(row)
+    })
+
+    let runningIndex = 0
+    const result: TableRowGroup[] = []
+    groupsMap.forEach((gRows, keyStr) => {
+      const subtotals: Record<string, number> = {}
+      visibleColumns.forEach((c) => {
+        if (c.componentType === 'Number' || c.precision !== undefined || c.isSummary || (c as any).summary) {
+          const sum = gRows.reduce((acc, r) => {
+            const v = Number(r[c.key])
+            return acc + (isNaN(v) ? 0 : v)
+          }, 0)
+          subtotals[c.key] = sum
+        }
+      })
+
+      result.push({
+        groupKey: keyStr,
+        groupLabel: keyStr,
+        rows: gRows,
+        subtotals,
+        startIndex: runningIndex,
+      })
+      runningIndex += gRows.length
+    })
+    return result
+  }, [groupByKey, processedRows, visibleColumns])
+
+  // ── VIRTUAL SCROLLING WINDOWING (TSK-4.1) ──
+  const VIRTUAL_ROW_HEIGHT = 38
+  const VIRTUAL_OVERSCAN = 10
+  const isVirtualScrollEnabled =
+    !groupByKey && (processedRows.length > 80 || Boolean(props.virtual) || Boolean(props.virtualScroll))
+
+  const [scrollTop, setScrollTop] = useState(0)
+  const [containerHeight, setContainerHeight] = useState(550)
+
+  useEffect(() => {
+    const container = tableRef.current
+    if (!container || !isVirtualScrollEnabled) return
+
+    const onScroll = () => {
+      setScrollTop(container.scrollTop)
+    }
+
+    const onResize = () => {
+      if (container.clientHeight > 0) {
+        setContainerHeight(container.clientHeight)
+      }
+    }
+
+    container.addEventListener('scroll', onScroll, { passive: true })
+    onResize()
+    window.addEventListener('resize', onResize)
+
+    return () => {
+      container.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onResize)
+    }
+  }, [isVirtualScrollEnabled])
+
+  // Tính toán chỉ số cửa sổ hiển thị thực tế
+  const { virtualStartIndex, virtualEndIndex, topPaddingHeight, bottomPaddingHeight, virtualRows } = useMemo(() => {
+    if (!isVirtualScrollEnabled) {
+      return {
+        virtualStartIndex: 0,
+        virtualEndIndex: processedRows.length,
+        topPaddingHeight: 0,
+        bottomPaddingHeight: 0,
+        virtualRows: processedRows,
+      }
+    }
+
+    const totalRows = processedRows.length
+    const visibleCount = Math.ceil(containerHeight / VIRTUAL_ROW_HEIGHT)
+    const rawStart = Math.floor(scrollTop / VIRTUAL_ROW_HEIGHT)
+    const start = Math.max(0, rawStart - VIRTUAL_OVERSCAN)
+    const end = Math.min(totalRows, rawStart + visibleCount + VIRTUAL_OVERSCAN)
+
+    const topPad = start * VIRTUAL_ROW_HEIGHT
+    const bottomPad = Math.max(0, (totalRows - end) * VIRTUAL_ROW_HEIGHT)
+    const slice = processedRows.slice(start, end)
+
+    return {
+      virtualStartIndex: start,
+      virtualEndIndex: end,
+      topPaddingHeight: topPad,
+      bottomPaddingHeight: bottomPad,
+      virtualRows: slice,
+    }
+  }, [isVirtualScrollEnabled, processedRows, scrollTop, containerHeight])
+
+  // ── USER GRID POLICY PERSISTENCE (TSK-2.6: LocalStorage + Server UserSettings API) ──
+  const USER_GRID_POLICY_STORAGE_KEY = `uiforge_user_gridpolicy_${String(node.pageId || 'default')}_${node.id}`
+
+  // Nạp cấu hình cá nhân hóa cột của user khi khởi tạo
+  useEffect(() => {
+    let isMounted = true
+    const featureCode = String(node.pageId || 'default')
+
+    // 1. Nạp tức thì từ LocalStorage để không giật layout
+    try {
+      const cached = localStorage.getItem(USER_GRID_POLICY_STORAGE_KEY)
+      if (cached) {
+        const parsed = JSON.parse(cached)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          updateComponentProps(node.id, { columns: parsed })
+        }
+      }
+    } catch {}
+
+    // 2. Đồng bộ mới nhất từ SQL Server UserSettings API
+    fetch(
+      `http://localhost:5048/api/core/user-settings?featureCode=${encodeURIComponent(
+        featureCode
+      )}&componentId=${encodeURIComponent(node.id)}&settingType=GridPolicy`
+    )
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!isMounted || !data) return
+        const rawJson = data.settingJson || data.SettingJson
+        if (rawJson) {
+          const parsed = JSON.parse(rawJson)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            updateComponentProps(node.id, { columns: parsed })
+            try {
+              localStorage.setItem(USER_GRID_POLICY_STORAGE_KEY, rawJson)
+            } catch {}
+          }
+        }
+      })
+      .catch(() => {})
+
+    return () => {
+      isMounted = false
+    }
+  }, [node.id, node.pageId])
+
+  // Cập nhật và lưu bền vững danh sách cột (chuẩn hóa order & frozen lên đầu, đồng bộ User GridPolicy)
   const commitColumns = (updated: TableColumn[]) => {
     const normalized = normalizeColumnOrders(updated)
     updateComponentProps(node.id, { columns: normalized })
+
+    // Lưu LocalStorage
+    try {
+      localStorage.setItem(USER_GRID_POLICY_STORAGE_KEY, JSON.stringify(normalized))
+    } catch {}
+
+    // Đồng bộ bất đồng bộ lên SQL Server UserSettings API (TSK-2.6)
+    const featureCode = String(node.pageId || 'default')
+    fetch('http://localhost:5048/api/core/user-settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        featureCode,
+        componentId: node.id,
+        settingType: 'GridPolicy',
+        settingJson: JSON.stringify(normalized),
+      }),
+    }).catch(() => {})
   }
+
+  const latestActiveRowsRef = useRef(activeRows)
+  latestActiveRowsRef.current = activeRows
 
   // Sửa giá trị cell trực tiếp (khớp theo rowId để tránh lỗi khi sắp xếp hoặc tìm kiếm)
   const handleCellChange = (rowId: any, colKey: string, newVal: any) => {
@@ -290,7 +478,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
     const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
       ? detailGrids[node.id]
-      : activeRows
+      : latestActiveRowsRef.current
 
     const updated = currentList.map((r: any, i: number) => {
       const match = (r.id !== undefined && r.id === rowId) || (r.id === undefined && i === rowId)
@@ -489,17 +677,67 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     }, 60)
   }
 
-  // 📊 Xuất dữ liệu Grid ra file Excel (Core C# ButtonExcel.cs & ExcelExt.cs)
-  const handleExportExcel = () => {
+  // 📊 Xuất dữ liệu Grid ra file Excel (Core C# ButtonExcel.cs & ExcelExt.cs kết hợp Backend Native .xlsx)
+  const handleExportExcel = async () => {
+    const rawFileName = props.label ? String(props.label).replace(/\s+/g, '_') : 'Du_Lieu_Bang'
+    const sheetName = props.label ? String(props.label).slice(0, 30) : 'Sheet1'
+
+    // 1. Thử gọi Backend Native OpenXML .xlsx Export API (TSK-2.1 / TSK-2.5)
+    try {
+      const payload = {
+        title: props.label ? String(props.label) : 'BẢNG DỮ LIỆU',
+        sheetName,
+        columns: visibleColumns.map((c) => ({
+          key: c.key,
+          title: c.title || c.key,
+          align: c.align || 'left',
+          dataType:
+            c.componentType === 'Number' || c.precision !== undefined || c.format === 'number'
+              ? 'number'
+              : c.componentType === 'Checkbox'
+              ? 'boolean'
+              : 'string',
+        })),
+        rows: processedRows,
+      }
+
+      const res = await fetch('http://localhost:5048/api/core/export/excel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (res.ok) {
+        const blob = await res.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${rawFileName}.xlsx`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+        showTableToast(
+          'Xuất Excel Backend (.xlsx)',
+          `Đã xuất file Excel chuẩn OpenXML từ server thành công (${processedRows.length} bản ghi)`,
+          'success'
+        )
+        return
+      }
+    } catch {
+      // Fallback về client export nếu offline hoặc server lỗi
+    }
+
+    // 2. Client-side Fallback
     try {
       exportGridToExcel({
-        fileName: props.label ? String(props.label).replace(/\s+/g, '_') : 'Du_Lieu_Bang',
-        sheetName: props.label ? String(props.label).slice(0, 30) : 'Sheet1',
+        fileName: rawFileName,
+        sheetName,
         columns: visibleColumns,
         rows: processedRows,
         includeSummary: true,
       })
-      showTableToast('Xuất Excel', `Đã xuất ${processedRows.length} dòng dữ liệu ra file Excel thành công`, 'success')
+      showTableToast('Xuất Excel Client', `Đã xuất ${processedRows.length} dòng dữ liệu ra file Excel thành công`, 'success')
     } catch (err: any) {
       showTableToast('Lỗi xuất Excel', err?.message || 'Không thể tạo file Excel', 'warning')
     }
@@ -550,6 +788,66 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     }
   }
 
+  // 📋 Xử lý dán dữ liệu nhiều ô từ Excel / Google Sheets (Ctrl+V) chuẩn Core C# GridView.cs:2323
+  const handlePasteExcel = (clipText: string, startRowIndex: number, startColIndex: number) => {
+    const matrix = parseClipboardMatrix(clipText)
+    if (matrix.length === 0) return
+
+    const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
+      ? detailGrids[node.id]
+      : activeRows
+
+    const { updatedRows, pastedRowCount, pastedColCount, newRowsCreated } = applyExcelPaste({
+      currentRows: currentList,
+      visibleColumns,
+      allColumns: columns,
+      clipMatrix: matrix,
+      startRowIndex,
+      startColIndex,
+    })
+
+    commitRows(updatedRows)
+
+    if (reference) {
+      useDataEngine.getState().registerDataset(reference, updatedRows)
+    }
+
+    if (isMasterDetailGrid) {
+      useMasterDetailStore.setState((state) => ({
+        detailGrids: {
+          ...state.detailGrids,
+          [node.id]: updatedRows,
+        },
+      }))
+    }
+
+    const toastMessage = newRowsCreated > 0
+      ? `Đã dán thành công ${pastedRowCount} dòng × ${pastedColCount} cột (tự động tạo thêm ${newRowsCreated} dòng mới)`
+      : `Đã dán thành công ${pastedRowCount} dòng × ${pastedColCount} cột vào bảng`
+
+    showTableToast('Dán từ Excel (Ctrl+V)', toastMessage, 'success')
+  }
+
+  // 📋 Kích hoạt dán từ Clipboard qua Context Menu dòng
+  const handleContextMenuPaste = (targetRowIdx: number) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.readText === 'function') {
+      navigator.clipboard
+        .readText()
+        .then((clipText) => {
+          if (clipText) {
+            handlePasteExcel(clipText, targetRowIdx, 0)
+          } else {
+            showTableToast('Dán từ Excel', 'Clipboard hiện đang trống', 'warning')
+          }
+        })
+        .catch(() => {
+          showTableToast('Dán từ Excel', 'Hãy bấm chọn ô và nhấn phím Ctrl+V để dán dữ liệu', 'info')
+        })
+    } else {
+      showTableToast('Dán từ Excel', 'Hãy bấm chọn ô và nhấn phím Ctrl+V để dán dữ liệu', 'info')
+    }
+  }
+
   // ⌨️ Kích hoạt Hook Điều hướng Bàn phím & Phím tắt ERP chuẩn Desktop (Core C# GridView.cs & GridViewItem.cs)
   const {
     focusedCell,
@@ -557,6 +855,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     focusCell,
     handleTableContainerKeyDown,
     handleCellKeyDown,
+    handlePaste,
   } = useGridKeyboardNavigation({
     tableRef,
     rows: processedRows,
@@ -573,6 +872,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     onFilterByCell: handleF2,
     onQuickSum: handleF3,
     onToggleColumnFilters: () => setShowColumnFilters((prev) => !prev),
+    onPasteExcel: handlePasteExcel,
   })
 
   const handleRowClick = (r: any, rowIdx: number, e?: React.MouseEvent) => {
@@ -667,6 +967,56 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     commitRows(updated)
     if (reference) {
       useDataEngine.getState().registerDataset(reference, updated)
+    }
+  }
+
+  // ── INLINE GHOST ROW (TSK-2.1: AddNewEmptyRow chuẩn Core C# GridView.cs:2523) ──
+  const [ghostRow, setGhostRow] = useState<Record<string, any>>({})
+
+  const handleGhostCellChange = (colKey: string, newVal: any) => {
+    // Nếu ô vừa nhập có dữ liệu thực sự (khác rỗng)
+    if (newVal !== undefined && newVal !== null && String(newVal).trim() !== '') {
+      const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
+        ? detailGrids[node.id]
+        : activeRows
+
+      const newId = currentList.length > 0
+        ? Math.max(...currentList.map((r: any) => Number(r.id) || 0)) + 1
+        : 1
+
+      const newRealRow: any = { id: newId, ...ghostRow, [colKey]: newVal }
+
+      // Gán giá trị mặc định cho các cột còn lại nếu chưa có
+      columns.forEach((col) => {
+        if (newRealRow[col.key] === undefined) {
+          if (col.componentType === 'Number' || (col as any).dataType === 'number') newRealRow[col.key] = 0
+          else if (col.componentType === 'Checkbox' || (col as any).dataType === 'boolean') newRealRow[col.key] = false
+          else if (col.componentType === 'DatePicker' || (col as any).dataType === 'date') newRealRow[col.key] = ''
+          else newRealRow[col.key] = ''
+        }
+      })
+
+      const updated = [...currentList, newRealRow]
+      commitRows(updated)
+
+      if (reference) {
+        useDataEngine.getState().registerDataset(reference, updated)
+      }
+
+      if (isMasterDetailGrid) {
+        useMasterDetailStore.setState((state) => ({
+          detailGrids: {
+            ...state.detailGrids,
+            [node.id]: updated,
+          },
+        }))
+      }
+
+      // Reset ghost row
+      setGhostRow({})
+      showTableToast('Dòng mới tự động', `Đã tự động khởi tạo dòng #${updated.length} vào bảng`, 'success')
+    } else {
+      setGhostRow((prev) => ({ ...prev, [colKey]: newVal }))
     }
   }
 
@@ -936,6 +1286,110 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     commitColumns(updated)
   }
 
+  // ── RENDER DÒNG BẢNG CHUẨN HOÁ DÙNG CHO CẢ VIRTUAL SCROLL VÀ GROUP BY ──
+  const renderTableRow = (row: any, rowIdx: number) => {
+    const isRowSelected = selectedRowId === (row.id ?? row.Id ?? rowIdx)
+    const isChecked = selectedRowIds.has(row.id ?? row.Id ?? rowIdx)
+
+    return (
+      <tr
+        key={row.id ?? row.Id ?? rowIdx}
+        data-row-index={rowIdx}
+        onClick={(e) => handleRowClick(row, rowIdx, e)}
+        onDoubleClick={() => handleRowDoubleClick(row, rowIdx)}
+        onContextMenu={(e) => handleRowContextMenu(e, row, rowIdx)}
+        className={`transition-colors group cursor-pointer ${
+          isRowSelected || isChecked
+            ? 'bg-blue-600/25 hover:bg-blue-600/35 border-l-2 border-l-blue-400'
+            : 'hover:bg-slate-800/40'
+        }`}
+      >
+        {/* Cột STT ghim cố định ở đầu */}
+        <td
+          onClick={(e) => {
+            e.stopPropagation()
+            const rowId = row.id ?? row.Id ?? rowIdx
+            setSelectedRowIds((prev) => {
+              const next = new Set(prev)
+              if (next.has(rowId)) next.delete(rowId)
+              else next.add(rowId)
+              return next
+            })
+            setSelectedRowId(rowId)
+          }}
+          className={`px-2 py-1 text-center font-mono text-[11px] sticky left-0 z-20 border-r border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] text-slate-400 select-none cursor-pointer ${
+            isChecked
+              ? 'bg-blue-900/60 text-blue-200 font-bold'
+              : 'bg-[#0f172a] group-hover:bg-slate-800/90'
+          }`}
+          style={{ width: `${STT_COL_WIDTH}px`, minWidth: `${STT_COL_WIDTH}px` }}
+          title="Click chọn dòng | Chuột phải mở menu thao tác"
+        >
+          <span className="flex items-center justify-center gap-1.5">
+            {isChecked ? (
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            ) : null}
+            <span>{rowIdx + 1}</span>
+          </span>
+        </td>
+
+        {/* Render Từng Ô (Interactive Grid Component) */}
+        {visibleColumns.map((col, colIdx) => {
+          const isFrozen = Boolean(col.frozen || col.sticky === 'left')
+          const leftOffset = isFrozen && leftOffsets[col.key] !== undefined ? leftOffsets[col.key] : undefined
+          const isLastFrozen = col.key === lastFrozenKey
+          const cellVal = row[col.key]
+
+          const alignClass =
+            col.align === 'right'
+              ? 'text-right'
+              : col.align === 'center'
+                ? 'text-center'
+                : 'text-left'
+
+          const cellError = validationErrors[`${node.id}_${row.id}_${col.key}`]
+
+          return (
+            <td
+              key={col.key}
+              className={`px-2 py-1 whitespace-nowrap transition-colors ${alignClass} ${
+                isFrozen
+                  ? `sticky z-10 bg-[#0f172a] group-hover:bg-slate-800/90 ${
+                      isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : 'border-r border-slate-800/60'
+                    }`
+                  : 'border-r border-slate-800/60'
+              }`}
+              style={{
+                width: col.width,
+                minWidth: col.minWidth || col.width || '100px',
+                maxWidth: col.maxWidth,
+                left: leftOffset !== undefined ? `${leftOffset}px` : undefined,
+              }}
+            >
+              <GridCellComponent
+                column={col}
+                value={cellVal}
+                row={row}
+                rowIndex={rowIdx}
+                columnIndex={colIdx}
+                isFocused={focusedCell?.rowIndex === rowIdx && focusedCell?.colIndex === colIdx}
+                isSelected={isRowSelected}
+                error={cellError}
+                onChange={(newVal) => handleCellChange(row.id ?? rowIdx, col.key, newVal)}
+                onActionClick={(actionKey) => handleCellAction(actionKey, row, col)}
+                onKeyDown={handleCellKeyDown}
+                onFocus={(rIdx, cIdx, cKey) => {
+                  setSelectedRowId(row.id ?? row.Id ?? rIdx)
+                  setFocusedCell({ rowIndex: rIdx, colIndex: cIdx, colKey: cKey })
+                }}
+              />
+            </td>
+          )
+        })}
+      </tr>
+    )
+  }
+
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } =
     style || {}
 
@@ -958,6 +1412,24 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
           <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-mono text-[10px] font-semibold border border-emerald-500/20">
             {processedRows.length} bản ghi
           </span>
+          {isVirtualScrollEnabled && (
+            <span
+              className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-mono text-[10px] font-semibold border border-blue-500/30"
+              title="Cơ chế cuộn ảo Virtual Windowing đang hoạt động (TSK-4.1)"
+            >
+              <Zap className="w-3 h-3 text-cyan-400" />
+              <span>Virtual ({virtualStartIndex + 1}..{virtualEndIndex}/{processedRows.length})</span>
+            </span>
+          )}
+          {groupByKey && (
+            <span
+              className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-mono text-[10px] font-semibold border border-amber-500/30"
+              title="Cơ chế gom nhóm dòng đang hoạt động (TSK-4.2)"
+            >
+              <FolderTree className="w-3 h-3 text-amber-400" />
+              <span>{rowGroups.length} nhóm</span>
+            </span>
+          )}
         </div>
 
         {/* Search, FilterLocal & Action Buttons */}
@@ -1019,6 +1491,40 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
             <span className="hidden md:inline">Xuất Excel</span>
           </button>
 
+          {/* Nút Dán Excel (Ctrl+V) chuẩn Core C# GridView.cs:2323 */}
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.readText === 'function') {
+                navigator.clipboard
+                  .readText()
+                  .then((clipText) => {
+                    if (clipText) {
+                      const startRow = focusedCell
+                        ? focusedCell.rowIndex
+                        : selectedRowId !== null
+                        ? Math.max(0, processedRows.findIndex((r, i) => (r.id ?? r.Id ?? i) === selectedRowId))
+                        : 0
+                      const startCol = focusedCell ? focusedCell.colIndex : 0
+                      handlePasteExcel(clipText, startRow, startCol)
+                    } else {
+                      showTableToast('Dán từ Excel', 'Clipboard hiện đang trống', 'warning')
+                    }
+                  })
+                  .catch(() => {
+                    showTableToast('Dán từ Excel', 'Hãy bấm chọn một ô và nhấn phím Ctrl+V để dán dữ liệu', 'info')
+                  })
+              } else {
+                showTableToast('Dán từ Excel', 'Hãy bấm chọn một ô và nhấn phím Ctrl+V để dán dữ liệu', 'info')
+              }
+            }}
+            title="Dán dữ liệu sao chép từ Excel / Google Sheets vào bảng (Ctrl+V)"
+            className="flex items-center gap-1.5 h-7 px-2.5 rounded-md border border-slate-700 bg-slate-800 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/60 hover:bg-slate-800/90 transition-all text-xs font-medium cursor-pointer shadow-sm active:scale-95"
+          >
+            <ClipboardPaste className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden md:inline">Dán Excel</span>
+          </button>
+
           {/* Nút In Báo Cáo / PDF chuẩn Core C# ButtonPdf.cs & PdfReport.cs */}
           <button
             type="button"
@@ -1029,6 +1535,49 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
             <Printer className="w-3.5 h-3.5 text-cyan-400" />
             <span className="hidden md:inline">In / PDF</span>
           </button>
+
+          {/* Gom Nhóm Cột (Group By - TSK-4.2 & GroupGridView.cs) */}
+          <div className="flex items-center gap-1.5 h-7 px-2 rounded-md border border-slate-700 bg-slate-800 text-slate-300">
+            <FolderTree className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+            <select
+              value={groupByKey || ''}
+              onChange={(e) => {
+                const val = e.target.value || null
+                setGroupByKey(val)
+                setCollapsedGroups(new Set())
+              }}
+              title="Gom nhóm bảng theo cột (Group By - GroupGridView.cs)"
+              className="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer max-w-[130px] truncate"
+            >
+              <option value="" className="bg-slate-900 text-slate-300">-- Không nhóm --</option>
+              {visibleColumns.map((col) => (
+                <option key={col.key} value={col.key} className="bg-slate-900 text-slate-200">
+                  Nhóm: {col.title || col.key}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {groupByKey && (
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setCollapsedGroups(new Set())}
+                title="Mở rộng tất cả các nhóm"
+                className="h-7 px-2 rounded-md border border-slate-700 bg-slate-800 text-[11px] text-slate-300 hover:text-emerald-400 hover:border-emerald-500/60 transition-colors"
+              >
+                Mở rộng
+              </button>
+              <button
+                type="button"
+                onClick={() => setCollapsedGroups(new Set(rowGroups.map((g) => g.groupKey)))}
+                title="Thu gọn tất cả các nhóm"
+                className="h-7 px-2 rounded-md border border-slate-700 bg-slate-800 text-[11px] text-slate-300 hover:text-amber-400 hover:border-amber-500/60 transition-colors"
+              >
+                Thu gọn
+              </button>
+            </div>
+          )}
 
           {/* Phím tắt F1..F6 chuẩn ERP (Ảnh 4 & C# Core GridView.cs) */}
           <div className="hidden xl:flex items-center gap-1 pl-1 border-l border-slate-800 text-[10px] font-mono text-slate-400">
@@ -1081,7 +1630,13 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
         ref={tableRef}
         tabIndex={0}
         onKeyDown={handleTableContainerKeyDown}
-        className="w-full overflow-x-auto select-none relative focus:outline-none"
+        onPaste={handlePaste}
+        style={{
+          maxHeight: isVirtualScrollEnabled
+            ? ((props.maxHeight as any) || (props.height as any) || '550px')
+            : ((props.maxHeight as any) || undefined),
+        }}
+        className={`w-full overflow-x-auto select-none relative focus:outline-none ${isVirtualScrollEnabled ? 'overflow-y-auto' : ''}`}
       >
         <table className="w-full text-left text-xs border-collapse">
           {/* THEAD */}
@@ -1213,7 +1768,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
             )}
           </thead>
 
-          {/* TBODY: MỖI Ô LÀ MỘT COMPONENT THỰC THỤ */}
+          {/* TBODY: DỮ LIỆU DÒNG (VIRTUAL SCROLLING & GROUP-BY ROWS) */}
           <tbody className="divide-y divide-slate-800/70 text-slate-300">
             {processedRows.length === 0 ? (
               <tr>
@@ -1224,100 +1779,161 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                   Không tìm thấy bản ghi nào. Bấm nút "+ Thêm dòng" để nhập dữ liệu.
                 </td>
               </tr>
-            ) : (
-              processedRows.map((row, rowIdx) => (
-                <tr
-                  key={row.id || rowIdx}
-                  data-row-index={rowIdx}
-                  onClick={(e) => handleRowClick(row, rowIdx, e)}
-                  onDoubleClick={() => handleRowDoubleClick(row, rowIdx)}
-                  onContextMenu={(e) => handleRowContextMenu(e, row, rowIdx)}
-                  className={`transition-colors group cursor-pointer ${
-                    selectedRowId === (row.id ?? row.Id ?? rowIdx) || selectedRowIds.has(row.id ?? row.Id ?? rowIdx)
-                      ? 'bg-blue-600/25 hover:bg-blue-600/35 border-l-2 border-l-blue-400'
-                      : 'hover:bg-slate-800/40'
-                  }`}
-                >
-                  {/* Cột STT ghim cố định ở đầu (Left: 0, z-20, bg đặc #0f172a, click chọn dòng) */}
-                  <td
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      const rowId = row.id ?? row.Id ?? rowIdx
-                      setSelectedRowIds((prev) => {
-                        const next = new Set(prev)
-                        if (next.has(rowId)) next.delete(rowId)
-                        else next.add(rowId)
-                        return next
-                      })
-                      setSelectedRowId(rowId)
-                    }}
-                    className={`px-2 py-1 text-center font-mono text-[11px] sticky left-0 z-20 border-r border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] text-slate-400 select-none cursor-pointer ${
-                      selectedRowIds.has(row.id ?? row.Id ?? rowIdx)
-                        ? 'bg-blue-900/60 text-blue-200 font-bold'
-                        : 'bg-[#0f172a] group-hover:bg-slate-800/90'
-                    }`}
-                    style={{ width: `${STT_COL_WIDTH}px`, minWidth: `${STT_COL_WIDTH}px` }}
-                    title="Click chọn dòng | Chuột phải mở menu thao tác"
-                  >
-                    <span className="flex items-center justify-center gap-1.5">
-                      {selectedRowIds.has(row.id ?? row.Id ?? rowIdx) ? (
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                      ) : null}
-                      <span>{rowIdx + 1}</span>
-                    </span>
-                  </td>
+            ) : groupByKey ? (
+              // ── 1. CHẾ ĐỘ GOM NHÓM DÒNG (COLLAPSIBLE GROUP-BY ROWS - TSK-4.2 & GroupGridView.cs) ──
+              rowGroups.map((group) => {
+                const isCollapsed = collapsedGroups.has(group.groupKey)
+                const groupCol = visibleColumns.find((c) => c.key === groupByKey)
+                const groupColTitle = groupCol?.title || groupByKey
 
-                  {/* Render Từng Ô (Mỗi Ô Là Một Interactive Grid Component) */}
-                  {visibleColumns.map((col, colIdx) => {
-                    const isFrozen = Boolean(col.frozen || col.sticky === 'left')
-                    const leftOffset = isFrozen && leftOffsets[col.key] !== undefined ? leftOffsets[col.key] : undefined
-                    const isLastFrozen = col.key === lastFrozenKey
-                    const cellVal = row[col.key]
-
-                    const alignClass =
-                      col.align === 'right'
-                        ? 'text-right'
-                        : col.align === 'center'
-                          ? 'text-center'
-                          : 'text-left'
-
-                    const cellError = validationErrors[`${node.id}_${row.id}_${col.key}`]
-
-                    return (
+                return (
+                  <React.Fragment key={`group_${group.groupKey}`}>
+                    {/* Hàng tiêu đề nhóm (Group Header) */}
+                    <tr
+                      onClick={() => {
+                        setCollapsedGroups((prev) => {
+                          const next = new Set(prev)
+                          if (next.has(group.groupKey)) next.delete(group.groupKey)
+                          else next.add(group.groupKey)
+                          return next
+                        })
+                      }}
+                      className="bg-slate-900/95 hover:bg-slate-850 border-y border-amber-500/30 cursor-pointer select-none group transition-colors sticky top-0 z-15"
+                    >
                       <td
-                        key={col.key}
-                        className={`px-2 py-1 whitespace-nowrap transition-colors ${alignClass} ${isFrozen
-                          ? `sticky z-10 bg-[#0f172a] group-hover:bg-slate-800/90 ${isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : 'border-r border-slate-800/60'}`
-                          : 'border-r border-slate-800/60'
-                          }`}
-                        style={{
-                          width: col.width,
-                          minWidth: col.minWidth || col.width || '100px',
-                          maxWidth: col.maxWidth,
-                          left: leftOffset !== undefined ? `${leftOffset}px` : undefined,
-                        }}
+                        colSpan={visibleColumns.length + 1}
+                        className="px-3 py-2 text-xs font-semibold text-slate-200"
                       >
-                        <GridCellComponent
-                          column={col}
-                          value={cellVal}
-                          row={row}
-                          rowIndex={rowIdx}
-                          columnIndex={colIdx}
-                          error={cellError}
-                          onChange={(newVal) => handleCellChange(row.id ?? rowIdx, col.key, newVal)}
-                          onActionClick={(actionKey) => handleCellAction(actionKey, row, col)}
-                          onKeyDown={handleCellKeyDown}
-                          onFocus={(rIdx, cIdx, cKey) => {
-                            setSelectedRowId(row.id ?? row.Id ?? rIdx)
-                            setFocusedCell({ rowIndex: rIdx, colIndex: cIdx, colKey: cKey })
-                          }}
-                        />
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            className="w-5 h-5 flex items-center justify-center rounded bg-slate-800 text-amber-400 group-hover:bg-amber-500 group-hover:text-slate-950 transition-colors"
+                          >
+                            {isCollapsed ? (
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            ) : (
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                          <span className="text-slate-400 font-normal">
+                            Gom nhóm theo <strong className="text-amber-300 font-semibold">{groupColTitle}</strong>:
+                          </span>
+                          <span className="text-amber-400 font-bold font-mono text-sm">
+                            {group.groupLabel}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full bg-amber-950/60 border border-amber-500/40 text-amber-300 text-[10px] font-mono font-bold">
+                            {group.rows.length} bản ghi
+                          </span>
+
+                          {/* Subtotals tóm tắt trên header nếu có cột số */}
+                          <div className="ml-auto flex items-center gap-3 text-[11px] font-mono text-slate-400">
+                            {visibleColumns
+                              .filter((c) => group.subtotals[c.key] !== undefined && group.subtotals[c.key] > 0)
+                              .slice(0, 3)
+                              .map((c) => (
+                                <span key={c.key} className="flex items-center gap-1">
+                                  <span>{c.title}:</span>
+                                  <strong className="text-emerald-400 font-bold">
+                                    {group.subtotals[c.key].toLocaleString('en-US')}
+                                  </strong>
+                                </span>
+                              ))}
+                          </div>
+                        </div>
                       </td>
-                    )
-                  })}
-                </tr>
-              ))
+                    </tr>
+
+                    {/* Các dòng dữ liệu bên trong nhóm */}
+                    {!isCollapsed &&
+                      group.rows.map((row, idxInGroup) => {
+                        const rowIdx = group.startIndex + idxInGroup
+                        return renderTableRow(row, rowIdx)
+                      })}
+                  </React.Fragment>
+                )
+              })
+            ) : isVirtualScrollEnabled ? (
+              // ── 2. CHẾ ĐỘ CUỘN ẢO (VIRTUAL SCROLLING WINDOWING - TSK-4.1) ──
+              <>
+                {topPaddingHeight > 0 && (
+                  <tr style={{ height: `${topPaddingHeight}px`, pointerEvents: 'none' }}>
+                    <td colSpan={visibleColumns.length + 1} style={{ padding: 0, border: 'none' }} />
+                  </tr>
+                )}
+                {virtualRows.map((row, index) => {
+                  const rowIdx = virtualStartIndex + index
+                  return renderTableRow(row, rowIdx)
+                })}
+                {bottomPaddingHeight > 0 && (
+                  <tr style={{ height: `${bottomPaddingHeight}px`, pointerEvents: 'none' }}>
+                    <td colSpan={visibleColumns.length + 1} style={{ padding: 0, border: 'none' }} />
+                  </tr>
+                )}
+              </>
+            ) : (
+              // ── 3. CHẾ ĐỘ RENDER TIÊU CHUẨN (NORMAL RENDERING) ──
+              processedRows.map((row, rowIdx) => renderTableRow(row, rowIdx))
             )}
+
+            {/* ── INLINE GHOST ROW: DÒNG NHẬP LIỆU TRỐNG TỰ ĐỘNG CHÂN BẢNG (TSK-2.1) ── */}
+            <tr
+              className="bg-slate-950/40 hover:bg-slate-900/60 border-t border-dashed border-slate-700/60 transition-colors opacity-75 hover:opacity-100 group"
+              title="Dòng nhập liệu trống: Gõ giá trị vào ô bất kỳ để tự động tạo dòng mới (Core C# AddNewEmptyRow)"
+            >
+              {/* STT của Ghost row */}
+              <td
+                className="px-2 py-1 text-center font-mono text-[11px] sticky left-0 z-20 border-r border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] text-emerald-400/80 bg-[#0c1222] select-none font-bold"
+                style={{ width: `${STT_COL_WIDTH}px`, minWidth: `${STT_COL_WIDTH}px` }}
+              >
+                <span className="flex items-center justify-center gap-1">
+                  <Plus className="w-3 h-3 text-emerald-400" />
+                  <span>{processedRows.length + 1}</span>
+                </span>
+              </td>
+
+              {/* Các ô nhập liệu của Ghost row */}
+              {visibleColumns.map((col, colIdx) => {
+                const isFrozen = Boolean(col.frozen || col.sticky === 'left')
+                const leftOffset = isFrozen && leftOffsets[col.key] !== undefined ? leftOffsets[col.key] : undefined
+                const isLastFrozen = col.key === lastFrozenKey
+                const ghostVal = ghostRow[col.key] ?? ''
+
+                const alignClass =
+                  col.align === 'right'
+                    ? 'text-right'
+                    : col.align === 'center'
+                      ? 'text-center'
+                      : 'text-left'
+
+                return (
+                  <td
+                    key={`ghost_${col.key}`}
+                    className={`px-2 py-1 whitespace-nowrap transition-colors ${alignClass} ${
+                      isFrozen
+                        ? `sticky z-10 bg-[#0c1222] ${isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : 'border-r border-slate-800/60'}`
+                        : 'border-r border-slate-800/60'
+                    }`}
+                    style={{
+                      width: col.width,
+                      minWidth: col.minWidth || col.width || '100px',
+                      maxWidth: col.maxWidth,
+                      left: leftOffset !== undefined ? `${leftOffset}px` : undefined,
+                    }}
+                  >
+                    <GridCellComponent
+                      column={col}
+                      value={ghostVal}
+                      row={ghostRow}
+                      rowIndex={processedRows.length}
+                      columnIndex={colIdx}
+                      isFocused={focusedCell?.rowIndex === processedRows.length && focusedCell?.colIndex === colIdx}
+                      onChange={(newVal) => handleGhostCellChange(col.key, newVal)}
+                      onKeyDown={handleCellKeyDown}
+                    />
+                  </td>
+                )
+              })}
+            </tr>
           </tbody>
 
           {/* TFOOT: HÀNG TỔNG CỘNG CHÂN BẢNG (Chuẩn Ảnh 4) */}
@@ -1377,6 +1993,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
           onInsertRowBelow={handleInsertRowBelow}
           onMoveRowUp={handleMoveRowUp}
           onMoveRowDown={handleMoveRowDown}
+          onPasteExcel={handleContextMenuPaste}
         />
       )}
     </div>

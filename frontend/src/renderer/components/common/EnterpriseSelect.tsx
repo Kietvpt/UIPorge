@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
-import { ChevronDown, Search, X, Check, Loader2 } from 'lucide-react'
+import { ChevronDown, Search, X, Check, Loader2, Plus, Save } from 'lucide-react'
 import type { DropdownColumnConfig, SelectOption } from '@/types/schema'
 import { useDataEngine } from '@/core/engines/dataEngine'
 import { interpolateFormatData, lookupFieldValue } from '@/core/utils/formatDataInterpolator'
+import { openPopup } from '@/core/engines/navigationEngine'
 
 export interface EnterpriseSelectProps {
   value?: any
@@ -11,6 +12,8 @@ export interface EnterpriseSelectProps {
   options?: SelectOption[]
   items?: Record<string, any>[]
   reference?: string
+  refClass?: string
+  canQuickAdd?: boolean
   dataSource?: string
   idField?: string
   selectField?: string
@@ -27,6 +30,7 @@ export interface EnterpriseSelectProps {
   onKeyDown?: (e: React.KeyboardEvent) => void
   onFocus?: () => void
   onBlur?: () => void
+  onQuickAdd?: () => void
 }
 
 export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
@@ -35,6 +39,8 @@ export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
   options,
   items: directItems,
   reference,
+  refClass,
+  canQuickAdd = true,
   dataSource,
   idField = 'id',
   selectField = 'name',
@@ -51,12 +57,20 @@ export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
   onKeyDown,
   onFocus,
   onBlur,
+  onQuickAdd,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const [isLoading, setIsLoading] = useState(false)
   const [rawRecords, setRawRecords] = useState<Record<string, any>[]>([])
+
+  // ── QUICK ADD MODAL STATES ──
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
+  const [quickAddCode, setQuickAddCode] = useState('')
+  const [quickAddName, setQuickAddName] = useState('')
+  const [quickAddDescription, setQuickAddDescription] = useState('')
+  const [isSubmittingQuickAdd, setIsSubmittingQuickAdd] = useState(false)
 
   const triggerRef = useRef<HTMLDivElement>(null)
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -67,6 +81,90 @@ export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
   const getDataset = useDataEngine((s) => s.getDataset)
   const applyPopulate = useDataEngine((s) => s.applyPopulate)
   const datasetLen = useDataEngine((s) => (reference ? s.getDataset(reference).length : 0))
+
+  // ── MỞ DIALOG HOẶC POPUP TẠO NHANH BẢN GHI (RefClass / Quick Add) ──
+  const handleOpenQuickAdd = () => {
+    if (onQuickAdd) {
+      onQuickAdd()
+      setIsOpen(false)
+      return
+    }
+    if (refClass) {
+      openPopup(refClass, {}, `Tạo mới ${reference || refClass}`)
+      setIsOpen(false)
+      return
+    }
+    const cleanSearch = searchTerm.trim()
+    setQuickAddCode(cleanSearch ? cleanSearch.toUpperCase().replace(/\s+/g, '_') : '')
+    setQuickAddName(cleanSearch)
+    setQuickAddDescription('')
+    setIsQuickAddOpen(true)
+  }
+
+  // ── LƯU BẢN GHI MỚI VÀ CHỌN NGAY VÀO SELECT ──
+  const handleSaveQuickAdd = async () => {
+    if (!quickAddCode.trim() || !quickAddName.trim()) return
+    const cleanRef = (reference || '').trim()
+    if (!cleanRef) return
+
+    setIsSubmittingQuickAdd(true)
+    try {
+      const payload: Record<string, any> = {
+        code: quickAddCode.trim(),
+        name: quickAddName.trim(),
+        fullName: quickAddName.trim(),
+        description: quickAddDescription.trim(),
+        active: true,
+      }
+
+      const res = await fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(cleanRef)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (res.ok) {
+        const createdItem = await res.json()
+        const newRecord = {
+          ...payload,
+          ...createdItem,
+          id: createdItem.id ?? createdItem.Id ?? Date.now(),
+        }
+
+        // Tải lại dataset từ API và cập nhật local state
+        const freshData = await queryEntity(cleanRef, dataSource)
+        if (Array.isArray(freshData) && freshData.length > 0) {
+          setRawRecords(freshData)
+        } else {
+          setRawRecords((prev) => [newRecord, ...prev])
+        }
+
+        // Chọn ngay bản ghi vừa tạo
+        handleSelectRecord(newRecord)
+        setIsQuickAddOpen(false)
+        setIsOpen(false)
+      } else {
+        alert('Không thể lưu bản ghi mới vào server. Vui lòng kiểm tra lại thông tin.')
+      }
+    } catch (err) {
+      console.error('[EnterpriseSelect] Lỗi tạo nhanh bản ghi:', err)
+      // Fallback lưu local nếu offline
+      const newRecord = {
+        id: `mock-${Date.now()}`,
+        code: quickAddCode.trim(),
+        name: quickAddName.trim(),
+        fullName: quickAddName.trim(),
+        description: quickAddDescription.trim(),
+        active: true,
+      }
+      setRawRecords((prev) => [newRecord, ...prev])
+      handleSelectRecord(newRecord)
+      setIsQuickAddOpen(false)
+      setIsOpen(false)
+    } finally {
+      setIsSubmittingQuickAdd(false)
+    }
+  }
 
   // ── 1. TẢI DỮ LIỆU ĐỘNG TỪ REFERENCE / DATAENGINE ──
   useEffect(() => {
@@ -446,6 +544,19 @@ export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
                 )}
               </div>
 
+              {/* Nút Tạo nhanh RefClass / Reference */}
+              {canQuickAdd && (reference || refClass) && (
+                <button
+                  type="button"
+                  onClick={handleOpenQuickAdd}
+                  title={`Tạo nhanh bản ghi mới cho ${reference || 'danh mục'}`}
+                  className="flex items-center gap-1 h-8 px-2.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-medium transition-all shrink-0 cursor-pointer shadow-sm active:scale-95"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Tạo nhanh</span>
+                </button>
+              )}
+
               {isLoading && (
                 <div className="flex items-center text-emerald-400 text-[11px] gap-1 px-1">
                   <Loader2 className="w-3 h-3 animate-spin" />
@@ -476,9 +587,19 @@ export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
               className="max-h-[220px] overflow-y-auto divide-y divide-slate-800/40 select-none"
             >
               {filteredRecords.length === 0 ? (
-                <div className="py-8 text-center text-slate-500 flex flex-col items-center justify-center gap-1.5">
+                <div className="py-6 px-4 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
                   <Search className="w-5 h-5 text-slate-600 opacity-60" />
                   <span>{isLoading ? 'Đang truy vấn dữ liệu...' : 'Không tìm thấy kết quả phù hợp'}</span>
+                  {canQuickAdd && (reference || refClass) && (
+                    <button
+                      type="button"
+                      onClick={handleOpenQuickAdd}
+                      className="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-950 transition-all cursor-pointer active:scale-95"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Thêm nhanh "{searchTerm || reference}"</span>
+                    </button>
+                  )}
                 </div>
               ) : (
                 filteredRecords.map((item, idx) => {
@@ -546,6 +667,105 @@ export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
                 <span>[Enter] Chọn</span>
                 <span>•</span>
                 <span>[Esc] Đóng</span>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {/* ── MODAL TẠO NHANH BẢN GHI (QUICK ADD MODAL) ── */}
+      {isQuickAddOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-100">
+            <div
+              className="w-full max-w-md rounded-2xl border border-emerald-500/50 bg-slate-900 p-6 shadow-2xl text-slate-100 space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold">
+                    <Plus className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-100">
+                      Tạo nhanh danh mục: {reference || 'Bản ghi mới'}
+                    </h3>
+                    <p className="text-[11px] text-slate-400">
+                      Thêm mới vào cơ sở dữ liệu và tự động chọn vào ô này
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsQuickAddOpen(false)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-slate-400 font-medium mb-1">
+                    Mã số (Code) <span className="text-rose-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={quickAddCode}
+                    onChange={(e) => setQuickAddCode(e.target.value)}
+                    placeholder="VD: SITC, V-001..."
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 font-mono text-xs focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-medium mb-1">
+                    Tên hiển thị (Name) <span className="text-rose-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={quickAddName}
+                    onChange={(e) => setQuickAddName(e.target.value)}
+                    placeholder="VD: CÔNG TY CỔ PHẦN..."
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-medium mb-1">
+                    Ghi chú / Mô tả (Description)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={quickAddDescription}
+                    onChange={(e) => setQuickAddDescription(e.target.value)}
+                    placeholder="Thông tin bổ sung..."
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setIsQuickAddOpen(false)}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  disabled={isSubmittingQuickAdd || !quickAddCode.trim() || !quickAddName.trim()}
+                  onClick={handleSaveQuickAdd}
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-900/40 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {isSubmittingQuickAdd ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Save className="w-3.5 h-3.5" />
+                  )}
+                  <span>Lưu & Chọn ngay</span>
+                </button>
               </div>
             </div>
           </div>,

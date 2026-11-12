@@ -1,6 +1,6 @@
 import React from 'react'
 import type { TableColumn } from '@/types/schema'
-import { Calendar, ExternalLink } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { useDataEngine } from '@/core/engines/dataEngine'
 import { EnterpriseDatePicker } from '../common/EnterpriseDatePicker'
 
@@ -11,19 +11,25 @@ export interface GridCellComponentProps {
   rowIndex: number
   columnIndex?: number
   error?: string
+  isFocused?: boolean
+  isEditing?: boolean
+  isSelected?: boolean
   onChange: (newValue: any) => void
   onActionClick?: (actionName: string, row: any) => void
   onKeyDown?: (e: React.KeyboardEvent, rowIndex: number, columnIndex: number, colKey: string) => void
   onFocus?: (rowIndex: number, columnIndex: number, colKey: string) => void
 }
 
-export const GridCellComponent: React.FC<GridCellComponentProps> = ({
+const GridCellComponentBase: React.FC<GridCellComponentProps> = ({
   column,
   value,
   row,
   rowIndex,
   columnIndex = 0,
   error,
+  isFocused = false,
+  isEditing = false,
+  isSelected = false,
   onChange,
   onActionClick,
   onKeyDown,
@@ -35,10 +41,14 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
   // Chuẩn hóa giá trị hiển thị: nếu giá trị là '—' hoặc '-' thì khi nhập liệu để trống cho user gõ trực tiếp
   const displayValue = value === '—' || value === '-' ? '' : (value ?? '')
 
-  // Lớp CSS báo lỗi viền đỏ khi có vi phạm Validation (ISO 6346, Required, Date Sequence)
+  // Lớp CSS báo lỗi viền đỏ khi có vi phạm Validation (ISO 6346, Required, Date Sequence) hoặc viền active khi focus
+  const focusBorderClass = isFocused
+    ? 'border-emerald-400 ring-2 ring-emerald-400/50 shadow-[0_0_8px_rgba(52,211,153,0.3)]'
+    : 'border-slate-700/70 hover:border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40'
+
   const errorBorderClass = error
     ? 'border-red-500/90 bg-red-950/40 text-red-100 ring-1 ring-red-500/70 focus:border-red-400 focus:ring-red-400 placeholder:text-red-400/50'
-    : 'border-slate-700/70 hover:border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40'
+    : focusBorderClass
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (onKeyDown) {
@@ -72,7 +82,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           {...cellDataProps}
-          className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          className={`w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 ${isFocused ? 'ring-2 ring-emerald-400' : ''}`}
         />
       </div>
     )
@@ -93,7 +103,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           {...cellDataProps}
-          className="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 hover:text-white border border-blue-500/40 text-[11px] font-semibold transition-colors disabled:opacity-50 cursor-pointer shadow-sm hover:shadow-blue-500/20"
+          className={`px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 hover:text-white border border-blue-500/40 text-[11px] font-semibold transition-colors disabled:opacity-50 cursor-pointer shadow-sm hover:shadow-blue-500/20 ${isFocused ? 'ring-2 ring-emerald-400 border-emerald-400' : ''}`}
         >
           {buttonText}
         </button>
@@ -114,7 +124,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
         onKeyDown={handleKeyDown}
         onFocus={handleFocus}
         {...cellDataProps}
-        className="text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 font-medium truncate"
+        className={`text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 font-medium truncate ${isFocused ? 'ring-2 ring-emerald-400/80 rounded px-1' : ''}`}
       >
         <span className="truncate">{value || '—'}</span>
         <ExternalLink className="w-3 h-3 flex-shrink-0" />
@@ -134,7 +144,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           {...cellDataProps}
-          className="font-mono text-slate-200 outline-none focus:ring-1 focus:ring-emerald-400/50 rounded px-1"
+          className={`font-mono text-slate-200 outline-none rounded px-1 ${isFocused ? 'ring-2 ring-emerald-400/80 bg-emerald-950/30' : 'focus:ring-1 focus:ring-emerald-400/50'}`}
         >
           {formatted}{column.summarySuffix ? ` ${column.summarySuffix}` : ''}
         </span>
@@ -154,7 +164,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           {...cellDataProps}
-          className="truncate text-slate-200 outline-none focus:ring-1 focus:ring-emerald-400/50 rounded px-1"
+          className={`truncate text-slate-200 outline-none rounded px-1 ${isFocused ? 'ring-2 ring-emerald-400/80 bg-emerald-950/30' : 'focus:ring-1 focus:ring-emerald-400/50'}`}
         >
           {formatted}
         </span>
@@ -167,7 +177,7 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
         onKeyDown={handleKeyDown}
         onFocus={handleFocus}
         {...cellDataProps}
-        className="truncate text-slate-200 outline-none focus:ring-1 focus:ring-emerald-400/50 rounded px-1"
+        className={`truncate text-slate-200 outline-none rounded px-1 ${isFocused ? 'ring-2 ring-emerald-400/80 bg-emerald-950/30' : 'focus:ring-1 focus:ring-emerald-400/50'}`}
       >
         {value !== undefined && value !== null ? String(value) : '—'}
       </span>
@@ -176,9 +186,6 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
 
   // ── 5. SELECT / DROPDOWN COMPONENT (EDITABLE) ──
   if (column.componentType === 'Select' || (column.componentType as string) === 'Dropdown') {
-    // 100% Generic & Domain-Agnostic:
-    // 1. Ưu tiên options được cấu hình trong Column Metadata (column.options)
-    // 2. Tra cứu động từ DataEngine nếu cột có cấu hình reference / refName (dataset liên kết)
     let options = column.options || []
     const refTarget = (column as any).reference || (column as any).refName
     if (options.length === 0 && refTarget) {
@@ -305,3 +312,90 @@ export const GridCellComponent: React.FC<GridCellComponentProps> = ({
     />
   )
 }
+
+/**
+ * ⚡ Tối ưu hóa hiệu năng render runtime cho GridCell (TSK-3.5):
+ * Chỉ re-render ô khi giá trị, trạng thái focus/editing/selection, cấu hình cột
+ * hoặc các trường trong row được tham chiếu bởi formatCell thay đổi.
+ * Đạt chuẩn 60fps mượt mà cho bảng 1.000+ dòng.
+ */
+export function areGridCellPropsEqual(
+  prevProps: Readonly<GridCellComponentProps>,
+  nextProps: Readonly<GridCellComponentProps>
+): boolean {
+  // 1. Kiểm tra giá trị cell
+  if (prevProps.value !== nextProps.value) return false
+
+  // 2. Kiểm tra thông báo lỗi validation
+  if (prevProps.error !== nextProps.error) return false
+
+  // 3. Kiểm tra tọa độ hàng & cột
+  if (prevProps.rowIndex !== nextProps.rowIndex || prevProps.columnIndex !== nextProps.columnIndex) {
+    return false
+  }
+
+  // 4. Kiểm tra trạng thái focus, editing, selection
+  if (
+    Boolean(prevProps.isFocused) !== Boolean(nextProps.isFocused) ||
+    Boolean(prevProps.isEditing) !== Boolean(nextProps.isEditing) ||
+    Boolean(prevProps.isSelected) !== Boolean(nextProps.isSelected)
+  ) {
+    return false
+  }
+
+  // 5. So sánh cấu hình cột (Column Metadata)
+  const prevCol = prevProps.column
+  const nextCol = nextProps.column
+  if (prevCol !== nextCol) {
+    if (
+      prevCol.key !== nextCol.key ||
+      prevCol.title !== nextCol.title ||
+      prevCol.componentType !== nextCol.componentType ||
+      prevCol.editable !== nextCol.editable ||
+      prevCol.disabled !== nextCol.disabled ||
+      prevCol.precision !== nextCol.precision ||
+      prevCol.align !== nextCol.align ||
+      prevCol.formatCell !== nextCol.formatCell ||
+      prevCol.cssClass !== nextCol.cssClass ||
+      prevCol.summarySuffix !== nextCol.summarySuffix ||
+      prevCol.upperCase !== nextCol.upperCase ||
+      prevCol.options !== nextCol.options ||
+      (prevCol as any).reference !== (nextCol as any).reference ||
+      (prevCol as any).refName !== (nextCol as any).refName
+    ) {
+      return false
+    }
+  }
+
+  // 6. Kiểm tra danh tính dòng (Row Identity)
+  const prevId = prevProps.row?.id ?? prevProps.row?.Id ?? prevProps.row?.ID
+  const nextId = nextProps.row?.id ?? nextProps.row?.Id ?? nextProps.row?.ID
+  if (prevId !== undefined && nextId !== undefined && prevId !== nextId) {
+    return false
+  }
+
+  // 7. Kiểm tra các trường dữ liệu dòng liên đới khi cột có formatCell (ví dụ: "{0} ({Code})")
+  if (nextCol.formatCell && typeof nextCol.formatCell === 'string') {
+    const tokens = nextCol.formatCell.match(/\{([a-zA-Z0-9_]+)\}/g)
+    if (tokens) {
+      for (const token of tokens) {
+        const fieldName = token.slice(1, -1)
+        if (fieldName === '0') continue
+        if (prevProps.row?.[fieldName] !== nextProps.row?.[fieldName]) {
+          return false
+        }
+      }
+    }
+  }
+
+  // 8. Đối với Button hoặc Link (truyền cả row vào action handler), nếu row object thay đổi thì re-render
+  if (nextCol.componentType === 'Button' || nextCol.componentType === 'Link') {
+    if (prevProps.row !== nextProps.row) {
+      return false
+    }
+  }
+
+  return true
+}
+
+export const GridCellComponent = React.memo(GridCellComponentBase, areGridCellPropsEqual)

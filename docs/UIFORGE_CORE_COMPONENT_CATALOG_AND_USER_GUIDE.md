@@ -37,15 +37,21 @@ Các Component trong UIForge được thiết kế theo các nguyên tắc nền
 
 #### 1.1. Chức năng chính
 - Kế thừa và hiện đại hóa từ `GridView.cs` (183KB) trong Core C# cũ.
+- Hỗ trợ **Dán dữ liệu hàng loạt từ Excel** (`Ctrl+V` Paste): Bóc tách TSV, tự động ép kiểu thông minh (Number, Checkbox, DatePicker), tự động sinh dòng mới khi dán vượt quá số dòng hiện có.
+- Hỗ trợ **Dòng nhập liệu trống tự động ở chân bảng (Inline Ghost Row)**: Dòng `#N+1` với icon `+`, gõ trực tiếp vào ô để tự động tạo dòng mới mà không cần chuột.
+- Hỗ trợ **Gom nhóm dòng dữ liệu thu phóng (Collapsible Group-By Rows)**: Gom nhóm theo trường, hiển thị Group Header kèm icon chevron thu gọn/mở rộng, badge số lượng và tính Subtotal nhóm.
+- Hỗ trợ **Virtual Scrolling (Cuộn ảo quy mô lớn)**: Tự động kích hoạt khi dữ liệu lớn (>80 dòng) giúp xử lý 10.000 – 50.000 dòng ở tốc độ 60fps mượt mà.
+- Hỗ trợ **Cá nhân hóa GridPolicy theo người dùng**: Tự động lưu cấu hình độ rộng cột, thứ tự cột, cột ẩn/hiện, ghim cột vào `localStorage` và đồng bộ SQL Server (`/api/core/user-settings`).
 - Hỗ trợ **Cột Ghim Cố Định** (`sticky: 'left'`, `frozen: true`) không bị trôi khi cuộn ngang.
 - Hỗ trợ **Dòng Tổng Cộng** (`SummaryRow`) tự động tính tổng (`sum`), đếm (`count`), trung bình (`avg`).
 - Hỗ trợ **Bộ Lọc Đa Cột** (`FilterLocal`) theo thời gian thực (phím tắt `F6` hoặc nút Lọc trên toolbar).
-- Hỗ trợ **Xuất Excel** chuẩn định dạng `.xls` (kế thừa `ButtonExcel.cs`).
-- Hỗ trợ **In Báo Cáo & Xuất PDF** trực tiếp từ trình duyệt kèm header công ty và chữ ký phê duyệt (kế thừa `ButtonPdf.cs` & `PdfReport.cs`).
+- Hỗ trợ **Xuất Excel Native OpenXML** (`.xlsx`) gọi trực tiếp backend service (.NET 8 ZipArchive chuẩn, có header, border, format tiền tệ và dòng tổng cộng `=SUM()`).
+- Hỗ trợ **In Báo Cáo & Xuất PDF** trực tiếp từ backend hoặc trình duyệt kèm header công ty và chữ ký phê duyệt (kế thừa `ButtonPdf.cs` & `PdfReport.cs`).
 - Hỗ trợ **Điều hướng bàn phím chuẩn Desktop**:
   - `↑ / ↓ / ← / →`: Di chuyển tiêu điểm giữa các ô dữ liệu.
-  - `Enter`: Xác nhận giá trị, nhảy xuống dòng tiếp theo (nếu ở dòng cuối và `canAdd: true`, tự động tạo dòng mới).
+  - `Enter`: Xác nhận giá trị, nhảy xuống dòng tiếp theo.
   - `Tab / Shift+Tab`: Di chuyển ngang qua các ô cho phép sửa (`editable: true`).
+  - `Ctrl + V`: Dán mảng ô từ clipboard Excel / Sheets.
   - `F1`: Chọn tất cả / Bỏ chọn (`Toggle All`).
   - `F2`: Thêm dòng mới (`Add Row`).
   - `F3`: Nhân bản dòng đang chọn (`Duplicate Row`).
@@ -235,6 +241,37 @@ export interface TableColumn {
   - `size`: `'sm'`, `'md'`, `'lg'`.
   - `events`: Danh sách sự kiện gắn vào file `.bl.ts`.
 
+#### 6.5. Tạo Nhanh Danh Mục: `RefClass` Quick Add (`+ Tạo nhanh`)
+- **Chức năng**: Tích hợp sẵn trên `EnterpriseSelect` và `ForgeSearchEntry`. Khi người dùng tìm kiếm không thấy mục mong muốn, có thể click nút `+ Tạo nhanh` để mở popup tạo mới ngay lập tức.
+- **Hành vi**:
+  - Tự động gọi `openPopup(refClass)` hoặc mở modal tạo nhanh bản ghi.
+  - Khi lưu thành công: Gửi `POST /api/core/data/{reference}`, tự động reload dataset và chọn ngay bản ghi vừa tạo vào control mà không làm gián đoạn luồng nhập liệu.
+
+---
+
+### 7. Nhóm Thành Phần Mở Rộng: TreeView & Chart
+
+#### 7.1. Cây Phân Cấp Doanh Nghiệp: `ForgeTreeView` (`TreeView`)
+- **Chức năng**: Kế thừa `TreeView.cs` của Core C# cũ, hiển thị cấu trúc phân cấp đa tầng (Cây tài khoản kế toán, Sơ đồ tổ chức phòng ban, Cây danh mục `MasterData`).
+- **Thuộc tính chính**:
+  - `reference`: Tên bảng dữ liệu phân cấp (VD: `MasterData`, `Department`).
+  - `idField`: Trường khóa chính (mặc định `id`).
+  - `parentIdField`: Trường tham chiếu nút cha (mặc định `parentId`).
+  - `textField` / `labelField`: Trường hiển thị tên nút (mặc định `name` hoặc `code`).
+  - `searchable`: Hiển thị ô tìm kiếm lọc nhanh trên cây.
+  - `showControls`: Hiển thị nút Mở rộng tất cả / Thu gọn tất cả.
+  - `selectable`: Cho phép chọn node, tự động đồng bộ giá trị với `dataEngine`.
+
+#### 7.2. Biểu Đồ Trực Quan Hóa: `ForgeChart` (`Chart`)
+- **Chức năng**: Kế thừa `Chart.cs` của Core C# cũ, trực quan hóa dữ liệu thống kê từ SQL Server OData.
+- **Thuộc tính chính**:
+  - `chartType`: `'bar'` (cột), `'line'` (đường xu hướng), `'donut'` (tròn phân bổ).
+  - `reference`: Tên thực thể truy vấn dữ liệu động.
+  - `query`: Bộ lọc OData (VD: `?$filter=Active eq true`).
+  - `xField` / `categoryField`: Trường dữ liệu trục hoành (nhãn).
+  - `yField` / `valueField`: Trường dữ liệu trục tung (giá trị số liệu).
+  - `height`: Chiều cao biểu đồ (VD: `'320px'`).
+
 ---
 
 ## III. QUY CHUẨN ĐẶT TÊN & LIÊN KẾT DỮ LIỆU (DATA BINDING CONVENTION)
@@ -268,19 +305,26 @@ Tab **Data** trên thanh `PropertyPanel` được thiết kế ngữ cảnh thô
 
 ## IV. BẢNG PHÍM NÓNG ERP CHUẨN HÓA TRÊN TOÀN HỆ THỐNG
 
-| Phím tắt | Tác vụ trên Bảng Dữ Liệu (`ForgeTable`) | Tác vụ trên Form / Ô Nhập Liệu |
+UIForge kế thừa và quy chuẩn hóa toàn bộ trải nghiệm phím tắt từ Desktop ERP cũ (Core C#) thông qua hook toàn cục `useGlobalHotkeys` và các bộ điều hướng chuyên dụng:
+
+| Phím tắt | Tác vụ trên Bảng Dữ Liệu (`ForgeTable`) | Tác vụ trên Form / Ứng Dụng Toàn Cục |
 | :--- | :--- | :--- |
+| **`Alt + \``** | - | Chuyển đổi xoay vòng qua lại giữa các Tab nghiệp vụ đang mở |
+| **`Ctrl + Shift + F`** | - | Đưa con trỏ focus ngay vào ô tìm kiếm nhanh toàn hệ thống |
+| **`F9` / `Ctrl + S`** | - | Kích hoạt Lưu dữ liệu Form/Bản ghi hiện tại (`triggerSave`) |
+| **`F8`** | - | Kích hoạt Duyệt chứng từ / Bản ghi hiện tại (`triggerApprove`) |
+| **`Escape`** | Hủy chế độ sửa ô, khôi phục giá trị ban đầu | Đóng Modal tra cứu, Popover Lịch hoặc Popup đang mở |
+| **`Ctrl + V`** | Dán mảng dữ liệu nhiều ô/dòng từ clipboard Excel / Sheets | Dán văn bản thông thường |
 | **`↑ / ↓`** | Di chuyển focus lên / xuống hàng liền kề | Di chuyển trong menu gợi ý (`Autocomplete`) |
 | **`← / →`** | Di chuyển focus sang ô bên trái / phải | Di chuyển con trỏ văn bản |
 | **`Enter`** | Commit giá trị ô, nhảy xuống ô dòng dưới | Chọn mục gợi ý, xác nhận nhập liệu |
-| **`Tab`** | Nhảy sang ô có thể sửa (`editable`) tiếp theo | Nhảy sang ô nhập liệu kế tiếp |
-| **`Shift + Tab`** | Nhảy lùi lại ô có thể sửa phía trước | Nhảy lùi lại ô nhập phía trước |
-| **`F1`** | Chọn tất cả / Bỏ chọn tất cả dòng (`Toggle All`) | Mở Modal tra cứu đa cột (`SearchEntry`) |
+| **`Tab`** | Nhảy sang ô có thể sửa (`editable`) tiếp theo | Nhảy sang ô nhập liệu kế tiếp trên Form |
+| **`Shift + Tab`** | Nhảy lùi lại ô có thể sửa phía trước | Nhảy lùi lại ô nhập phía trước trên Form |
+| **`F1`** | Chọn tất cả / Bỏ chọn tất cả dòng (`Toggle All`) | Mở Modal tra cứu danh mục đa cột (`SearchEntry`) |
 | **`F2`** | Thêm dòng mới vào bảng (`Add Row`) | - |
 | **`F3`** | Nhân bản dòng dữ liệu đang chọn (`Duplicate Row`) | - |
-| **`F4`** | Xóa dòng dữ liệu đang chọn (`Delete Row`) | - |
+| **`F4`** | Xóa dòng dữ liệu đang chọn (`Delete Row`) | Mở Popover Lịch chọn ngày (`DatePicker`) |
 | **`F6`** | Bật / Tắt thanh lọc dữ liệu từng cột (`Filter`) | - |
-| **`Escape`** | Hủy chế độ sửa ô, khôi phục giá trị ban đầu | Đóng Menu gợi ý / Đóng Modal popup |
 
 ---
 
@@ -294,4 +338,87 @@ Khi bạn phát triển thêm một component mới vào `@uiforge/core`:
 5. **Bước 5 - Đăng ký Palette**: Thêm mẫu định nghĩa vào `AVAILABLE_COMPONENTS` trong `frontend/src/editor/ComponentPalette.tsx`.
 6. **Bước 6 - Bổ sung Property Inspector**: Thêm mục chỉnh sửa thuộc tính trong `frontend/src/editor/PropertyPanel.tsx`.
 7. **Bước 7 - CẬP NHẬT TÀI LIỆU NÀY**: Bổ sung mục mới vào Phần II của file tài liệu này với đầy đủ: Chức năng, Bảng thuộc tính (`props`) và ví dụ minh họa.
+
+---
+
+## VI. ĐẶC TẢ CÁC DỊCH VỤ BACKEND & ĐỘNG CƠ CỐT LÕI (BACKEND SERVICES & RUNTIME ENGINES)
+
+Hệ thống UIForge được xây dựng với kiến trúc hướng dịch vụ decoupled hoàn toàn, mang đến hiệu năng doanh nghiệp cao cấp:
+
+### 1. Động cơ Logic Nghiệp vụ `BaseBL` (`frontend/src/core/bl/BaseBL.ts`)
+- **Vai trò**: Cung cấp lớp trừu tượng tiêu chuẩn cho tất cả các file xử lý logic nghiệp vụ `*.bl.ts`.
+- **Nguyên tắc**: Tách rời 100% logic khỏi giao diện Core. Mọi tương tác tính toán, thẩm định dữ liệu hoặc gọi API ngoại vi đều viết trên lớp kế thừa `BaseBL`.
+- **Hợp đồng Vòng đời (Lifecycle Hooks)**:
+  - `onInit(context)`: Khởi tạo dữ liệu form, cấu hình mặc định.
+  - `onFieldChange(field, value, context)`: Lắng nghe thay đổi giá trị trường dữ liệu để tính toán công thức tự động (vd: Thành tiền = Đơn giá * Số lượng).
+  - `beforeSave(data, context)`: Thẩm định logic phức tạp trước khi gửi lưu.
+  - `afterSave(result, context)`: Xử lý hậu kỳ sau khi lưu thành công (thông báo, reset form, refresh bảng).
+  - `onDestroy()`: Dọn dẹp tài nguyên và các subscription.
+- **Hàm tiện ích `defineBL`**: Hỗ trợ đăng ký và khởi tạo instance BL linh hoạt cho từng Form/Màn hình.
+
+### 2. Động cơ Thời Gian Thực SignalR & Đồng Bộ Dữ Liệu (`UIForgeHub.cs` & `realtimeEngine.ts`)
+- **Endpoint Hub**: `/hubs/uiforge` trên ASP.NET Core SignalR.
+- **Tính năng chính**:
+  - **Khóa bản ghi đồng thời (Concurrent Record Locking)**: Khi người dùng mở sửa một bản ghi, hệ thống phát tín hiệu `LockRecord`. Nếu người dùng khác cố truy cập, hệ thống cảnh báo ai đang giữ quyền sửa để ngăn ghi đè mâu thuẫn. Tự động giải phóng khi đóng form hoặc mất kết nối (`ReleaseRecord`).
+  - **Phát sóng cập nhật (Broadcast Record Updates)**: Khi một bản ghi được Lưu/Sửa/Xóa, Hub phát sự kiện `RecordUpdated` đến tất cả các máy trạm đang mở màn hình để tự động cập nhật bảng tức thì mà không cần F5.
+  - **Thông báo bảo trì hệ thống (Maintenance Broadcast)**: Quản trị viên phát cảnh báo bảo trì toàn hệ thống qua `ScheduledMaintenanceService`.
+
+### 3. Dịch vụ Xuất Báo Cáo Excel Native OpenXML (`ExcelExportService.cs`)
+- **Endpoint**: `POST /api/core/excel-export/export`
+- **Công nghệ**: Sử dụng trực tiếp `System.IO.Compression.ZipArchive` từ BCL của .NET 8, tuân thủ đặc tả Microsoft OpenXML (SpreadsheetML) mà không cần cài thêm thư viện nặng nề của bên thứ ba.
+- **Đặc điểm nổi bật**:
+  - Hỗ trợ định dạng phong cách chuyên nghiệp: Header in đậm nền xám nhạt, viền ô mảnh chuẩn mực kế toán.
+  - Nhận diện kiểu dữ liệu thông minh: Tự động format số lượng, đơn giá, số tiền phân cách hàng nghìn.
+  - Tự động sinh công thức tổng cộng chân bảng: Thêm công thức Excel bản địa `=SUM(col_first:col_last)` cho các cột có cờ tính tổng (`aggregate: 'sum'`).
+  - Tốc độ xử lý siêu nhanh, tốn ít bộ nhớ RAM, hỗ trợ streaming trực tiếp file `.xlsx` về trình duyệt.
+
+### 4. Dịch vụ Xuất Báo Cáo PDF Chuẩn Doanh Nghiệp (`PdfReportService.cs`)
+- **Endpoint**: `POST /api/core/reports/export-pdf`
+- **Công nghệ**: Sinh binary `%PDF-1.4` chuẩn trực tiếp từ backend, không phụ thuộc trình điều khiển in ảo hay tool ngoài.
+- **Đặc điểm nổi bật**:
+  - Header chuẩn doanh nghiệp: Tên đơn vị, tiêu đề báo cáo, ngày giờ in, số chứng từ.
+  - Bảng số liệu tự động chia cột, ngắt trang và vẽ khung viền chi tiết.
+  - Khối chữ ký phê duyệt 3 bên: Người lập biểu, Kế toán trưởng, Giám đốc / Thủ trưởng đơn vị.
+  - Tích hợp động cơ frontend `printReportEngine.ts` với hàm `downloadBackendPdfReport` để tải file hoặc in trực tiếp.
+
+### 5. Dịch vụ Điền Mẫu & Xuất Tài Liệu Word (`DocxReplacerService.cs`)
+- **Endpoint**: `POST /api/core/reports/export-docx`
+- **Công nghệ**: Giải nén và thao tác trực tiếp trên cây XML `word/document.xml` của tệp mẫu Word (`.docx`).
+- **Đặc điểm nổi bật**:
+  - Thay thế các placeholder nghiệp vụ: `{{CUSTOMER_NAME}}`, `{{CONTRACT_NO}}`, `{{TOTAL_AMOUNT}}`, `{{TODAY_DATE}}`...
+  - Hỗ trợ nhân bản bảng động (Dynamic Table Rows) cho danh sách hàng hóa/chứng từ chi tiết.
+  - Xuất hợp đồng, phiếu giao nhận, biên bản nghiệm thu chuẩn xác 100% định dạng template gốc.
+
+### 6. Dịch vụ Quản Lý & Lưu Trữ Tệp Tin Đính Kèm (`FileStorageService.cs`)
+- **Endpoints**:
+  - `POST /api/core/files/upload`: Tải lên danh sách tệp tin chứng từ đính kèm.
+  - `GET /api/core/files/download/{id}`: Tải tệp tin về máy trạm.
+  - `DELETE /api/core/files/{id}`: Xóa tệp tin có xác thực an toàn.
+- **Đặc điểm nổi bật**:
+  - Phân tách cấu trúc lưu trữ theo ngày tháng và mã thực thể (`uploads/{EntityName}/{Year}/{Month}/`).
+  - Tự động hash mã định danh chống trùng tên tệp, ghi nhận kích thước, đuôi tệp và người tải.
+  - Tích hợp chặt chẽ với component `ForgeFileUploadGrid` và lightbox preview ảnh/PDF.
+
+### 7. Cơ Chế Phân Quyền Thực Thể & Hành Vi (`RequireEntityPermissionAttribute.cs`)
+- **Mô hình RBAC**: `Roles`, `UserRoles`, `RolePermissions`.
+- **Cơ chế hoạt động**: ActionFilter kiểm tra quyền động trên `DynamicMetadataController.cs` theo từng hành động:
+  - `View` (GET): Xem danh sách, chi tiết bản ghi.
+  - `Create` (POST): Thêm mới bản ghi.
+  - `Edit` (PUT / PATCH): Chỉnh sửa, cập nhật bản ghi.
+  - `Delete` (DELETE): Xóa bản ghi.
+- **Bảo mật**: Chặn đứng truy cập trái phép ở tầng API với mã lỗi HTTP 403 Forbidden kèm mô tả chi tiết quyền bị thiếu.
+
+### 8. Cơ Chế Kiểm Soát Đồng Thời Lạc Quan (Optimistic Concurrency Control)
+- **Cơ chế**: Sử dụng Header `X-Expected-UpdatedDate` hoặc trường `UpdatedDate` làm timestamp phiên bản bản ghi.
+- **Xử lý xung đột**:
+  - Khi Client gửi yêu cầu `PUT` hoặc `PATCH`, backend so sánh `UpdatedDate` hiện tại trong DB với `X-Expected-UpdatedDate`.
+  - Nếu bản ghi đã bị thay đổi bởi người dùng khác trong cùng khoảng thời gian: Backend trả về **HTTP 409 Conflict** kèm dữ liệu mới nhất.
+  - Client hiển thị hộp thoại cảnh báo xung đột và cung cấp tùy chọn: Tải lại dữ liệu mới hoặc Xem lại thay đổi.
+
+### 9. Hệ Thống Nhật Ký Kiểm Toán Thay Đổi Dữ Liệu (`AuditLog.cs`)
+- **Endpoint**: `GET /api/core/audit/{entityName}/{recordId}`
+- **Cơ chế ghi vết tự động**:
+  - Mọi thao tác ghi dữ liệu (`CREATE`, `UPDATE`, `PATCH`, `DELETE`) qua `DynamicMetadataController` đều được tự động lưu vào bảng `AuditLogs`.
+  - Lưu chi tiết: `EntityName`, `RecordId`, `Action`, `ChangesJson` (danh sách các trường bị thay đổi, giá trị cũ `OldValue` và giá trị mới `NewValue`), `ChangedBy`, `ChangedAt`.
+  - Bảng được đánh chỉ mục tối ưu `IX_AuditLogs_Entity_Record` phục vụ truy vấn lịch sử thay đổi tức thì trên Form.
 

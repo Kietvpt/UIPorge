@@ -22,6 +22,7 @@ import { WorkspaceTabBar } from '@/editor/WorkspaceTabBar'
 import { FeaturePopupModal } from '@/editor/FeaturePopupModal'
 import { useDataEngine } from '@/core/engines/dataEngine'
 import { useNavigationEngine } from '@/core/engines/navigationEngine'
+import { useGlobalHotkeys } from '@/core/hooks/useGlobalHotkeys'
 
 export function App() {
   // ── Auth state ──
@@ -170,6 +171,13 @@ export function App() {
       setIsSaving(false)
     }
   }
+
+  // ── ⌨️ Kích hoạt hệ thống phím tắt ERP toàn cục (Alt+`, Esc, F9/Ctrl+S, F8, Ctrl+Shift+F) ──
+  useGlobalHotkeys({
+    onSaveLayout: handleSave,
+    isPreview: effectivePreview,
+    canEdit: isDev,
+  })
 
   // ── Chưa đăng nhập -> màn hình login ──
   if (!token) {

@@ -24,6 +24,12 @@ namespace UIForge.Core.Data
         public DbSet<Project> Projects => Set<Project>();
         public DbSet<Page> Pages => Set<Page>();
         public DbSet<UIComponent> Components => Set<UIComponent>();
+        public DbSet<MasterData> MasterDatas => Set<MasterData>();
+        public DbSet<Role> Roles => Set<Role>();
+        public DbSet<UserRole> UserRoles => Set<UserRole>();
+        public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+        public DbSet<UserSetting> UserSettings => Set<UserSetting>();
+        public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,7 +66,36 @@ namespace UIForge.Core.Data
                 .HasIndex(u => u.Username)
                 .IsUnique();
 
+            modelBuilder.Entity<MasterData>().ToTable("MasterDatas");
+            modelBuilder.Entity<Role>().ToTable("Roles");
+            modelBuilder.Entity<UserRole>().ToTable("UserRoles");
+            modelBuilder.Entity<RolePermission>().ToTable("RolePermissions");
+            modelBuilder.Entity<UserSetting>().ToTable("UserSettings");
+            modelBuilder.Entity<AuditLog>().ToTable("AuditLogs");
+
             var seedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+            // ---------- Seed roles mặc định ----------
+            modelBuilder.Entity<Role>().HasData(
+                new Role
+                {
+                    Id = 1,
+                    Code = "Dev",
+                    Name = "Nhà phát triển / Quản trị",
+                    Description = "Toàn quyền hệ thống",
+                    Active = true,
+                    CreatedDate = seedDate,
+                },
+                new Role
+                {
+                    Id = 2,
+                    Code = "User",
+                    Name = "Người dùng nghiệp vụ",
+                    Description = "Người dùng thông thường",
+                    Active = true,
+                    CreatedDate = seedDate,
+                }
+            );
 
             // ---------- Seed users mặc định ----------
             modelBuilder.Entity<User>().HasData(

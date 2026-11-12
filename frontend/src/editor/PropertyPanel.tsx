@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useEditorStore } from '@/store/editorStore'
 import {
   Sliders,
@@ -49,11 +49,159 @@ import {
   findMatchingEntity,
 } from '@/core/services/metadataService'
 
+export interface FastInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  value: string | number | undefined | null
+  onChange: (value: string) => void
+  debounceMs?: number
+}
+
+/**
+ * ⚡ FastInput: Quản lý local state đồng bộ để gõ phím tức thì 60fps (0ms lag),
+ * tự động debounce đồng bộ lên Zustand Store / History để không re-render canvas thừa.
+ */
+export const FastInput: React.FC<FastInputProps> = ({
+  value: initialValue,
+  onChange,
+  debounceMs = 120,
+  onBlur,
+  onKeyDown,
+  ...rest
+}) => {
+  const [localVal, setLocalVal] = useState<string>(
+    initialValue !== undefined && initialValue !== null ? String(initialValue) : ''
+  )
+  const latestOnChangeRef = useRef(onChange)
+  latestOnChangeRef.current = onChange
+  const timerRef = useRef<any>(null)
+
+  useEffect(() => {
+    setLocalVal(initialValue !== undefined && initialValue !== null ? String(initialValue) : '')
+  }, [initialValue])
+
+  const flush = (val: string) => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+    const currentPropStr = initialValue !== undefined && initialValue !== null ? String(initialValue) : ''
+    if (val !== currentPropStr) {
+      latestOnChangeRef.current(val)
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextVal = e.target.value
+    setLocalVal(nextVal)
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      flush(nextVal)
+    }, debounceMs)
+  }
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    flush(e.target.value)
+    if (onBlur) onBlur(e)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      flush((e.target as HTMLInputElement).value)
+    }
+    if (onKeyDown) onKeyDown(e)
+  }
+
+  return (
+    <input
+      {...rest}
+      value={localVal}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+    />
+  )
+}
+
+export interface FastTextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> {
+  value: string | number | undefined | null
+  onChange: (value: string) => void
+  debounceMs?: number
+}
+
+/**
+ * ⚡ FastTextarea: Quản lý local state cho textarea nhiều dòng, chống re-render giật lag.
+ */
+export const FastTextarea: React.FC<FastTextareaProps> = ({
+  value: initialValue,
+  onChange,
+  debounceMs = 120,
+  onBlur,
+  onKeyDown,
+  ...rest
+}) => {
+  const [localVal, setLocalVal] = useState<string>(
+    initialValue !== undefined && initialValue !== null ? String(initialValue) : ''
+  )
+  const latestOnChangeRef = useRef(onChange)
+  latestOnChangeRef.current = onChange
+  const timerRef = useRef<any>(null)
+
+  useEffect(() => {
+    setLocalVal(initialValue !== undefined && initialValue !== null ? String(initialValue) : '')
+  }, [initialValue])
+
+  const flush = (val: string) => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+    const currentPropStr = initialValue !== undefined && initialValue !== null ? String(initialValue) : ''
+    if (val !== currentPropStr) {
+      latestOnChangeRef.current(val)
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const nextVal = e.target.value
+    setLocalVal(nextVal)
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      flush(nextVal)
+    }, debounceMs)
+  }
+
+  const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+    flush(e.target.value)
+    if (onBlur) onBlur(e)
+  }
+
+  return (
+    <textarea
+      {...rest}
+      value={localVal}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onKeyDown={onKeyDown}
+    />
+  )
+}
+
 interface PropertyPanelProps {
   width?: number
 }
 
-export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
+const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
   const [activeTab, setActiveTab] = useState<
     'layout' | 'children' | 'props' | 'styles' | 'events' | 'data' | 'validation' | 'permissions' | 'columns'
   >('layout')
@@ -72,8 +220,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
   const [listDragIdx, setListDragIdx] = useState<number | null>(null)
   const [listDragOverIdx, setListDragOverIdx] = useState<number | null>(null)
 
-  const features = useEditorStore((s) => s.features)
+  // ⚡ Tối ưu selective selectors từ useEditorStore (TSK-3.5):
+  // Chỉ subscribe vào activeFeature thay vì toàn bộ mảng s.features
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
+  const activeFeature = useEditorStore((s) => s.features.find((f) => f.id === s.activeFeatureId))
   const selection = useEditorStore((s) => s.selection)
   const selectComponent = useEditorStore((s) => s.selectComponent)
   const addComponent = useEditorStore((s) => s.addComponent)
@@ -92,8 +242,6 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
   const [newBlFnInput, setNewBlFnInput] = useState('')
   const [blFnVer, setBlFnVer] = useState(0)
 
-  const activeFeature = features.find((f) => f.id === activeFeatureId)
-
   // Find component recursively in tree
   const findNodeById = (nodes: any[], targetId: string | null): any => {
     if (!targetId) return null
@@ -107,17 +255,20 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
     return null
   }
 
-  const selectedNode: ComponentNode | null = selection.componentId && activeFeature
-    ? findNodeById(activeFeature.components, selection.componentId)
-    : null
+  const selectedNode: ComponentNode | null = useMemo(
+    () => (selection.componentId && activeFeature ? findNodeById(activeFeature.components, selection.componentId) : null),
+    [selection.componentId, activeFeature]
+  )
 
-  const parentNode = selectedNode?.parentId && activeFeature
-    ? findNodeById(activeFeature.components, selectedNode.parentId)
-    : null
+  const parentNode = useMemo(
+    () => (selectedNode?.parentId && activeFeature ? findNodeById(activeFeature.components, selectedNode.parentId) : null),
+    [selectedNode?.parentId, activeFeature]
+  )
 
-  const parentTabContainer = parentNode && (parentNode.props?.isTab || parentNode.props?.tab || parentNode.type === 'Tabs')
-    ? parentNode
-    : null
+  const parentTabContainer = useMemo(
+    () => (parentNode && (parentNode.props?.isTab || parentNode.props?.tab || parentNode.type === 'Tabs') ? parentNode : null),
+    [parentNode]
+  )
 
   // Trạng thái khi chưa chọn component nào (Xem và cấu hình Feature / Trang)
   if (!selectedNode) {
@@ -161,11 +312,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                     File Nghiệp Vụ (.bl.ts)
                   </span>
-                  <input
+                  <FastInput
                     type="text"
                     value={activeFeature.scriptFile || ''}
                     placeholder="feature.bl.ts..."
-                    onChange={(e) => updateFeatureScriptFile(activeFeature.id, e.target.value)}
+                    onChange={(val) => updateFeatureScriptFile(activeFeature.id, val)}
                     className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-emerald-400 font-mono text-xs focus:outline-none focus:border-emerald-500"
                   />
                 </div>
@@ -837,11 +988,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                       <label className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
                         Tên Nhãn Tab (Hiển Thị Trên Thanh Tab)
                       </label>
-                      <input
+                      <FastInput
                         type="text"
                         value={selectedNode.props.label || ''}
                         placeholder="e.g. MAIN INFORMATION, MASTER COST..."
-                        onChange={(e) => updateComponentProps(selectedNode.id, { label: e.target.value })}
+                        onChange={(val) => updateComponentProps(selectedNode.id, { label: val })}
                         className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-bold text-xs focus:outline-none focus:border-emerald-500"
                       />
                     </div>
@@ -1123,11 +1274,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                   />
                 </div>
               </div>
-              <input
+              <FastInput
                 type="text"
                 value={selectedNode.props.label || ''}
                 placeholder="Nhập tên nhãn (ví dụ: Job No., S. Lines...)"
-                onChange={(e) => updateComponentProps(selectedNode.id, { label: e.target.value })}
+                onChange={(val) => updateComponentProps(selectedNode.id, { label: val })}
                 className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 text-xs focus:outline-none focus:border-blue-500"
               />
 
@@ -1186,10 +1337,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                 <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
                   Placeholder Gợi Ý
                 </label>
-                <input
+                <FastInput
                   type="text"
                   value={selectedNode.props.placeholder || ''}
-                  onChange={(e) => updateComponentProps(selectedNode.id, { placeholder: e.target.value })}
+                  onChange={(val) => updateComponentProps(selectedNode.id, { placeholder: val })}
                   className="w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded text-slate-100"
                 />
               </div>
@@ -1204,11 +1355,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                   <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
                     Bảng danh mục tra cứu (Reference Dataset)
                   </label>
-                  <input
+                  <FastInput
                     type="text"
                     value={(selectedNode.props.reference as string) || ''}
                     placeholder="VD: MasterData, Customers, Products..."
-                    onChange={(e) => updateComponentProps(selectedNode.id, { reference: e.target.value })}
+                    onChange={(val) => updateComponentProps(selectedNode.id, { reference: val })}
                     className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-cyan-300 font-mono text-xs"
                   />
                 </div>
@@ -1217,11 +1368,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                     <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
                       Cột hiển thị (Display)
                     </label>
-                    <input
+                    <FastInput
                       type="text"
                       value={(selectedNode.props.displayField as string) || ''}
                       placeholder="VD: name"
-                      onChange={(e) => updateComponentProps(selectedNode.id, { displayField: e.target.value })}
+                      onChange={(val) => updateComponentProps(selectedNode.id, { displayField: val })}
                       className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 font-mono text-xs"
                     />
                   </div>
@@ -1229,11 +1380,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                     <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
                       Cột giá trị (Value)
                     </label>
-                    <input
+                    <FastInput
                       type="text"
                       value={(selectedNode.props.valueField as string) || ''}
                       placeholder="VD: code / id"
-                      onChange={(e) => updateComponentProps(selectedNode.id, { valueField: e.target.value })}
+                      onChange={(val) => updateComponentProps(selectedNode.id, { valueField: val })}
                       className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 font-mono text-xs"
                     />
                   </div>
@@ -1242,11 +1393,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                   <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
                     Placeholder
                   </label>
-                  <input
+                  <FastInput
                     type="text"
                     value={(selectedNode.props.placeholder as string) || ''}
                     placeholder="Tra cứu danh mục (F1)..."
-                    onChange={(e) => updateComponentProps(selectedNode.id, { placeholder: e.target.value })}
+                    onChange={(val) => updateComponentProps(selectedNode.id, { placeholder: val })}
                     className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs"
                   />
                 </div>
@@ -1957,12 +2108,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                       </label>
                       <span className="text-[10px] text-slate-500 font-mono">SqlWhere</span>
                     </div>
-                    <input
+                    <FastInput
                       type="text"
                       value={binding.sqlWhere || (nodeProps.sqlWhere as string) || ''}
                       placeholder="VD: Active = 1 AND Status = 'OPEN'"
-                      onChange={(e) => {
-                        const sw = e.target.value
+                      onChange={(sw) => {
                         updateComponentDataBinding(selectedNode.id, { sqlWhere: sw })
                         updateComponentProps(selectedNode.id, { sqlWhere: sw })
                       }}
@@ -1983,13 +2133,12 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                       </label>
                       <span className="text-[10px] text-emerald-400 font-mono">Nhập tay</span>
                     </div>
-                    <input
+                    <FastInput
                       type="text"
                       value={binding.fieldName || (nodeProps.fieldName as string) || ''}
                       placeholder="Nhập tên trường trên model (VD: PolId, VendorId, CustomerId)..."
                       list="lookup-fields-list"
-                      onChange={(e) => {
-                        const f = e.target.value
+                      onChange={(f) => {
                         updateComponentDataBinding(selectedNode.id, { fieldName: f })
                         updateComponentProps(selectedNode.id, { fieldName: f })
                       }}
@@ -2034,12 +2183,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                         </option>
                       ))}
                     </select>
-                    <input
+                    <FastInput
                       type="text"
                       value={binding.entityName || (nodeProps.reference as string) || (nodeProps.refName as string) || ''}
                       placeholder="Hoặc gõ tên Entity danh mục (VD: Terminal, Partner, Customer)..."
-                      onChange={(e) => {
-                        const customName = e.target.value
+                      onChange={(customName) => {
                         updateComponentDataBinding(selectedNode.id, {
                           entityName: customName,
                           refName: customName,
@@ -2064,11 +2212,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                         OData Query
                       </span>
                     </div>
-                    <textarea
+                    <FastTextarea
                       rows={3}
                       value={currentDataSource}
                       placeholder="VD: ?$filter=Active eq true"
-                      onChange={(e) => handleUpdateDataSource(e.target.value)}
+                      onChange={(val) => handleUpdateDataSource(val)}
                       className="w-full px-3 py-2 bg-slate-950 border border-amber-500/40 focus:border-amber-400 rounded-lg text-xs font-mono text-amber-200 focus:outline-none placeholder-slate-600 resize-y"
                     />
                   </div>
@@ -2081,12 +2229,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                       </label>
                       <span className="text-[10px] text-purple-400 font-mono">Populate</span>
                     </div>
-                    <input
+                    <FastInput
                       type="text"
                       value={binding.populateField || (nodeProps.populateRule as string) || (nodeProps.populateField as string) || ''}
                       placeholder="VD: VendorName = Name, TaxCode = TaxId, Agent = AgentName"
-                      onChange={(e) => {
-                        const pf = e.target.value
+                      onChange={(pf) => {
                         updateComponentDataBinding(selectedNode.id, { populateField: pf })
                         updateComponentProps(selectedNode.id, { populateRule: pf, populateField: pf })
                       }}
@@ -2100,12 +2247,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                       <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                         Khóa Chính (IdField)
                       </label>
-                      <input
+                      <FastInput
                         type="text"
                         value={binding.idField || (nodeProps.idField as string) || 'Id'}
                         placeholder="Id"
-                        onChange={(e) => {
-                          const idf = e.target.value
+                        onChange={(idf) => {
                           updateComponentDataBinding(selectedNode.id, { idField: idf })
                           updateComponentProps(selectedNode.id, { idField: idf })
                         }}
@@ -2116,12 +2262,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                       <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
                         Cột Chọn (SelectField)
                       </label>
-                      <input
+                      <FastInput
                         type="text"
                         value={binding.selectField || (nodeProps.selectField as string) || ''}
                         placeholder="Name, Code"
-                        onChange={(e) => {
-                          const sf = e.target.value
+                        onChange={(sf) => {
                           updateComponentDataBinding(selectedNode.id, { selectField: sf })
                           updateComponentProps(selectedNode.id, { selectField: sf })
                         }}
@@ -2182,13 +2327,12 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                       </label>
                       <span className="text-[10px] text-emerald-400 font-mono">Nhập tay</span>
                     </div>
-                    <input
+                    <FastInput
                       type="text"
                       value={binding.fieldName || (nodeProps.fieldName as string) || ''}
                       placeholder="Nhập tên trường trên model (VD: JobNo, GrossWeight, IssueDate)..."
                       list="input-fields-list"
-                      onChange={(e) => {
-                        const f = e.target.value
+                      onChange={(f) => {
                         updateComponentDataBinding(selectedNode.id, { fieldName: f })
                         updateComponentProps(selectedNode.id, { fieldName: f })
                       }}
@@ -2227,12 +2371,11 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
                       Chuỗi Định Dạng Mẫu (FormatData)
                     </label>
-                    <input
+                    <FastInput
                       type="text"
                       value={binding.formatData || (nodeProps.formatData as string) || ''}
                       placeholder="VD: {0} KGS hoặc {0} USD"
-                      onChange={(e) => {
-                        const fd = e.target.value
+                      onChange={(fd) => {
                         updateComponentDataBinding(selectedNode.id, { formatData: fd })
                         updateComponentProps(selectedNode.id, { formatData: fd })
                       }}
@@ -2831,3 +2974,5 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ width }) => {
     </aside>
   )
 }
+
+export const PropertyPanel = React.memo(PropertyPanelComponent)
