@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,8 +63,21 @@ namespace UIForge.Core.Controllers
             var catalogs = new List<EntityMetadataDto>();
             var baseEntityType = typeof(BaseEntity);
 
+            var excludedCoreNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "BaseEntity",
+                "Project", "Projects",
+                "Page", "Pages",
+                "UIComponent", "UIComponents", "Components",
+                "__EFMigrationsHistory"
+            };
+
             var entityTypes = _dbContext.Model.GetEntityTypes()
-                .Where(e => baseEntityType.IsAssignableFrom(e.ClrType))
+                .Where(e => !e.ClrType.IsAbstract
+                            && baseEntityType.IsAssignableFrom(e.ClrType)
+                            && (e.ClrType.Namespace != baseEntityType.Namespace || e.ClrType == typeof(User))
+                            && !excludedCoreNames.Contains(e.ClrType.Name)
+                            && !excludedCoreNames.Contains(e.GetTableName() ?? string.Empty))
                 .Select(e => e.ClrType)
                 .Distinct()
                 .ToList();
@@ -78,6 +93,9 @@ namespace UIForge.Core.Controllers
 
                 foreach (var p in props)
                 {
+                    if (p.GetCustomAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>() != null)
+                        continue;
+
                     var colType = "string";
                     var pt = Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType;
 
@@ -217,10 +235,7 @@ namespace UIForge.Core.Controllers
                 return NotFound(new { message = $"Thực thể '{entityName}' không tồn tại trong hệ thống." });
             }
 
-            var entity = JsonSerializer.Deserialize(payload.GetRawText(), entityType.ClrType, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var entity = JsonSerializer.Deserialize(payload.GetRawText(), entityType.ClrType, DynamicDeserializeOptions);
 
             if (entity == null)
             {
@@ -265,26 +280,40 @@ namespace UIForge.Core.Controllers
                 return NotFound(new { message = $"Bản ghi #{id} đã bị xóa hoặc không hoạt động." });
             }
 
-            var incoming = JsonSerializer.Deserialize(payload.GetRawText(), entityType.ClrType, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var incoming = JsonSerializer.Deserialize(payload.GetRawText(), entityType.ClrType, DynamicDeserializeOptions);
 
             if (incoming == null)
             {
                 return BadRequest(new { message = "Dữ liệu cập nhật không hợp lệ" });
             }
 
+            var presentKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (payload.ValueKind == JsonValueKind.Object)
+            {
+                foreach (var jp in payload.EnumerateObject())
+                {
+                    presentKeys.Add(jp.Name);
+                }
+            }
+
+            var nullabilityCtx = new NullabilityInfoContext();
             var props = entityType.ClrType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var prop in props)
             {
                 if (!prop.CanWrite || !prop.CanRead) continue;
                 if (prop.Name is "Id" or "CreatedDate" or "CreatedBy") continue;
+                if (prop.GetCustomAttribute<JsonIgnoreAttribute>() != null) continue;
+                if (presentKeys.Count > 0 && !presentKeys.Contains(prop.Name)) continue;
 
                 var newVal = prop.GetValue(incoming);
                 if (newVal != null)
                 {
                     prop.SetValue(existing, newVal);
+                }
+                else if (Nullable.GetUnderlyingType(prop.PropertyType) != null ||
+                         (!prop.PropertyType.IsValueType && nullabilityCtx.Create(prop).WriteState == NullabilityState.Nullable))
+                {
+                    prop.SetValue(existing, null);
                 }
             }
 
@@ -466,6 +495,62 @@ namespace UIForge.Core.Controllers
                 }
             }
             return true;
+        }
+        private static readonly JsonSerializerOptions DynamicDeserializeOptions = CreateDynamicDeserializeOptions();
+
+        private static JsonSerializerOptions CreateDynamicDeserializeOptions()
+        {
+            var opts = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString,
+            };
+            opts.Converters.Add(new FlexibleStringJsonConverter());
+            opts.Converters.Add(new FlexibleNullableDateTimeConverter());
+            return opts;
+        }
+
+        private sealed class FlexibleStringJsonConverter : JsonConverter<string?>
+        {
+            public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                return reader.TokenType switch
+                {
+                    JsonTokenType.String => reader.GetString(),
+                    JsonTokenType.Number => Encoding.UTF8.GetString(reader.ValueSpan),
+                    JsonTokenType.True => "true",
+                    JsonTokenType.False => "false",
+                    JsonTokenType.Null => null,
+                    _ => JsonDocument.ParseValue(ref reader).RootElement.ToString(),
+                };
+            }
+
+            public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
+            {
+                if (value == null) writer.WriteNullValue();
+                else writer.WriteStringValue(value);
+            }
+        }
+
+        private sealed class FlexibleNullableDateTimeConverter : JsonConverter<DateTime?>
+        {
+            public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                if (reader.TokenType == JsonTokenType.Null) return null;
+                if (reader.TokenType == JsonTokenType.String)
+                {
+                    var s = reader.GetString();
+                    if (string.IsNullOrWhiteSpace(s)) return null;
+                    if (DateTime.TryParse(s, out var dt)) return dt;
+                }
+                return reader.GetDateTime();
+            }
+
+            public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
+            {
+                if (value.HasValue) writer.WriteStringValue(value.Value);
+                else writer.WriteNullValue();
+            }
         }
     }
 }

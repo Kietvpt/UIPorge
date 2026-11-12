@@ -72,40 +72,21 @@ export function App() {
 
   // ── Nạp dữ liệu thực tế từ SQL Server Database vào Core DataEngine ──
   useEffect(() => {
-    fetch('http://localhost:5048/api/core/data/Terminal')
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => useDataEngine.getState().registerDataset('Terminal', data))
-      .catch(() => {})
+    const syncDatasetFromBackend = (entityName: string) => {
+      fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}`)
+        .then((res) => (res.ok ? res.json() : []))
+        .then((data) => {
+          const items = Array.isArray(data) ? data : (data?.value ?? [])
+          useDataEngine.getState().registerDataset(entityName, items)
+        })
+        .catch(() => {})
+    }
 
-    fetch('http://localhost:5048/api/core/data/Transaction')
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => useDataEngine.getState().registerDataset('Transaction', data))
-      .catch(() => {})
-
-    fetch('http://localhost:5048/api/core/data/Container')
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => useDataEngine.getState().registerDataset('Container', data))
-      .catch(() => {})
-
-    // Nạp Vendor (nếu backend chưa có bảng Vendor thì cung cấp fixture mẫu để test Multi-Column Select & DataSource filter)
-    fetch('http://localhost:5048/api/core/data/Vendor')
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          useDataEngine.getState().registerDataset('Vendor', data)
-        } else {
-          return Promise.reject()
-        }
-      })
-      .catch(() => {
-        useDataEngine.getState().registerDataset('Vendor', [
-          { Id: 1, id: 1, Code: 'COSCO', FullName: 'COSCO SHIPPING LINES (VIETNAM)', Address: 'Lầu 8, Tòa nhà Saigon Centre, Q.1, TP.HCM', TaxCode: '0301234567', Active: true },
-          { Id: 2, id: 2, Code: 'MAERSK', FullName: 'MAERSK VIETNAM CO., LTD', Address: '285 Cách Mạng Tháng 8, Q.10, TP.HCM', TaxCode: '0309876543', Active: true },
-          { Id: 3, id: 3, Code: 'WANHAI', FullName: 'WAN HAI LINES LTD', Address: 'Lầu 12, Lim Tower, Q.1, TP.HCM', TaxCode: '0304567890', Active: true },
-          { Id: 4, id: 4, Code: 'VERAC', FullName: 'VERAC-IT VIETNAM LOGISTICS', Address: 'Khu Công Nghệ Cao, Q.9, TP.HCM', TaxCode: '0311223344', Active: true },
-          { Id: 5, id: 5, Code: 'LEGACY', FullName: 'CÔNG TY CỔ PHẦN VẬN TẢI CŨ (NGỪNG HOẠT ĐỘNG)', Address: 'Quận 4, TP.HCM', TaxCode: '0399887766', Active: false },
-        ])
-      })
+    syncDatasetFromBackend('Terminal')
+    syncDatasetFromBackend('Transaction')
+    syncDatasetFromBackend('Container')
+    syncDatasetFromBackend('Vendor')
+    syncDatasetFromBackend('User')
   }, [])
 
   // ── Lắng nghe sự kiện Back/Forward của trình duyệt để đổi màn hình ──

@@ -15,6 +15,12 @@ import {
 import type { TableColumn, ComponentEvent, DropdownColumnConfig } from '@/types/schema'
 import { useEditorStore } from '@/store/editorStore'
 import { UnifiedEventEditor } from '@/editor/events/UnifiedEventEditor'
+import {
+  fetchEntityMetadata,
+  EntityMetadata,
+  buildCombinedEntityCatalog,
+  findMatchingEntity,
+} from '@/core/services/metadataService'
 
 export interface ColumnPropertiesModalProps {
   isOpen: boolean
@@ -31,10 +37,17 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<TableColumn | null>(null)
   const [activeBottomTab, setActiveBottomTab] = useState<'info' | 'dropdownColumns' | 'events' | 'permissions'>('info')
+  const [liveEntities, setLiveEntities] = useState<EntityMetadata[]>([])
   const activeFeature = useEditorStore((s) => s.features.find((f) => f.id === s.activeFeatureId))
 
   useEffect(() => {
-    if (column) {
+    fetchEntityMetadata().then((data) => {
+      if (data && data.length > 0) setLiveEntities(data)
+    })
+  }, [])
+
+  useEffect(() => {
+    if (column && isOpen) {
       let parsedEvents: ComponentEvent[] = []
       if (Array.isArray(column.events)) {
         parsedEvents = [...column.events]
@@ -72,15 +85,21 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
         active: column.active ?? true,
         hasFilter: column.hasFilter ?? true,
         advancedSearch: column.advancedSearch ?? true,
-        formatCell: column.formatCell || (column.format as string) || '{Name}',
+        formatCell: column.formatCell ?? (column.format as string) ?? '',
+        formatData: column.formatData ?? '',
         events: parsedEvents,
       })
     }
-  }, [column])
+  }, [column, isOpen])
 
   if (!isOpen || !formData) return null
 
   const columnEvents: ComponentEvent[] = Array.isArray(formData.events) ? formData.events : []
+  const combinedEntities = buildCombinedEntityCatalog(liveEntities)
+  const selectedEntity = findMatchingEntity(combinedEntities, formData.reference || formData.refName)
+  const availableFields = selectedEntity ? selectedEntity.fields : []
+  const isSelectColumn =
+    formData.componentType === 'Select' || (formData.componentType as string) === 'Dropdown'
 
   const handleChange = (field: keyof TableColumn, value: any) => {
     setFormData((prev) => {
@@ -275,26 +294,47 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[10px] text-slate-400 block mb-0.5">RefName</label>
+                  <label className="text-[10px] text-slate-400 block mb-0.5">Reference (Danh Mục)</label>
+                  <select
+                    value={selectedEntity ? selectedEntity.name : ''}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setFormData((prev) => ({
+                        ...prev,
+                        reference: val,
+                        refName: val,
+                      }))
+                    }}
+                    className="w-full px-2 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
+                  >
+                    <option value="">-- Chọn Thực Thể Danh Mục --</option>
+                    {combinedEntities.map((ent) => (
+                      <option key={ent.name} value={ent.name}>
+                        {ent.displayName} ({ent.name})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-400 block mb-0.5">RefName (Tên Tham Chiếu)</label>
                   <input
                     type="text"
                     value={formData.refName || ''}
-                    onChange={(e) => handleChange('refName', e.target.value)}
-                    className="w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] text-slate-400 block mb-0.5">Reference</label>
-                  <input
-                    type="text"
-                    value={formData.reference || ''}
-                    onChange={(e) => handleChange('reference', e.target.value)}
+                    placeholder="VD: Vendor, Customer..."
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setFormData((prev) => ({
+                        ...prev,
+                        refName: val,
+                        reference: val,
+                      }))
+                    }}
                     className="w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className={isSelectColumn ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-2 gap-2'}>
                 <div>
                   <label className="text-[10px] text-slate-400 block mb-0.5">Format Cell</label>
                   <input
@@ -305,16 +345,18 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
                     className="w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                   />
                 </div>
-                <div>
-                  <label className="text-[10px] text-emerald-400 font-semibold block mb-0.5">Format Data (Select)</label>
-                  <input
-                    type="text"
-                    value={formData.formatData || ''}
-                    placeholder="{FullName} - {Address}"
-                    onChange={(e) => handleChange('formatData', e.target.value)}
-                    className="w-full px-2.5 py-1 rounded bg-[#0b1329] border border-emerald-500/40 text-emerald-300 font-mono text-xs focus:border-emerald-400 focus:outline-none"
-                  />
-                </div>
+                {!isSelectColumn && (
+                  <div>
+                    <label className="text-[10px] text-emerald-400 font-semibold block mb-0.5">Format Data</label>
+                    <input
+                      type="text"
+                      value={formData.formatData || ''}
+                      placeholder="{FullName} - {Address}"
+                      onChange={(e) => handleChange('formatData', e.target.value)}
+                      className="w-full px-2.5 py-1 rounded bg-[#0b1329] border border-emerald-500/40 text-emerald-300 font-mono text-xs focus:border-emerald-400 focus:outline-none"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-3 gap-2">
@@ -486,7 +528,7 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
               >
                 THÔNG TIN KHÁC
               </button>
-              {(formData.componentType === 'Select' || (formData.componentType as string) === 'Dropdown') && (
+              {isSelectColumn && (
                 <button
                   type="button"
                   onClick={() => setActiveBottomTab('dropdownColumns')}
@@ -763,40 +805,66 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
               </div>
             )}
 
-            {activeBottomTab === 'dropdownColumns' && (() => {
+            {activeBottomTab === 'dropdownColumns' && isSelectColumn && (() => {
               const cols: DropdownColumnConfig[] = formData.dropdownColumns || []
               const updateCols = (next: DropdownColumnConfig[]) => handleChange('dropdownColumns', next)
+              const entityTokenPrefix = selectedEntity?.name || formData.refName || formData.reference || ''
 
               return (
                 <div className="p-4 bg-slate-950/60 space-y-4 max-h-[420px] overflow-y-auto text-xs">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-3">
                     <div>
                       <h4 className="font-bold text-emerald-300 flex items-center gap-1.5">
                         <TableIcon className="w-4 h-4 text-emerald-400" />
                         <span>Cấu Hình Bảng Chọn Đa Cột Cho Cột [{formData.title || formData.key}]</span>
                       </h4>
                       <p className="text-[11px] text-slate-400 mt-0.5">
-                        Khi bấm vào ô Select trên bảng, danh sách sẽ mở dạng bảng nhiều cột từ thực thể <span className="font-mono text-cyan-300">{formData.reference || formData.refName || '(Chưa nhập Reference)'}</span>.
+                        Khi bấm vào ô Select trên bảng, danh sách sẽ mở dạng bảng nhiều cột từ thực thể <span className="font-mono text-cyan-300">{selectedEntity ? `${selectedEntity.displayName} (${selectedEntity.name})` : (formData.reference || formData.refName || '(Chưa chọn Reference)')}</span>.
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        updateCols([
-                          ...cols,
-                          {
-                            key: `col${cols.length + 1}`,
-                            title: `Cột ${cols.length + 1}`,
-                            width: '50%',
-                            align: 'left',
-                          },
-                        ])
-                      }}
-                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Thêm Cột</span>
-                    </button>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {availableFields.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const candidateFields = availableFields
+                              .filter((f) => f.name.toLowerCase() !== 'id' && f.name.toLowerCase() !== 'active')
+                              .slice(0, 3)
+                            const widthPct = `${Math.floor(100 / Math.max(candidateFields.length, 1))}%`
+                            updateCols(
+                              candidateFields.map((f) => ({
+                                key: f.name,
+                                title: f.displayName,
+                                width: widthPct,
+                                align: 'left' as const,
+                              }))
+                            )
+                          }}
+                          className="px-2.5 py-1.5 bg-cyan-600/20 hover:bg-cyan-600/35 text-cyan-300 border border-cyan-500/40 rounded-lg text-xs font-semibold cursor-pointer"
+                          title="Tự động nạp các cột tiêu biểu từ thực thể Reference đã chọn"
+                        >
+                          ⚡ Tự động nạp ({selectedEntity?.name})
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          updateCols([
+                            ...cols,
+                            {
+                              key: `col${cols.length + 1}`,
+                              title: `Cột ${cols.length + 1}`,
+                              width: '50%',
+                              align: 'left',
+                            },
+                          ])
+                        }}
+                        className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Thêm Cột</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* Khóa chính & FormatData & PopulateField */}
@@ -805,7 +873,7 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
                       <label className="text-[10px] text-slate-400 block mb-1">Khóa Chính (IdField)</label>
                       <input
                         type="text"
-                        value={formData.idField || 'id'}
+                        value={formData.idField ?? ''}
                         placeholder="id"
                         onChange={(e) => handleChange('idField', e.target.value)}
                         className="w-full px-2.5 py-1 bg-[#0b1329] border border-slate-700 rounded text-xs font-mono text-slate-200 focus:border-emerald-500 focus:outline-none"
@@ -815,23 +883,52 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
                       <label className="text-[10px] text-emerald-400 font-semibold block mb-1">Định Dạng Hiển Thị (FormatData)</label>
                       <input
                         type="text"
-                        value={formData.formatData || ''}
+                        value={formData.formatData ?? ''}
                         placeholder="{FullName} - {Address}"
                         onChange={(e) => handleChange('formatData', e.target.value)}
                         className="w-full px-2.5 py-1 bg-[#0b1329] border border-emerald-500/40 rounded text-xs font-mono text-emerald-300 focus:border-emerald-400 focus:outline-none"
                       />
+                      {cols.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {cols.map((c, cIdx) => {
+                            const token = entityTokenPrefix ? `{${entityTokenPrefix}.${c.key}}` : `{${c.key}}`
+                            return (
+                              <button
+                                key={`${c.key}-${cIdx}`}
+                                type="button"
+                                onClick={() => {
+                                  const curr = formData.formatData || ''
+                                  const next = curr ? `${curr} - ${token}` : token
+                                  handleChange('formatData', next)
+                                }}
+                                className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 cursor-pointer"
+                              >
+                                +{token}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label className="text-[10px] text-purple-400 font-semibold block mb-1">Tự Động Điền Cột Khác (Populate)</label>
                       <input
                         type="text"
-                        value={formData.populateField || ''}
+                        value={formData.populateField ?? ''}
                         placeholder="VendorName = FullName"
                         onChange={(e) => handleChange('populateField', e.target.value)}
                         className="w-full px-2.5 py-1 bg-[#0b1329] border border-slate-700 rounded text-xs font-mono text-purple-300 focus:border-purple-400 focus:outline-none"
                       />
                     </div>
                   </div>
+
+                  <datalist id="col-dropdown-field-suggestions">
+                    {availableFields.map((f) => (
+                      <option key={f.name} value={f.name}>
+                        {f.displayName} ({f.dataType})
+                      </option>
+                    ))}
+                  </datalist>
 
                   {/* Bảng quản lý danh sách cột */}
                   {cols.length === 0 ? (
@@ -878,11 +975,18 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
                           <div className="col-span-4">
                             <input
                               type="text"
+                              list="col-dropdown-field-suggestions"
                               value={col.key}
                               placeholder="Key (vd: FullName)"
                               onChange={(e) => {
+                                const newKey = e.target.value
+                                const matchedField = availableFields.find((f) => f.name === newKey)
                                 const next = [...cols]
-                                next[idx] = { ...next[idx], key: e.target.value }
+                                next[idx] = {
+                                  ...next[idx],
+                                  key: newKey,
+                                  title: matchedField && (!next[idx].title || next[idx].title.startsWith('Cột ')) ? matchedField.displayName : next[idx].title,
+                                }
                                 updateCols(next)
                               }}
                               className="w-full px-2 py-1 bg-[#0b1329] border border-slate-700 rounded text-xs font-mono text-cyan-300"

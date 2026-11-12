@@ -71,13 +71,36 @@ export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
   // ── 1. TẢI DỮ LIỆU ĐỘNG TỪ REFERENCE / DATAENGINE ──
   useEffect(() => {
     let isMounted = true
+    const cleanRef = (reference || '').trim()
 
     if (directItems && Array.isArray(directItems) && directItems.length > 0) {
       setRawRecords(directItems)
       return
     }
 
-    if (options && Array.isArray(options) && options.length > 0) {
+    // Ưu tiên Reference (truy vấn DB/API động) hơn options tĩnh mẫu
+    if (cleanRef) {
+      setIsLoading(true)
+      queryEntity(cleanRef, dataSource)
+        .then((data) => {
+          if (isMounted) {
+            if (Array.isArray(data) && data.length > 0) {
+              setRawRecords(data)
+            } else {
+              setRawRecords([])
+            }
+          }
+        })
+        .catch(() => {
+          if (isMounted) {
+            const local = getDataset(cleanRef)
+            setRawRecords(Array.isArray(local) ? local : [])
+          }
+        })
+        .finally(() => {
+          if (isMounted) setIsLoading(false)
+        })
+    } else if (options && Array.isArray(options) && options.length > 0) {
       const converted = options.map((opt) => {
         if (opt.rawItem && typeof opt.rawItem === 'object') return opt.rawItem
         return {
@@ -89,31 +112,6 @@ export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
         }
       })
       setRawRecords(converted)
-      return
-    }
-
-    if (reference) {
-      setIsLoading(true)
-      queryEntity(reference, dataSource)
-        .then((data) => {
-          if (isMounted) {
-            if (Array.isArray(data) && data.length > 0) {
-              setRawRecords(data)
-            } else {
-              // Nếu backend trả mảng rỗng, kiểm tra lại local dataset (đề phòng query lọc ra 0 hay backend chưa có)
-              setRawRecords([])
-            }
-          }
-        })
-        .catch(() => {
-          if (isMounted) {
-            const local = getDataset(reference)
-            setRawRecords(Array.isArray(local) ? local : [])
-          }
-        })
-        .finally(() => {
-          if (isMounted) setIsLoading(false)
-        })
     } else {
       setRawRecords([])
     }

@@ -114,6 +114,36 @@ try
             ALTER TABLE Components ADD ValidationJson NVARCHAR(MAX) NULL;
         IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Components') AND name = 'PermissionsJson')
             ALTER TABLE Components ADD PermissionsJson NVARCHAR(MAX) NULL;
+
+        -- Đồng bộ các cột BaseEntity cho bảng Users (nếu DB tạo trước khi User kế thừa BaseEntity)
+        IF EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Users')
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Users') AND name = 'Active')
+                ALTER TABLE Users ADD Active BIT NOT NULL CONSTRAINT DF_Users_Active DEFAULT 1;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Users') AND name = 'CreatedDate')
+                ALTER TABLE Users ADD CreatedDate DATETIME2 NOT NULL CONSTRAINT DF_Users_CreatedDate DEFAULT GETUTCDATE();
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Users') AND name = 'CreatedBy')
+                ALTER TABLE Users ADD CreatedBy NVARCHAR(MAX) NULL;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Users') AND name = 'UpdatedDate')
+                ALTER TABLE Users ADD UpdatedDate DATETIME2 NULL;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Users') AND name = 'UpdatedBy')
+                ALTER TABLE Users ADD UpdatedBy NVARCHAR(MAX) NULL;
+        END
+
+        -- Tạo bảng Vendors nếu DB branch chưa có
+        IF OBJECT_ID('Vendors', 'U') IS NULL
+        BEGIN
+            CREATE TABLE Vendors (
+                Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                FullName NVARCHAR(MAX) NOT NULL,
+                Address NVARCHAR(MAX) NULL,
+                Active BIT NOT NULL CONSTRAINT DF_Vendors_Active DEFAULT 1,
+                CreatedDate DATETIME2 NOT NULL CONSTRAINT DF_Vendors_CreatedDate DEFAULT GETUTCDATE(),
+                CreatedBy NVARCHAR(MAX) NULL,
+                UpdatedDate DATETIME2 NULL,
+                UpdatedBy NVARCHAR(MAX) NULL
+            );
+        END
     ";
     await db.Database.ExecuteSqlRawAsync(sqlMigration);
     Console.WriteLine("[DB] Components schema migrated with DataBindingJson, ValidationJson, PermissionsJson.");

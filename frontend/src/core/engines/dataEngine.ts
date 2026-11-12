@@ -383,13 +383,22 @@ export const useDataEngine = create<DataEngineState>()(
       idField = 'id',
       textField = 'fullName'
     ): Promise<SelectOption[]> => {
+      // Chuẩn hóa DataSource (hỗ trợ cả dạng `return "?$filter=..."` lẫn `?$filter=...` hoặc biểu thức `Active eq true`)
+      let normalizedQuery = (query || '').trim()
+      const returnMatch = normalizedQuery.match(/^return\s+(['"`])([\s\S]*)\1\s*;?$/i)
+      if (returnMatch) {
+        normalizedQuery = returnMatch[2].trim()
+      }
+
       // 1. Thử gọi Backend OData API nếu có
       if (entityName) {
         try {
-          const queryString = query
-            ? query.startsWith('?')
-              ? query
-              : `?$filter=${encodeURIComponent(query)}`
+          const queryString = normalizedQuery
+            ? normalizedQuery.startsWith('?')
+              ? normalizedQuery
+              : normalizedQuery.startsWith('$')
+              ? `?${normalizedQuery}`
+              : `?$filter=${encodeURIComponent(normalizedQuery)}`
             : ''
           const url = `http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}${queryString}`
           const response = await fetch(url)
@@ -415,7 +424,7 @@ export const useDataEngine = create<DataEngineState>()(
       }
 
       // 2. Fallback sang dataset đã đăng ký trong bộ nhớ Core (có áp dụng lọc query nếu có)
-      const localItems = filterLocalDataset(get().getDataset(entityName), query)
+      const localItems = filterLocalDataset(get().getDataset(entityName), normalizedQuery)
       return localItems.map((item: any) => {
         const val = item[idField] !== undefined ? item[idField] : item.Id || item.id || item.code
         const label =
@@ -432,12 +441,20 @@ export const useDataEngine = create<DataEngineState>()(
 
     // 9. Truy vấn danh sách Entity tổng quát (GridView / Table)
     queryEntity: async (entityName: string, query?: string): Promise<any[]> => {
+      let normalizedQuery = (query || '').trim()
+      const returnMatch = normalizedQuery.match(/^return\s+(['"`])([\s\S]*)\1\s*;?$/i)
+      if (returnMatch) {
+        normalizedQuery = returnMatch[2].trim()
+      }
+
       if (entityName) {
         try {
-          const queryString = query
-            ? query.startsWith('?')
-              ? query
-              : `?$filter=${encodeURIComponent(query)}`
+          const queryString = normalizedQuery
+            ? normalizedQuery.startsWith('?')
+              ? normalizedQuery
+              : normalizedQuery.startsWith('$')
+              ? `?${normalizedQuery}`
+              : `?$filter=${encodeURIComponent(normalizedQuery)}`
             : ''
           const url = `http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}${queryString}`
           const response = await fetch(url)
@@ -449,7 +466,7 @@ export const useDataEngine = create<DataEngineState>()(
           // Offline fallback
         }
       }
-      return filterLocalDataset(get().getDataset(entityName), query)
+      return filterLocalDataset(get().getDataset(entityName), normalizedQuery)
     },
 
     // 10. Tiện ích lưu bản ghi chuẩn Core (tự động phân loại POST thêm mới hoặc PUT cập nhật)

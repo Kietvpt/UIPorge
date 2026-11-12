@@ -72,6 +72,8 @@ namespace UIForge.Core.Data
                     FullName = "Quản trị hệ thống",
                     Role = "Dev",
                     CreatedAt = seedDate,
+                    Active = true,
+                    CreatedDate = seedDate,
                 },
                 new User
                 {
@@ -81,6 +83,8 @@ namespace UIForge.Core.Data
                     FullName = "Người dùng xem",
                     Role = "User",
                     CreatedAt = seedDate,
+                    Active = true,
+                    CreatedDate = seedDate,
                 }
             );
 
