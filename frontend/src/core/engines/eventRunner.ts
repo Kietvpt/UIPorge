@@ -1,4 +1,8 @@
 import type { ComponentEvent } from '@/types/schema'
+import type { BaseBLContext, BaseBLLifecycle } from '../contracts/BaseBL'
+import { useDataEngine } from './dataEngine'
+import { useNavigationEngine } from './navigationEngine'
+import { useEditorStore } from '@/store/editorStore'
 import { registerBlFunctions } from './blRegistry'
 
 // Map các module BL động được đăng ký vào ứng dụng
@@ -209,12 +213,22 @@ export function executeSingleEvent(
   let executedRealFunction = false
   let matchedFnName = rawFnName.replace(/\(.*?\)/g, '').trim()
 
+  const enrichedContext: BaseBLContext = {
+    componentName,
+    trigger: triggerType,
+    blFileName: canonicalName || blFileName,
+    dataEngine: useDataEngine.getState(),
+    navigationEngine: useNavigationEngine.getState(),
+    editorStore: useEditorStore.getState(),
+    ...(context || {}),
+  }
+
   if (blModule) {
     const { fn, matchedName } = findFunctionInModule(blModule, rawFnName)
     matchedFnName = matchedName
     if (fn) {
       try {
-        const ret = fn(context || { componentName, trigger: triggerType, blFileName: canonicalName })
+        const ret = fn(enrichedContext)
         executedRealFunction = true
 
         if (ret && typeof ret.then === 'function') {
@@ -279,4 +293,32 @@ export function triggerComponentEvent(
     executeSingleEvent(ev, componentName, blFileName, context)
   }
 }
+
+/**
+ * ⚡ Gọi một hook trong vòng đời BaseBL của file BL tương ứng (onInit, beforeSave, onSave, afterSave...)
+ */
+export async function invokeBLLifecycle(
+  blFileName?: string,
+  hookName: keyof BaseBLLifecycle = 'onInit',
+  context?: Partial<BaseBLContext>
+): Promise<any> {
+  if (!blFileName) return null
+  const { module: blModule, canonicalName } = resolveBlModule(blFileName)
+  if (!blModule) return null
+
+  const { fn } = findFunctionInModule(blModule, hookName as string)
+  if (!fn) return null
+
+  const enrichedContext: BaseBLContext = {
+    trigger: hookName as string,
+    blFileName: canonicalName,
+    dataEngine: useDataEngine.getState(),
+    navigationEngine: useNavigationEngine.getState(),
+    editorStore: useEditorStore.getState(),
+    ...(context || {}),
+  }
+
+  return await fn(enrichedContext)
+}
+
 

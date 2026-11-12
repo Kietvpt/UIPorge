@@ -24,6 +24,7 @@ export interface UseGridKeyboardNavigationProps {
   onQuickSum?: () => void
   onToggleColumnFilters?: () => void
   isEditableTable?: boolean
+  onPasteExcel?: (clipText: string, startRowIndex: number, startColIndex: number) => void
 }
 
 /**
@@ -50,6 +51,7 @@ export function useGridKeyboardNavigation({
   onQuickSum,
   onToggleColumnFilters,
   isEditableTable = true,
+  onPasteExcel,
 }: UseGridKeyboardNavigationProps) {
   const [focusedCell, setFocusedCell] = useState<FocusedCellCoord | null>(null)
 
@@ -193,6 +195,29 @@ export function useGridKeyboardNavigation({
         }
         return
       }
+
+      // 7. Ctrl + V -> Dán từ Clipboard nếu bảng đang focus chọn dòng/container mà không trong ô input
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'V')) {
+        const target = e.target as HTMLElement
+        const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')
+        if (!isInput && onPasteExcel && typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.readText === 'function') {
+          e.preventDefault()
+          navigator.clipboard
+            .readText()
+            .then((clipText) => {
+              if (clipText) {
+                const startRow = focusedCell
+                  ? focusedCell.rowIndex
+                  : selectedRowId !== null
+                  ? Math.max(0, rows.findIndex((r, i) => (r.id ?? r.Id ?? i) === selectedRowId))
+                  : 0
+                const startCol = focusedCell ? focusedCell.colIndex : 0
+                onPasteExcel(clipText, startRow, startCol)
+              }
+            })
+            .catch(() => {})
+        }
+      }
     },
     [
       rows,
@@ -208,6 +233,8 @@ export function useGridKeyboardNavigation({
       onRowDoubleClick,
       onDeleteRow,
       onDuplicateRow,
+      focusedCell,
+      onPasteExcel,
     ]
   )
 
@@ -352,6 +379,38 @@ export function useGridKeyboardNavigation({
     [rows, visibleColumns, focusCell, onToggleAll, onFilterByCell, onQuickSum, onAddRow, onToggleColumnFilters]
   )
 
+  // 📋 Bắt sự kiện Paste (Ctrl+V) tại bất kỳ vị trí nào trên vùng bảng
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent) => {
+      const clipText = e.clipboardData?.getData('text/plain')
+      if (!clipText || !onPasteExcel) return
+
+      const isMultiCell = clipText.includes('\t') || clipText.includes('\n')
+      const target = e.target as HTMLElement
+      const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')
+
+      // Nếu đang nhập liệu trong ô văn bản đơn lẻ và dữ liệu dán không phải là nhiều ô Excel -> Cho phép dán text mặc định
+      if (isInput && !isMultiCell) {
+        return
+      }
+
+      // Ngược lại, dữ liệu chứa nhiều dòng/cột từ Excel hoặc focus ở ngoài input -> Chặn mặc định và dán vào lưới
+      e.preventDefault()
+      e.stopPropagation()
+
+      const startRow = focusedCell
+        ? focusedCell.rowIndex
+        : selectedRowId !== null
+        ? Math.max(0, rows.findIndex((r, i) => (r.id ?? r.Id ?? i) === selectedRowId))
+        : 0
+
+      const startCol = focusedCell ? focusedCell.colIndex : 0
+
+      onPasteExcel(clipText, startRow, startCol)
+    },
+    [focusedCell, selectedRowId, rows, onPasteExcel]
+  )
+
   return {
     focusedCell,
     setFocusedCell,
@@ -359,6 +418,7 @@ export function useGridKeyboardNavigation({
     scrollToRow,
     handleTableContainerKeyDown,
     handleCellKeyDown,
+    handlePaste,
   }
 }
 

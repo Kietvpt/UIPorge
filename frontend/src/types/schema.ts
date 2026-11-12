@@ -24,6 +24,8 @@ export type ComponentType =
   | 'SearchEntry'
   | 'FileUploadGrid'
   | 'Autocomplete'
+  | 'TreeView'
+  | 'Chart'
 
 export type EventTrigger = 'onClick' | 'onChange' | 'onSubmit' | 'onFocus' | 'onBlur' | 'click' | 'change' | 'focus' | 'blur' | 'dblclick'
 export type EventAction = 'navigate' | 'callApi' | 'showModal' | 'hideModal' | 'setState' | 'custom' | (string & {})

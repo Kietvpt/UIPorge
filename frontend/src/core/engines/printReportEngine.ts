@@ -224,3 +224,89 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;')
 }
 
+export interface BackendDocxReportOptions {
+  fileName?: string
+  templateName?: string
+  placeholders: Record<string, any>
+}
+
+/**
+ * 📄 Tải báo cáo PDF xuất bản từ Backend Service (hoặc fallback về client in ấn nếu offline)
+ */
+export async function downloadBackendPdfReport(options: PrintReportOptions) {
+  const visibleCols = options.columns.filter((c) => !c.hidden)
+  const payload = {
+    title: options.title,
+    subtitle: options.subtitle,
+    companyName: options.companyName,
+    metadata: options.metadata,
+    columns: visibleCols.map((c) => ({
+      key: c.key,
+      title: c.title || c.key,
+      align: c.align || 'left',
+      dataType: (c as any).dataType || (c as any).componentType || 'string',
+    })),
+    rows: options.rows,
+  }
+
+  try {
+    const res = await fetch('http://localhost:5048/api/core/reports/pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+
+    if (res.ok) {
+      const blob = await res.blob()
+      const downloadUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = downloadUrl
+      a.download = `${options.title.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(downloadUrl)
+      return
+    }
+  } catch {}
+
+  // Fallback về client-side window.print preview
+  printGridReport(options)
+}
+
+/**
+ * 📑 Tải biểu mẫu Word (.docx) được điền tự động từ Backend Service
+ */
+export async function downloadBackendDocxReport(options: BackendDocxReportOptions) {
+  const fileName = options.fileName || 'Bieu_Mau_Chung_Tu'
+  const payload = {
+    templateName: options.templateName,
+    placeholders: options.placeholders,
+  }
+
+  try {
+    const res = await fetch('http://localhost:5048/api/core/reports/docx', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+
+    if (res.ok) {
+      const blob = await res.blob()
+      const downloadUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = downloadUrl
+      a.download = fileName.endsWith('.docx') ? fileName : `${fileName}.docx`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(downloadUrl)
+      return true
+    }
+  } catch (err) {
+    console.error('[DocxReport] Lỗi khi tạo file word:', err)
+  }
+  return false
+}
+
+

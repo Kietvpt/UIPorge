@@ -23,6 +23,8 @@ import {
   Search,
   Sparkles,
   Paperclip,
+  FolderTree,
+  BarChart3,
 } from 'lucide-react'
 
 export interface ComponentDefinition {
@@ -269,6 +271,34 @@ export const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
       ],
     },
     defaultStyle: { width: '100%' },
+  },
+  {
+    type: 'TreeView',
+    name: 'Cây Danh Mục (TreeView)',
+    description: 'Cây phân cấp danh mục đa tầng (kế thừa MasterData C# Core)',
+    icon: FolderTree,
+    defaultProps: {
+      title: 'DANH MỤC CÂY PHÂN CẤP',
+      reference: 'MasterData',
+      idField: 'id',
+      labelField: 'name',
+      parentField: 'parentId',
+      colSpan: 4,
+    },
+    defaultStyle: { width: '100%', minHeight: '340px' },
+  },
+  {
+    type: 'Chart',
+    name: 'Biểu Đồ Trực Quan (Chart)',
+    description: 'Biểu đồ trực quan hóa dữ liệu (Cột, Đường, Tròn) 100% SVG',
+    icon: BarChart3,
+    defaultProps: {
+      title: 'THỐNG KÊ SẢN LƯỢNG',
+      chartType: 'bar',
+      reference: 'Statistics',
+      colSpan: 8,
+    },
+    defaultStyle: { width: '100%', minHeight: '320px' },
   },
 ]
 

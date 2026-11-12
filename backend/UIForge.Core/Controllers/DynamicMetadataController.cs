@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using UIForge.Core.Data;
 using UIForge.Core.Entities;
+using UIForge.Core.Security;
 
 namespace UIForge.Core.Controllers
 {
@@ -25,6 +26,7 @@ namespace UIForge.Core.Controllers
     /// </summary>
     [ApiController]
     [Route("api/core")]
+    [RequireEntityPermission]
     public class DynamicMetadataController : ControllerBase
     {
         private readonly UIForgeDbContext _dbContext;
@@ -69,13 +71,17 @@ namespace UIForge.Core.Controllers
                 "Project", "Projects",
                 "Page", "Pages",
                 "UIComponent", "UIComponents", "Components",
+                "Role", "Roles",
+                "UserRole", "UserRoles",
+                "RolePermission", "RolePermissions",
+                "UserSetting", "UserSettings",
+                "AuditLog", "AuditLogs",
                 "__EFMigrationsHistory"
             };
 
             var entityTypes = _dbContext.Model.GetEntityTypes()
                 .Where(e => !e.ClrType.IsAbstract
                             && baseEntityType.IsAssignableFrom(e.ClrType)
-                            && (e.ClrType.Namespace != baseEntityType.Namespace || e.ClrType == typeof(User))
                             && !excludedCoreNames.Contains(e.ClrType.Name)
                             && !excludedCoreNames.Contains(e.GetTableName() ?? string.Empty))
                 .Select(e => e.ClrType)
@@ -135,14 +141,17 @@ namespace UIForge.Core.Controllers
         }
 
         /// <summary>
-        /// 📊 GET /api/core/data/{entityName}?$filter=...
-        /// Truy vấn dữ liệu Generic từ SQL Server cho Gridview, Dropdown, Form với hỗ trợ OData.
+        /// 📊 GET /api/core/data/{entityName}?$filter=...&$top=...&$skip=...&$orderby=...
+        /// Truy vấn dữ liệu Generic từ SQL Server cho Gridview, Dropdown, Form với hỗ trợ OData phân trang, lọc và sắp xếp.
         /// </summary>
         [HttpGet("data/{entityName}")]
         public async Task<IActionResult> QueryEntityData(
             string entityName,
             [FromQuery] string? filter = null,
-            [FromQuery(Name = "$filter")] string? odataFilter = null)
+            [FromQuery(Name = "$filter")] string? odataFilter = null,
+            [FromQuery(Name = "$top")] int? top = null,
+            [FromQuery(Name = "$skip")] int? skip = null,
+            [FromQuery(Name = "$orderby")] string? orderBy = null)
         {
             var entityType = ResolveEntityType(entityName);
             if (entityType == null)
@@ -186,13 +195,68 @@ namespace UIForge.Core.Controllers
                 resultList.Add(item);
             }
 
-            var idProp = clrType.GetProperty("Id");
-            if (idProp != null)
+            // Sắp xếp động theo $orderby (ví dụ "Id desc", "FullName asc"), mặc định Id desc
+            if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                resultList = resultList.OrderByDescending(x => idProp.GetValue(x)).ToList();
+                var orderParts = orderBy.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                IOrderedEnumerable<object>? ordered = null;
+
+                for (int i = 0; i < orderParts.Length; i++)
+                {
+                    var part = orderParts[i];
+                    var tokens = part.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    var fieldName = tokens[0];
+                    bool isDesc = tokens.Length > 1 && tokens[1].Equals("desc", StringComparison.OrdinalIgnoreCase);
+
+                    var prop = clrType.GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                    if (prop != null)
+                    {
+                        if (i == 0)
+                        {
+                            ordered = isDesc
+                                ? resultList.OrderByDescending(x => prop.GetValue(x))
+                                : resultList.OrderBy(x => prop.GetValue(x));
+                        }
+                        else if (ordered != null)
+                        {
+                            ordered = isDesc
+                                ? ordered.ThenByDescending(x => prop.GetValue(x))
+                                : ordered.ThenBy(x => prop.GetValue(x));
+                        }
+                    }
+                }
+
+                if (ordered != null)
+                {
+                    resultList = ordered.ToList();
+                }
+            }
+            else
+            {
+                var idProp = clrType.GetProperty("Id");
+                if (idProp != null)
+                {
+                    resultList = resultList.OrderByDescending(x => idProp.GetValue(x)).ToList();
+                }
             }
 
-            return Ok(resultList);
+            var totalCount = resultList.Count;
+
+            if (skip.HasValue && skip.Value > 0)
+            {
+                resultList = resultList.Skip(skip.Value).ToList();
+            }
+
+            if (top.HasValue && top.Value > 0)
+            {
+                resultList = resultList.Take(top.Value).ToList();
+            }
+
+            return Ok(new
+            {
+                value = resultList,
+                count = totalCount
+            });
         }
 
         /// <summary>
@@ -242,16 +306,35 @@ namespace UIForge.Core.Controllers
                 return BadRequest(new { message = "Dữ liệu bản ghi không hợp lệ" });
             }
 
+            var currentUser = User.Identity?.Name ?? "system";
             if (entity is BaseEntity b)
             {
                 b.Id = 0;
                 b.Active = true;
                 b.CreatedDate = DateTime.UtcNow;
-                b.CreatedBy = User.Identity?.Name ?? "system";
+                b.CreatedBy = currentUser;
             }
 
             _dbContext.Add(entity);
             await _dbContext.SaveChangesAsync();
+
+            var idProp = entityType.ClrType.GetProperty("Id");
+            int recordId = (idProp?.GetValue(entity) as int?) ?? 0;
+
+            // 📜 Ghi vết AuditLog khi tạo mới
+            var createChanges = new List<object>();
+            foreach (var prop in entityType.ClrType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (prop.CanRead && prop.Name is not ("Id" or "CreatedDate" or "CreatedBy" or "UpdatedDate" or "UpdatedBy"))
+                {
+                    var val = prop.GetValue(entity)?.ToString();
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        createChanges.Add(new { field = prop.Name, oldValue = (string?)null, newValue = val });
+                    }
+                }
+            }
+            await RecordAuditLogAsync(entityName, recordId, "CREATE", JsonSerializer.Serialize(createChanges), currentUser);
 
             return Ok(entity);
         }
@@ -275,9 +358,43 @@ namespace UIForge.Core.Controllers
                 return NotFound(new { message = $"Không tìm thấy bản ghi #{id}" });
             }
 
-            if (existing is BaseEntity bExisting && !bExisting.Active)
+            if (existing is BaseEntity bExisting)
             {
-                return NotFound(new { message = $"Bản ghi #{id} đã bị xóa hoặc không hoạt động." });
+                if (!bExisting.Active)
+                {
+                    return NotFound(new { message = $"Bản ghi #{id} đã bị xóa hoặc không hoạt động." });
+                }
+
+                // 🛡️ Optimistic Concurrency Control (kiểm tra sai lệch > 1s giữa Expected và DB)
+                DateTime? expectedDate = null;
+                if (Request.Headers.TryGetValue("X-Expected-UpdatedDate", out var headerVal) &&
+                    DateTime.TryParse(headerVal.ToString(), out var dtHeader))
+                {
+                    expectedDate = dtHeader;
+                }
+                else if (payload.ValueKind == JsonValueKind.Object &&
+                         (payload.TryGetProperty("_expectedUpdatedDate", out var propExp) ||
+                          payload.TryGetProperty("expectedUpdatedDate", out propExp)))
+                {
+                    if (propExp.ValueKind == JsonValueKind.String &&
+                        DateTime.TryParse(propExp.GetString(), out var dtProp))
+                    {
+                        expectedDate = dtProp;
+                    }
+                }
+
+                if (expectedDate.HasValue && bExisting.UpdatedDate.HasValue)
+                {
+                    var diffSeconds = Math.Abs((bExisting.UpdatedDate.Value - expectedDate.Value).TotalSeconds);
+                    if (diffSeconds > 1.0)
+                    {
+                        return Conflict(new
+                        {
+                            message = "Dữ liệu đã bị người dùng khác thay đổi trước đó. Vui lòng tải lại bản ghi!",
+                            currentRecord = existing
+                        });
+                    }
+                }
             }
 
             var incoming = JsonSerializer.Deserialize(payload.GetRawText(), entityType.ClrType, DynamicDeserializeOptions);
@@ -296,16 +413,27 @@ namespace UIForge.Core.Controllers
                 }
             }
 
+            var currentUser = User.Identity?.Name ?? "system";
+            var changes = new List<object>();
+
             var nullabilityCtx = new NullabilityInfoContext();
             var props = entityType.ClrType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var prop in props)
             {
                 if (!prop.CanWrite || !prop.CanRead) continue;
-                if (prop.Name is "Id" or "CreatedDate" or "CreatedBy") continue;
+                if (prop.Name is "Id" or "CreatedDate" or "CreatedBy" or "UpdatedDate" or "UpdatedBy") continue;
                 if (prop.GetCustomAttribute<JsonIgnoreAttribute>() != null) continue;
                 if (presentKeys.Count > 0 && !presentKeys.Contains(prop.Name)) continue;
 
+                var oldVal = prop.GetValue(existing)?.ToString();
                 var newVal = prop.GetValue(incoming);
+                var newStr = newVal?.ToString();
+
+                if (!string.Equals(oldVal, newStr, StringComparison.OrdinalIgnoreCase))
+                {
+                    changes.Add(new { field = prop.Name, oldValue = oldVal, newValue = newStr });
+                }
+
                 if (newVal != null)
                 {
                     prop.SetValue(existing, newVal);
@@ -320,11 +448,217 @@ namespace UIForge.Core.Controllers
             if (existing is BaseEntity b)
             {
                 b.UpdatedDate = DateTime.UtcNow;
-                b.UpdatedBy = User.Identity?.Name ?? "system";
+                b.UpdatedBy = currentUser;
             }
 
             await _dbContext.SaveChangesAsync();
+
+            // 📜 Ghi vết AuditLog khi cập nhật
+            if (changes.Count > 0)
+            {
+                await RecordAuditLogAsync(entityName, id, "UPDATE", JsonSerializer.Serialize(changes), currentUser);
+            }
+
             return Ok(existing);
+        }
+
+        /// <summary>
+        /// 🩹 PATCH /api/core/data/{entityName}/{id}
+        /// Cập nhật một phần từng trường đơn lẻ (kế thừa PatchUpdate.cs / PatchAsync của Core C# cũ).
+        /// Hỗ trợ cả 2 định dạng:
+        /// 1) Danh sách thay đổi có kiểm tra xung đột oldVal: { "changes": [{ "field": "Name", "oldVal": "Old", "value": "New" }] }
+        /// 2) Dictionary trường trực tiếp: { "fieldName": "newValue", ... }
+        /// </summary>
+        [HttpPatch("data/{entityName}/{id}")]
+        public async Task<IActionResult> PatchEntity(string entityName, int id, [FromBody] JsonElement payload)
+        {
+            var entityType = ResolveEntityType(entityName);
+            if (entityType == null)
+            {
+                return NotFound(new { message = $"Thực thể '{entityName}' không tồn tại trong hệ thống." });
+            }
+
+            var existing = await _dbContext.FindAsync(entityType.ClrType, id);
+            if (existing == null)
+            {
+                return NotFound(new { message = $"Không tìm thấy bản ghi #{id}" });
+            }
+
+            if (existing is BaseEntity bExisting && !bExisting.Active)
+            {
+                return NotFound(new { message = $"Bản ghi #{id} đã bị xóa hoặc không hoạt động." });
+            }
+
+            var currentUser = User.Identity?.Name ?? "system";
+            var patchChanges = new List<object>();
+            var clrType = entityType.ClrType;
+            var props = clrType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var nullabilityCtx = new NullabilityInfoContext();
+
+            // Format 1: Payload có danh sách "changes"
+            if (payload.ValueKind == JsonValueKind.Object &&
+                (payload.TryGetProperty("changes", out var changesProp) || payload.TryGetProperty("Changes", out changesProp)) &&
+                changesProp.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var item in changesProp.EnumerateArray())
+                {
+                    string? field = null;
+                    string? oldVal = null;
+                    JsonElement valElem = default;
+                    bool hasValElem = false;
+
+                    if (item.TryGetProperty("field", out var f) || item.TryGetProperty("Field", out f))
+                        field = f.GetString();
+                    if (item.TryGetProperty("oldVal", out var ov) || item.TryGetProperty("OldVal", out ov))
+                        oldVal = ov.GetString();
+                    if (item.TryGetProperty("value", out var v) || item.TryGetProperty("Value", out v))
+                    {
+                        valElem = v;
+                        hasValElem = true;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(field) || !hasValElem) continue;
+
+                    var prop = props.FirstOrDefault(p => string.Equals(p.Name, field, StringComparison.OrdinalIgnoreCase));
+                    if (prop == null || !prop.CanWrite || prop.Name is "Id" or "CreatedDate" or "CreatedBy") continue;
+
+                    var currentPropVal = prop.GetValue(existing)?.ToString();
+
+                    // Kiểm tra xung đột oldVal nếu có
+                    if (oldVal != null)
+                    {
+                        if (!string.Equals(currentPropVal, oldVal, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return Conflict(new
+                            {
+                                message = $"Dữ liệu trường '{prop.Name}' đã bị thay đổi trước đó từ '{oldVal}' thành '{currentPropVal}'. Vui lòng tải lại!",
+                                currentRecord = existing
+                            });
+                        }
+                    }
+
+                    AssignPropertyValue(existing, prop, valElem, nullabilityCtx);
+                    var updatedVal = prop.GetValue(existing)?.ToString();
+
+                    if (!string.Equals(currentPropVal, updatedVal, StringComparison.OrdinalIgnoreCase))
+                    {
+                        patchChanges.Add(new { field = prop.Name, oldValue = currentPropVal, newValue = updatedVal });
+                    }
+                }
+            }
+            // Format 2: Flat JSON object key-value
+            else if (payload.ValueKind == JsonValueKind.Object)
+            {
+                foreach (var propItem in payload.EnumerateObject())
+                {
+                    var fieldName = propItem.Name;
+                    if (fieldName.StartsWith("_")) continue;
+
+                    var prop = props.FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.OrdinalIgnoreCase));
+                    if (prop == null || !prop.CanWrite || prop.Name is "Id" or "CreatedDate" or "CreatedBy") continue;
+
+                    var currentPropVal = prop.GetValue(existing)?.ToString();
+                    AssignPropertyValue(existing, prop, propItem.Value, nullabilityCtx);
+                    var updatedVal = prop.GetValue(existing)?.ToString();
+
+                    if (!string.Equals(currentPropVal, updatedVal, StringComparison.OrdinalIgnoreCase))
+                    {
+                        patchChanges.Add(new { field = prop.Name, oldValue = currentPropVal, newValue = updatedVal });
+                    }
+                }
+            }
+            else
+            {
+                return BadRequest(new { message = "Payload PATCH không hợp lệ." });
+            }
+
+            if (existing is BaseEntity b)
+            {
+                b.UpdatedDate = DateTime.UtcNow;
+                b.UpdatedBy = currentUser;
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            // 📜 Ghi vết AuditLog cho PATCH
+            if (patchChanges.Count > 0)
+            {
+                await RecordAuditLogAsync(entityName, id, "PATCH", JsonSerializer.Serialize(patchChanges), currentUser);
+            }
+
+            return Ok(existing);
+        }
+
+        private static void AssignPropertyValue(object target, PropertyInfo prop, JsonElement valElem, NullabilityInfoContext nullabilityCtx)
+        {
+            var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+
+            if (valElem.ValueKind == JsonValueKind.Null || valElem.ValueKind == JsonValueKind.Undefined)
+            {
+                if (Nullable.GetUnderlyingType(prop.PropertyType) != null ||
+                    (!prop.PropertyType.IsValueType && nullabilityCtx.Create(prop).WriteState == NullabilityState.Nullable))
+                {
+                    prop.SetValue(target, null);
+                }
+                return;
+            }
+
+            try
+            {
+                if (targetType == typeof(string))
+                {
+                    prop.SetValue(target, valElem.GetString());
+                }
+                else if (targetType == typeof(int))
+                {
+                    if (valElem.ValueKind == JsonValueKind.Number)
+                        prop.SetValue(target, valElem.GetInt32());
+                    else if (int.TryParse(valElem.GetString(), out var iVal))
+                        prop.SetValue(target, iVal);
+                }
+                else if (targetType == typeof(long))
+                {
+                    if (valElem.ValueKind == JsonValueKind.Number)
+                        prop.SetValue(target, valElem.GetInt64());
+                    else if (long.TryParse(valElem.GetString(), out var lVal))
+                        prop.SetValue(target, lVal);
+                }
+                else if (targetType == typeof(decimal))
+                {
+                    if (valElem.ValueKind == JsonValueKind.Number)
+                        prop.SetValue(target, valElem.GetDecimal());
+                    else if (decimal.TryParse(valElem.GetString(), out var dVal))
+                        prop.SetValue(target, dVal);
+                }
+                else if (targetType == typeof(double))
+                {
+                    if (valElem.ValueKind == JsonValueKind.Number)
+                        prop.SetValue(target, valElem.GetDouble());
+                    else if (double.TryParse(valElem.GetString(), out var dbVal))
+                        prop.SetValue(target, dbVal);
+                }
+                else if (targetType == typeof(bool))
+                {
+                    if (valElem.ValueKind is JsonValueKind.True or JsonValueKind.False)
+                        prop.SetValue(target, valElem.GetBoolean());
+                    else if (bool.TryParse(valElem.GetString(), out var bVal))
+                        prop.SetValue(target, bVal);
+                }
+                else if (targetType == typeof(DateTime))
+                {
+                    if (valElem.ValueKind == JsonValueKind.String && DateTime.TryParse(valElem.GetString(), out var dtVal))
+                        prop.SetValue(target, dtVal);
+                }
+                else
+                {
+                    var converted = JsonSerializer.Deserialize(valElem.GetRawText(), prop.PropertyType, DynamicDeserializeOptions);
+                    prop.SetValue(target, converted);
+                }
+            }
+            catch
+            {
+                // Bỏ qua lỗi ép kiểu
+            }
         }
 
         /// <summary>
@@ -346,11 +680,12 @@ namespace UIForge.Core.Controllers
                 return NotFound(new { message = $"Không tìm thấy bản ghi #{id}" });
             }
 
+            var currentUser = User.Identity?.Name ?? "system";
             if (record is BaseEntity b)
             {
                 b.Active = false;
                 b.UpdatedDate = DateTime.UtcNow;
-                b.UpdatedBy = User.Identity?.Name ?? "system";
+                b.UpdatedBy = currentUser;
             }
             else
             {
@@ -358,7 +693,58 @@ namespace UIForge.Core.Controllers
             }
 
             await _dbContext.SaveChangesAsync();
+
+            // 📜 Ghi vết AuditLog khi xóa mềm
+            var deleteChanges = new List<object>
+            {
+                new { field = "Active", oldValue = "True", newValue = "False" }
+            };
+            await RecordAuditLogAsync(entityName, id, "DELETE", JsonSerializer.Serialize(deleteChanges), currentUser);
+
             return Ok(new { success = true, message = $"Đã xóa mềm bản ghi #{id} ({entityName}) trong cơ sở dữ liệu thành công" });
+        }
+
+        /// <summary>
+        /// 📜 GET /api/core/audit/{entityName}/{recordId}
+        /// Lấy toàn bộ lịch sử kiểm toán thay đổi của một bản ghi cụ thể (kế thừa History.cs của Core C# cũ).
+        /// </summary>
+        [HttpGet("audit/{entityName}/{recordId:int}")]
+        public async Task<IActionResult> GetAuditLogs(string entityName, int recordId)
+        {
+            var logs = await _dbContext.AuditLogs
+                .AsNoTracking()
+                .Where(a => a.Active &&
+                            a.EntityName.ToLower() == entityName.ToLower() &&
+                            a.RecordId == recordId)
+                .OrderByDescending(a => a.ChangedAt)
+                .ToListAsync();
+
+            return Ok(logs);
+        }
+
+        private async Task RecordAuditLogAsync(string entityName, int recordId, string action, string changesJson, string changedBy)
+        {
+            try
+            {
+                var audit = new AuditLog
+                {
+                    EntityName = entityName,
+                    RecordId = recordId,
+                    Action = action,
+                    ChangesJson = changesJson,
+                    ChangedBy = changedBy,
+                    ChangedAt = DateTime.UtcNow,
+                    Active = true,
+                    CreatedDate = DateTime.UtcNow,
+                    CreatedBy = changedBy
+                };
+                _dbContext.AuditLogs.Add(audit);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch
+            {
+                // Bỏ qua lỗi ghi audit để không ảnh hưởng luồng chính
+            }
         }
 
         /// <summary>
