@@ -49,6 +49,17 @@ namespace UIForge.Core.Data
                 .HasForeignKey(c => c.PageId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Page -> Page cha-con tự tham chiếu (Hierarchical Feature Tree)
+            // Restrict để tránh multiple cascade paths trong SQL Server
+            modelBuilder.Entity<Page>()
+                .HasOne(p => p.Parent)
+                .WithMany(p => p.Children)
+                .HasForeignKey(p => p.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Page>()
+                .HasIndex(p => new { p.ProjectId, p.ParentId, p.Order });
+
             // Component -> Component cha-con tự tham chiếu.
             // Restrict để tránh lỗi "multiple cascade paths" của SQL Server.
             modelBuilder.Entity<UIComponent>()
@@ -142,9 +153,16 @@ namespace UIForge.Core.Data
                 {
                     Id = demoPageId,
                     ProjectId = demoProjectId,
+                    Code = "F0010001",
                     Name = "Tổng quan hệ thống",
+                    Title = "Dashboard",
                     Route = "/dashboard",
                     Icon = "LayoutDashboard",
+                    ParentId = null,
+                    Order = 1,
+                    IsMenu = true,
+                    IsGroup = false,
+                    Active = true,
                     ScriptFile = "dashboard.bl.ts",
                     LayoutTemplateId = "sidebar-left",
                     LayoutConfigJson = "{\"direction\":\"column\",\"gap\":\"16px\",\"wrap\":\"wrap\"}",
@@ -155,9 +173,18 @@ namespace UIForge.Core.Data
                 {
                     Id = 2,
                     ProjectId = demoProjectId,
+                    Code = "F0013226",
                     Name = "FCL Import (Logistics ERP)",
+                    Title = "FCL Import",
                     Route = "/fcl-import",
                     Icon = "Ship",
+                    ParentId = null,
+                    Order = 2,
+                    IsMenu = true,
+                    IsGroup = false,
+                    Active = true,
+                    EntityName = "Transaction",
+                    Description = "FCL Import Logistics Operation Screen",
                     ScriptFile = "fclImport.bl.ts",
                     LayoutTemplateId = "sidebar-left",
                     LayoutConfigJson = "{\"direction\":\"column\",\"gap\":\"16px\",\"wrap\":\"nowrap\"}",

@@ -293,6 +293,30 @@ export interface ComponentNode {
 // Feature / Page types
 // ============================================================
 
+export interface FeatureDisplayFlags {
+  isDivider?: boolean
+  isMenu?: boolean
+  isStartup?: boolean
+  isPublic?: boolean
+  is403?: boolean
+  deleteTemp?: boolean
+  lockUpdate?: boolean
+  isGroup?: boolean
+  active?: boolean
+  noEncode?: boolean
+  isPermissionInherited?: boolean
+  isSystem?: boolean
+  customNextCell?: boolean
+}
+
+export interface FeatureCustomStyles {
+  event?: string
+  className?: string
+  style?: string
+  stylesheet?: string
+  script?: string
+}
+
 export interface FeatureLayoutConfig {
   direction: 'column' | 'row'
   gap: string
@@ -302,12 +326,25 @@ export interface FeatureLayoutConfig {
 export interface FeaturePage {
   id: string
   name: string
+  title?: string
+  code?: string
   icon?: string
   route: string
+  parentId?: string | null
+  order?: number
+  isGroup?: boolean
+  isMenu?: boolean
+  active?: boolean
+  entityName?: string
   description?: string
   scriptFile?: string
+  scriptContent?: string
   components: ComponentNode[]
   layoutConfig?: FeatureLayoutConfig
+  featureProps?: Record<string, any>
+  displayFlags?: FeatureDisplayFlags
+  customStyles?: FeatureCustomStyles
+  badge?: string | number
   hidden?: boolean
   isDetail?: boolean
   createdAt?: string

@@ -64,6 +64,7 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString;
     });
 
 // 4. CORS Configuration for React Frontend
@@ -322,9 +323,78 @@ try
                 LEFT JOIN Roles r ON (u.Role = r.Code OR (u.Role IS NULL AND r.Code = 'User'));
             END
         END
+
+        -- 🌳 MIGRATION BẢNG PAGES: HỆ THỐNG PHÂN TẦNG FEATURE, KÉO THẢ & FEATURE PROPERTIES
+        IF EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Pages')
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'ParentId')
+                ALTER TABLE Pages ADD ParentId INT NULL;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'Order')
+                ALTER TABLE Pages ADD [Order] INT NOT NULL CONSTRAINT DF_Pages_Order DEFAULT 0;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'Code')
+                ALTER TABLE Pages ADD Code NVARCHAR(50) NULL;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'Title')
+                ALTER TABLE Pages ADD Title NVARCHAR(200) NULL;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'EntityName')
+                ALTER TABLE Pages ADD EntityName NVARCHAR(100) NULL;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'Description')
+                ALTER TABLE Pages ADD Description NVARCHAR(500) NULL;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'IsMenu')
+                ALTER TABLE Pages ADD IsMenu BIT NOT NULL CONSTRAINT DF_Pages_IsMenu DEFAULT 1;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'IsGroup')
+                ALTER TABLE Pages ADD IsGroup BIT NOT NULL CONSTRAINT DF_Pages_IsGroup DEFAULT 0;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'Active')
+                ALTER TABLE Pages ADD Active BIT NOT NULL CONSTRAINT DF_Pages_Active DEFAULT 1;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'ScriptContent')
+                ALTER TABLE Pages ADD ScriptContent NVARCHAR(MAX) NULL;
+
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Pages') AND name = 'FeaturePropsJson')
+                ALTER TABLE Pages ADD FeaturePropsJson NVARCHAR(MAX) NULL;
+
+            -- Đánh chỉ mục tăng tốc độ truy vấn phân cấp và sắp xếp
+            IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Pages_Hierarchy' AND object_id = OBJECT_ID('Pages'))
+            BEGIN
+                CREATE INDEX IX_Pages_Hierarchy ON Pages (ParentId, [Order], IsMenu, Active);
+            END
+
+            -- Backfill dữ liệu an toàn cho các trang hiện có qua dynamic SQL (EXEC) để tránh lỗi compile-time column name
+            EXEC(N'
+                UPDATE Pages SET [Order] = Id WHERE [Order] = 0 OR [Order] IS NULL;
+                UPDATE Pages SET Active = 1 WHERE Active IS NULL;
+                UPDATE Pages SET IsMenu = 1 WHERE IsMenu IS NULL;
+                UPDATE Pages SET IsGroup = 0 WHERE IsGroup IS NULL;
+                UPDATE Pages SET Title = Name WHERE Title IS NULL OR Title = '''';
+                UPDATE Pages SET Code = ''F'' + RIGHT(''0000000'' + CAST(Id AS NVARCHAR(10)), 7) WHERE Code IS NULL OR Code = '''';
+                
+                -- Chuẩn hóa mã Code & Entity theo đúng Hình 3 cho trang FCL Import
+                UPDATE Pages 
+                SET Code = ''F0013226'', Title = N''FCL Import'', EntityName = ''Transaction'', Description = N''Hệ thống quản lý lô hàng nhập FCL Logistics''
+                WHERE Route = ''/fcl-import'' AND (Code LIKE ''F000000%'' OR Code IS NULL);
+
+                -- Tạo nhóm Menu Cha mẫu SHIPMENTS (chuẩn Hình 1) nếu chưa có
+                IF NOT EXISTS (SELECT 1 FROM Pages WHERE Route = ''/shipments'' OR Name = ''SHIPMENTS'')
+                BEGIN
+                    INSERT INTO Pages (ProjectId, Name, Title, Route, Icon, LayoutTemplateId, [Order], Code, IsMenu, IsGroup, Active, CreatedAt, UpdatedAt)
+                    VALUES (1, ''SHIPMENTS'', N''SHIPMENTS'', ''/shipments'', ''Truck'', ''sidebar-left'', 10, ''F_SHIPMENTS'', 1, 1, 1, GETUTCDATE(), GETUTCDATE());
+                    
+                    DECLARE @ShipmentsId INT = SCOPE_IDENTITY();
+                    -- Gắn trang FCL Import vào làm con của nhóm SHIPMENTS
+                    UPDATE Pages SET ParentId = @ShipmentsId, [Order] = 1 WHERE Route = ''/fcl-import'';
+                END
+            ');
+        END
     ";
     await db.Database.ExecuteSqlRawAsync(sqlMigration);
-    Console.WriteLine("[DB] Database schema migrated: Components (JSON), MasterDatas, Roles, UserRoles, RolePermissions, UserSettings, AuditLogs.");
+    Console.WriteLine("[DB] Database schema migrated: Components (JSON), MasterDatas, Roles, UserRoles, RolePermissions, UserSettings, AuditLogs, Pages (Hierarchy & Features).");
 }
 catch (Exception ex)
 {

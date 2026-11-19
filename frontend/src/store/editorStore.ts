@@ -12,12 +12,32 @@ import type {
   ValidationConfig,
   ComponentPermissionConfig,
 } from '@/types/schema'
+import {
+  reorderPages,
+  updatePageProperties as apiUpdatePageProperties,
+  clonePageApi,
+  togglePageActive as apiTogglePageActive,
+  apiPageToFeature,
+} from '@/api/pagesApi'
 
 interface EditorState {
   // All features in the system
   features: FeaturePage[]
   activeFeatureId: string
   activeRecordId: string | null
+
+  // Modals management
+  isFeatureManagerOpen: boolean
+  openFeatureManager: () => void
+  closeFeatureManager: () => void
+
+  featurePropertiesTargetId: string | null
+  openFeatureProperties: (featureId?: string) => void
+  closeFeatureProperties: () => void
+
+  componentModalTargetId: string | null
+  openComponentModal: (nodeId: string) => void
+  closeComponentModal: () => void
 
   // Selection
   selection: EditorSelection
@@ -29,12 +49,18 @@ interface EditorState {
   // Actions for Features
   setActiveFeature: (id: string, recordId?: string | number | null) => void
   setActiveRecordId: (recordId: string | null) => void
-  addFeature: (name: string, icon?: string) => string
+  addFeature: (name: string, icon?: string, parentId?: string | null, isGroup?: boolean) => string
   renameFeature: (id: string, name: string) => void
   deleteFeature: (id: string) => void
   updateFeatureId: (oldId: string, newId: string) => void
   updateFeatureLayout: (id: string, layoutConfig: Partial<FeatureLayoutConfig>) => void
   updateFeatureScriptFile: (id: string, scriptFile: string) => void
+
+  // Extended Feature Actions
+  reorderFeatures: (items: { id: string; parentId: string | null; order: number; isGroup?: boolean }[]) => void
+  updateFeatureProperties: (featureId: string, properties: Partial<FeaturePage>) => void
+  cloneFeature: (featureId: string) => Promise<string | null>
+  toggleFeatureActive: (featureId: string) => void
 
   // Hydrate toàn bộ features từ server (sau khi login / reload)
   setFeatures: (features: FeaturePage[]) => void
@@ -158,6 +184,23 @@ export const useEditorStore = create<EditorState>()(
       history: [[]],
       historyIndex: 0,
 
+      // Modals State
+      isFeatureManagerOpen: false,
+      openFeatureManager: () => set({ isFeatureManagerOpen: true }),
+      closeFeatureManager: () => set({ isFeatureManagerOpen: false }),
+
+      featurePropertiesTargetId: null,
+      openFeatureProperties: (featureId) => {
+        set((s) => ({
+          featurePropertiesTargetId: featureId || s.activeFeatureId || (s.features[0]?.id ?? null),
+        }))
+      },
+      closeFeatureProperties: () => set({ featurePropertiesTargetId: null }),
+
+      componentModalTargetId: null,
+      openComponentModal: (nodeId) => set({ componentModalTargetId: nodeId }),
+      closeComponentModal: () => set({ componentModalTargetId: null }),
+
       setActiveRecordId: (recordId) => {
         set({ activeRecordId: recordId ? String(recordId) : null })
       },
@@ -222,37 +265,173 @@ export const useEditorStore = create<EditorState>()(
         })
       },
 
-      addFeature: (name, icon = 'Layers') => {
-  const id = `feat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
-  const newFeature: FeaturePage = {
-    id,
-    name: name.trim() || 'Tính năng mới',
-    icon,
-    route: `/${id}`,
-    scriptFile: '',
-    layoutConfig: {
-      direction: 'column',
-      gap: '16px',
-      wrap: 'wrap',
-    },
-    components: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  }
+      addFeature: (name, icon = 'Layers', parentId = null, isGroup = false) => {
+        const id = `feat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
+        const siblings = get().features.filter((f) => (f.parentId ?? null) === parentId)
+        const nextOrder = siblings.length > 0 ? Math.max(...siblings.map((s) => s.order ?? 0)) + 1 : 1
 
-  saveActiveFeatureIdToUrl(id, null)
-  set((s) => {
-    const nextFeatures = [...s.features, newFeature]
-    return {
-      ...recordHistory(s, nextFeatures),
-      activeFeatureId: id,
-      selection: { componentId: null, pageId: id },
-    }
-  })
-  return id
-},
+        const newFeature: FeaturePage = {
+          id,
+          code: `F_${Date.now().toString(36).toUpperCase()}`,
+          name: name.trim() || 'Tính năng mới',
+          title: name.trim() || 'Tính năng mới',
+          icon: isGroup ? 'Folder' : icon,
+          route: `/${id}`,
+          parentId: parentId ? String(parentId) : null,
+          order: nextOrder,
+          isGroup: Boolean(isGroup),
+          isMenu: true,
+          active: true,
+          scriptFile: '',
+          scriptContent: '',
+          layoutConfig: {
+            direction: 'column',
+            gap: '16px',
+            wrap: 'wrap',
+          },
+          components: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
 
-  renameFeature: (id, name) => {
+        saveActiveFeatureIdToUrl(id, null)
+        set((s) => {
+          const nextFeatures = [...s.features, newFeature]
+          return {
+            ...recordHistory(s, nextFeatures),
+            activeFeatureId: id,
+            selection: { componentId: null, pageId: id },
+          }
+        })
+        return id
+      },
+
+      reorderFeatures: (items) => {
+        set((s) => {
+          const map = new Map(items.map((it) => [it.id, it]))
+          const next = s.features.map((f) => {
+            const update = map.get(f.id)
+            if (!update) return f
+            return {
+              ...f,
+              parentId: update.parentId !== undefined ? (update.parentId ? String(update.parentId) : null) : f.parentId,
+              order: update.order !== undefined ? update.order : f.order,
+              isGroup: update.isGroup !== undefined ? update.isGroup : f.isGroup,
+            }
+          })
+          reorderPages(
+            items.map((it) => ({
+              id: it.id,
+              parentId: it.parentId,
+              order: it.order,
+              isGroup: it.isGroup,
+            }))
+          ).catch(() => {})
+          return recordHistory(s, next)
+        })
+      },
+
+      updateFeatureProperties: (featureId, properties) => {
+        set((s) => {
+          const normalizedParentId =
+            properties.parentId !== undefined
+              ? (properties.parentId && String(properties.parentId).trim() !== '' ? String(properties.parentId) : null)
+              : undefined
+
+          const normalizedProps: Partial<FeaturePage> = {
+            ...properties,
+            ...(normalizedParentId !== undefined ? { parentId: normalizedParentId } : {}),
+          }
+
+          const next = s.features.map((f) => {
+            if (f.id !== featureId) return f
+            return {
+              ...f,
+              ...normalizedProps,
+              updatedAt: new Date().toISOString(),
+            }
+          })
+
+          const apiPayload = {
+            ...properties,
+            parentId:
+              normalizedParentId !== undefined
+                ? (normalizedParentId ? (isNaN(Number(normalizedParentId)) ? normalizedParentId : Number(normalizedParentId)) : null)
+                : undefined,
+          }
+
+          apiUpdatePageProperties(featureId, apiPayload).catch(() => {})
+          return recordHistory(s, next)
+        })
+      },
+
+      cloneFeature: async (featureId) => {
+        const s = get()
+        const source = s.features.find((f) => f.id === featureId)
+        if (!source) return null
+
+        try {
+          const clonedApiPage = await clonePageApi(featureId)
+          if (clonedApiPage && clonedApiPage.id) {
+            const newFeat = apiPageToFeature(clonedApiPage)
+            set((state) => {
+              const nextFeatures = [...state.features, newFeat]
+              return {
+                ...recordHistory(state, nextFeatures),
+                activeFeatureId: newFeat.id,
+                selection: { componentId: null, pageId: newFeat.id },
+              }
+            })
+            saveActiveFeatureIdToUrl(newFeat.id, null)
+            return newFeat.id
+          }
+        } catch {
+          // Fallback to local clone
+        }
+
+        const newId = `feat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
+        const clonedFeat: FeaturePage = {
+          ...source,
+          id: newId,
+          name: `${source.name} (Copy)`,
+          title: source.title ? `${source.title} (Copy)` : `${source.name} (Copy)`,
+          code: source.code ? `${source.code}_COPY` : `F_${Date.now().toString(36).toUpperCase()}`,
+          route: `/${newId}`,
+          order: (source.order || 0) + 1,
+          components: cloneComponentNodes(source.components || [], newId),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+
+        set((state) => {
+          const nextFeatures = [...state.features, clonedFeat]
+          return {
+            ...recordHistory(state, nextFeatures),
+            activeFeatureId: newId,
+            selection: { componentId: null, pageId: newId },
+          }
+        })
+        saveActiveFeatureIdToUrl(newId, null)
+        return newId
+      },
+
+      toggleFeatureActive: (featureId) => {
+        set((s) => {
+          const next = s.features.map((f) => {
+            if (f.id !== featureId) return f
+            const newActive = !(f.active !== false)
+            return {
+              ...f,
+              active: newActive,
+              updatedAt: new Date().toISOString(),
+            }
+          })
+          apiTogglePageActive(featureId).catch(() => {})
+          return recordHistory(s, next)
+        })
+      },
+
+      renameFeature: (id, name) => {
     set((s) => {
       const next = s.features.map((f) => (f.id === id ? { ...f, name } : f))
       return recordHistory(s, next)
@@ -748,5 +927,17 @@ function insertNodeInParent(
       return { ...node, children: insertNodeInParent(node.children, parentId, newNode, atIndex) }
     }
     return node
+  })
+}
+
+function cloneComponentNodes(nodes: ComponentNode[], newPageId: string): ComponentNode[] {
+  return nodes.map((node) => {
+    const newId = `c_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`
+    return {
+      ...node,
+      id: newId,
+      pageId: newPageId,
+      children: node.children ? cloneComponentNodes(node.children, newPageId) : [],
+    }
   })
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useEditorStore } from '@/store/editorStore'
 import {
   Save,
   Shield,
@@ -474,6 +475,21 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const state = useEditorStore.getState() as any
+                const targetPageId = node?.pageId || state.activeFeatureId
+                if (typeof state.openFeatureProperties === 'function') {
+                  state.openFeatureProperties(targetPageId)
+                }
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border border-teal-700/60 bg-teal-950/60 hover:bg-teal-900 text-teal-300 transition-all cursor-pointer"
+              title="Mở cấu hình Feature của màn hình này"
+            >
+              <Sliders className="w-3.5 h-3.5 text-teal-400" />
+              <span>Feature Properties ↗</span>
+            </button>
             <button
               type="button"
               onClick={handleSave}
