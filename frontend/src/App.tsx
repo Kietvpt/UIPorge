@@ -152,12 +152,27 @@ export function App() {
 
     setIsSaving(true)
     try {
+      const parentIdNum = activeFeature.parentId
+        ? (isNaN(Number(activeFeature.parentId)) ? activeFeature.parentId : Number(activeFeature.parentId))
+        : null
+
       await savePage({
         id: activeFeature.id,
+        code: activeFeature.code,
         name: activeFeature.name,
+        title: activeFeature.title,
         route: activeFeature.route,
         icon: activeFeature.icon,
+        parentId: parentIdNum,
+        order: activeFeature.order ?? 0,
+        isGroup: activeFeature.isGroup ?? false,
+        isMenu: activeFeature.isMenu !== undefined ? activeFeature.isMenu : true,
+        active: activeFeature.active !== undefined ? activeFeature.active : true,
+        entityName: activeFeature.entityName,
+        description: activeFeature.description,
         scriptFile: activeFeature.scriptFile,
+        scriptContent: activeFeature.scriptContent,
+        featureProps: activeFeature.featureProps,
         layoutConfig: {
           ...(activeFeature.layoutConfig || { direction: 'column', gap: '16px', wrap: 'wrap' }),
           scriptFile: activeFeature.scriptFile,

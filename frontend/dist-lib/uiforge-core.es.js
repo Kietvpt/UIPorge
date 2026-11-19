@@ -1,14 +1,15 @@
-var aa = Object.defineProperty;
-var la = (t, r, s) => r in t ? aa(t, r, { enumerable: !0, configurable: !0, writable: !0, value: s }) : t[r] = s;
-var rn = (t, r, s) => la(t, typeof r != "symbol" ? r + "" : r, s);
-import Mt, { useState as A, useRef as Je, useEffect as Be, useMemo as Ve, useCallback as bs, useId as ur } from "react";
-import { create as cs } from "zustand";
-import { Layers as Pt, ChevronDown as St, ChevronUp as ws, Printer as pr, Zap as ft, Save as At, Eye as Dn, EyeOff as oa, Pin as xr, ChevronRight as Ds, Sliders as Gt, Copy as hr, Trash2 as ot, Filter as mr, Settings as ia, ClipboardPaste as br, PlusCircle as fr, ArrowUp as gr, ArrowDown as vr, Plus as et, FileCode as hn, Play as ca, Shield as mn, X as ct, Table as bt, Calendar as yr, ChevronLeft as jr, Clock as da, ExternalLink as Nr, FolderTree as bn, Search as Bt, RefreshCw as ua, FileDown as pa, ArrowUpDown as In, Loader2 as fn, Check as Fn, Tag as wr, Database as gn, Paperclip as Cr, Upload as qn, Download as an, Image as xa, FileText as is, File as ha, Minus as kr, FolderOpen as ma, Folder as ba, TrendingUp as fa, BarChart3 as Sr, LineChart as ga, PieChart as va, GripVertical as Rn, Lock as Cs, Sparkles as Tr, CheckCircle2 as vn, Box as Et, ArrowRightLeft as Yn, Columns as ls, Type as as, Square as Hs, Paintbrush as ya, ShieldCheck as Jn, Code as ln, Hash as ja, ChevronDownSquare as Na, CheckSquare as wa, Maximize2 as Ca, AlignLeft as ka, FolderKanban as Sa, AlertTriangle as Ta, FolderPlus as on, Edit2 as Da, LayoutDashboard as Ia, MoreVertical as Fa, Undo2 as Dr, Redo2 as Ir, Edit3 as Ra, PanelRightClose as $a, PanelRightOpen as La, Bell as Ea, LogOut as Pa, CheckCircle as Aa } from "lucide-react";
-import { createPortal as Tt } from "react-dom";
-import { useDraggable as Fr, useDroppable as Rr } from "@dnd-kit/core";
-import { CSS as Ba } from "@dnd-kit/utilities";
-import Ma from "axios";
-var yn = { exports: {} }, fs = {};
+var pa = Object.defineProperty;
+var ha = (t, r, s) => r in t ? pa(t, r, { enumerable: !0, configurable: !0, writable: !0, value: s }) : t[r] = s;
+var pn = (t, r, s) => ha(t, typeof r != "symbol" ? r + "" : r, s);
+import Zt, { useState as D, useRef as tt, useEffect as He, useMemo as Ae, useCallback as vs, useId as vr } from "react";
+import { create as xs } from "zustand";
+import ma from "axios";
+import { Layers as yt, ChevronDown as wt, ChevronUp as Ss, Printer as yr, Zap as Tt, Save as Gt, Eye as Rs, EyeOff as Pn, Pin as jr, ChevronRight as es, Sliders as lt, Copy as Ls, Trash2 as bt, Filter as Nr, Settings as ba, ClipboardPaste as wr, PlusCircle as Cr, ArrowUp as En, ArrowDown as An, Plus as Qe, FileCode as jn, Play as fa, Shield as Nn, X as dt, Table as Nt, Calendar as Mn, ChevronLeft as kr, Clock as ga, ExternalLink as Sr, FolderTree as wn, Search as Et, RefreshCw as va, FileDown as ya, ArrowUpDown as Bn, Loader2 as Cn, Check as Qs, Tag as Tr, Database as kn, Paperclip as Ir, Upload as tr, Download as hn, Image as ja, FileText as Qt, File as Na, Minus as Dr, FolderOpen as wa, Folder as Zs, TrendingUp as Ca, BarChart3 as Fr, LineChart as ka, PieChart as Sa, GripVertical as $s, Lock as Ts, Sparkles as On, CheckCircle2 as qs, Box as Xt, ArrowRightLeft as sr, Columns as ds, Type as ns, Square as Cs, Paintbrush as Ta, ShieldCheck as nr, Code as Us, Hash as Rr, ChevronDownSquare as Ia, CheckSquare as Da, Maximize2 as Fa, AlignLeft as Ra, FolderKanban as La, AlertTriangle as $a, XCircle as Lr, Info as rr, Menu as mn, FolderPlus as Pa, MoreVertical as Ea, Truck as Aa, DollarSign as Ma, Ship as Ba, Plane as Oa, Package as _a, LayoutDashboard as Ha, Undo2 as $r, Redo2 as Pr, Edit3 as Ga, PanelRightClose as Va, PanelRightOpen as Wa, Bell as Ka, LogOut as Ua, CheckCircle as za } from "lucide-react";
+import { createPortal as It } from "react-dom";
+import { useDraggable as Er, useDroppable as Ar, useSensors as qa, useSensor as Ya, PointerSensor as Ja, DndContext as Xa, closestCenter as Qa, DragOverlay as Za } from "@dnd-kit/core";
+import { CSS as Mr } from "@dnd-kit/utilities";
+import { SortableContext as el, verticalListSortingStrategy as tl, useSortable as sl } from "@dnd-kit/sortable";
+var Sn = { exports: {} }, ys = {};
 /**
  * @license React
  * react-jsx-runtime.production.min.js
@@ -18,21 +19,21 @@ var yn = { exports: {} }, fs = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var Xn;
-function Oa() {
-  if (Xn) return fs;
-  Xn = 1;
-  var t = Mt, r = Symbol.for("react.element"), s = Symbol.for("react.fragment"), a = Object.prototype.hasOwnProperty, n = t.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, o = { key: !0, ref: !0, __self: !0, __source: !0 };
+var ar;
+function nl() {
+  if (ar) return ys;
+  ar = 1;
+  var t = Zt, r = Symbol.for("react.element"), s = Symbol.for("react.fragment"), a = Object.prototype.hasOwnProperty, n = t.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, o = { key: !0, ref: !0, __self: !0, __source: !0 };
   function l(i, d, c) {
-    var p, g = {}, I = null, f = null;
-    c !== void 0 && (I = "" + c), d.key !== void 0 && (I = "" + d.key), d.ref !== void 0 && (f = d.ref);
+    var p, g = {}, T = null, x = null;
+    c !== void 0 && (T = "" + c), d.key !== void 0 && (T = "" + d.key), d.ref !== void 0 && (x = d.ref);
     for (p in d) a.call(d, p) && !o.hasOwnProperty(p) && (g[p] = d[p]);
     if (i && i.defaultProps) for (p in d = i.defaultProps, d) g[p] === void 0 && (g[p] = d[p]);
-    return { $$typeof: r, type: i, key: I, ref: f, props: g, _owner: n.current };
+    return { $$typeof: r, type: i, key: T, ref: x, props: g, _owner: n.current };
   }
-  return fs.Fragment = s, fs.jsx = l, fs.jsxs = l, fs;
+  return ys.Fragment = s, ys.jsx = l, ys.jsxs = l, ys;
 }
-var gs = {};
+var js = {};
 /**
  * @license React
  * react-jsx-runtime.development.js
@@ -42,61 +43,61 @@ var gs = {};
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var Qn;
-function _a() {
-  return Qn || (Qn = 1, process.env.NODE_ENV !== "production" && function() {
-    var t = Mt, r = Symbol.for("react.element"), s = Symbol.for("react.portal"), a = Symbol.for("react.fragment"), n = Symbol.for("react.strict_mode"), o = Symbol.for("react.profiler"), l = Symbol.for("react.provider"), i = Symbol.for("react.context"), d = Symbol.for("react.forward_ref"), c = Symbol.for("react.suspense"), p = Symbol.for("react.suspense_list"), g = Symbol.for("react.memo"), I = Symbol.for("react.lazy"), f = Symbol.for("react.offscreen"), x = Symbol.iterator, N = "@@iterator";
-    function u(D) {
-      if (D === null || typeof D != "object")
+var lr;
+function rl() {
+  return lr || (lr = 1, process.env.NODE_ENV !== "production" && function() {
+    var t = Zt, r = Symbol.for("react.element"), s = Symbol.for("react.portal"), a = Symbol.for("react.fragment"), n = Symbol.for("react.strict_mode"), o = Symbol.for("react.profiler"), l = Symbol.for("react.provider"), i = Symbol.for("react.context"), d = Symbol.for("react.forward_ref"), c = Symbol.for("react.suspense"), p = Symbol.for("react.suspense_list"), g = Symbol.for("react.memo"), T = Symbol.for("react.lazy"), x = Symbol.for("react.offscreen"), h = Symbol.iterator, w = "@@iterator";
+    function u(I) {
+      if (I === null || typeof I != "object")
         return null;
-      var J = x && D[x] || D[N];
-      return typeof J == "function" ? J : null;
+      var te = h && I[h] || I[w];
+      return typeof te == "function" ? te : null;
     }
     var v = t.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-    function C(D) {
+    function k(I) {
       {
-        for (var J = arguments.length, ne = new Array(J > 1 ? J - 1 : 0), be = 1; be < J; be++)
-          ne[be - 1] = arguments[be];
-        h("error", D, ne);
+        for (var te = arguments.length, de = new Array(te > 1 ? te - 1 : 0), ve = 1; ve < te; ve++)
+          de[ve - 1] = arguments[ve];
+        m("error", I, de);
       }
     }
-    function h(D, J, ne) {
+    function m(I, te, de) {
       {
-        var be = v.ReactDebugCurrentFrame, $e = be.getStackAddendum();
-        $e !== "" && (J += "%s", ne = ne.concat([$e]));
-        var Ae = ne.map(function(Fe) {
-          return String(Fe);
+        var ve = v.ReactDebugCurrentFrame, G = ve.getStackAddendum();
+        G !== "" && (te += "%s", de = de.concat([G]));
+        var je = de.map(function(ke) {
+          return String(ke);
         });
-        Ae.unshift("Warning: " + J), Function.prototype.apply.call(console[D], console, Ae);
+        je.unshift("Warning: " + te), Function.prototype.apply.call(console[I], console, je);
       }
     }
-    var y = !1, L = !1, k = !1, F = !1, w = !1, S;
+    var y = !1, P = !1, R = !1, F = !1, C = !1, S;
     S = Symbol.for("react.module.reference");
-    function R(D) {
-      return !!(typeof D == "string" || typeof D == "function" || D === a || D === o || w || D === n || D === c || D === p || F || D === f || y || L || k || typeof D == "object" && D !== null && (D.$$typeof === I || D.$$typeof === g || D.$$typeof === l || D.$$typeof === i || D.$$typeof === d || // This needs to include all possible module reference object
+    function L(I) {
+      return !!(typeof I == "string" || typeof I == "function" || I === a || I === o || C || I === n || I === c || I === p || F || I === x || y || P || R || typeof I == "object" && I !== null && (I.$$typeof === T || I.$$typeof === g || I.$$typeof === l || I.$$typeof === i || I.$$typeof === d || // This needs to include all possible module reference object
       // types supported by any Flight configuration anywhere since
       // we don't know which Flight build this will end up being used
       // with.
-      D.$$typeof === S || D.getModuleId !== void 0));
+      I.$$typeof === S || I.getModuleId !== void 0));
     }
-    function $(D, J, ne) {
-      var be = D.displayName;
-      if (be)
-        return be;
-      var $e = J.displayName || J.name || "";
-      return $e !== "" ? ne + "(" + $e + ")" : ne;
+    function $(I, te, de) {
+      var ve = I.displayName;
+      if (ve)
+        return ve;
+      var G = te.displayName || te.name || "";
+      return G !== "" ? de + "(" + G + ")" : de;
     }
-    function Q(D) {
-      return D.displayName || "Context";
+    function se(I) {
+      return I.displayName || "Context";
     }
-    function O(D) {
-      if (D == null)
+    function V(I) {
+      if (I == null)
         return null;
-      if (typeof D.tag == "number" && C("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."), typeof D == "function")
-        return D.displayName || D.name || null;
-      if (typeof D == "string")
-        return D;
-      switch (D) {
+      if (typeof I.tag == "number" && k("Received an unexpected object in getComponentNameFromType(). This is likely a bug in React. Please file an issue."), typeof I == "function")
+        return I.displayName || I.name || null;
+      if (typeof I == "string")
+        return I;
+      switch (I) {
         case a:
           return "Fragment";
         case s:
@@ -110,23 +111,23 @@ function _a() {
         case p:
           return "SuspenseList";
       }
-      if (typeof D == "object")
-        switch (D.$$typeof) {
+      if (typeof I == "object")
+        switch (I.$$typeof) {
           case i:
-            var J = D;
-            return Q(J) + ".Consumer";
+            var te = I;
+            return se(te) + ".Consumer";
           case l:
-            var ne = D;
-            return Q(ne._context) + ".Provider";
+            var de = I;
+            return se(de._context) + ".Provider";
           case d:
-            return $(D, D.render, "ForwardRef");
+            return $(I, I.render, "ForwardRef");
           case g:
-            var be = D.displayName || null;
-            return be !== null ? be : O(D.type) || "Memo";
-          case I: {
-            var $e = D, Ae = $e._payload, Fe = $e._init;
+            var ve = I.displayName || null;
+            return ve !== null ? ve : V(I.type) || "Memo";
+          case T: {
+            var G = I, je = G._payload, ke = G._init;
             try {
-              return O(Fe(Ae));
+              return V(ke(je));
             } catch {
               return null;
             }
@@ -134,507 +135,507 @@ function _a() {
         }
       return null;
     }
-    var V = Object.assign, P = 0, K, G, b, se, de, me, Ce;
-    function he() {
+    var U = Object.assign, E = 0, Y, z, b, ae, O, _, me;
+    function ce() {
     }
-    he.__reactDisabledLog = !0;
-    function we() {
+    ce.__reactDisabledLog = !0;
+    function ye() {
       {
-        if (P === 0) {
-          K = console.log, G = console.info, b = console.warn, se = console.error, de = console.group, me = console.groupCollapsed, Ce = console.groupEnd;
-          var D = {
+        if (E === 0) {
+          Y = console.log, z = console.info, b = console.warn, ae = console.error, O = console.group, _ = console.groupCollapsed, me = console.groupEnd;
+          var I = {
             configurable: !0,
             enumerable: !0,
-            value: he,
+            value: ce,
             writable: !0
           };
           Object.defineProperties(console, {
-            info: D,
-            log: D,
-            warn: D,
-            error: D,
-            group: D,
-            groupCollapsed: D,
-            groupEnd: D
+            info: I,
+            log: I,
+            warn: I,
+            error: I,
+            group: I,
+            groupCollapsed: I,
+            groupEnd: I
           });
         }
-        P++;
+        E++;
       }
     }
-    function Oe() {
+    function ue() {
       {
-        if (P--, P === 0) {
-          var D = {
+        if (E--, E === 0) {
+          var I = {
             configurable: !0,
             enumerable: !0,
             writable: !0
           };
           Object.defineProperties(console, {
-            log: V({}, D, {
-              value: K
+            log: U({}, I, {
+              value: Y
             }),
-            info: V({}, D, {
-              value: G
+            info: U({}, I, {
+              value: z
             }),
-            warn: V({}, D, {
+            warn: U({}, I, {
               value: b
             }),
-            error: V({}, D, {
-              value: se
+            error: U({}, I, {
+              value: ae
             }),
-            group: V({}, D, {
-              value: de
+            group: U({}, I, {
+              value: O
             }),
-            groupCollapsed: V({}, D, {
+            groupCollapsed: U({}, I, {
+              value: _
+            }),
+            groupEnd: U({}, I, {
               value: me
-            }),
-            groupEnd: V({}, D, {
-              value: Ce
             })
           });
         }
-        P < 0 && C("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
+        E < 0 && k("disabledDepth fell below zero. This is a bug in React. Please file an issue.");
       }
     }
-    var U = v.ReactCurrentDispatcher, oe;
-    function Y(D, J, ne) {
+    var M = v.ReactCurrentDispatcher, Q;
+    function W(I, te, de) {
       {
-        if (oe === void 0)
+        if (Q === void 0)
           try {
             throw Error();
-          } catch ($e) {
-            var be = $e.stack.trim().match(/\n( *(at )?)/);
-            oe = be && be[1] || "";
+          } catch (G) {
+            var ve = G.stack.trim().match(/\n( *(at )?)/);
+            Q = ve && ve[1] || "";
           }
         return `
-` + oe + D;
+` + Q + I;
       }
     }
-    var z = !1, xe;
+    var q = !1, ie;
     {
-      var ve = typeof WeakMap == "function" ? WeakMap : Map;
-      xe = new ve();
+      var Ne = typeof WeakMap == "function" ? WeakMap : Map;
+      ie = new Ne();
     }
-    function T(D, J) {
-      if (!D || z)
+    function j(I, te) {
+      if (!I || q)
         return "";
       {
-        var ne = xe.get(D);
-        if (ne !== void 0)
-          return ne;
+        var de = ie.get(I);
+        if (de !== void 0)
+          return de;
       }
-      var be;
-      z = !0;
-      var $e = Error.prepareStackTrace;
+      var ve;
+      q = !0;
+      var G = Error.prepareStackTrace;
       Error.prepareStackTrace = void 0;
-      var Ae;
-      Ae = U.current, U.current = null, we();
+      var je;
+      je = M.current, M.current = null, ye();
       try {
-        if (J) {
-          var Fe = function() {
+        if (te) {
+          var ke = function() {
             throw Error();
           };
-          if (Object.defineProperty(Fe.prototype, "props", {
+          if (Object.defineProperty(ke.prototype, "props", {
             set: function() {
               throw Error();
             }
           }), typeof Reflect == "object" && Reflect.construct) {
             try {
-              Reflect.construct(Fe, []);
-            } catch (Qe) {
-              be = Qe;
+              Reflect.construct(ke, []);
+            } catch (Ze) {
+              ve = Ze;
             }
-            Reflect.construct(D, [], Fe);
+            Reflect.construct(I, [], ke);
           } else {
             try {
-              Fe.call();
-            } catch (Qe) {
-              be = Qe;
+              ke.call();
+            } catch (Ze) {
+              ve = Ze;
             }
-            D.call(Fe.prototype);
+            I.call(ke.prototype);
           }
         } else {
           try {
             throw Error();
-          } catch (Qe) {
-            be = Qe;
+          } catch (Ze) {
+            ve = Ze;
           }
-          D();
+          I();
         }
-      } catch (Qe) {
-        if (Qe && be && typeof Qe.stack == "string") {
-          for (var De = Qe.stack.split(`
-`), Xe = be.stack.split(`
-`), Ke = De.length - 1, Ue = Xe.length - 1; Ke >= 1 && Ue >= 0 && De[Ke] !== Xe[Ue]; )
-            Ue--;
-          for (; Ke >= 1 && Ue >= 0; Ke--, Ue--)
-            if (De[Ke] !== Xe[Ue]) {
-              if (Ke !== 1 || Ue !== 1)
+      } catch (Ze) {
+        if (Ze && ve && typeof Ze.stack == "string") {
+          for (var oe = Ze.stack.split(`
+`), Ve = ve.stack.split(`
+`), We = oe.length - 1, Pe = Ve.length - 1; We >= 1 && Pe >= 0 && oe[We] !== Ve[Pe]; )
+            Pe--;
+          for (; We >= 1 && Pe >= 0; We--, Pe--)
+            if (oe[We] !== Ve[Pe]) {
+              if (We !== 1 || Pe !== 1)
                 do
-                  if (Ke--, Ue--, Ue < 0 || De[Ke] !== Xe[Ue]) {
-                    var tt = `
-` + De[Ke].replace(" at new ", " at ");
-                    return D.displayName && tt.includes("<anonymous>") && (tt = tt.replace("<anonymous>", D.displayName)), typeof D == "function" && xe.set(D, tt), tt;
+                  if (We--, Pe--, Pe < 0 || oe[We] !== Ve[Pe]) {
+                    var Xe = `
+` + oe[We].replace(" at new ", " at ");
+                    return I.displayName && Xe.includes("<anonymous>") && (Xe = Xe.replace("<anonymous>", I.displayName)), typeof I == "function" && ie.set(I, Xe), Xe;
                   }
-                while (Ke >= 1 && Ue >= 0);
+                while (We >= 1 && Pe >= 0);
               break;
             }
         }
       } finally {
-        z = !1, U.current = Ae, Oe(), Error.prepareStackTrace = $e;
+        q = !1, M.current = je, ue(), Error.prepareStackTrace = G;
       }
-      var mt = D ? D.displayName || D.name : "", ut = mt ? Y(mt) : "";
-      return typeof D == "function" && xe.set(D, ut), ut;
+      var at = I ? I.displayName || I.name : "", it = at ? W(at) : "";
+      return typeof I == "function" && ie.set(I, it), it;
     }
-    function B(D, J, ne) {
-      return T(D, !1);
+    function A(I, te, de) {
+      return j(I, !1);
     }
-    function ee(D) {
-      var J = D.prototype;
-      return !!(J && J.isReactComponent);
+    function ne(I) {
+      var te = I.prototype;
+      return !!(te && te.isReactComponent);
     }
-    function je(D, J, ne) {
-      if (D == null)
+    function Ce(I, te, de) {
+      if (I == null)
         return "";
-      if (typeof D == "function")
-        return T(D, ee(D));
-      if (typeof D == "string")
-        return Y(D);
-      switch (D) {
+      if (typeof I == "function")
+        return j(I, ne(I));
+      if (typeof I == "string")
+        return W(I);
+      switch (I) {
         case c:
-          return Y("Suspense");
+          return W("Suspense");
         case p:
-          return Y("SuspenseList");
+          return W("SuspenseList");
       }
-      if (typeof D == "object")
-        switch (D.$$typeof) {
+      if (typeof I == "object")
+        switch (I.$$typeof) {
           case d:
-            return B(D.render);
+            return A(I.render);
           case g:
-            return je(D.type, J, ne);
-          case I: {
-            var be = D, $e = be._payload, Ae = be._init;
+            return Ce(I.type, te, de);
+          case T: {
+            var ve = I, G = ve._payload, je = ve._init;
             try {
-              return je(Ae($e), J, ne);
+              return Ce(je(G), te, de);
             } catch {
             }
           }
         }
       return "";
     }
-    var te = Object.prototype.hasOwnProperty, Se = {}, ce = v.ReactDebugCurrentFrame;
-    function Ne(D) {
-      if (D) {
-        var J = D._owner, ne = je(D.type, D._source, J ? J.type : null);
-        ce.setExtraStackFrame(ne);
+    var le = Object.prototype.hasOwnProperty, Fe = {}, fe = v.ReactDebugCurrentFrame;
+    function Ie(I) {
+      if (I) {
+        var te = I._owner, de = Ce(I.type, I._source, te ? te.type : null);
+        fe.setExtraStackFrame(de);
       } else
-        ce.setExtraStackFrame(null);
+        fe.setExtraStackFrame(null);
     }
-    function le(D, J, ne, be, $e) {
+    function pe(I, te, de, ve, G) {
       {
-        var Ae = Function.call.bind(te);
-        for (var Fe in D)
-          if (Ae(D, Fe)) {
-            var De = void 0;
+        var je = Function.call.bind(le);
+        for (var ke in I)
+          if (je(I, ke)) {
+            var oe = void 0;
             try {
-              if (typeof D[Fe] != "function") {
-                var Xe = Error((be || "React class") + ": " + ne + " type `" + Fe + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof D[Fe] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
-                throw Xe.name = "Invariant Violation", Xe;
+              if (typeof I[ke] != "function") {
+                var Ve = Error((ve || "React class") + ": " + de + " type `" + ke + "` is invalid; it must be a function, usually from the `prop-types` package, but received `" + typeof I[ke] + "`.This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.");
+                throw Ve.name = "Invariant Violation", Ve;
               }
-              De = D[Fe](J, Fe, be, ne, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
-            } catch (Ke) {
-              De = Ke;
+              oe = I[ke](te, ke, ve, de, null, "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED");
+            } catch (We) {
+              oe = We;
             }
-            De && !(De instanceof Error) && (Ne($e), C("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", be || "React class", ne, Fe, typeof De), Ne(null)), De instanceof Error && !(De.message in Se) && (Se[De.message] = !0, Ne($e), C("Failed %s type: %s", ne, De.message), Ne(null));
+            oe && !(oe instanceof Error) && (Ie(G), k("%s: type specification of %s `%s` is invalid; the type checker function must return `null` or an `Error` but returned a %s. You may have forgotten to pass an argument to the type checker creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and shape all require an argument).", ve || "React class", de, ke, typeof oe), Ie(null)), oe instanceof Error && !(oe.message in Fe) && (Fe[oe.message] = !0, Ie(G), k("Failed %s type: %s", de, oe.message), Ie(null));
           }
       }
     }
-    var ue = Array.isArray;
-    function Pe(D) {
-      return ue(D);
+    var ge = Array.isArray;
+    function Me(I) {
+      return ge(I);
     }
-    function ye(D) {
+    function De(I) {
       {
-        var J = typeof Symbol == "function" && Symbol.toStringTag, ne = J && D[Symbol.toStringTag] || D.constructor.name || "Object";
-        return ne;
+        var te = typeof Symbol == "function" && Symbol.toStringTag, de = te && I[Symbol.toStringTag] || I.constructor.name || "Object";
+        return de;
       }
     }
-    function pe(D) {
+    function we(I) {
       try {
-        return W(D), !1;
+        return X(I), !1;
       } catch {
         return !0;
       }
     }
-    function W(D) {
-      return "" + D;
+    function X(I) {
+      return "" + I;
     }
-    function ae(D) {
-      if (pe(D))
-        return C("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", ye(D)), W(D);
+    function xe(I) {
+      if (we(I))
+        return k("The provided key is an unsupported type %s. This value must be coerced to a string before before using it here.", De(I)), X(I);
     }
-    var it = v.ReactCurrentOwner, gt = {
+    var ot = v.ReactCurrentOwner, ft = {
       key: !0,
       ref: !0,
       __self: !0,
       __source: !0
-    }, rt, xt;
-    function q(D) {
-      if (te.call(D, "ref")) {
-        var J = Object.getOwnPropertyDescriptor(D, "ref").get;
-        if (J && J.isReactWarning)
+    }, nt, pt;
+    function ee(I) {
+      if (le.call(I, "ref")) {
+        var te = Object.getOwnPropertyDescriptor(I, "ref").get;
+        if (te && te.isReactWarning)
           return !1;
       }
-      return D.ref !== void 0;
+      return I.ref !== void 0;
     }
-    function ge(D) {
-      if (te.call(D, "key")) {
-        var J = Object.getOwnPropertyDescriptor(D, "key").get;
-        if (J && J.isReactWarning)
+    function Se(I) {
+      if (le.call(I, "key")) {
+        var te = Object.getOwnPropertyDescriptor(I, "key").get;
+        if (te && te.isReactWarning)
           return !1;
       }
-      return D.key !== void 0;
+      return I.key !== void 0;
     }
-    function Ee(D, J) {
-      typeof D.ref == "string" && it.current;
+    function Ee(I, te) {
+      typeof I.ref == "string" && ot.current;
     }
-    function ke(D, J) {
+    function Re(I, te) {
       {
-        var ne = function() {
-          rt || (rt = !0, C("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", J));
+        var de = function() {
+          nt || (nt = !0, k("%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", te));
         };
-        ne.isReactWarning = !0, Object.defineProperty(D, "key", {
-          get: ne,
+        de.isReactWarning = !0, Object.defineProperty(I, "key", {
+          get: de,
           configurable: !0
         });
       }
     }
-    function Me(D, J) {
+    function _e(I, te) {
       {
-        var ne = function() {
-          xt || (xt = !0, C("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", J));
+        var de = function() {
+          pt || (pt = !0, k("%s: `ref` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://reactjs.org/link/special-props)", te));
         };
-        ne.isReactWarning = !0, Object.defineProperty(D, "ref", {
-          get: ne,
+        de.isReactWarning = !0, Object.defineProperty(I, "ref", {
+          get: de,
           configurable: !0
         });
       }
     }
-    var Te = function(D, J, ne, be, $e, Ae, Fe) {
-      var De = {
+    var Le = function(I, te, de, ve, G, je, ke) {
+      var oe = {
         // This tag allows us to uniquely identify this as a React Element
         $$typeof: r,
         // Built-in properties that belong on the element
-        type: D,
-        key: J,
-        ref: ne,
-        props: Fe,
+        type: I,
+        key: te,
+        ref: de,
+        props: ke,
         // Record the component responsible for creating this element.
-        _owner: Ae
+        _owner: je
       };
-      return De._store = {}, Object.defineProperty(De._store, "validated", {
+      return oe._store = {}, Object.defineProperty(oe._store, "validated", {
         configurable: !1,
         enumerable: !1,
         writable: !0,
         value: !1
-      }), Object.defineProperty(De, "_self", {
+      }), Object.defineProperty(oe, "_self", {
         configurable: !1,
         enumerable: !1,
         writable: !1,
-        value: be
-      }), Object.defineProperty(De, "_source", {
+        value: ve
+      }), Object.defineProperty(oe, "_source", {
         configurable: !1,
         enumerable: !1,
         writable: !1,
-        value: $e
-      }), Object.freeze && (Object.freeze(De.props), Object.freeze(De)), De;
+        value: G
+      }), Object.freeze && (Object.freeze(oe.props), Object.freeze(oe)), oe;
     };
-    function Ye(D, J, ne, be, $e) {
+    function qe(I, te, de, ve, G) {
       {
-        var Ae, Fe = {}, De = null, Xe = null;
-        ne !== void 0 && (ae(ne), De = "" + ne), ge(J) && (ae(J.key), De = "" + J.key), q(J) && (Xe = J.ref, Ee(J, $e));
-        for (Ae in J)
-          te.call(J, Ae) && !gt.hasOwnProperty(Ae) && (Fe[Ae] = J[Ae]);
-        if (D && D.defaultProps) {
-          var Ke = D.defaultProps;
-          for (Ae in Ke)
-            Fe[Ae] === void 0 && (Fe[Ae] = Ke[Ae]);
+        var je, ke = {}, oe = null, Ve = null;
+        de !== void 0 && (xe(de), oe = "" + de), Se(te) && (xe(te.key), oe = "" + te.key), ee(te) && (Ve = te.ref, Ee(te, G));
+        for (je in te)
+          le.call(te, je) && !ft.hasOwnProperty(je) && (ke[je] = te[je]);
+        if (I && I.defaultProps) {
+          var We = I.defaultProps;
+          for (je in We)
+            ke[je] === void 0 && (ke[je] = We[je]);
         }
-        if (De || Xe) {
-          var Ue = typeof D == "function" ? D.displayName || D.name || "Unknown" : D;
-          De && ke(Fe, Ue), Xe && Me(Fe, Ue);
+        if (oe || Ve) {
+          var Pe = typeof I == "function" ? I.displayName || I.name || "Unknown" : I;
+          oe && Re(ke, Pe), Ve && _e(ke, Pe);
         }
-        return Te(D, De, Xe, $e, be, it.current, Fe);
+        return Le(I, oe, Ve, G, ve, ot.current, ke);
       }
     }
-    var Ie = v.ReactCurrentOwner, ht = v.ReactDebugCurrentFrame;
-    function dt(D) {
-      if (D) {
-        var J = D._owner, ne = je(D.type, D._source, J ? J.type : null);
-        ht.setExtraStackFrame(ne);
+    var $e = v.ReactCurrentOwner, rt = v.ReactDebugCurrentFrame;
+    function ut(I) {
+      if (I) {
+        var te = I._owner, de = Ce(I.type, I._source, te ? te.type : null);
+        rt.setExtraStackFrame(de);
       } else
-        ht.setExtraStackFrame(null);
+        rt.setExtraStackFrame(null);
     }
-    var Nt;
-    Nt = !1;
-    function vt(D) {
-      return typeof D == "object" && D !== null && D.$$typeof === r;
+    var Ct;
+    Ct = !1;
+    function gt(I) {
+      return typeof I == "object" && I !== null && I.$$typeof === r;
     }
-    function Ot() {
+    function xt() {
       {
-        if (Ie.current) {
-          var D = O(Ie.current.type);
-          if (D)
+        if ($e.current) {
+          var I = V($e.current.type);
+          if (I)
             return `
 
-Check the render method of \`` + D + "`.";
+Check the render method of \`` + I + "`.";
         }
         return "";
       }
     }
-    function zt(D) {
+    function Wt(I) {
       return "";
     }
-    var _t = {};
-    function wt(D) {
+    var Dt = {};
+    function vt(I) {
       {
-        var J = Ot();
-        if (!J) {
-          var ne = typeof D == "string" ? D : D.displayName || D.name;
-          ne && (J = `
+        var te = xt();
+        if (!te) {
+          var de = typeof I == "string" ? I : I.displayName || I.name;
+          de && (te = `
 
-Check the top-level render call using <` + ne + ">.");
+Check the top-level render call using <` + de + ">.");
         }
-        return J;
+        return te;
       }
     }
-    function Ht(D, J) {
+    function kt(I, te) {
       {
-        if (!D._store || D._store.validated || D.key != null)
+        if (!I._store || I._store.validated || I.key != null)
           return;
-        D._store.validated = !0;
-        var ne = wt(J);
-        if (_t[ne])
+        I._store.validated = !0;
+        var de = vt(te);
+        if (Dt[de])
           return;
-        _t[ne] = !0;
-        var be = "";
-        D && D._owner && D._owner !== Ie.current && (be = " It was passed a child from " + O(D._owner.type) + "."), dt(D), C('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', ne, be), dt(null);
+        Dt[de] = !0;
+        var ve = "";
+        I && I._owner && I._owner !== $e.current && (ve = " It was passed a child from " + V(I._owner.type) + "."), ut(I), k('Each child in a list should have a unique "key" prop.%s%s See https://reactjs.org/link/warning-keys for more information.', de, ve), ut(null);
       }
     }
-    function _e(D, J) {
+    function Ge(I, te) {
       {
-        if (typeof D != "object")
+        if (typeof I != "object")
           return;
-        if (Pe(D))
-          for (var ne = 0; ne < D.length; ne++) {
-            var be = D[ne];
-            vt(be) && Ht(be, J);
+        if (Me(I))
+          for (var de = 0; de < I.length; de++) {
+            var ve = I[de];
+            gt(ve) && kt(ve, te);
           }
-        else if (vt(D))
-          D._store && (D._store.validated = !0);
-        else if (D) {
-          var $e = u(D);
-          if (typeof $e == "function" && $e !== D.entries)
-            for (var Ae = $e.call(D), Fe; !(Fe = Ae.next()).done; )
-              vt(Fe.value) && Ht(Fe.value, J);
+        else if (gt(I))
+          I._store && (I._store.validated = !0);
+        else if (I) {
+          var G = u(I);
+          if (typeof G == "function" && G !== I.entries)
+            for (var je = G.call(I), ke; !(ke = je.next()).done; )
+              gt(ke.value) && kt(ke.value, te);
         }
       }
     }
-    function qt(D) {
+    function Kt(I) {
       {
-        var J = D.type;
-        if (J == null || typeof J == "string")
+        var te = I.type;
+        if (te == null || typeof te == "string")
           return;
-        var ne;
-        if (typeof J == "function")
-          ne = J.propTypes;
-        else if (typeof J == "object" && (J.$$typeof === d || // Note: Memo only checks outer props here.
+        var de;
+        if (typeof te == "function")
+          de = te.propTypes;
+        else if (typeof te == "object" && (te.$$typeof === d || // Note: Memo only checks outer props here.
         // Inner props are checked in the reconciler.
-        J.$$typeof === g))
-          ne = J.propTypes;
+        te.$$typeof === g))
+          de = te.propTypes;
         else
           return;
-        if (ne) {
-          var be = O(J);
-          le(ne, D.props, "prop", be, D);
-        } else if (J.PropTypes !== void 0 && !Nt) {
-          Nt = !0;
-          var $e = O(J);
-          C("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", $e || "Unknown");
+        if (de) {
+          var ve = V(te);
+          pe(de, I.props, "prop", ve, I);
+        } else if (te.PropTypes !== void 0 && !Ct) {
+          Ct = !0;
+          var G = V(te);
+          k("Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?", G || "Unknown");
         }
-        typeof J.getDefaultProps == "function" && !J.getDefaultProps.isReactClassApproved && C("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
+        typeof te.getDefaultProps == "function" && !te.getDefaultProps.isReactClassApproved && k("getDefaultProps is only used on classic React.createClass definitions. Use a static property named `defaultProps` instead.");
       }
     }
-    function Yt(D) {
+    function Ut(I) {
       {
-        for (var J = Object.keys(D.props), ne = 0; ne < J.length; ne++) {
-          var be = J[ne];
-          if (be !== "children" && be !== "key") {
-            dt(D), C("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.", be), dt(null);
+        for (var te = Object.keys(I.props), de = 0; de < te.length; de++) {
+          var ve = te[de];
+          if (ve !== "children" && ve !== "key") {
+            ut(I), k("Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.", ve), ut(null);
             break;
           }
         }
-        D.ref !== null && (dt(D), C("Invalid attribute `ref` supplied to `React.Fragment`."), dt(null));
+        I.ref !== null && (ut(I), k("Invalid attribute `ref` supplied to `React.Fragment`."), ut(null));
       }
     }
-    var Vt = {};
-    function It(D, J, ne, be, $e, Ae) {
+    var Ft = {};
+    function Rt(I, te, de, ve, G, je) {
       {
-        var Fe = R(D);
-        if (!Fe) {
-          var De = "";
-          (D === void 0 || typeof D == "object" && D !== null && Object.keys(D).length === 0) && (De += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
-          var Xe = zt();
-          Xe ? De += Xe : De += Ot();
-          var Ke;
-          D === null ? Ke = "null" : Pe(D) ? Ke = "array" : D !== void 0 && D.$$typeof === r ? (Ke = "<" + (O(D.type) || "Unknown") + " />", De = " Did you accidentally export a JSX literal instead of a component?") : Ke = typeof D, C("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", Ke, De);
+        var ke = L(I);
+        if (!ke) {
+          var oe = "";
+          (I === void 0 || typeof I == "object" && I !== null && Object.keys(I).length === 0) && (oe += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
+          var Ve = Wt();
+          Ve ? oe += Ve : oe += xt();
+          var We;
+          I === null ? We = "null" : Me(I) ? We = "array" : I !== void 0 && I.$$typeof === r ? (We = "<" + (V(I.type) || "Unknown") + " />", oe = " Did you accidentally export a JSX literal instead of a component?") : We = typeof I, k("React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", We, oe);
         }
-        var Ue = Ye(D, J, ne, $e, Ae);
-        if (Ue == null)
-          return Ue;
-        if (Fe) {
-          var tt = J.children;
-          if (tt !== void 0)
-            if (be)
-              if (Pe(tt)) {
-                for (var mt = 0; mt < tt.length; mt++)
-                  _e(tt[mt], D);
-                Object.freeze && Object.freeze(tt);
+        var Pe = qe(I, te, de, G, je);
+        if (Pe == null)
+          return Pe;
+        if (ke) {
+          var Xe = te.children;
+          if (Xe !== void 0)
+            if (ve)
+              if (Me(Xe)) {
+                for (var at = 0; at < Xe.length; at++)
+                  Ge(Xe[at], I);
+                Object.freeze && Object.freeze(Xe);
               } else
-                C("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");
+                k("React.jsx: Static children should always be an array. You are likely explicitly calling React.jsxs or React.jsxDEV. Use the Babel transform instead.");
             else
-              _e(tt, D);
+              Ge(Xe, I);
         }
-        if (te.call(J, "key")) {
-          var ut = O(D), Qe = Object.keys(J).filter(function(Zt) {
-            return Zt !== "key";
-          }), Ft = Qe.length > 0 ? "{key: someKey, " + Qe.join(": ..., ") + ": ...}" : "{key: someKey}";
-          if (!Vt[ut + Ft]) {
-            var Qt = Qe.length > 0 ? "{" + Qe.join(": ..., ") + ": ...}" : "{}";
-            C(`A props object containing a "key" prop is being spread into JSX:
+        if (le.call(te, "key")) {
+          var it = V(I), Ze = Object.keys(te).filter(function(zt) {
+            return zt !== "key";
+          }), St = Ze.length > 0 ? "{key: someKey, " + Ze.join(": ..., ") + ": ...}" : "{key: someKey}";
+          if (!Ft[it + St]) {
+            var Ot = Ze.length > 0 ? "{" + Ze.join(": ..., ") + ": ...}" : "{}";
+            k(`A props object containing a "key" prop is being spread into JSX:
   let props = %s;
   <%s {...props} />
 React keys must be passed directly to JSX without using spread:
   let props = %s;
-  <%s key={someKey} {...props} />`, Ft, ut, Qt, ut), Vt[ut + Ft] = !0;
+  <%s key={someKey} {...props} />`, St, it, Ot, it), Ft[it + St] = !0;
           }
         }
-        return D === a ? Yt(Ue) : qt(Ue), Ue;
+        return I === a ? Ut(Pe) : Kt(Pe), Pe;
       }
     }
-    function Jt(D, J, ne) {
-      return It(D, J, ne, !0);
+    function Lt(I, te, de) {
+      return Rt(I, te, de, !0);
     }
-    function Xt(D, J, ne) {
-      return It(D, J, ne, !1);
+    function At(I, te, de) {
+      return Rt(I, te, de, !1);
     }
-    var Wt = Xt, Kt = Jt;
-    gs.Fragment = a, gs.jsx = Wt, gs.jsxs = Kt;
-  }()), gs;
+    var Mt = At, Bt = Lt;
+    js.Fragment = a, js.jsx = Mt, js.jsxs = Bt;
+  }()), js;
 }
-process.env.NODE_ENV === "production" ? yn.exports = Oa() : yn.exports = _a();
-var e = yn.exports;
-const Ut = ({
+process.env.NODE_ENV === "production" ? Sn.exports = nl() : Sn.exports = rl();
+var e = Sn.exports;
+const rs = ({
   label: t,
   showLabel: r = !0,
   labelPosition: s = "left",
@@ -678,31 +679,31 @@ const Ut = ({
       ]
     }
   );
-}, Zn = { BASE_URL: "/", DEV: !1, MODE: "production", PROD: !0, SSR: !1, VITE_API_URL: "http://localhost:5048/api" }, er = (t) => !!t.dispatchFromDevtools && typeof t.dispatch == "function", ks = /* @__PURE__ */ new Map(), Os = (t) => {
-  const r = ks.get(t);
+}, or = { BASE_URL: "/", DEV: !1, MODE: "production", PROD: !0, SSR: !1, VITE_API_URL: "http://localhost:5048/api" }, ir = (t) => !!t.dispatchFromDevtools && typeof t.dispatch == "function", Is = /* @__PURE__ */ new Map(), Ws = (t) => {
+  const r = Is.get(t);
   return r ? Object.fromEntries(
     Object.entries(r.stores).map(([s, a]) => [s, a.getState()])
   ) : {};
-}, Ha = (t, r, s) => {
+}, al = (t, r, s) => {
   if (t === void 0)
     return {
       type: "untracked",
       connection: r.connect(s)
     };
-  const a = ks.get(s.name);
+  const a = Is.get(s.name);
   if (a)
     return { type: "tracked", store: t, ...a };
   const n = {
     connection: r.connect(s),
     stores: {}
   };
-  return ks.set(s.name, n), { type: "tracked", store: t, ...n };
-}, Va = (t, r) => {
+  return Is.set(s.name, n), { type: "tracked", store: t, ...n };
+}, ll = (t, r) => {
   if (r === void 0) return;
-  const s = ks.get(t);
-  s && (delete s.stores[r], Object.keys(s.stores).length === 0 && ks.delete(t));
-}, Wa = /^at (?:new |async )?(.+?) \(/, Ka = /^([^@]+)@/;
-function Ga(t) {
+  const s = Is.get(t);
+  s && (delete s.stores[r], Object.keys(s.stores).length === 0 && Is.delete(t));
+}, ol = /^at (?:new |async )?(.+?) \(/, il = /^([^@]+)@/;
+function cl(t) {
   var r, s, a;
   if (!t) return;
   const n = t.split(`
@@ -711,76 +712,76 @@ function Ga(t) {
   );
   if (o < 0) return;
   const l = ((r = n[o + 1]) == null ? void 0 : r.trim()) || "";
-  return ((s = Wa.exec(l)) == null ? void 0 : s[1]) || ((a = Ka.exec(l)) == null ? void 0 : a[1]);
+  return ((s = ol.exec(l)) == null ? void 0 : s[1]) || ((a = il.exec(l)) == null ? void 0 : a[1]);
 }
-const Ua = (t, r = {}) => (s, a, n) => {
+const dl = (t, r = {}) => (s, a, n) => {
   const { enabled: o, anonymousActionType: l, store: i, ...d } = r;
   let c;
   try {
-    c = (o ?? (Zn ? "production" : void 0) !== "production") && window.__REDUX_DEVTOOLS_EXTENSION__;
+    c = (o ?? (or ? "production" : void 0) !== "production") && window.__REDUX_DEVTOOLS_EXTENSION__;
   } catch {
   }
   if (!c)
     return t(s, a, n);
-  const { connection: p, ...g } = Ha(i, c, d);
-  let I = !0;
-  n.setState = (N, u, v) => {
-    const C = s(N, u);
-    if (!I) return C;
-    const h = v === void 0 ? {
-      type: l || Ga(new Error().stack) || "anonymous"
+  const { connection: p, ...g } = al(i, c, d);
+  let T = !0;
+  n.setState = (w, u, v) => {
+    const k = s(w, u);
+    if (!T) return k;
+    const m = v === void 0 ? {
+      type: l || cl(new Error().stack) || "anonymous"
     } : typeof v == "string" ? { type: v } : v;
-    return i === void 0 ? (p == null || p.send(h, a()), C) : (p == null || p.send(
+    return i === void 0 ? (p == null || p.send(m, a()), k) : (p == null || p.send(
       {
-        ...h,
-        type: `${i}/${h.type}`
+        ...m,
+        type: `${i}/${m.type}`
       },
       {
-        ...Os(d.name),
+        ...Ws(d.name),
         [i]: n.getState()
       }
-    ), C);
+    ), k);
   }, n.devtools = {
     cleanup: () => {
-      p && typeof p.unsubscribe == "function" && p.unsubscribe(), Va(d.name, i);
+      p && typeof p.unsubscribe == "function" && p.unsubscribe(), ll(d.name, i);
     }
   };
-  const f = (...N) => {
-    const u = I;
-    I = !1, s(...N), I = u;
-  }, x = t(n.setState, a, n);
-  if (g.type === "untracked" ? p == null || p.init(x) : (g.stores[g.store] = n, p == null || p.init(
+  const x = (...w) => {
+    const u = T;
+    T = !1, s(...w), T = u;
+  }, h = t(n.setState, a, n);
+  if (g.type === "untracked" ? p == null || p.init(h) : (g.stores[g.store] = n, p == null || p.init(
     Object.fromEntries(
-      Object.entries(g.stores).map(([N, u]) => [
-        N,
-        N === g.store ? x : u.getState()
+      Object.entries(g.stores).map(([w, u]) => [
+        w,
+        w === g.store ? h : u.getState()
       ])
     )
-  )), er(n)) {
-    let N = !1;
+  )), ir(n)) {
+    let w = !1;
     const u = n.dispatch;
     n.dispatch = (...v) => {
-      (Zn ? "production" : void 0) !== "production" && v[0].type === "__setState" && !N && (console.warn(
+      (or ? "production" : void 0) !== "production" && v[0].type === "__setState" && !w && (console.warn(
         '[zustand devtools middleware] "__setState" action type is reserved to set state from the devtools. Avoid using it.'
-      ), N = !0), u(...v);
+      ), w = !0), u(...v);
     };
   }
-  return p.subscribe((N) => {
+  return p.subscribe((w) => {
     var u;
-    switch (N.type) {
+    switch (w.type) {
       case "ACTION":
-        if (typeof N.payload != "string") {
+        if (typeof w.payload != "string") {
           console.error(
             "[zustand devtools middleware] Unsupported action format"
           );
           return;
         }
-        return cn(
-          N.payload,
+        return bn(
+          w.payload,
           (v) => {
             if (v.type === "__setState") {
               if (i === void 0) {
-                f(v.state);
+                x(v.state);
                 return;
               }
               Object.keys(v.state).length !== 1 && console.error(
@@ -790,46 +791,46 @@ const Ua = (t, r = {}) => (s, a, n) => {
                     and value of this only key should be a state object. Example: { "type": "__setState", "state": { "abc123Store": { "foo": "bar" } } }
                     `
               );
-              const C = v.state[i];
-              if (C == null)
+              const k = v.state[i];
+              if (k == null)
                 return;
-              JSON.stringify(n.getState()) !== JSON.stringify(C) && f(C);
+              JSON.stringify(n.getState()) !== JSON.stringify(k) && x(k);
               return;
             }
-            er(n) && n.dispatch(v);
+            ir(n) && n.dispatch(v);
           }
         );
       case "DISPATCH":
-        switch (N.payload.type) {
+        switch (w.payload.type) {
           case "RESET":
-            return f(x), i === void 0 ? p == null ? void 0 : p.init(n.getState()) : p == null ? void 0 : p.init(Os(d.name));
+            return x(h), i === void 0 ? p == null ? void 0 : p.init(n.getState()) : p == null ? void 0 : p.init(Ws(d.name));
           case "COMMIT":
             if (i === void 0) {
               p == null || p.init(n.getState());
               return;
             }
-            return p == null ? void 0 : p.init(Os(d.name));
+            return p == null ? void 0 : p.init(Ws(d.name));
           case "ROLLBACK":
-            return cn(N.state, (v) => {
+            return bn(w.state, (v) => {
               if (i === void 0) {
-                f(v), p == null || p.init(n.getState());
+                x(v), p == null || p.init(n.getState());
                 return;
               }
-              f(v[i]), p == null || p.init(Os(d.name));
+              x(v[i]), p == null || p.init(Ws(d.name));
             });
           case "JUMP_TO_STATE":
           case "JUMP_TO_ACTION":
-            return cn(N.state, (v) => {
+            return bn(w.state, (v) => {
               if (i === void 0) {
-                f(v);
+                x(v);
                 return;
               }
-              JSON.stringify(n.getState()) !== JSON.stringify(v[i]) && f(v[i]);
+              JSON.stringify(n.getState()) !== JSON.stringify(v[i]) && x(v[i]);
             });
           case "IMPORT_STATE": {
-            const { nextLiftedState: v } = N.payload, C = (u = v.computedStates.slice(-1)[0]) == null ? void 0 : u.state;
-            if (!C) return;
-            f(i === void 0 ? C : C[i]), p == null || p.send(
+            const { nextLiftedState: v } = w.payload, k = (u = v.computedStates.slice(-1)[0]) == null ? void 0 : u.state;
+            if (!k) return;
+            x(i === void 0 ? k : k[i]), p == null || p.send(
               null,
               // FIXME no-any
               v
@@ -837,12 +838,12 @@ const Ua = (t, r = {}) => (s, a, n) => {
             return;
           }
           case "PAUSE_RECORDING":
-            return I = !I;
+            return T = !T;
         }
         return;
     }
-  }), x;
-}, Is = Ua, cn = (t, r) => {
+  }), h;
+}, Ps = dl, bn = (t, r) => {
   let s;
   try {
     s = JSON.parse(t);
@@ -854,7 +855,7 @@ const Ua = (t, r = {}) => (s, a, n) => {
   }
   s !== void 0 && r(s);
 };
-function za(t, r) {
+function ul(t, r) {
   let s;
   try {
     s = t();
@@ -871,12 +872,12 @@ function za(t, r) {
     removeItem: (n) => s.removeItem(n)
   };
 }
-const jn = (t) => (r) => {
+const Tn = (t) => (r) => {
   try {
     const s = t(r);
     return s instanceof Promise ? s : {
       then(a) {
-        return jn(a)(s);
+        return Tn(a)(s);
       },
       catch(a) {
         return this;
@@ -888,13 +889,13 @@ const jn = (t) => (r) => {
         return this;
       },
       catch(a) {
-        return jn(a)(s);
+        return Tn(a)(s);
       }
     };
   }
-}, qa = (t, r) => (s, a, n) => {
+}, xl = (t, r) => (s, a, n) => {
   let o = {
-    storage: za(() => window.localStorage),
+    storage: ul(() => window.localStorage),
     partialize: (u) => u,
     version: 0,
     merge: (u, v) => ({
@@ -921,33 +922,33 @@ const jn = (t) => (r) => {
       state: u,
       version: o.version
     });
-  }, I = n.setState;
-  n.setState = (u, v) => (I(u, v), g());
-  const f = t(
+  }, T = n.setState;
+  n.setState = (u, v) => (T(u, v), g());
+  const x = t(
     (...u) => (s(...u), g()),
     a,
     n
   );
-  n.getInitialState = () => f;
-  let x;
-  const N = () => {
+  n.getInitialState = () => x;
+  let h;
+  const w = () => {
     var u, v;
     if (!p) return;
-    const C = ++i;
+    const k = ++i;
     l = !1, d.forEach((y) => {
-      var L;
-      return y((L = a()) != null ? L : f);
+      var P;
+      return y((P = a()) != null ? P : x);
     });
-    const h = ((v = o.onRehydrateStorage) == null ? void 0 : v.call(o, (u = a()) != null ? u : f)) || void 0;
-    return jn(p.getItem.bind(p))(o.name).then((y) => {
+    const m = ((v = o.onRehydrateStorage) == null ? void 0 : v.call(o, (u = a()) != null ? u : x)) || void 0;
+    return Tn(p.getItem.bind(p))(o.name).then((y) => {
       if (y)
         if (typeof y.version == "number" && y.version !== o.version) {
           if (o.migrate) {
-            const L = o.migrate(
+            const P = o.migrate(
               y.state,
               y.version
             );
-            return L instanceof Promise ? L.then((k) => [!0, k]) : [!0, L];
+            return P instanceof Promise ? P.then((R) => [!0, R]) : [!0, P];
           }
           console.error(
             "State loaded from storage couldn't be migrated since no migrate function was provided"
@@ -956,19 +957,19 @@ const jn = (t) => (r) => {
           return [!1, y.state];
       return [!1, void 0];
     }).then((y) => {
-      var L;
-      if (C !== i)
+      var P;
+      if (k !== i)
         return;
-      const [k, F] = y;
-      if (x = o.merge(
+      const [R, F] = y;
+      if (h = o.merge(
         F,
-        (L = a()) != null ? L : f
-      ), s(x, !0), k)
+        (P = a()) != null ? P : x
+      ), s(h, !0), R)
         return g();
     }).then(() => {
-      C === i && (h == null || h(a(), void 0), x = a(), l = !0, c.forEach((y) => y(x)));
+      k === i && (m == null || m(a(), void 0), h = a(), l = !0, c.forEach((y) => y(h)));
     }).catch((y) => {
-      C === i && (h == null || h(void 0, y));
+      k === i && (m == null || m(void 0, y));
     });
   };
   return n.persist = {
@@ -982,7 +983,7 @@ const jn = (t) => (r) => {
       ++i, p == null || p.removeItem(o.name);
     },
     getOptions: () => o,
-    rehydrate: () => N(),
+    rehydrate: () => w(),
     hasHydrated: () => l,
     onHydrate: (u) => (d.add(u), () => {
       d.delete(u);
@@ -990,9 +991,211 @@ const jn = (t) => (r) => {
     onFinishHydration: (u) => (c.add(u), () => {
       c.delete(u);
     })
-  }, o.skipHydration || N(), x || f;
-}, Ya = qa, Ja = 40;
-function dn() {
+  }, o.skipHydration || w(), h || x;
+}, pl = xl, _n = xs()(
+  pl(
+    (t) => ({
+      token: null,
+      branch: null,
+      user: null,
+      setAuth: ({ token: r, branch: s, user: a }) => t({ token: r, branch: s, user: a }),
+      logout: () => t({ token: null, branch: null, user: null })
+    }),
+    { name: "uiforge-auth" }
+  )
+), Br = "uiforge_resilience_queue_v1";
+let zs = !1, cr = !1;
+function Ys() {
+  if (typeof window > "u") return [];
+  try {
+    const t = localStorage.getItem(Br);
+    return t ? JSON.parse(t) : [];
+  } catch {
+    return [];
+  }
+}
+function Or(t) {
+  if (!(typeof window > "u"))
+    try {
+      localStorage.setItem(Br, JSON.stringify(t)), console.log(`[ResilienceQueue] Hiện có ${t.length} tác vụ đang chờ đồng bộ an toàn`);
+    } catch {
+    }
+}
+function hl(t, r) {
+  var n;
+  const s = Ys(), a = {
+    id: `req_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    url: t.url || "",
+    method: (t.method || "POST").toUpperCase(),
+    data: t.data,
+    headers: {
+      "Content-Type": "application/json"
+    },
+    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+    retryCount: 0,
+    description: r || `Thao tác ${(n = t.method) == null ? void 0 : n.toUpperCase()} trên ${t.url}`
+  };
+  return s.push(a), Or(s), _r(
+    "🛡️ Đã lưu vào Hàng Đợi Bền Bỉ (Resilience Queue)",
+    `Mạng gián đoạn hoặc máy chủ phản hồi 502/503. Thao tác "${a.description}" được bảo toàn an toàn và sẽ tự động đồng bộ khi kết nối phục hồi.`,
+    "warning"
+  ), a;
+}
+function _r(t, r, s = "info") {
+  if (typeof document > "u") return;
+  const a = document.createElement("div");
+  a.className = `fixed top-6 right-6 z-[9999] max-w-md px-4 py-3 rounded-xl shadow-2xl border backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-300 ${s === "warning" ? "bg-amber-950/90 border-amber-600/50 text-amber-100 shadow-amber-900/30" : s === "success" ? "bg-emerald-950/90 border-emerald-600/50 text-emerald-100 shadow-emerald-900/30" : "bg-blue-950/90 border-blue-600/50 text-blue-100 shadow-blue-900/30"}`, a.innerHTML = `
+    <div class="flex items-start gap-3">
+      <div class="mt-0.5 text-lg">
+        ${s === "warning" ? "⚠️" : s === "success" ? "✅" : "ℹ️"}
+      </div>
+      <div class="flex-1 text-xs">
+        <div class="font-bold text-sm mb-1">${t}</div>
+        <div class="opacity-90 leading-relaxed">${r}</div>
+      </div>
+    </div>
+  `, document.body.appendChild(a), setTimeout(() => {
+    a.classList.add("opacity-0", "transition-opacity", "duration-300"), setTimeout(() => a.remove(), 300);
+  }, 4500);
+}
+async function fn(t) {
+  var n, o;
+  if (zs) return;
+  const r = Ys();
+  if (r.length === 0) return;
+  zs = !0, console.log(`[ResilienceQueue] Bắt đầu tự động đồng bộ ${r.length} tác vụ đang chờ...`);
+  let s = 0;
+  const a = [];
+  for (const l of r)
+    try {
+      await t.request({
+        url: l.url,
+        method: l.method,
+        data: l.data
+      }), s++, console.log(`[ResilienceQueue] Đồng bộ thành công: ${l.description}`);
+    } catch (i) {
+      l.retryCount = (l.retryCount || 0) + 1, console.warn(`[ResilienceQueue] Lỗi khi đồng bộ lại ${l.description} (lần thử ${l.retryCount}):`, i == null ? void 0 : i.message), ((n = i == null ? void 0 : i.response) == null ? void 0 : n.status) >= 400 && ((o = i == null ? void 0 : i.response) == null ? void 0 : o.status) < 500 || a.push(l);
+    }
+  Or(a), zs = !1, s > 0 && _r(
+    "✨ Đồng Bộ Tự Động Hoàn Tất",
+    `Đã phát lại và ghi nhận thành công ${s} thao tác vào cơ sở dữ liệu sau khi kết nối phục hồi!`,
+    "success"
+  );
+}
+function ml(t) {
+  var s, a;
+  if (!t) return !1;
+  if (typeof navigator < "u" && !navigator.onLine || !t.response && (t.code === "ERR_NETWORK" || (s = t.message) != null && s.includes("Network Error"))) return !0;
+  const r = (a = t.response) == null ? void 0 : a.status;
+  return r === 502 || r === 503 || r === 504;
+}
+function bl(t) {
+  cr || typeof window > "u" || (cr = !0, window.addEventListener("online", () => {
+    console.log("[ResilienceQueue] Kết nối Internet đã được phục hồi. Kích hoạt replay..."), fn(t);
+  }), setInterval(() => {
+    typeof navigator < "u" && navigator.onLine && Ys().length > 0 && !zs && fn(t);
+  }, 2e4), setTimeout(() => {
+    const r = Ys();
+    r.length > 0 && (console.log(`[ResilienceQueue] Phát hiện ${r.length} tác vụ chưa hoàn tất từ phiên trước.`), fn(t));
+  }, 3e3));
+}
+const fl = "http://localhost:5048/api", ts = ma.create({
+  baseURL: fl,
+  timeout: 15e3
+});
+ts.interceptors.request.use((t) => {
+  const r = _n.getState().token;
+  return r && (t.headers.Authorization = `Bearer ${r}`), t;
+});
+ts.interceptors.response.use(
+  (t) => t,
+  async (t) => {
+    var a, n, o, l, i;
+    if (((a = t == null ? void 0 : t.response) == null ? void 0 : a.status) === 401)
+      return _n.getState().logout(), Promise.reject(t);
+    const r = (((n = t == null ? void 0 : t.config) == null ? void 0 : n.method) || "").toUpperCase();
+    if (["POST", "PUT", "DELETE", "PATCH"].includes(r) && ml(t)) {
+      const d = (l = (o = t == null ? void 0 : t.config) == null ? void 0 : o.url) != null && l.includes("/pages/save") ? "Lưu cấu hình trang (UI Forge Page)" : `Thao tác ${r} [${(i = t == null ? void 0 : t.config) == null ? void 0 : i.url}]`;
+      return hl(t.config, d), Promise.resolve({
+        data: {
+          success: !0,
+          isQueued: !0,
+          message: "Dữ liệu đã được lưu an toàn trong Hàng Đợi Bền Bỉ (Resilience Queue)."
+        },
+        status: 202,
+        statusText: "Accepted into Resilience Queue",
+        headers: {},
+        config: t.config
+      });
+    }
+    return Promise.reject(t);
+  }
+);
+bl(ts);
+async function gl(t) {
+  await ts.delete(`/pages/${t}`);
+}
+async function vl(t) {
+  const { data: r } = await ts.put("/pages/reorder", t);
+  return r;
+}
+async function yl(t, r) {
+  const { data: s } = await ts.put(`/pages/${t}/properties`, r);
+  return s;
+}
+async function jl(t) {
+  const { data: r } = await ts.post(`/pages/clone/${t}`);
+  return r;
+}
+async function Nl(t) {
+  const { data: r } = await ts.put(`/pages/${t}/toggle-active`);
+  return r;
+}
+function wl(t) {
+  var o, l, i;
+  const r = String(t.id), s = t.scriptFile || ((o = t.layoutConfig) == null ? void 0 : o.scriptFile) || "";
+  let a = t.featureProps;
+  if (!a && t.featurePropsJson)
+    try {
+      a = JSON.parse(t.featurePropsJson);
+    } catch {
+      a = {};
+    }
+  const n = (d) => d.map((c) => ({
+    ...c,
+    pageId: r,
+    children: c.children && c.children.length > 0 ? n(c.children) : c.children
+  }));
+  return {
+    id: r,
+    code: t.code || "",
+    name: t.name,
+    title: t.title || t.name,
+    route: t.route,
+    icon: t.icon || (t.isGroup ? "Folder" : "Layers"),
+    parentId: t.parentId !== null && t.parentId !== void 0 ? String(t.parentId) : null,
+    order: t.order ?? 0,
+    isGroup: !!t.isGroup,
+    isMenu: t.isMenu !== void 0 ? !!t.isMenu : !0,
+    active: t.active !== void 0 ? !!t.active : !0,
+    entityName: t.entityName || "",
+    description: t.description || "",
+    scriptFile: s,
+    scriptContent: t.scriptContent || "",
+    layoutConfig: t.layoutConfig || { direction: "column", gap: "16px", wrap: "wrap" },
+    featureProps: a || {},
+    displayFlags: t.displayFlags || (a == null ? void 0 : a.displayFlags),
+    customStyles: t.customStyles || (a == null ? void 0 : a.customStyles),
+    badge: t.badge ?? (a == null ? void 0 : a.badge),
+    components: n(t.components || []),
+    hidden: t.hidden ?? ((l = t.layoutConfig) == null ? void 0 : l.hidden) ?? (r === "2" ? !0 : void 0),
+    isDetail: t.isDetail ?? ((i = t.layoutConfig) == null ? void 0 : i.isDetail) ?? (r === "2" ? !0 : void 0),
+    createdAt: t.createdAt,
+    updatedAt: t.updatedAt
+  };
+}
+const Cl = 40;
+function gn() {
   if (typeof window > "u") return null;
   try {
     const t = new URLSearchParams(window.location.search), r = t.get("feature") || t.get("page");
@@ -1001,7 +1204,7 @@ function dn() {
     return null;
   }
 }
-function un() {
+function vn() {
   if (typeof window > "u") return null;
   try {
     const r = new URLSearchParams(window.location.search).get("id");
@@ -1010,14 +1213,14 @@ function un() {
     return null;
   }
 }
-function $r(t) {
+function Hr(t) {
   var r, s, a, n;
   return t ? !!(t.isDetail || t.route === "/fcl-import" || (r = t.route) != null && r.includes("detail") || (s = t.scriptFile) != null && s.toLowerCase().includes("detail") || (a = t.name) != null && a.toLowerCase().includes("fcl import") || (n = t.name) != null && n.toLowerCase().includes("chi tiết")) : !1;
 }
-function Nn(t) {
-  return t ? !$r(t) : !1;
+function In(t) {
+  return t ? !Hr(t) : !1;
 }
-function vs(t, r, s) {
+function ss(t, r, s) {
   var a;
   if (!(typeof window > "u"))
     try {
@@ -1025,7 +1228,7 @@ function vs(t, r, s) {
       const n = new URL(window.location.href);
       n.searchParams.set("feature", t);
       const l = (s || ((a = Z.getState()) == null ? void 0 : a.features) || []).find((d) => String(d.id) === String(t) || d.route === `/${t}` || d.route === t);
-      if ((l ? Nn(l) : t === "6" || t === "1" || t === "3") || r === null || r === "") {
+      if ((l ? In(l) : t === "6" || t === "1" || t === "3") || r === null || r === "") {
         n.searchParams.delete("id");
         try {
           localStorage.removeItem("uiforge_active_transaction_id");
@@ -1042,23 +1245,40 @@ function vs(t, r, s) {
     } catch {
     }
 }
-const Z = cs()(
-  Is(
+const Z = xs()(
+  Ps(
     (t, r) => ({
       features: [],
-      activeFeatureId: dn() || "",
-      activeRecordId: un(),
-      selection: { componentId: null, pageId: dn() || "" },
+      activeFeatureId: gn() || "",
+      activeRecordId: vn(),
+      selection: { componentId: null, pageId: gn() || "" },
       history: [[]],
       historyIndex: 0,
+      // Modals State
+      isFeatureManagerOpen: !1,
+      openFeatureManager: () => t({ isFeatureManagerOpen: !0 }),
+      closeFeatureManager: () => t({ isFeatureManagerOpen: !1 }),
+      featurePropertiesTargetId: null,
+      openFeatureProperties: (s) => {
+        t((a) => {
+          var n;
+          return {
+            featurePropertiesTargetId: s || a.activeFeatureId || (((n = a.features[0]) == null ? void 0 : n.id) ?? null)
+          };
+        });
+      },
+      closeFeatureProperties: () => t({ featurePropertiesTargetId: null }),
+      componentModalTargetId: null,
+      openComponentModal: (s) => t({ componentModalTargetId: s }),
+      closeComponentModal: () => t({ componentModalTargetId: null }),
       setActiveRecordId: (s) => {
         t({ activeRecordId: s ? String(s) : null });
       },
       setActiveFeature: (s, a) => {
-        const n = r().features || [], o = n.find((d) => String(d.id) === String(s) || d.route === `/${s}` || d.route === s), l = o ? Nn(o) : s === "6" || s === "1" || s === "3";
-        vs(s, l ? null : a, n);
+        const n = r().features || [], o = n.find((d) => String(d.id) === String(s) || d.route === `/${s}` || d.route === s), l = o ? In(o) : s === "6" || s === "1" || s === "3";
+        ss(s, l ? null : a, n);
         let i = null;
-        l || a === null || a === "" ? i = null : a != null ? i = String(a) : i = un(), t((d) => ({
+        l || a === null || a === "" ? i = null : a != null ? i = String(a) : i = vn(), t((d) => ({
           activeFeatureId: s,
           activeRecordId: i,
           selection: { componentId: null, pageId: s }
@@ -1076,8 +1296,8 @@ const Z = cs()(
           });
           return;
         }
-        const a = dn(), n = a && s.find((i) => i.id === a || i.route === `/${a}` || i.route === a) || s.find((i) => i.route === "/transactions" || i.name.includes("Lô Hàng")) || s.find((i) => !i.hidden && !i.isDetail) || s[0], l = Nn(n) ? null : un();
-        vs(n.id, l, s), t({
+        const a = gn(), n = a && s.find((i) => i.id === a || i.route === `/${a}` || i.route === a) || s.find((i) => i.route === "/transactions" || i.name.includes("Lô Hàng")) || s.find((i) => !i.hidden && !i.isDetail) || s[0], l = In(n) ? null : vn();
+        ss(n.id, l, s), t({
           features: s,
           activeFeatureId: n.id,
           activeRecordId: l,
@@ -1086,13 +1306,21 @@ const Z = cs()(
           historyIndex: 0
         });
       },
-      addFeature: (s, a = "Layers") => {
-        const n = `feat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`, o = {
-          id: n,
+      addFeature: (s, a = "Layers", n = null, o = !1) => {
+        const l = `feat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`, i = r().features.filter((p) => (p.parentId ?? null) === n), d = i.length > 0 ? Math.max(...i.map((p) => p.order ?? 0)) + 1 : 1, c = {
+          id: l,
+          code: `F_${Date.now().toString(36).toUpperCase()}`,
           name: s.trim() || "Tính năng mới",
-          icon: a,
-          route: `/${n}`,
+          title: s.trim() || "Tính năng mới",
+          icon: o ? "Folder" : a,
+          route: `/${l}`,
+          parentId: n ? String(n) : null,
+          order: d,
+          isGroup: !!o,
+          isMenu: !0,
+          active: !0,
           scriptFile: "",
+          scriptContent: "",
           layoutConfig: {
             direction: "column",
             gap: "16px",
@@ -1102,19 +1330,112 @@ const Z = cs()(
           createdAt: (/* @__PURE__ */ new Date()).toISOString(),
           updatedAt: (/* @__PURE__ */ new Date()).toISOString()
         };
-        return vs(n, null), t((l) => {
-          const i = [...l.features, o];
+        return ss(l, null), t((p) => {
+          const g = [...p.features, c];
           return {
-            ...st(l, i),
-            activeFeatureId: n,
-            selection: { componentId: null, pageId: n }
+            ...et(p, g),
+            activeFeatureId: l,
+            selection: { componentId: null, pageId: l }
           };
-        }), n;
+        }), l;
+      },
+      reorderFeatures: (s) => {
+        t((a) => {
+          const n = new Map(s.map((l) => [l.id, l])), o = a.features.map((l) => {
+            const i = n.get(l.id);
+            return i ? {
+              ...l,
+              parentId: i.parentId !== void 0 ? i.parentId ? String(i.parentId) : null : l.parentId,
+              order: i.order !== void 0 ? i.order : l.order,
+              isGroup: i.isGroup !== void 0 ? i.isGroup : l.isGroup
+            } : l;
+          });
+          return vl(
+            s.map((l) => ({
+              id: l.id,
+              parentId: l.parentId,
+              order: l.order,
+              isGroup: l.isGroup
+            }))
+          ).catch(() => {
+          }), et(a, o);
+        });
+      },
+      updateFeatureProperties: (s, a) => {
+        t((n) => {
+          const o = a.parentId !== void 0 ? a.parentId && String(a.parentId).trim() !== "" ? String(a.parentId) : null : void 0, l = {
+            ...a,
+            ...o !== void 0 ? { parentId: o } : {}
+          }, i = n.features.map((c) => c.id !== s ? c : {
+            ...c,
+            ...l,
+            updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+          }), d = {
+            ...a,
+            parentId: o !== void 0 ? o ? isNaN(Number(o)) ? o : Number(o) : null : void 0
+          };
+          return yl(s, d).catch(() => {
+          }), et(n, i);
+        });
+      },
+      cloneFeature: async (s) => {
+        const n = r().features.find((i) => i.id === s);
+        if (!n) return null;
+        try {
+          const i = await jl(s);
+          if (i && i.id) {
+            const d = wl(i);
+            return t((c) => {
+              const p = [...c.features, d];
+              return {
+                ...et(c, p),
+                activeFeatureId: d.id,
+                selection: { componentId: null, pageId: d.id }
+              };
+            }), ss(d.id, null), d.id;
+          }
+        } catch {
+        }
+        const o = `feat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`, l = {
+          ...n,
+          id: o,
+          name: `${n.name} (Copy)`,
+          title: n.title ? `${n.title} (Copy)` : `${n.name} (Copy)`,
+          code: n.code ? `${n.code}_COPY` : `F_${Date.now().toString(36).toUpperCase()}`,
+          route: `/${o}`,
+          order: (n.order || 0) + 1,
+          components: Ur(n.components || [], o),
+          createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+          updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+        };
+        return t((i) => {
+          const d = [...i.features, l];
+          return {
+            ...et(i, d),
+            activeFeatureId: o,
+            selection: { componentId: null, pageId: o }
+          };
+        }), ss(o, null), o;
+      },
+      toggleFeatureActive: (s) => {
+        t((a) => {
+          const n = a.features.map((o) => {
+            if (o.id !== s) return o;
+            const l = o.active === !1;
+            return {
+              ...o,
+              active: l,
+              updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+            };
+          });
+          return Nl(s).catch(() => {
+          }), et(a, n);
+        });
       },
       renameFeature: (s, a) => {
         t((n) => {
           const o = n.features.map((l) => l.id === s ? { ...l, name: a } : l);
-          return st(n, o);
+          return et(n, o);
         });
       },
       updateFeatureId: (s, a) => {
@@ -1127,7 +1448,7 @@ const Z = cs()(
               components: i.components.map((d) => ({ ...d, pageId: a }))
             } : i
           ), l = n.activeFeatureId === s ? a : n.activeFeatureId;
-          return vs(l), {
+          return ss(l), {
             features: o,
             activeFeatureId: l,
             selection: n.selection.pageId === s ? { ...n.selection, pageId: a } : n.selection
@@ -1138,8 +1459,8 @@ const Z = cs()(
         t((a) => {
           if (a.features.length <= 1) return {};
           const n = a.features.filter((l) => l.id !== s), o = a.activeFeatureId === s ? n[0].id : a.activeFeatureId;
-          return vs(o, null), {
-            ...st(a, n),
+          return ss(o, null), {
+            ...et(a, n),
             activeFeatureId: o,
             selection: { componentId: null, pageId: o }
           };
@@ -1154,13 +1475,13 @@ const Z = cs()(
               ...a
             }
           });
-          return st(n, o);
+          return et(n, o);
         });
       },
       updateFeatureScriptFile: (s, a) => {
         t((n) => {
           const o = n.features.map((l) => l.id === s ? { ...l, scriptFile: a.trim() } : l);
-          return st(n, o);
+          return et(n, o);
         });
       },
       selectComponent: (s) => {
@@ -1174,7 +1495,7 @@ const Z = cs()(
           if (!l) return {};
           let i;
           if (a)
-            n !== void 0 ? i = wn(l.components, a, s, n) : i = Er(l.components, a, s);
+            n !== void 0 ? i = Dn(l.components, a, s, n) : i = Vr(l.components, a, s);
           else if (n !== void 0) {
             const c = [...l.components];
             c.splice(n, 0, s), i = c.map((p, g) => ({ ...p, order: g + 1 }));
@@ -1184,7 +1505,7 @@ const Z = cs()(
             (c) => c.id === o.activeFeatureId ? { ...c, components: i } : c
           );
           return {
-            ...st(o, d),
+            ...et(o, d),
             selection: { ...o.selection, componentId: s.id }
           };
         });
@@ -1193,127 +1514,127 @@ const Z = cs()(
         t((n) => {
           const o = n.features.map((l) => l.id !== n.activeFeatureId ? l : {
             ...l,
-            components: $t(l.components, s, (i) => ({
+            components: Yt(l.components, s, (i) => ({
               ...i,
               props: { ...i.props, ...a }
             }))
           });
-          return st(n, o);
+          return et(n, o);
         });
       },
       updateComponentStyle: (s, a) => {
         t((n) => {
           const o = n.features.map((l) => l.id !== n.activeFeatureId ? l : {
             ...l,
-            components: $t(l.components, s, (i) => ({
+            components: Yt(l.components, s, (i) => ({
               ...i,
               style: { ...i.style, ...a }
             }))
           });
-          return st(n, o);
+          return et(n, o);
         });
       },
       updateComponentEvents: (s, a) => {
         t((n) => {
           const o = n.features.map((l) => l.id !== n.activeFeatureId ? l : {
             ...l,
-            components: $t(l.components, s, (i) => ({
+            components: Yt(l.components, s, (i) => ({
               ...i,
               events: a
             }))
           });
-          return st(n, o);
+          return et(n, o);
         });
       },
       updateComponentDataBinding: (s, a) => {
         t((n) => {
           const o = n.features.map((l) => l.id !== n.activeFeatureId ? l : {
             ...l,
-            components: $t(l.components, s, (i) => ({
+            components: Yt(l.components, s, (i) => ({
               ...i,
               dataBinding: { ...i.dataBinding, ...a }
             }))
           });
-          return st(n, o);
+          return et(n, o);
         });
       },
       updateComponentValidation: (s, a) => {
         t((n) => {
           const o = n.features.map((l) => l.id !== n.activeFeatureId ? l : {
             ...l,
-            components: $t(l.components, s, (i) => ({
+            components: Yt(l.components, s, (i) => ({
               ...i,
               validation: { ...i.validation, ...a }
             }))
           });
-          return st(n, o);
+          return et(n, o);
         });
       },
       updateComponentPermissions: (s, a) => {
         t((n) => {
           const o = n.features.map((l) => l.id !== n.activeFeatureId ? l : {
             ...l,
-            components: $t(l.components, s, (i) => ({
+            components: Yt(l.components, s, (i) => ({
               ...i,
               permissions: { ...i.permissions, ...a }
             }))
           });
-          return st(n, o);
+          return et(n, o);
         });
       },
       updateComponentOrder: (s, a) => {
         t((n) => {
           const o = n.features.map((l) => l.id !== n.activeFeatureId ? l : {
             ...l,
-            components: $t(l.components, s, (i) => ({
+            components: Yt(l.components, s, (i) => ({
               ...i,
               order: a,
               props: { ...i.props, order: a }
             }))
           });
-          return st(n, o);
+          return et(n, o);
         });
       },
       removeComponent: (s) => {
         t((a) => {
           const n = a.features.map((o) => o.id !== a.activeFeatureId ? o : {
             ...o,
-            components: Lr(o.components, s)
+            components: Gr(o.components, s)
           });
           return {
-            ...st(a, n),
+            ...et(a, n),
             selection: { ...a.selection, componentId: null }
           };
         });
       },
       moveComponent: (s, a, n) => {
         t((o) => {
-          const l = o.features.find((f) => f.id === o.activeFeatureId);
+          const l = o.features.find((x) => x.id === o.activeFeatureId);
           if (!l) return {};
-          const i = Xa(l.components, s);
+          const i = kl(l.components, s);
           if (!i) return {};
           const [d, c] = i, p = { ...d, parentId: a };
           let g;
           if (a === null) {
-            const f = c.filter((u) => !u.parentId);
-            f.splice(n, 0, p);
-            const x = f.map((u, v) => ({ ...u, order: v + 1 })), N = c.filter((u) => u.parentId);
-            g = [...x, ...N];
+            const x = c.filter((u) => !u.parentId);
+            x.splice(n, 0, p);
+            const h = x.map((u, v) => ({ ...u, order: v + 1 })), w = c.filter((u) => u.parentId);
+            g = [...h, ...w];
           } else
-            g = wn(c, a, p, n);
-          const I = o.features.map(
-            (f) => f.id === o.activeFeatureId ? { ...f, components: g } : f
+            g = Dn(c, a, p, n);
+          const T = o.features.map(
+            (x) => x.id === o.activeFeatureId ? { ...x, components: g } : x
           );
-          return st(o, I);
+          return et(o, T);
         });
       },
       distributeSiblingWidths: (s, a) => {
         t((n) => {
           const o = n.features.map((l) => l.id !== n.activeFeatureId ? l : {
             ...l,
-            components: Pr(l.components, s, a)
+            components: Wr(l.components, s, a)
           });
-          return st(n, o);
+          return et(n, o);
         });
       },
       undo: () => {
@@ -1334,32 +1655,32 @@ const Z = cs()(
     { name: "UIForge/MultiFeatureStore" }
   )
 );
-function st(t, r) {
+function et(t, r) {
   const s = t.history.slice(0, t.historyIndex + 1);
-  return s.length >= Ja && s.shift(), s.push(r), {
+  return s.length >= Cl && s.shift(), s.push(r), {
     features: r,
     history: s,
     historyIndex: s.length - 1
   };
 }
-function $t(t, r, s) {
-  return t.map((a) => a.id === r ? s(a) : a.children && a.children.length > 0 ? { ...a, children: $t(a.children, r, s) } : a);
+function Yt(t, r, s) {
+  return t.map((a) => a.id === r ? s(a) : a.children && a.children.length > 0 ? { ...a, children: Yt(a.children, r, s) } : a);
 }
-function Lr(t, r) {
+function Gr(t, r) {
   return t.filter((s) => s.id !== r).map(
-    (s) => s.children && s.children.length > 0 ? { ...s, children: Lr(s.children, r) } : s
+    (s) => s.children && s.children.length > 0 ? { ...s, children: Gr(s.children, r) } : s
   );
 }
-function Er(t, r, s) {
+function Vr(t, r, s) {
   return t.map((a) => a.id === r ? {
     ...a,
     children: [...a.children || [], { ...s, parentId: r }]
   } : a.children && a.children.length > 0 ? {
     ...a,
-    children: Er(a.children, r, s)
+    children: Vr(a.children, r, s)
   } : a);
 }
-function Pr(t, r, s) {
+function Wr(t, r, s) {
   return t.some((n) => n.id === r) ? t.map((n) => {
     var o;
     return n.id === r ? {
@@ -1383,10 +1704,10 @@ function Pr(t, r, s) {
     };
   }) : t.map((n) => n.children && n.children.length > 0 ? {
     ...n,
-    children: Pr(n.children, r, s)
+    children: Wr(n.children, r, s)
   } : n);
 }
-function Xa(t, r) {
+function kl(t, r) {
   const s = t.findIndex((a) => a.id === r);
   if (s !== -1) {
     const a = t[s], n = [...t.slice(0, s), ...t.slice(s + 1)];
@@ -1403,7 +1724,7 @@ function Xa(t, r) {
       ], c = { ...n, children: d }, p = [...t.slice(0, a), c, ...t.slice(a + 1)];
       return [i, p];
     }
-    const l = Ar(n.children, r);
+    const l = Kr(n.children, r);
     if (l) {
       const [i, d] = l, c = { ...n, children: d }, p = [...t.slice(0, a), c, ...t.slice(a + 1)];
       return [i, p];
@@ -1411,7 +1732,7 @@ function Xa(t, r) {
   }
   return null;
 }
-function Ar(t, r) {
+function Kr(t, r) {
   for (let s = 0; s < t.length; s++) {
     const a = t[s];
     if (a.id === r) {
@@ -1419,7 +1740,7 @@ function Ar(t, r) {
       return [a, n];
     }
     if (a.children && a.children.length > 0) {
-      const n = Ar(a.children, r);
+      const n = Kr(a.children, r);
       if (n) {
         const [o, l] = n, i = { ...a, children: l }, d = [...t.slice(0, s), i, ...t.slice(s + 1)];
         return [o, d];
@@ -1428,7 +1749,7 @@ function Ar(t, r) {
   }
   return null;
 }
-function wn(t, r, s, a) {
+function Dn(t, r, s, a) {
   return t.map((n) => {
     if (n.id === r) {
       const l = [...n.children || []];
@@ -1436,11 +1757,22 @@ function wn(t, r, s, a) {
       const i = l.map((d, c) => ({ ...d, order: c + 1 }));
       return { ...n, children: i };
     }
-    return n.children && n.children.length > 0 ? { ...n, children: wn(n.children, r, s, a) } : n;
+    return n.children && n.children.length > 0 ? { ...n, children: Dn(n.children, r, s, a) } : n;
   });
 }
-const Ze = cs()(
-  Is((t, r) => ({
+function Ur(t, r) {
+  return t.map((s) => {
+    const a = `c_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+    return {
+      ...s,
+      id: a,
+      pageId: r,
+      children: s.children ? Ur(s.children, r) : []
+    };
+  });
+}
+const st = xs()(
+  Ps((t, r) => ({
     openTabs: [],
     activeTabId: null,
     activePopup: null,
@@ -1509,11 +1841,11 @@ const Ze = cs()(
     }
   }))
 );
-function Br(t, r = {}, s) {
-  Ze.getState().openFeature(t, r, "Popup", s || t);
+function zr(t, r = {}, s) {
+  st.getState().openFeature(t, r, "Popup", s || t);
 }
-const Qa = [];
-function Za(t) {
+const Sl = [];
+function Tl(t) {
   if (!t || typeof t != "string") return [];
   const r = [], s = t.split(",");
   for (const a of s) {
@@ -1525,7 +1857,7 @@ function Za(t) {
   }
   return r;
 }
-function Dt(t, r, s, a = void 0) {
+function Vt(t, r, s, a = void 0) {
   const n = [
     t.formRecords[r],
     t.formRecords.default,
@@ -1546,8 +1878,8 @@ function Dt(t, r, s, a = void 0) {
   }
   return a;
 }
-const fe = cs()(
-  Is((t, r) => ({
+const Te = xs()(
+  Ps((t, r) => ({
     datasets: {},
     formRecords: {},
     originalFormRecords: {},
@@ -1558,12 +1890,12 @@ const fe = cs()(
       if (!o) return !1;
       const l = ["btn_", "sec_", "tab_", "lbl_"], i = /* @__PURE__ */ new Set();
       for (const [d, c] of Object.entries(n)) {
-        if (!d || l.some((x) => d.startsWith(x))) continue;
+        if (!d || l.some((h) => d.startsWith(h))) continue;
         const p = d.replace(/^fld_/, "").toLowerCase();
         if (i.has(p)) continue;
         i.add(p);
-        const g = o[d] ?? o[p] ?? o[d.replace(/^fld_/, "")], I = c === "" || c === void 0 ? null : c, f = g === "" || g === void 0 ? null : g;
-        if (String(I ?? "") !== String(f ?? ""))
+        const g = o[d] ?? o[p] ?? o[d.replace(/^fld_/, "")], T = c === "" || c === void 0 ? null : c, x = g === "" || g === void 0 ? null : g;
+        if (String(T ?? "") !== String(x ?? ""))
           return !0;
       }
       return !1;
@@ -1580,7 +1912,7 @@ const fe = cs()(
         };
       });
       try {
-        Ze.getState().setTabDirty(s, !1);
+        st.getState().setTabDirty(s, !1);
       } catch {
       }
     },
@@ -1609,32 +1941,32 @@ const fe = cs()(
       const a = r().datasets;
       if (a[s]) return a[s];
       const n = s == null ? void 0 : s.toLowerCase(), o = Object.keys(a).find((l) => l.toLowerCase() === n);
-      return o ? a[o] : Qa;
+      return o ? a[o] : Sl;
     },
     // 3. Gán giá trị 1 trường trên Form (Two-Way Binding)
     setFieldValue: (s, a, n) => {
       t((o) => {
-        const l = a.replace(/^fld_/, ""), i = l.toLowerCase(), d = l.charAt(0).toLowerCase() + l.slice(1), c = l.charAt(0).toUpperCase() + l.slice(1), p = (N) => {
-          const u = { ...N };
+        const l = a.replace(/^fld_/, ""), i = l.toLowerCase(), d = l.charAt(0).toLowerCase() + l.slice(1), c = l.charAt(0).toUpperCase() + l.slice(1), p = (w) => {
+          const u = { ...w };
           for (const v of Object.keys(u))
             (v.toLowerCase() === i || v.toLowerCase() === a.toLowerCase()) && delete u[v];
           return u[d] = n, u[c] = n, u;
-        }, g = o.formRecords[s] || {}, I = o.formRecords.default || {}, f = p(g), x = p(I);
+        }, g = o.formRecords[s] || {}, T = o.formRecords.default || {}, x = p(g), h = p(T);
         try {
-          Ze.getState().setTabDirty(s, !0);
+          st.getState().setTabDirty(s, !0);
         } catch {
         }
         return {
           formRecords: {
             ...o.formRecords,
-            [s]: f,
-            default: x
+            [s]: x,
+            default: h
           }
         };
       });
     },
     // 4. Lấy giá trị 1 trường trên Form (với Fallback thông minh)
-    getFieldValue: (s, a, n = "") => Dt(r(), s, a, n),
+    getFieldValue: (s, a, n = "") => Vt(r(), s, a, n),
     // 5. Gán trọn vẹn bản ghi
     setFormRecord: (s, a) => {
       t((n) => {
@@ -1668,15 +2000,15 @@ const fe = cs()(
       const d = { ...l };
       for (const [c, p] of Object.entries(l)) {
         if (!c) continue;
-        const g = c.charAt(0).toLowerCase() + c.slice(1), I = c.charAt(0).toUpperCase() + c.slice(1);
-        d[g] === void 0 && (d[g] = p), d[I] === void 0 && (d[I] = p);
+        const g = c.charAt(0).toLowerCase() + c.slice(1), T = c.charAt(0).toUpperCase() + c.slice(1);
+        d[g] === void 0 && (d[g] = p), d[T] === void 0 && (d[T] = p);
       }
       return d;
     },
     // 7. Thực thi cơ chế Populate Field chuẩn Core C#
     applyPopulate: (s, a, n) => {
       if (!n || typeof n != "object") return;
-      const o = Za(a);
+      const o = Tl(a);
       if (o.length === 0) return;
       const l = r().formRecords[s] || {}, i = {};
       for (const d of o) {
@@ -1706,19 +2038,19 @@ const fe = cs()(
         try {
           const c = l ? l.startsWith("?") ? l : l.startsWith("$") ? `?${l}` : `?$filter=${encodeURIComponent(l)}` : "", p = `http://localhost:5048/api/core/data/${encodeURIComponent(s)}${c}`, g = await fetch(p);
           if (g.ok) {
-            const I = await g.json();
-            return (Array.isArray(I) ? I : I.value || []).map((x) => {
-              const N = x[n] !== void 0 ? x[n] : x.Id || x.id || x.code, u = x[o] !== void 0 ? x[o] : x.FullName || x.fullName || x.Name || x.name || x.title || String(N);
+            const T = await g.json();
+            return (Array.isArray(T) ? T : T.value || []).map((h) => {
+              const w = h[n] !== void 0 ? h[n] : h.Id || h.id || h.code, u = h[o] !== void 0 ? h[o] : h.FullName || h.fullName || h.Name || h.name || h.title || String(w);
               return {
-                value: N,
+                value: w,
                 label: String(u),
-                rawItem: x
+                rawItem: h
               };
             });
           }
         } catch {
         }
-      return tr(r().getDataset(s), l).map((c) => {
+      return dr(r().getDataset(s), l).map((c) => {
         const p = c[n] !== void 0 ? c[n] : c.Id || c.id || c.code, g = c[o] !== void 0 ? c[o] : c.FullName || c.fullName || c.Name || c.name || c.title || String(p);
         return {
           value: p,
@@ -1740,7 +2072,7 @@ const fe = cs()(
           }
         } catch {
         }
-      return tr(r().getDataset(s), n);
+      return dr(r().getDataset(s), n);
     },
     // 10. Tiện ích lưu bản ghi chuẩn Core (tự động phân loại POST thêm mới hoặc PUT cập nhật)
     saveRecord: async (s, a, n) => {
@@ -1758,45 +2090,45 @@ const fe = cs()(
       const i = !!(o && o !== "new" && Number(o) > 0), d = i ? Number(o) : 0;
       try {
         const c = i ? `http://localhost:5048/api/core/data/${encodeURIComponent(s)}/${d}` : `http://localhost:5048/api/core/data/${encodeURIComponent(s)}`, p = i ? "PUT" : "POST", g = { ...a };
-        for (const [x, N] of Object.entries(g))
-          if (N === "")
-            (/date|time/i.test(x) || /^(id|qty|quantity|amount|total|price|count|precision|number|order)/i.test(x) || /gw|cbm|vgm|package/i.test(x)) && (g[x] = null);
-          else if (typeof N == "string" && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(N.trim())) {
-            const [u, v, C] = N.trim().split("/");
-            g[x] = `${C}-${v.padStart(2, "0")}-${u.padStart(2, "0")}T00:00:00`;
+        for (const [h, w] of Object.entries(g))
+          if (w === "")
+            (/date|time/i.test(h) || /^(id|qty|quantity|amount|total|price|count|precision|number|order)/i.test(h) || /gw|cbm|vgm|package/i.test(h)) && (g[h] = null);
+          else if (typeof w == "string" && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(w.trim())) {
+            const [u, v, k] = w.trim().split("/");
+            g[h] = `${k}-${v.padStart(2, "0")}-${u.padStart(2, "0")}T00:00:00`;
           }
-        const I = {};
-        for (const [x, N] of Object.entries(g)) {
-          if (!x || x.startsWith("fld_") || x.startsWith("btn_") || x.startsWith("sec_") || x.startsWith("tab_"))
+        const T = {};
+        for (const [h, w] of Object.entries(g)) {
+          if (!h || h.startsWith("fld_") || h.startsWith("btn_") || h.startsWith("sec_") || h.startsWith("tab_"))
             continue;
-          const u = x.replace(/^fld_/, ""), v = u.charAt(0).toUpperCase() + u.slice(1);
-          I[v] = N;
+          const u = h.replace(/^fld_/, ""), v = u.charAt(0).toUpperCase() + u.slice(1);
+          T[v] = w;
         }
-        i ? I.Id = d : (I.Id = 0, I.Active = !0);
-        const f = await fetch(c, {
+        i ? T.Id = d : (T.Id = 0, T.Active = !0);
+        const x = await fetch(c, {
           method: p,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(I)
+          body: JSON.stringify(T)
         });
-        if (f.ok) {
-          const x = await f.json(), N = x.id || x.Id || d;
-          Z.getState().setActiveRecordId(String(N)), n && (r().setFormRecord(n, x), r().markFormClean(n)), r().setFormRecord("default", x), r().markFormClean("default");
+        if (x.ok) {
+          const h = await x.json(), w = h.id || h.Id || d;
+          Z.getState().setActiveRecordId(String(w)), n && (r().setFormRecord(n, h), r().markFormClean(n)), r().setFormRecord("default", h), r().markFormClean("default");
           const u = r().datasets[s];
           if (u && Array.isArray(u))
             if (i) {
               const v = u.map(
-                (C) => (C.id || C.Id) === d ? { ...C, ...x } : C
+                (k) => (k.id || k.Id) === d ? { ...k, ...h } : k
               );
               r().registerDataset(s, v);
             } else
-              r().registerDataset(s, [x, ...u]);
+              r().registerDataset(s, [h, ...u]);
           return {
             success: !0,
-            data: x,
+            data: h,
             message: i ? `Cập nhật thành công bản ghi #${d} (${s}) vào Database!` : `Thêm mới thành công bản ghi (${s}) vào Database!`
           };
         } else
-          return { success: !1, message: `Lỗi máy chủ: HTTP ${f.status}` };
+          return { success: !1, message: `Lỗi máy chủ: HTTP ${x.status}` };
       } catch (c) {
         return { success: !1, message: `Lỗi kết nối API: ${(c == null ? void 0 : c.message) || c}` };
       }
@@ -1824,49 +2156,49 @@ const fe = cs()(
     },
     // 12. Thu thập trọn vẹn dữ liệu từ màn hình / các component thuộc Feature (chuẩn Core)
     collectScreenData: (s) => {
-      const a = r(), n = Z.getState(), o = n.features || [], l = n.activeFeatureId, i = o.find((x) => String(x.id) === String(s)) || o.find((x) => String(x.id) === String(l)) || o.find((x) => x.isDetail) || o[0], d = {}, c = (x) => {
-        var N, u, v;
-        if (!(!x || !Array.isArray(x)))
-          for (const C of x) {
-            const h = (N = C.dataBinding) == null ? void 0 : N.fieldName, y = (u = C.props) == null ? void 0 : u.name, L = C.id, k = h || (typeof y == "string" ? y : "") || (L == null ? void 0 : L.replace(/^fld_/, "")), F = String(k || "").trim();
+      const a = r(), n = Z.getState(), o = n.features || [], l = n.activeFeatureId, i = o.find((h) => String(h.id) === String(s)) || o.find((h) => String(h.id) === String(l)) || o.find((h) => h.isDetail) || o[0], d = {}, c = (h) => {
+        var w, u, v;
+        if (!(!h || !Array.isArray(h)))
+          for (const k of h) {
+            const m = (w = k.dataBinding) == null ? void 0 : w.fieldName, y = (u = k.props) == null ? void 0 : u.name, P = k.id, R = m || (typeof y == "string" ? y : "") || (P == null ? void 0 : P.replace(/^fld_/, "")), F = String(R || "").trim();
             if (F) {
-              let w = Dt(a, String(C.pageId || l || "default"), F, void 0);
-              if (w === void 0 && ((v = C.props) == null ? void 0 : v.value) !== void 0 && (w = C.props.value), w === void 0 && typeof document < "u") {
-                const S = document.getElementById(C.id) || document.querySelector(`[name="${C.id}"]`) || document.querySelector(`[name="${F}"]`);
-                S && "value" in S && S.value !== "" && (w = S.value);
+              let C = Vt(a, String(k.pageId || l || "default"), F, void 0);
+              if (C === void 0 && ((v = k.props) == null ? void 0 : v.value) !== void 0 && (C = k.props.value), C === void 0 && typeof document < "u") {
+                const S = document.getElementById(k.id) || document.querySelector(`[name="${k.id}"]`) || document.querySelector(`[name="${F}"]`);
+                S && "value" in S && S.value !== "" && (C = S.value);
               }
-              if (w != null) {
-                d[F] = w;
-                const S = F.charAt(0).toLowerCase() + F.slice(1), R = F.charAt(0).toUpperCase() + F.slice(1);
-                d[S] = w, d[R] = w;
+              if (C != null) {
+                d[F] = C;
+                const S = F.charAt(0).toLowerCase() + F.slice(1), L = F.charAt(0).toUpperCase() + F.slice(1);
+                d[S] = C, d[L] = C;
               }
             }
-            C.children && C.children.length > 0 && c(C.children);
+            k.children && k.children.length > 0 && c(k.children);
           }
       };
       i != null && i.components && c(i.components);
-      const p = s || String(l || "default"), g = { ...a.formRecords.default, ...p ? a.formRecords[p] : {} }, I = { ...d, ...g };
-      if (!I.id && !I.Id && typeof window < "u") {
-        const N = new URLSearchParams(window.location.search).get("id");
-        N && N !== "new" && Number(N) > 0 && (I.id = Number(N), I.Id = Number(N));
+      const p = s || String(l || "default"), g = { ...a.formRecords.default, ...p ? a.formRecords[p] : {} }, T = { ...d, ...g };
+      if (!T.id && !T.Id && typeof window < "u") {
+        const w = new URLSearchParams(window.location.search).get("id");
+        w && w !== "new" && Number(w) > 0 && (T.id = Number(w), T.Id = Number(w));
       }
-      const f = {};
-      for (const [x, N] of Object.entries(I)) {
-        if (!x || x.startsWith("fld_") || x.startsWith("btn_") || x.startsWith("sec_") || x.startsWith("tab_")) continue;
-        const u = x.replace(/^fld_/, ""), v = u.charAt(0).toLowerCase() + u.slice(1), C = u.charAt(0).toUpperCase() + u.slice(1);
-        f[v] = N, f[C] = N;
+      const x = {};
+      for (const [h, w] of Object.entries(T)) {
+        if (!h || h.startsWith("fld_") || h.startsWith("btn_") || h.startsWith("sec_") || h.startsWith("tab_")) continue;
+        const u = h.replace(/^fld_/, ""), v = u.charAt(0).toLowerCase() + u.slice(1), k = u.charAt(0).toUpperCase() + u.slice(1);
+        x[v] = w, x[k] = w;
       }
-      return (I.id || I.Id) && (f.id = I.id || I.Id, f.Id = I.id || I.Id), t((x) => ({
+      return (T.id || T.Id) && (x.id = T.id || T.Id, x.Id = T.id || T.Id), t((h) => ({
         formRecords: {
-          ...x.formRecords,
-          [p]: f,
-          default: f
+          ...h.formRecords,
+          [p]: x,
+          default: x
         }
-      })), f;
+      })), x;
     }
   }))
 );
-function tr(t, r) {
+function dr(t, r) {
   if (!r || !r.trim() || !Array.isArray(t) || t.length === 0)
     return t;
   let s = r.trim();
@@ -1882,10 +2214,10 @@ function tr(t, r) {
       if (!i) continue;
       const d = i.match(/^(\w+)(?:\s+(eq|ne)\s+|\s*(==|=|!=)\s*)('?[^']+'?)$/i);
       if (d) {
-        const c = d[1], p = (d[2] || d[3] || "=").toLowerCase(), g = d[4].replace(/^['"\s]+|['"\s]+$/g, ""), f = Object.keys(o).find((x) => x.toLowerCase() === c.toLowerCase());
-        if (f) {
-          const N = (o[f] !== void 0 && o[f] !== null ? String(o[f]) : "").toLowerCase() === g.toLowerCase();
-          if (p === "ne" || p === "!=" ? N : !N)
+        const c = d[1], p = (d[2] || d[3] || "=").toLowerCase(), g = d[4].replace(/^['"\s]+|['"\s]+$/g, ""), x = Object.keys(o).find((h) => h.toLowerCase() === c.toLowerCase());
+        if (x) {
+          const w = (o[x] !== void 0 && o[x] !== null ? String(o[x]) : "").toLowerCase() === g.toLowerCase();
+          if (p === "ne" || p === "!=" ? w : !w)
             return !1;
         }
       }
@@ -1893,68 +2225,68 @@ function tr(t, r) {
     return !0;
   });
 }
-const Mr = "uiforge_bl_functions_registry", os = {};
-function Us(t) {
+const qr = "uiforge_bl_functions_registry", us = {};
+function en(t) {
   if (!t || !t.trim()) return "";
   let r = t.trim().replace(/\\/g, "/").split("/").pop() || "";
   return r.endsWith(".ts") || (r.endsWith(".bl") || (r = `${r}.bl`), r = `${r}.ts`), r;
 }
-function zs() {
-  if (typeof window > "u") return os;
+function tn() {
+  if (typeof window > "u") return us;
   try {
-    const t = localStorage.getItem(Mr);
+    const t = localStorage.getItem(qr);
     if (t) {
-      const r = JSON.parse(t), s = { ...os, ...r };
-      for (const [a, n] of Object.entries(os))
+      const r = JSON.parse(t), s = { ...us, ...r };
+      for (const [a, n] of Object.entries(us))
         s[a] = Array.from(/* @__PURE__ */ new Set([...n, ...s[a] || []]));
       return s;
     }
   } catch {
   }
-  return os;
+  return us;
 }
-function qs(t) {
+function sn(t) {
   if (!(typeof window > "u"))
     try {
-      localStorage.setItem(Mr, JSON.stringify(t));
+      localStorage.setItem(qr, JSON.stringify(t));
     } catch {
     }
 }
-function el(t) {
+function Il(t) {
   if (!t || !t.trim()) return [];
-  const r = Us(t), s = zs();
+  const r = en(t), s = tn();
   if (s[r] && s[r].length > 0)
     return s[r];
   if (s[t.trim()] && s[t.trim()].length > 0)
     return s[t.trim()];
   const a = ["initPageData", "handleSubmitForm", "onRowClick", "saveRecord"];
-  return s[r] = a, qs(s), a;
+  return s[r] = a, sn(s), a;
 }
-function tl(t, r) {
+function Dl(t, r) {
   if (!t || !r) return [];
-  const s = Us(t), a = r.trim().replace(/\(.*?\)/g, "");
+  const s = en(t), a = r.trim().replace(/\(.*?\)/g, "");
   if (!s || !a) return [];
-  const n = zs(), o = n[s] || [];
-  return o.includes(a) || (n[s] = [...o, a], qs(n)), n[s];
+  const n = tn(), o = n[s] || [];
+  return o.includes(a) || (n[s] = [...o, a], sn(n)), n[s];
 }
-function uo(t, r) {
+function Bo(t, r) {
   if (!t || !r) return [];
-  const s = Us(t), a = r.trim().replace(/\(.*?\)/g, ""), n = zs(), o = n[s] || [];
-  return n[s] = o.filter((l) => l !== a), qs(n), n[s];
+  const s = en(t), a = r.trim().replace(/\(.*?\)/g, ""), n = tn(), o = n[s] || [];
+  return n[s] = o.filter((l) => l !== a), sn(n), n[s];
 }
-function sl(t, r) {
-  const s = Us(t);
-  os[s] = Array.from(/* @__PURE__ */ new Set([...os[s] || [], ...r]));
-  const a = zs();
-  a[s] = Array.from(/* @__PURE__ */ new Set([...a[s] || [], ...r])), qs(a);
+function Fl(t, r) {
+  const s = en(t);
+  us[s] = Array.from(/* @__PURE__ */ new Set([...us[s] || [], ...r]));
+  const a = tn();
+  a[s] = Array.from(/* @__PURE__ */ new Set([...a[s] || [], ...r])), sn(a);
 }
-const Lt = {};
-function po(t, r) {
-  Lt[t] = r;
+const Jt = {};
+function Oo(t, r) {
+  Jt[t] = r;
   const s = t.trim().replace(/\\/g, "/").split("/").pop() || "";
-  Lt[s] = r;
+  Jt[s] = r;
   const a = s.toLowerCase().replace(/\.ts$/, "").replace(/\.bl$/, "");
-  Lt[a] = r;
+  Jt[a] = r;
   const n = [];
   for (const [o, l] of Object.entries(r))
     if (typeof l == "function")
@@ -1967,20 +2299,20 @@ function po(t, r) {
         for (const d of Object.getOwnPropertyNames(i))
           d !== "constructor" && typeof l[d] == "function" && n.push(d);
     }
-  n.length > 0 && sl(s, n);
+  n.length > 0 && Fl(s, n);
 }
-function $n(t) {
+function Hn(t) {
   if (!t || !t.trim()) return { module: null, canonicalName: "" };
   const r = t.trim().replace(/\\/g, "/").split("/").pop() || "", s = r.toLowerCase();
-  if (Lt[r]) return { module: Lt[r], canonicalName: r };
-  if (Lt[s]) return { module: Lt[s], canonicalName: r };
+  if (Jt[r]) return { module: Jt[r], canonicalName: r };
+  if (Jt[s]) return { module: Jt[s], canonicalName: r };
   const a = s.replace(/\.ts$/, "").replace(/\.bl$/, "");
-  for (const [n, o] of Object.entries(Lt))
+  for (const [n, o] of Object.entries(Jt))
     if (n.toLowerCase().replace(/\.ts$/, "").replace(/\.bl$/, "") === a)
       return { module: o, canonicalName: n };
   return { module: null, canonicalName: r };
 }
-function Or(t, r) {
+function Yr(t, r) {
   if (!r || !r.trim()) return { fn: null, matchedName: "" };
   const s = r.replace(/\(.*?\)/g, "").trim(), a = s.toLowerCase();
   if (typeof t[s] == "function")
@@ -2023,7 +2355,7 @@ function Or(t, r) {
     }
   return { fn: null, matchedName: s };
 }
-function ys(t, r, s, a = !1, n, o = !0) {
+function Ns(t, r, s, a = !1, n, o = !0) {
   const l = document.createElement("div");
   l.className = `fixed bottom-6 right-6 z-50 bg-slate-900 border ${o ? a ? "border-emerald-500 shadow-emerald-500/30" : "border-blue-500 shadow-blue-500/30" : "border-red-500 shadow-red-500/30"} text-white px-4 py-3 rounded-2xl shadow-2xl text-xs flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200 max-w-md`;
   const i = o ? a ? "⚡" : "⚙" : "⚠️", d = o ? a ? "bg-emerald-600/25 text-emerald-400" : "bg-blue-600/20 text-blue-400" : "bg-red-600/25 text-red-400", c = o ? a ? "text-emerald-300" : "text-blue-300" : "text-red-300";
@@ -2044,33 +2376,33 @@ function ys(t, r, s, a = !1, n, o = !0) {
     l.classList.add("opacity-0", "transition-opacity", "duration-300"), setTimeout(() => l.remove(), 300);
   }, 3800);
 }
-function Ss(t, r, s, a) {
-  const n = t.handlerName || t.action || "unnamedHandler", o = t.trigger || "click", { module: l, canonicalName: i } = $n(s);
+function Ds(t, r, s, a) {
+  const n = t.handlerName || t.action || "unnamedHandler", o = t.trigger || "click", { module: l, canonicalName: i } = Hn(s);
   let d = !1, c = n.replace(/\(.*?\)/g, "").trim();
   const p = {
     componentName: r,
     trigger: o,
     blFileName: i || s,
-    dataEngine: fe.getState(),
-    navigationEngine: Ze.getState(),
+    dataEngine: Te.getState(),
+    navigationEngine: st.getState(),
     editorStore: Z.getState(),
     ...a || {}
   };
   if (l) {
-    const { fn: g, matchedName: I } = Or(l, n);
-    if (c = I, g)
+    const { fn: g, matchedName: T } = Yr(l, n);
+    if (c = T, g)
       try {
-        const f = g(p);
-        if (d = !0, f && typeof f.then == "function")
-          return f.then((x) => {
-            x && x.message ? ys(c, o, i || s, !0, x.message, x.success !== !1) : ys(c, o, i || s, !0);
-          }).catch((x) => {
-            ys(c, o, i || s, !0, String(x), !1);
+        const x = g(p);
+        if (d = !0, x && typeof x.then == "function")
+          return x.then((h) => {
+            h && h.message ? Ns(c, o, i || s, !0, h.message, h.success !== !1) : Ns(c, o, i || s, !0);
+          }).catch((h) => {
+            Ns(c, o, i || s, !0, String(h), !1);
           }), !0;
-        if (f && f.message)
-          return ys(c, o, i || s, !0, f.message, f.success !== !1), !0;
-      } catch (f) {
-        console.error(`[UIForge BL Error] Lỗi khi thực thi ${I}() trong ${i}:`, f);
+        if (x && x.message)
+          return Ns(c, o, i || s, !0, x.message, x.success !== !1), !0;
+      } catch (x) {
+        console.error(`[UIForge BL Error] Lỗi khi thực thi ${T}() trong ${i}:`, x);
       }
   }
   return console.log(
@@ -2080,32 +2412,32 @@ function Ss(t, r, s, a) {
     "color: #4ade80; font-weight: bold;",
     "color: #94a3b8;",
     "color: #fbbf24; font-mono;"
-  ), ys(c, o, i || s, d), d;
+  ), Ns(c, o, i || s, d), d;
 }
-function ze(t, r, s, a, n) {
+function Ye(t, r, s, a, n) {
   if (!t || t.length === 0) return;
   const o = t.filter((l) => l.trigger === r || r === "click" && (l.trigger === "onClick" || l.trigger === "click") || r === "dblclick" && (l.trigger === "onDoubleClick" || l.trigger === "dblclick") || r === "change" && (l.trigger === "onChange" || l.trigger === "change") || r === "focus" && (l.trigger === "onFocus" || l.trigger === "focus") || r === "blur" && (l.trigger === "onBlur" || l.trigger === "blur"));
   for (const l of o)
-    Ss(l, s, a, n);
+    Ds(l, s, a, n);
 }
-async function sr(t, r = "onInit", s) {
+async function ur(t, r = "onInit", s) {
   if (!t) return null;
-  const { module: a, canonicalName: n } = $n(t);
+  const { module: a, canonicalName: n } = Hn(t);
   if (!a) return null;
-  const { fn: o } = Or(a, r);
+  const { fn: o } = Yr(a, r);
   if (!o) return null;
   const l = {
     trigger: r,
     blFileName: n,
-    dataEngine: fe.getState(),
-    navigationEngine: Ze.getState(),
+    dataEngine: Te.getState(),
+    navigationEngine: st.getState(),
     editorStore: Z.getState(),
     ...s || {}
   };
   return await o(l);
 }
-const nl = ({ node: t, isEditing: r }) => {
-  const { props: s, style: a } = t, n = Z((C) => C.features), o = Z((C) => C.activeFeatureId), l = n.find((C) => String(C.id) === String(t.pageId)) || n.find((C) => String(C.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: I, maxWidth: f, width: x, ...N } = a || {}, u = {
+const Rl = ({ node: t, isEditing: r }) => {
+  const { props: s, style: a } = t, n = Z((k) => k.features), o = Z((k) => k.activeFeatureId), l = n.find((k) => String(k.id) === String(t.pageId)) || n.find((k) => String(k.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: T, maxWidth: x, width: h, ...w } = a || {}, u = {
     primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20",
     secondary: "bg-slate-700 hover:bg-slate-600 text-slate-100",
     danger: "bg-red-600 hover:bg-red-700 text-white",
@@ -2123,27 +2455,27 @@ const nl = ({ node: t, isEditing: r }) => {
       style: {
         width: "100%",
         maxWidth: "100%",
-        ...N
+        ...w
       },
       className: `inline-flex items-center justify-center font-medium rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${u} ${v}`,
-      onClick: (C) => {
-        r ? (C.ctrlKey || C.metaKey || C.altKey) && (C.stopPropagation(), ze(t.events, "click", s.label || "Nút bấm", i, {
+      onClick: (k) => {
+        r ? (k.ctrlKey || k.metaKey || k.altKey) && (k.stopPropagation(), Ye(t.events, "click", s.label || "Nút bấm", i, {
           componentId: t.id,
           pageId: l == null ? void 0 : l.id,
           trigger: "click (Ctrl+Click)"
-        })) : ze(t.events, "click", s.label || "Nút bấm", i, {
+        })) : Ye(t.events, "click", s.label || "Nút bấm", i, {
           componentId: t.id,
           pageId: l == null ? void 0 : l.id,
           trigger: "click"
         });
       },
-      onDoubleClick: (C) => {
+      onDoubleClick: (k) => {
         var y;
-        C.stopPropagation(), ((y = t.events) == null ? void 0 : y.some((L) => L.trigger === "dblclick" || L.trigger === "onDoubleClick")) ? ze(t.events, "dblclick", s.label || "Nút bấm", i, {
+        k.stopPropagation(), ((y = t.events) == null ? void 0 : y.some((P) => P.trigger === "dblclick" || P.trigger === "onDoubleClick")) ? Ye(t.events, "dblclick", s.label || "Nút bấm", i, {
           componentId: t.id,
           pageId: l == null ? void 0 : l.id,
           trigger: "dblclick"
-        }) : r && ze(t.events, "click", s.label || "Nút bấm", i, {
+        }) : r && Ye(t.events, "click", s.label || "Nút bấm", i, {
           componentId: t.id,
           pageId: l == null ? void 0 : l.id,
           trigger: "click (kích hoạt từ nhấp đúp test)"
@@ -2152,11 +2484,11 @@ const nl = ({ node: t, isEditing: r }) => {
       children: s.label || "Nút bấm"
     }
   );
-}, rl = ({ node: t, isEditing: r }) => {
-  var k;
-  const { props: s, style: a } = t, n = Z((F) => F.features), o = Z((F) => F.activeFeatureId), l = n.find((F) => String(F.id) === String(t.pageId)) || n.find((F) => String(F.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: I, maxWidth: f, width: x, ...N } = a || {}, u = String(t.pageId || o || "default"), v = String(((k = t.dataBinding) == null ? void 0 : k.fieldName) || t.props.name || t.id), C = fe((F) => Dt(F, u, v, void 0)), h = fe((F) => F.setFieldValue), y = C !== void 0 ? C : s.value ?? "", L = !!s.validationError;
+}, Ll = ({ node: t, isEditing: r }) => {
+  var R;
+  const { props: s, style: a } = t, n = Z((F) => F.features), o = Z((F) => F.activeFeatureId), l = n.find((F) => String(F.id) === String(t.pageId)) || n.find((F) => String(F.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: T, maxWidth: x, width: h, ...w } = a || {}, u = String(t.pageId || o || "default"), v = String(((R = t.dataBinding) == null ? void 0 : R.fieldName) || t.props.name || t.id), k = Te((F) => Vt(F, u, v, void 0)), m = Te((F) => F.setFieldValue), y = k !== void 0 ? k : s.value ?? "", P = !!s.validationError;
   return /* @__PURE__ */ e.jsx(
-    Ut,
+    rs,
     {
       label: s.label,
       showLabel: s.showLabel ?? !0,
@@ -2168,7 +2500,7 @@ const nl = ({ node: t, isEditing: r }) => {
       style: {
         width: "100%",
         maxWidth: "100%",
-        ...N
+        ...w
       },
       children: /* @__PURE__ */ e.jsx(
         "input",
@@ -2178,23 +2510,23 @@ const nl = ({ node: t, isEditing: r }) => {
           readOnly: r || !!s.readOnly,
           placeholder: s.placeholder || "Nhập dữ liệu...",
           value: y,
-          className: `w-full px-3 py-1.5 bg-slate-900 border rounded-lg text-xs text-slate-100 placeholder-slate-500 transition-all disabled:opacity-50 ${L ? "border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none" : "border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"}`,
+          className: `w-full px-3 py-1.5 bg-slate-900 border rounded-lg text-xs text-slate-100 placeholder-slate-500 transition-all disabled:opacity-50 ${P ? "border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none" : "border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"}`,
           onChange: (F) => {
-            const w = F.target.value;
-            h(u, v, w), r || ze(t.events, "change", s.label || "Ô nhập liệu", i, {
+            const C = F.target.value;
+            m(u, v, C), r || Ye(t.events, "change", s.label || "Ô nhập liệu", i, {
               componentId: t.id,
               fieldName: v,
-              value: w
+              value: C
             });
           },
           onFocus: () => {
-            r || ze(t.events, "focus", s.label || "Ô nhập liệu", i, {
+            r || Ye(t.events, "focus", s.label || "Ô nhập liệu", i, {
               componentId: t.id,
               fieldName: v
             });
           },
           onBlur: (F) => {
-            r || ze(t.events, "blur", s.label || "Ô nhập liệu", i, {
+            r || Ye(t.events, "blur", s.label || "Ô nhập liệu", i, {
               componentId: t.id,
               fieldName: v,
               value: F.target.value
@@ -2204,14 +2536,14 @@ const nl = ({ node: t, isEditing: r }) => {
       )
     }
   );
-}, al = ({ node: t, isEditing: r }) => {
+}, $l = ({ node: t, isEditing: r }) => {
   var S;
-  const { props: s, style: a } = t, n = Z((R) => R.features), o = Z((R) => R.activeFeatureId), l = n.find((R) => String(R.id) === String(t.pageId)) || n.find((R) => String(R.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: I, maxWidth: f, width: x, ...N } = a || {}, u = String(t.pageId || o || "default"), v = String(((S = t.dataBinding) == null ? void 0 : S.fieldName) || t.props.name || t.id), C = fe((R) => Dt(R, u, v, void 0)), h = fe((R) => R.setFieldValue), y = s.precision !== void 0 ? Number(s.precision) : 0, L = C !== void 0 ? C : s.value, k = L != null && L !== "" ? Number(L) : 0, F = (R) => R.toLocaleString("en-US", {
+  const { props: s, style: a } = t, n = Z((L) => L.features), o = Z((L) => L.activeFeatureId), l = n.find((L) => String(L.id) === String(t.pageId)) || n.find((L) => String(L.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: T, maxWidth: x, width: h, ...w } = a || {}, u = String(t.pageId || o || "default"), v = String(((S = t.dataBinding) == null ? void 0 : S.fieldName) || t.props.name || t.id), k = Te((L) => Vt(L, u, v, void 0)), m = Te((L) => L.setFieldValue), y = s.precision !== void 0 ? Number(s.precision) : 0, P = k !== void 0 ? k : s.value, R = P != null && P !== "" ? Number(P) : 0, F = (L) => L.toLocaleString("en-US", {
     minimumFractionDigits: y,
     maximumFractionDigits: y
-  }), w = !!s.validationError;
+  }), C = !!s.validationError;
   return /* @__PURE__ */ e.jsx(
-    Ut,
+    rs,
     {
       label: s.label,
       showLabel: s.showLabel ?? !0,
@@ -2223,7 +2555,7 @@ const nl = ({ node: t, isEditing: r }) => {
       style: {
         width: "100%",
         maxWidth: "100%",
-        ...N
+        ...w
       },
       children: /* @__PURE__ */ e.jsx("div", { className: "relative w-full", children: /* @__PURE__ */ e.jsx(
         "input",
@@ -2232,16 +2564,16 @@ const nl = ({ node: t, isEditing: r }) => {
           disabled: s.disabled,
           readOnly: r || !!s.readOnly,
           placeholder: s.placeholder || "0",
-          value: F(k),
-          className: `w-full px-3 py-1.5 bg-slate-900 border rounded-lg text-xs font-mono text-right text-emerald-400 placeholder-slate-500 transition-all disabled:opacity-50 ${w ? "border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none" : "border-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"}`,
-          onChange: (R) => {
-            const $ = R.target.value.replace(/,/g, "");
+          value: F(R),
+          className: `w-full px-3 py-1.5 bg-slate-900 border rounded-lg text-xs font-mono text-right text-emerald-400 placeholder-slate-500 transition-all disabled:opacity-50 ${C ? "border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none" : "border-slate-700 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"}`,
+          onChange: (L) => {
+            const $ = L.target.value.replace(/,/g, "");
             if ($ === "" || !isNaN(Number($))) {
-              const Q = $ === "" ? 0 : Number($);
-              h(u, v, Q), r || ze(t.events, "change", s.label || "Ô số", i, {
+              const se = $ === "" ? 0 : Number($);
+              m(u, v, se), r || Ye(t.events, "change", s.label || "Ô số", i, {
                 componentId: t.id,
                 fieldName: v,
-                value: Q
+                value: se
               });
             }
           }
@@ -2249,33 +2581,33 @@ const nl = ({ node: t, isEditing: r }) => {
       ) })
     }
   );
-}, ll = ({ node: t, isEditing: r }) => {
-  const { props: s, style: a } = t, n = Z((u) => u.features), o = Z((u) => u.activeFeatureId), l = n.find((u) => String(u.id) === String(t.pageId)) || n.find((u) => String(u.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: I, maxWidth: f, width: x, ...N } = a || {};
+}, Pl = ({ node: t, isEditing: r }) => {
+  const { props: s, style: a } = t, n = Z((u) => u.features), o = Z((u) => u.activeFeatureId), l = n.find((u) => String(u.id) === String(t.pageId)) || n.find((u) => String(u.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: T, maxWidth: x, width: h, ...w } = a || {};
   return /* @__PURE__ */ e.jsx(
     "span",
     {
       style: {
         width: "100%",
         maxWidth: "100%",
-        ...N
+        ...w
       },
       className: "text-sm font-medium text-slate-200 inline-block",
       onClick: (u) => {
-        r ? (u.ctrlKey || u.metaKey || u.altKey) && (u.stopPropagation(), ze(t.events, "click", s.label || "Văn bản", i, {
+        r ? (u.ctrlKey || u.metaKey || u.altKey) && (u.stopPropagation(), Ye(t.events, "click", s.label || "Văn bản", i, {
           componentId: t.id
-        })) : ze(t.events, "click", s.label || "Văn bản", i, {
+        })) : Ye(t.events, "click", s.label || "Văn bản", i, {
           componentId: t.id
         });
       },
       onDoubleClick: (u) => {
-        u.stopPropagation(), ze(t.events, "dblclick", s.label || "Văn bản", i, {
+        u.stopPropagation(), Ye(t.events, "dblclick", s.label || "Văn bản", i, {
           componentId: t.id
         });
       },
       children: s.label || "Văn bản tiêu đề"
     }
   );
-}, nr = ({
+}, xr = ({
   node: t,
   isEditing: r,
   isSelected: s,
@@ -2285,45 +2617,45 @@ const nl = ({ node: t, isEditing: r }) => {
   isWrappedByDrag: l = !1,
   children: i
 }) => {
-  var V;
+  var U;
   const { props: d, style: c } = t;
-  Z((P) => P.updateComponentProps);
+  Z((E) => E.updateComponentProps);
   const p = !!(d.isTab || d.tab || d.isTabGroup || t.type === "Tabs"), g = [
     { id: "main", label: "TAB 1" }
-  ], I = d.tabs || g, [f, x] = A(
-    d.activeTabId || ((V = I[0]) == null ? void 0 : V.id) || "main"
-  ), N = d.layoutMode || "flex", u = d.flexConfig || {
+  ], T = d.tabs || g, [x, h] = D(
+    d.activeTabId || ((U = T[0]) == null ? void 0 : U.id) || "main"
+  ), w = d.layoutMode || "flex", u = d.flexConfig || {
     direction: "row",
     wrap: "wrap",
     justify: "flex-start",
     align: "flex-start",
     gap: "12px",
     columnsPerRow: "auto"
-  }, v = d.gridConfig || { columns: 12, gap: "16px" }, C = Number(
+  }, v = d.gridConfig || { columns: 12, gap: "16px" }, k = Number(
     v.columns || (typeof u.columnsPerRow == "number" ? u.columnsPerRow : 12)
-  ) || 12, h = (c == null ? void 0 : c.justifyContent) || u.justify || "flex-start", y = (c == null ? void 0 : c.alignItems) || u.align || "flex-start", L = u.wrap || "wrap", k = N === "grid" ? {
+  ) || 12, m = (c == null ? void 0 : c.justifyContent) || u.justify || "flex-start", y = (c == null ? void 0 : c.alignItems) || u.align || "flex-start", P = u.wrap || "wrap", R = w === "grid" ? {
     display: "grid",
-    gridTemplateColumns: `repeat(${C}, minmax(0, 1fr))`,
+    gridTemplateColumns: `repeat(${k}, minmax(0, 1fr))`,
     gap: v.gap || u.gap || "16px",
     alignItems: y
   } : {
     display: "flex",
     flexDirection: u.direction || "row",
-    flexWrap: L,
-    justifyContent: h,
+    flexWrap: P,
+    justifyContent: m,
     alignItems: y,
     gap: u.gap || "12px"
   };
-  let F = c != null && c.flex ? void 0 : "100%", w = c == null ? void 0 : c.flex, S = c == null ? void 0 : c.maxWidth;
+  let F = c != null && c.flex ? void 0 : "100%", C = c == null ? void 0 : c.flex, S = c == null ? void 0 : c.maxWidth;
   if (!l && o && o.direction === "row" && o.columnsPerRow && o.columnsPerRow !== "auto") {
-    const P = typeof o.columnsPerRow == "number" ? o.columnsPerRow : parseInt(String(o.columnsPerRow), 10);
-    if (!isNaN(P) && P > 0) {
-      const K = parseInt(o.gap || "12", 10) || 12, G = P === 1 ? "100%" : `calc((100% - ${(P - 1) * K}px) / ${P})`;
-      (c == null ? void 0 : c.width) === void 0 && (c == null ? void 0 : c.flex) === void 0 && (F = G, w = `0 0 ${G}`, S = G);
+    const E = typeof o.columnsPerRow == "number" ? o.columnsPerRow : parseInt(String(o.columnsPerRow), 10);
+    if (!isNaN(E) && E > 0) {
+      const Y = parseInt(o.gap || "12", 10) || 12, z = E === 1 ? "100%" : `calc((100% - ${(E - 1) * Y}px) / ${E})`;
+      (c == null ? void 0 : c.width) === void 0 && (c == null ? void 0 : c.flex) === void 0 && (F = z, C = `0 0 ${z}`, S = z);
     }
   }
-  const { width: R, flex: $, ...Q } = c || {}, O = l ? {
-    ...k,
+  const { width: L, flex: $, ...se } = c || {}, V = l ? {
+    ...R,
     minHeight: (c == null ? void 0 : c.minHeight) || "90px",
     padding: p ? "0" : (c == null ? void 0 : c.padding) || "16px",
     backgroundColor: (c == null ? void 0 : c.backgroundColor) || (p ? "transparent" : "rgba(30, 41, 59, 0.4)"),
@@ -2332,18 +2664,18 @@ const nl = ({ node: t, isEditing: r }) => {
     height: c != null && c.height ? "100%" : void 0,
     minWidth: 0,
     boxSizing: "border-box",
-    ...Q,
+    ...se,
     width: "100%",
     flex: "1 1 auto"
   } : {
-    ...k,
+    ...R,
     minHeight: (c == null ? void 0 : c.minHeight) || "90px",
     padding: p ? "0" : (c == null ? void 0 : c.padding) || "16px",
     backgroundColor: (c == null ? void 0 : c.backgroundColor) || (p ? "transparent" : "rgba(30, 41, 59, 0.4)"),
     borderRadius: (c == null ? void 0 : c.borderRadius) || "12px",
     border: (c == null ? void 0 : c.border) || (p ? "none" : "1px dashed #475569"),
     width: (c == null ? void 0 : c.width) !== void 0 ? c.width : F,
-    flex: (c == null ? void 0 : c.flex) !== void 0 ? c.flex : w,
+    flex: (c == null ? void 0 : c.flex) !== void 0 ? c.flex : C,
     maxWidth: (c == null ? void 0 : c.maxWidth) !== void 0 ? c.maxWidth : S,
     minWidth: (c == null ? void 0 : c.minWidth) !== void 0 ? c.minWidth : 0,
     boxSizing: "border-box",
@@ -2354,7 +2686,7 @@ const nl = ({ node: t, isEditing: r }) => {
     {
       onClick: a,
       onContextMenu: n,
-      style: O,
+      style: V,
       className: `relative transition-all duration-150 group/container box-border ${r ? `cursor-pointer ${s ? p ? "ring-2 ring-emerald-500 shadow-lg shadow-emerald-500/20" : "ring-2 ring-blue-500 shadow-lg shadow-blue-500/20" : p ? "hover:outline-1 hover:outline-emerald-400/40" : "hover:outline-1 hover:outline-blue-400/40"}` : ""}`,
       children: [
         r && s && /* @__PURE__ */ e.jsxs(
@@ -2374,19 +2706,19 @@ const nl = ({ node: t, isEditing: r }) => {
       ]
     }
   );
-}, ol = ({ node: t, children: r }) => {
-  const { props: s, style: a } = t, { flex: n, flexGrow: o, flexShrink: l, flexBasis: i, minWidth: d, maxWidth: c, width: p, ...g } = a || {}, [I, f] = A(!1), x = s.title || s.label || "Khối Bố Cục (Section)", N = s.collapsible ?? !0, u = s.layoutMode || "grid", v = s.flexConfig || {}, C = s.gridConfig || {}, h = Number(C.columns || v.columnsPerRow || 12) || 12, y = v.gap || C.gap || "12px", L = (a == null ? void 0 : a.justifyContent) || v.justify || "flex-start", k = (a == null ? void 0 : a.alignItems) || v.align || "center", F = u === "flex" ? {
+}, El = ({ node: t, children: r }) => {
+  const { props: s, style: a } = t, { flex: n, flexGrow: o, flexShrink: l, flexBasis: i, minWidth: d, maxWidth: c, width: p, ...g } = a || {}, [T, x] = D(!1), h = s.title || s.label || "Khối Bố Cục (Section)", w = s.collapsible ?? !0, u = s.layoutMode || "grid", v = s.flexConfig || {}, k = s.gridConfig || {}, m = Number(k.columns || v.columnsPerRow || 12) || 12, y = v.gap || k.gap || "12px", P = (a == null ? void 0 : a.justifyContent) || v.justify || "flex-start", R = (a == null ? void 0 : a.alignItems) || v.align || "center", F = u === "flex" ? {
     display: "flex",
     flexDirection: v.direction || "row",
     flexWrap: v.wrap || "wrap",
-    justifyContent: L,
-    alignItems: k,
+    justifyContent: P,
+    alignItems: R,
     gap: y
   } : {
     display: "grid",
-    gridTemplateColumns: `repeat(${h}, minmax(0, 1fr))`,
+    gridTemplateColumns: `repeat(${m}, minmax(0, 1fr))`,
     gap: y,
-    alignItems: k
+    alignItems: R
   };
   return /* @__PURE__ */ e.jsxs(
     "div",
@@ -2400,26 +2732,26 @@ const nl = ({ node: t, isEditing: r }) => {
       children: [
         /* @__PURE__ */ e.jsxs("div", { className: "px-4 py-3 bg-slate-800/50 border-b border-slate-800 flex items-center justify-between select-none", children: [
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ e.jsx(Pt, { className: "w-4 h-4 text-blue-400" }),
-            /* @__PURE__ */ e.jsx("h3", { className: "text-xs font-bold uppercase tracking-wider text-slate-200", children: x })
+            /* @__PURE__ */ e.jsx(yt, { className: "w-4 h-4 text-blue-400" }),
+            /* @__PURE__ */ e.jsx("h3", { className: "text-xs font-bold uppercase tracking-wider text-slate-200", children: h })
           ] }),
-          N && /* @__PURE__ */ e.jsx(
+          w && /* @__PURE__ */ e.jsx(
             "button",
             {
               type: "button",
-              onClick: () => f(!I),
+              onClick: () => x(!T),
               className: "p-1 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 transition-colors cursor-pointer",
-              title: I ? "Mở rộng" : "Thu gọn",
-              children: I ? /* @__PURE__ */ e.jsx(St, { className: "w-4 h-4" }) : /* @__PURE__ */ e.jsx(ws, { className: "w-4 h-4" })
+              title: T ? "Mở rộng" : "Thu gọn",
+              children: T ? /* @__PURE__ */ e.jsx(wt, { className: "w-4 h-4" }) : /* @__PURE__ */ e.jsx(Ss, { className: "w-4 h-4" })
             }
           )
         ] }),
-        !I && /* @__PURE__ */ e.jsx("div", { className: "p-4 w-full box-border", style: F, children: r })
+        !T && /* @__PURE__ */ e.jsx("div", { className: "p-4 w-full box-border", style: F, children: r })
       ]
     }
   );
-}, xo = ({ node: t, children: r }) => {
-  const { props: s, style: a } = t, { flex: n, flexGrow: o, flexShrink: l, flexBasis: i, minWidth: d, maxWidth: c, width: p, ...g } = a || {}, I = s.title || s.label || "Biểu Mẫu Doanh Nghiệp";
+}, _o = ({ node: t, children: r }) => {
+  const { props: s, style: a } = t, { flex: n, flexGrow: o, flexShrink: l, flexBasis: i, minWidth: d, maxWidth: c, width: p, ...g } = a || {}, T = s.title || s.label || "Biểu Mẫu Doanh Nghiệp";
   return /* @__PURE__ */ e.jsxs(
     "div",
     {
@@ -2432,7 +2764,7 @@ const nl = ({ node: t, isEditing: r }) => {
       children: [
         /* @__PURE__ */ e.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800", children: [
           /* @__PURE__ */ e.jsxs("div", { children: [
-            /* @__PURE__ */ e.jsx("h2", { className: "text-sm font-bold text-slate-100 uppercase tracking-wide", children: I }),
+            /* @__PURE__ */ e.jsx("h2", { className: "text-sm font-bold text-slate-100 uppercase tracking-wide", children: T }),
             /* @__PURE__ */ e.jsx("p", { className: "text-[11px] text-slate-400", children: s.placeholder || "Biểu mẫu nhập liệu & quản lý giao dịch" })
           ] }),
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
@@ -2442,7 +2774,7 @@ const nl = ({ node: t, isEditing: r }) => {
                 type: "button",
                 className: "px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-700",
                 children: [
-                  /* @__PURE__ */ e.jsx(pr, { className: "w-3.5 h-3.5 text-slate-400" }),
+                  /* @__PURE__ */ e.jsx(yr, { className: "w-3.5 h-3.5 text-slate-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "In & Chứng từ" })
                 ]
               }
@@ -2453,7 +2785,7 @@ const nl = ({ node: t, isEditing: r }) => {
                 type: "button",
                 className: "px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-700",
                 children: [
-                  /* @__PURE__ */ e.jsx(ft, { className: "w-3.5 h-3.5 text-amber-400" }),
+                  /* @__PURE__ */ e.jsx(Tt, { className: "w-3.5 h-3.5 text-amber-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Hàm chức năng" })
                 ]
               }
@@ -2464,7 +2796,7 @@ const nl = ({ node: t, isEditing: r }) => {
                 type: "button",
                 className: "px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm shadow-blue-500/20",
                 children: [
-                  /* @__PURE__ */ e.jsx(At, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Lưu dữ liệu" })
                 ]
               }
@@ -2475,7 +2807,7 @@ const nl = ({ node: t, isEditing: r }) => {
       ]
     }
   );
-}, il = ({
+}, Al = ({
   x: t,
   y: r,
   column: s,
@@ -2488,26 +2820,26 @@ const nl = ({ node: t, isEditing: r }) => {
   onRemoveColumn: c,
   onToggleFilter: p
 }) => {
-  const g = Je(null), [I, f] = Mt.useState(!1);
-  if (Be(() => {
+  const g = tt(null), [T, x] = Zt.useState(!1);
+  if (He(() => {
     if (!a) return;
-    const u = (C) => {
-      g.current && !g.current.contains(C.target) && n();
-    }, v = (C) => {
-      C.key === "Escape" && n();
+    const u = (k) => {
+      g.current && !g.current.contains(k.target) && n();
+    }, v = (k) => {
+      k.key === "Escape" && n();
     };
     return document.addEventListener("mousedown", u), document.addEventListener("keydown", v), () => {
       document.removeEventListener("mousedown", u), document.removeEventListener("keydown", v);
     };
   }, [a, n]), !a) return null;
-  const x = Math.min(t, window.innerWidth - 220), N = Math.min(r, window.innerHeight - 340);
-  return Tt(
+  const h = Math.min(t, window.innerWidth - 220), w = Math.min(r, window.innerHeight - 340);
+  return It(
     /* @__PURE__ */ e.jsxs(
       "div",
       {
         ref: g,
         className: "fixed z-[999998] min-w-[210px] rounded-lg border border-slate-700/80 bg-slate-900/95 p-1 text-xs text-slate-200 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100",
-        style: { left: x, top: N },
+        style: { left: h, top: w },
         onClick: (u) => u.stopPropagation(),
         children: [
           /* @__PURE__ */ e.jsxs("div", { className: "px-3 py-1.5 border-b border-slate-800 text-[10px] font-semibold text-emerald-400 tracking-wider flex items-center justify-between uppercase", children: [
@@ -2529,10 +2861,10 @@ const nl = ({ node: t, isEditing: r }) => {
                   o(s.key), n();
                 },
                 children: s.hidden ? /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
-                  /* @__PURE__ */ e.jsx(Dn, { className: "w-3.5 h-3.5 text-emerald-400" }),
+                  /* @__PURE__ */ e.jsx(Rs, { className: "w-3.5 h-3.5 text-emerald-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Hiện cột này (Show header)" })
                 ] }) : /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
-                  /* @__PURE__ */ e.jsx(oa, { className: "w-3.5 h-3.5 text-amber-400" }),
+                  /* @__PURE__ */ e.jsx(Pn, { className: "w-3.5 h-3.5 text-amber-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Ẩn cột này (Hide header)" })
                 ] })
               }
@@ -2541,8 +2873,8 @@ const nl = ({ node: t, isEditing: r }) => {
               "div",
               {
                 className: "relative",
-                onMouseEnter: () => f(!0),
-                onMouseLeave: () => f(!1),
+                onMouseEnter: () => x(!0),
+                onMouseLeave: () => x(!1),
                 children: [
                   /* @__PURE__ */ e.jsxs(
                     "button",
@@ -2550,14 +2882,14 @@ const nl = ({ node: t, isEditing: r }) => {
                       className: "w-full flex items-center justify-between px-3 py-2 hover:bg-emerald-600/20 hover:text-emerald-300 rounded text-left transition-colors",
                       children: [
                         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2.5", children: [
-                          /* @__PURE__ */ e.jsx(xr, { className: `w-3.5 h-3.5 ${s.sticky ? "text-emerald-400 fill-emerald-400" : "text-slate-400"}` }),
+                          /* @__PURE__ */ e.jsx(jr, { className: `w-3.5 h-3.5 ${s.sticky ? "text-emerald-400 fill-emerald-400" : "text-slate-400"}` }),
                           /* @__PURE__ */ e.jsx("span", { children: "Cố định cột (Freeze)" })
                         ] }),
-                        /* @__PURE__ */ e.jsx(Ds, { className: "w-3.5 h-3.5 text-slate-400" })
+                        /* @__PURE__ */ e.jsx(es, { className: "w-3.5 h-3.5 text-slate-400" })
                       ]
                     }
                   ),
-                  I && /* @__PURE__ */ e.jsxs("div", { className: "absolute left-full top-0 ml-1 min-w-[170px] rounded-lg border border-slate-700 bg-slate-900/95 p-1 shadow-xl text-xs", children: [
+                  T && /* @__PURE__ */ e.jsxs("div", { className: "absolute left-full top-0 ml-1 min-w-[170px] rounded-lg border border-slate-700 bg-slate-900/95 p-1 shadow-xl text-xs", children: [
                     /* @__PURE__ */ e.jsxs(
                       "button",
                       {
@@ -2606,7 +2938,7 @@ const nl = ({ node: t, isEditing: r }) => {
                   i(s), n();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5 text-emerald-400" }),
+                  /* @__PURE__ */ e.jsx(lt, { className: "w-3.5 h-3.5 text-emerald-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Column Data Options" })
                 ]
               }
@@ -2619,7 +2951,7 @@ const nl = ({ node: t, isEditing: r }) => {
                   d(s.key), n();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(hr, { className: "w-3.5 h-3.5 text-sky-400" }),
+                  /* @__PURE__ */ e.jsx(Ls, { className: "w-3.5 h-3.5 text-sky-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Clone Column" })
                 ]
               }
@@ -2632,7 +2964,7 @@ const nl = ({ node: t, isEditing: r }) => {
                   c(s.key), n();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(ot, { className: "w-3.5 h-3.5 text-rose-400" }),
+                  /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5 text-rose-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Remove Column" })
                 ]
               }
@@ -2647,7 +2979,7 @@ const nl = ({ node: t, isEditing: r }) => {
                   p(), n();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(mr, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ e.jsx(Nr, { className: "w-3.5 h-3.5" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Filter Local" })
                 ]
               }
@@ -2660,7 +2992,7 @@ const nl = ({ node: t, isEditing: r }) => {
                   i(s), n();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(ia, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ e.jsx(ba, { className: "w-3.5 h-3.5" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Feature Settings" })
                 ]
               }
@@ -2671,7 +3003,7 @@ const nl = ({ node: t, isEditing: r }) => {
     ),
     document.body
   );
-}, cl = ({
+}, Ml = ({
   x: t,
   y: r,
   row: s,
@@ -2684,28 +3016,28 @@ const nl = ({ node: t, isEditing: r }) => {
   onInsertRowBelow: c,
   onMoveRowUp: p,
   onMoveRowDown: g,
-  onPasteExcel: I
+  onPasteExcel: T
 }) => {
-  const f = Je(null);
-  if (Be(() => {
+  const x = tt(null);
+  if (He(() => {
     if (!o) return;
-    const u = (C) => {
-      f.current && !f.current.contains(C.target) && l();
-    }, v = (C) => {
-      C.key === "Escape" && l();
+    const u = (k) => {
+      x.current && !x.current.contains(k.target) && l();
+    }, v = (k) => {
+      k.key === "Escape" && l();
     };
     return document.addEventListener("mousedown", u), document.addEventListener("keydown", v), () => {
       document.removeEventListener("mousedown", u), document.removeEventListener("keydown", v);
     };
   }, [o, l]), !o) return null;
-  const x = Math.min(t, window.innerWidth - 220), N = Math.min(r, window.innerHeight - 260);
-  return Tt(
+  const h = Math.min(t, window.innerWidth - 220), w = Math.min(r, window.innerHeight - 260);
+  return It(
     /* @__PURE__ */ e.jsxs(
       "div",
       {
-        ref: f,
+        ref: x,
         className: "fixed z-[999998] min-w-[210px] rounded-lg border border-slate-700/80 bg-slate-900/95 p-1 text-xs text-slate-200 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100",
-        style: { left: x, top: N },
+        style: { left: h, top: w },
         onClick: (u) => u.stopPropagation(),
         children: [
           /* @__PURE__ */ e.jsxs("div", { className: "px-3 py-1.5 border-b border-slate-800 text-[10px] font-semibold text-emerald-400 tracking-wider flex items-center justify-between uppercase", children: [
@@ -2728,21 +3060,21 @@ const nl = ({ node: t, isEditing: r }) => {
                   i(a), l();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(hr, { className: "w-3.5 h-3.5 text-sky-400" }),
+                  /* @__PURE__ */ e.jsx(Ls, { className: "w-3.5 h-3.5 text-sky-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Sao chép dòng (Duplicate)" })
                 ]
               }
             ),
-            I && /* @__PURE__ */ e.jsxs(
+            T && /* @__PURE__ */ e.jsxs(
               "button",
               {
                 type: "button",
                 className: "w-full flex items-center gap-2.5 px-3 py-2 hover:bg-emerald-600/20 hover:text-emerald-300 rounded text-left transition-colors cursor-pointer",
                 onClick: () => {
-                  I(a), l();
+                  T(a), l();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(br, { className: "w-3.5 h-3.5 text-emerald-400" }),
+                  /* @__PURE__ */ e.jsx(wr, { className: "w-3.5 h-3.5 text-emerald-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Dán từ Excel (Ctrl+V)" })
                 ]
               }
@@ -2756,7 +3088,7 @@ const nl = ({ node: t, isEditing: r }) => {
                   c(a), l();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(fr, { className: "w-3.5 h-3.5 text-emerald-400" }),
+                  /* @__PURE__ */ e.jsx(Cr, { className: "w-3.5 h-3.5 text-emerald-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Chèn dòng mới bên dưới" })
                 ]
               }
@@ -2771,7 +3103,7 @@ const nl = ({ node: t, isEditing: r }) => {
                   p(a), l();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(gr, { className: "w-3.5 h-3.5 text-slate-400" }),
+                  /* @__PURE__ */ e.jsx(En, { className: "w-3.5 h-3.5 text-slate-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Chuyển dòng lên trên" })
                 ]
               }
@@ -2786,7 +3118,7 @@ const nl = ({ node: t, isEditing: r }) => {
                   g(a), l();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(vr, { className: "w-3.5 h-3.5 text-slate-400" }),
+                  /* @__PURE__ */ e.jsx(An, { className: "w-3.5 h-3.5 text-slate-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Chuyển dòng xuống dưới" })
                 ]
               }
@@ -2801,7 +3133,7 @@ const nl = ({ node: t, isEditing: r }) => {
                   d(a), l();
                 },
                 children: [
-                  /* @__PURE__ */ e.jsx(ot, { className: "w-3.5 h-3.5 text-rose-400" }),
+                  /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5 text-rose-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Xóa dòng này (Delete)" })
                 ]
               }
@@ -2812,14 +3144,14 @@ const nl = ({ node: t, isEditing: r }) => {
     ),
     document.body
   );
-}, dl = [
+}, Bl = [
   { value: "click", label: "Bấm chuột / Nút (click)" },
   { value: "dblclick", label: "Nhấp đúp chuột (dblclick)" },
   { value: "actionClick", label: "Hành động ô (actionClick)" },
   { value: "change", label: "Thay đổi giá trị (change)" },
   { value: "focus", label: "Khi chọn ô (focus)" },
   { value: "blur", label: "Khi rời ô (blur)" }
-], _r = ({
+], Jr = ({
   events: t = [],
   onChange: r,
   scriptFile: s = "transactionList.bl.ts",
@@ -2827,35 +3159,35 @@ const nl = ({ node: t, isEditing: r }) => {
   componentId: n,
   contextExtra: o,
   compact: l = !1,
-  availableTriggers: i = dl
+  availableTriggers: i = Bl
 }) => {
-  const [d, c] = A(""), [, p] = A(0), g = s || "transactionList.bl.ts", I = el(g), f = () => {
-    var h;
-    const v = I[0] || "openTransactionDetail", C = {
+  const [d, c] = D(""), [, p] = D(0), g = s || "transactionList.bl.ts", T = Il(g), x = () => {
+    var m;
+    const v = T[0] || "openTransactionDetail", k = {
       id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      trigger: ((h = i[0]) == null ? void 0 : h.value) || "click",
+      trigger: ((m = i[0]) == null ? void 0 : m.value) || "click",
       handlerName: v,
       action: v
     };
-    r([...t, C]);
-  }, x = (v, C) => {
-    const h = t.map((y, L) => {
-      if (L !== v) return y;
-      const k = { ...y, ...C };
-      return C.handlerName && !C.action && (k.action = C.handlerName), k;
+    r([...t, k]);
+  }, h = (v, k) => {
+    const m = t.map((y, P) => {
+      if (P !== v) return y;
+      const R = { ...y, ...k };
+      return k.handlerName && !k.action && (R.action = k.handlerName), R;
     });
-    r(h);
-  }, N = (v) => {
-    const C = t.filter((h, y) => y !== v);
-    r(C);
+    r(m);
+  }, w = (v) => {
+    const k = t.filter((m, y) => y !== v);
+    r(k);
   }, u = () => {
-    d.trim() && (tl(g, d.trim()), c(""), p((v) => v + 1));
+    d.trim() && (Dl(g, d.trim()), c(""), p((v) => v + 1));
   };
   return /* @__PURE__ */ e.jsxs("div", { className: "space-y-4 text-xs", children: [
     /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
       /* @__PURE__ */ e.jsxs("div", { children: [
         /* @__PURE__ */ e.jsxs("h3", { className: "text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5", children: [
-          /* @__PURE__ */ e.jsx(ft, { className: "w-3.5 h-3.5 text-amber-400" }),
+          /* @__PURE__ */ e.jsx(Tt, { className: "w-3.5 h-3.5 text-amber-400" }),
           /* @__PURE__ */ e.jsxs("span", { children: [
             "Danh Sách Sự Kiện (",
             t.length,
@@ -2872,10 +3204,10 @@ const nl = ({ node: t, isEditing: r }) => {
         "button",
         {
           type: "button",
-          onClick: f,
+          onClick: x,
           className: "px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer shadow-md shadow-blue-600/20 active:scale-95",
           children: [
-            /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }),
+            /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }),
             /* @__PURE__ */ e.jsx("span", { children: "+ Thêm Sự Kiện" })
           ]
         }
@@ -2883,7 +3215,7 @@ const nl = ({ node: t, isEditing: r }) => {
     ] }),
     /* @__PURE__ */ e.jsxs("div", { className: "p-2.5 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1.5", children: [
       /* @__PURE__ */ e.jsxs("label", { className: "text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1", children: [
-        /* @__PURE__ */ e.jsx(hn, { className: "w-3 h-3 text-cyan-400" }),
+        /* @__PURE__ */ e.jsx(jn, { className: "w-3 h-3 text-cyan-400" }),
         /* @__PURE__ */ e.jsxs("span", { children: [
           "Khai Báo Hàm Mới Trong ",
           g
@@ -2910,15 +3242,15 @@ const nl = ({ node: t, isEditing: r }) => {
             onClick: u,
             className: "px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer",
             children: [
-              /* @__PURE__ */ e.jsx(fr, { className: "w-3.5 h-3.5 text-cyan-400" }),
+              /* @__PURE__ */ e.jsx(Cr, { className: "w-3.5 h-3.5 text-cyan-400" }),
               /* @__PURE__ */ e.jsx("span", { children: "Lưu Hàm" })
             ]
           }
         )
       ] })
     ] }),
-    t.length > 0 ? /* @__PURE__ */ e.jsx("div", { className: "space-y-3", children: t.map((v, C) => {
-      const h = I.includes(v.handlerName || "");
+    t.length > 0 ? /* @__PURE__ */ e.jsx("div", { className: "space-y-3", children: t.map((v, k) => {
+      const m = T.includes(v.handlerName || "");
       return /* @__PURE__ */ e.jsxs(
         "div",
         {
@@ -2928,7 +3260,7 @@ const nl = ({ node: t, isEditing: r }) => {
               /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
                 /* @__PURE__ */ e.jsxs("span", { className: "text-[11px] font-bold text-slate-300 uppercase tracking-wider", children: [
                   "Sự Kiện #",
-                  C + 1
+                  k + 1
                 ] }),
                 /* @__PURE__ */ e.jsx("span", { className: "px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-mono", children: v.trigger })
               ] }),
@@ -2936,10 +3268,10 @@ const nl = ({ node: t, isEditing: r }) => {
                 "button",
                 {
                   type: "button",
-                  onClick: () => N(C),
+                  onClick: () => w(k),
                   className: "text-slate-500 hover:text-red-400 p-1 rounded transition-colors",
                   title: "Xóa sự kiện này",
-                  children: /* @__PURE__ */ e.jsx(ot, { className: "w-3.5 h-3.5" })
+                  children: /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5" })
                 }
               )
             ] }),
@@ -2950,7 +3282,7 @@ const nl = ({ node: t, isEditing: r }) => {
                   "select",
                   {
                     value: v.trigger || "click",
-                    onChange: (y) => x(C, { trigger: y.target.value }),
+                    onChange: (y) => h(k, { trigger: y.target.value }),
                     className: "w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 text-xs focus:outline-none focus:border-blue-500 cursor-pointer",
                     children: i.map((y) => /* @__PURE__ */ e.jsx("option", { value: y.value, children: y.label }, y.value))
                   }
@@ -2961,18 +3293,18 @@ const nl = ({ node: t, isEditing: r }) => {
                 /* @__PURE__ */ e.jsxs(
                   "select",
                   {
-                    value: v.handlerName || I[0] || "",
+                    value: v.handlerName || T[0] || "",
                     onChange: (y) => {
-                      const L = y.target.value;
-                      x(C, { handlerName: L, action: L });
+                      const P = y.target.value;
+                      h(k, { handlerName: P, action: P });
                     },
                     className: "w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-cyan-300 font-mono text-xs focus:outline-none focus:border-blue-500 cursor-pointer",
                     children: [
-                      I.map((y) => /* @__PURE__ */ e.jsxs("option", { value: y, children: [
+                      T.map((y) => /* @__PURE__ */ e.jsxs("option", { value: y, children: [
                         y,
                         "()"
                       ] }, y)),
-                      !h && v.handlerName && /* @__PURE__ */ e.jsxs("option", { value: v.handlerName, children: [
+                      !m && v.handlerName && /* @__PURE__ */ e.jsxs("option", { value: v.handlerName, children: [
                         v.handlerName,
                         "() [Tùy chỉnh]"
                       ] })
@@ -2986,7 +3318,7 @@ const nl = ({ node: t, isEditing: r }) => {
               {
                 type: "button",
                 onClick: () => {
-                  Ss(
+                  Ds(
                     v,
                     a,
                     g,
@@ -3000,17 +3332,17 @@ const nl = ({ node: t, isEditing: r }) => {
                 className: "w-full mt-2 py-1.5 px-3 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm hover:text-emerald-300 active:scale-[0.99]",
                 title: "Bấm để kích hoạt và chạy hàm BL này ngay lập tức",
                 children: [
-                  /* @__PURE__ */ e.jsx(ca, { className: "w-3.5 h-3.5 fill-emerald-400" }),
+                  /* @__PURE__ */ e.jsx(fa, { className: "w-3.5 h-3.5 fill-emerald-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "▶ Chạy Thử Sự Kiện Này" })
                 ]
               }
             )
           ]
         },
-        v.id || C
+        v.id || k
       );
     }) }) : /* @__PURE__ */ e.jsxs("div", { className: "p-6 border border-dashed border-slate-800 rounded-xl text-center text-slate-500 space-y-1.5", children: [
-      /* @__PURE__ */ e.jsx(ft, { className: "w-6 h-6 text-slate-600 mx-auto mb-1 stroke-1" }),
+      /* @__PURE__ */ e.jsx(Tt, { className: "w-6 h-6 text-slate-600 mx-auto mb-1 stroke-1" }),
       /* @__PURE__ */ e.jsxs("p", { className: "text-xs font-medium text-slate-400", children: [
         a,
         " chưa gắn sự kiện nào."
@@ -3025,22 +3357,22 @@ const nl = ({ node: t, isEditing: r }) => {
     ] })
   ] });
 };
-let pn = null;
-async function Ln(t = !1) {
-  if (!t && pn) return pn;
+let yn = null;
+async function nn(t = !1) {
+  if (!t && yn) return yn;
   try {
     const r = await fetch("http://localhost:5048/api/core/metadata/entities");
     if (r.ok) {
       const s = await r.json();
       if (Array.isArray(s))
-        return pn = s, s;
+        return yn = s, s;
     }
   } catch (r) {
     console.warn("[MetadataService] Không thể tải danh mục thực thể từ Backend API:", r);
   }
   return [];
 }
-function Ws(t, r = []) {
+function Js(t, r = []) {
   return t.map((s) => ({
     name: s.name,
     displayName: s.displayName || s.name,
@@ -3052,37 +3384,37 @@ function Ws(t, r = []) {
     }))
   }));
 }
-function Ks(t, r) {
+function Xs(t, r) {
   if (!r || !r.trim()) return;
   const s = r.trim().toLowerCase(), a = s.endsWith("s") ? s.slice(0, -1) : s;
   return t.find(
     (n) => n.name.toLowerCase() === s || n.name.toLowerCase() === a || n.tableName && n.tableName.toLowerCase() === s
   );
 }
-const Hr = ({
+const Xr = ({
   isOpen: t,
   column: r,
   onClose: s,
   onSave: a
 }) => {
-  var C;
-  const [n, o] = A(null), [l, i] = A("info"), [d, c] = A([]), p = Z((h) => h.features.find((y) => y.id === h.activeFeatureId));
-  if (Be(() => {
-    Ln().then((h) => {
-      h && h.length > 0 && c(h);
+  var k;
+  const [n, o] = D(null), [l, i] = D("info"), [d, c] = D([]), p = Z((m) => m.features.find((y) => y.id === m.activeFeatureId));
+  if (He(() => {
+    nn().then((m) => {
+      m && m.length > 0 && c(m);
     });
-  }, []), Be(() => {
+  }, []), He(() => {
     if (r && t) {
-      let h = [];
+      let m = [];
       if (Array.isArray(r.events))
-        h = [...r.events];
+        m = [...r.events];
       else if (typeof r.events == "string" && r.events.trim())
         try {
           const y = JSON.parse(r.events);
-          Array.isArray(y) && (h = y);
+          Array.isArray(y) && (m = y);
         } catch {
         }
-      h.length === 0 && r.action && (h = [
+      m.length === 0 && r.action && (m = [
         {
           id: `evt-${r.key}-action`,
           trigger: r.componentType === "Button" ? "click" : "dblclick",
@@ -3106,24 +3438,24 @@ const Hr = ({
         advancedSearch: r.advancedSearch ?? !0,
         formatCell: r.formatCell ?? r.format ?? "",
         formatData: r.formatData ?? "",
-        events: h
+        events: m
       });
     }
   }, [r, t]), !t || !n) return null;
-  const g = Array.isArray(n.events) ? n.events : [], I = Ws(d), f = Ks(I, n.reference || n.refName), x = f ? f.fields : [], N = n.componentType === "Select" || n.componentType === "Dropdown", u = (h, y) => {
-    o((L) => {
-      if (!L) return L;
-      const k = { ...L, [h]: y };
-      return h === "frozen" ? k.sticky = y ? "left" : "none" : h === "sticky" && (k.frozen = y === "left"), k;
+  const g = Array.isArray(n.events) ? n.events : [], T = Js(d), x = Xs(T, n.reference || n.refName), h = x ? x.fields : [], w = n.componentType === "Select" || n.componentType === "Dropdown", u = (m, y) => {
+    o((P) => {
+      if (!P) return P;
+      const R = { ...P, [m]: y };
+      return m === "frozen" ? R.sticky = y ? "left" : "none" : m === "sticky" && (R.frozen = y === "left"), R;
     });
-  }, v = (h) => {
+  }, v = (m) => {
     n && (a(n), s());
   };
-  return Tt(
+  return It(
     /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-[999999] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-y-auto animate-in fade-in duration-150", children: /* @__PURE__ */ e.jsxs("div", { className: "w-full max-w-6xl rounded-xl border border-emerald-500/40 bg-[#0f172a] shadow-2xl overflow-hidden flex flex-col text-slate-200 my-auto max-h-[95vh] relative z-10", children: [
       /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between px-6 py-3 bg-[#0b1329] border-b border-emerald-600/30", children: [
         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2.5", children: [
-          /* @__PURE__ */ e.jsx(Gt, { className: "w-4 h-4 text-emerald-400" }),
+          /* @__PURE__ */ e.jsx(lt, { className: "w-4 h-4 text-emerald-400" }),
           /* @__PURE__ */ e.jsx("span", { className: "font-bold text-sm tracking-wide text-slate-100", children: "Properties (GridPolicy)" }),
           /* @__PURE__ */ e.jsx("span", { className: "text-xs font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-500/30", children: n.key || "Column" })
         ] }),
@@ -3135,7 +3467,7 @@ const Hr = ({
               onClick: () => v(),
               className: "flex items-center gap-1.5 px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-md shadow-emerald-950/50 transition-colors",
               children: [
-                /* @__PURE__ */ e.jsx(At, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Lưu" })
               ]
             }
@@ -3147,7 +3479,7 @@ const Hr = ({
               onClick: () => i("permissions"),
               className: "flex items-center gap-1.5 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold text-xs transition-colors",
               children: [
-                /* @__PURE__ */ e.jsx(mn, { className: "w-3.5 h-3.5 text-amber-400" }),
+                /* @__PURE__ */ e.jsx(Nn, { className: "w-3.5 h-3.5 text-amber-400" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Phân quyền" })
               ]
             }
@@ -3159,7 +3491,7 @@ const Hr = ({
               onClick: s,
               className: "flex items-center gap-1 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs transition-colors",
               children: [
-                /* @__PURE__ */ e.jsx(ct, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(dt, { className: "w-3.5 h-3.5" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Đóng" })
               ]
             }
@@ -3177,7 +3509,7 @@ const Hr = ({
                 {
                   type: "text",
                   value: n.code || "",
-                  onChange: (h) => u("code", h.target.value),
+                  onChange: (m) => u("code", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-cyan-400 font-mono text-xs focus:border-emerald-500 focus:outline-none"
                 }
               )
@@ -3189,7 +3521,7 @@ const Hr = ({
                 {
                   type: "number",
                   value: n.order ?? 1,
-                  onChange: (h) => u("order", parseInt(h.target.value) || 0),
+                  onChange: (m) => u("order", parseInt(m.target.value) || 0),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-emerald-500/50 text-emerald-300 font-mono text-xs focus:border-emerald-400 focus:outline-none font-bold"
                 }
               ),
@@ -3202,7 +3534,7 @@ const Hr = ({
                 {
                   type: "text",
                   value: n.feature || "F0013000",
-                  onChange: (h) => u("feature", h.target.value),
+                  onChange: (m) => u("feature", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                 }
               )
@@ -3214,7 +3546,7 @@ const Hr = ({
                 {
                   type: "text",
                   value: n.refClass || "",
-                  onChange: (h) => u("refClass", h.target.value),
+                  onChange: (m) => u("refClass", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                 }
               )
@@ -3226,7 +3558,7 @@ const Hr = ({
                 {
                   type: "text",
                   value: n.filterTemplate || "",
-                  onChange: (h) => u("filterTemplate", h.target.value),
+                  onChange: (m) => u("filterTemplate", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                 }
               )
@@ -3238,7 +3570,7 @@ const Hr = ({
                 {
                   type: "text",
                   value: n.formatExcell || "",
-                  onChange: (h) => u("formatExcell", h.target.value),
+                  onChange: (m) => u("formatExcell", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                 }
               )
@@ -3250,7 +3582,7 @@ const Hr = ({
                 {
                   type: "text",
                   value: n.childStyle || "",
-                  onChange: (h) => u("childStyle", h.target.value),
+                  onChange: (m) => u("childStyle", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                 }
               )
@@ -3262,7 +3594,7 @@ const Hr = ({
                 {
                   rows: 2,
                   value: n.dataSource || "",
-                  onChange: (h) => u("dataSource", h.target.value),
+                  onChange: (m) => u("dataSource", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 font-mono text-[11px] focus:border-emerald-500 focus:outline-none"
                 }
               )
@@ -3277,7 +3609,7 @@ const Hr = ({
                 {
                   type: "text",
                   value: n.key,
-                  onChange: (h) => u("key", h.target.value),
+                  onChange: (m) => u("key", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-emerald-500/50 text-emerald-300 font-mono text-xs focus:border-emerald-400 focus:outline-none"
                 }
               )
@@ -3289,7 +3621,7 @@ const Hr = ({
                 {
                   type: "text",
                   value: n.title,
-                  onChange: (h) => u("title", h.target.value),
+                  onChange: (m) => u("title", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                 }
               )
@@ -3301,7 +3633,7 @@ const Hr = ({
                 {
                   type: "text",
                   value: n.description || "",
-                  onChange: (h) => u("description", h.target.value),
+                  onChange: (m) => u("description", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                 }
               )
@@ -3312,11 +3644,11 @@ const Hr = ({
                 /* @__PURE__ */ e.jsxs(
                   "select",
                   {
-                    value: f ? f.name : "",
-                    onChange: (h) => {
-                      const y = h.target.value;
-                      o((L) => ({
-                        ...L,
+                    value: x ? x.name : "",
+                    onChange: (m) => {
+                      const y = m.target.value;
+                      o((P) => ({
+                        ...P,
                         reference: y,
                         refName: y
                       }));
@@ -3324,12 +3656,12 @@ const Hr = ({
                     className: "w-full px-2 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none",
                     children: [
                       /* @__PURE__ */ e.jsx("option", { value: "", children: "-- Chọn Thực Thể Danh Mục --" }),
-                      I.map((h) => /* @__PURE__ */ e.jsxs("option", { value: h.name, children: [
-                        h.displayName,
+                      T.map((m) => /* @__PURE__ */ e.jsxs("option", { value: m.name, children: [
+                        m.displayName,
                         " (",
-                        h.name,
+                        m.name,
                         ")"
-                      ] }, h.name))
+                      ] }, m.name))
                     ]
                   }
                 )
@@ -3342,10 +3674,10 @@ const Hr = ({
                     type: "text",
                     value: n.refName || "",
                     placeholder: "VD: Vendor, Customer...",
-                    onChange: (h) => {
-                      const y = h.target.value;
-                      o((L) => ({
-                        ...L,
+                    onChange: (m) => {
+                      const y = m.target.value;
+                      o((P) => ({
+                        ...P,
                         refName: y,
                         reference: y
                       }));
@@ -3355,7 +3687,7 @@ const Hr = ({
                 )
               ] })
             ] }),
-            /* @__PURE__ */ e.jsxs("div", { className: N ? "grid grid-cols-1 gap-2" : "grid grid-cols-2 gap-2", children: [
+            /* @__PURE__ */ e.jsxs("div", { className: w ? "grid grid-cols-1 gap-2" : "grid grid-cols-2 gap-2", children: [
               /* @__PURE__ */ e.jsxs("div", { children: [
                 /* @__PURE__ */ e.jsx("label", { className: "text-[10px] text-slate-400 block mb-0.5", children: "Format Cell" }),
                 /* @__PURE__ */ e.jsx(
@@ -3364,12 +3696,12 @@ const Hr = ({
                     type: "text",
                     value: n.formatCell || "",
                     placeholder: "{Name}",
-                    onChange: (h) => u("formatCell", h.target.value),
+                    onChange: (m) => u("formatCell", m.target.value),
                     className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                   }
                 )
               ] }),
-              !N && /* @__PURE__ */ e.jsxs("div", { children: [
+              !w && /* @__PURE__ */ e.jsxs("div", { children: [
                 /* @__PURE__ */ e.jsx("label", { className: "text-[10px] text-emerald-400 font-semibold block mb-0.5", children: "Format Data" }),
                 /* @__PURE__ */ e.jsx(
                   "input",
@@ -3377,7 +3709,7 @@ const Hr = ({
                     type: "text",
                     value: n.formatData || "",
                     placeholder: "{FullName} - {Address}",
-                    onChange: (h) => u("formatData", h.target.value),
+                    onChange: (m) => u("formatData", m.target.value),
                     className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-emerald-500/40 text-emerald-300 font-mono text-xs focus:border-emerald-400 focus:outline-none"
                   }
                 )
@@ -3391,7 +3723,7 @@ const Hr = ({
                   {
                     type: "text",
                     value: n.width || "162px",
-                    onChange: (h) => u("width", h.target.value),
+                    onChange: (m) => u("width", m.target.value),
                     className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 font-mono text-xs focus:border-emerald-500 focus:outline-none"
                   }
                 )
@@ -3403,7 +3735,7 @@ const Hr = ({
                   {
                     type: "text",
                     value: n.minWidth || "162px",
-                    onChange: (h) => u("minWidth", h.target.value),
+                    onChange: (m) => u("minWidth", m.target.value),
                     className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 font-mono text-xs focus:border-emerald-500 focus:outline-none"
                   }
                 )
@@ -3415,7 +3747,7 @@ const Hr = ({
                   {
                     type: "text",
                     value: n.maxWidth || "162px",
-                    onChange: (h) => u("maxWidth", h.target.value),
+                    onChange: (m) => u("maxWidth", m.target.value),
                     className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 font-mono text-xs focus:border-emerald-500 focus:outline-none"
                   }
                 )
@@ -3430,7 +3762,7 @@ const Hr = ({
                 "select",
                 {
                   value: n.componentType || "TextBox",
-                  onChange: (h) => u("componentType", h.target.value),
+                  onChange: (m) => u("componentType", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-emerald-500/50 text-slate-100 text-xs focus:border-emerald-400 focus:outline-none font-semibold",
                   children: [
                     /* @__PURE__ */ e.jsx("option", { value: "TextBox", children: "TextBox (Input ô gõ trực tiếp)" }),
@@ -3457,7 +3789,7 @@ const Hr = ({
                     min: 0,
                     max: 6,
                     value: n.precision ?? 0,
-                    onChange: (h) => u("precision", parseInt(h.target.value) || 0),
+                    onChange: (m) => u("precision", parseInt(m.target.value) || 0),
                     className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 font-mono text-xs focus:border-emerald-500 focus:outline-none"
                   }
                 )
@@ -3468,7 +3800,7 @@ const Hr = ({
                   "select",
                   {
                     value: n.align || "left",
-                    onChange: (h) => u("align", h.target.value),
+                    onChange: (m) => u("align", m.target.value),
                     className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none",
                     children: [
                       /* @__PURE__ */ e.jsx("option", { value: "left", children: "Left (Trái)" }),
@@ -3489,7 +3821,7 @@ const Hr = ({
                     onClick: () => i("events"),
                     className: "text-[10px] text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 transition-colors cursor-pointer",
                     children: [
-                      /* @__PURE__ */ e.jsx(ft, { className: "w-3 h-3 text-amber-400" }),
+                      /* @__PURE__ */ e.jsx(Tt, { className: "w-3 h-3 text-amber-400" }),
                       /* @__PURE__ */ e.jsx("span", { children: g.length > 0 ? `Cấu hình (${g.length})` : "+ Thêm Sự Kiện" })
                     ]
                   }
@@ -3503,8 +3835,8 @@ const Hr = ({
                   title: "Nhấn để mở Tab cấu hình sự kiện cho cột này",
                   children: [
                     /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2 truncate", children: [
-                      /* @__PURE__ */ e.jsx(ft, { className: "w-3.5 h-3.5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" }),
-                      g.length > 0 ? /* @__PURE__ */ e.jsx("span", { className: "text-emerald-300 font-mono text-[11px] truncate", children: g.map((h) => `${h.trigger} ➔ ${h.handlerName || h.action}()`).join(", ") }) : /* @__PURE__ */ e.jsx("span", { className: "text-slate-500 italic text-[11px]", children: "Chưa cấu hình sự kiện" })
+                      /* @__PURE__ */ e.jsx(Tt, { className: "w-3.5 h-3.5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" }),
+                      g.length > 0 ? /* @__PURE__ */ e.jsx("span", { className: "text-emerald-300 font-mono text-[11px] truncate", children: g.map((m) => `${m.trigger} ➔ ${m.handlerName || m.action}()`).join(", ") }) : /* @__PURE__ */ e.jsx("span", { className: "text-slate-500 italic text-[11px]", children: "Chưa cấu hình sự kiện" })
                     ] }),
                     /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono shrink-0 group-hover:bg-emerald-950 group-hover:text-emerald-300 transition-colors", children: [
                       g.length,
@@ -3523,7 +3855,7 @@ const Hr = ({
                   {
                     type: "text",
                     value: n.cascadeField || "",
-                    onChange: (h) => u("cascadeField", h.target.value),
+                    onChange: (m) => u("cascadeField", m.target.value),
                     className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                   }
                 )
@@ -3534,7 +3866,7 @@ const Hr = ({
                   "select",
                   {
                     value: n.aggregate || "none",
-                    onChange: (h) => u("aggregate", h.target.value),
+                    onChange: (m) => u("aggregate", m.target.value),
                     className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none",
                     children: [
                       /* @__PURE__ */ e.jsx("option", { value: "none", children: "None" }),
@@ -3555,7 +3887,7 @@ const Hr = ({
                 {
                   type: "text",
                   value: n.validation || "",
-                  onChange: (h) => u("validation", h.target.value),
+                  onChange: (m) => u("validation", m.target.value),
                   className: "w-full px-2.5 py-1 rounded bg-[#0b1329] border border-slate-700 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                 }
               )
@@ -3573,16 +3905,16 @@ const Hr = ({
                 children: "THÔNG TIN KHÁC"
               }
             ),
-            N && /* @__PURE__ */ e.jsxs(
+            w && /* @__PURE__ */ e.jsxs(
               "button",
               {
                 type: "button",
                 onClick: () => i("dropdownColumns"),
                 className: `px-5 py-2.5 border-b-2 transition-colors flex items-center gap-1.5 ${l === "dropdownColumns" ? "border-emerald-500 text-emerald-400 bg-emerald-500/10" : "border-transparent text-slate-400 hover:text-slate-200"}`,
                 children: [
-                  /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5 text-emerald-400" }),
+                  /* @__PURE__ */ e.jsx(Nt, { className: "w-3.5 h-3.5 text-emerald-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "CỘT DROPDOWN" }),
-                  (((C = n.dropdownColumns) == null ? void 0 : C.length) ?? 0) > 0 && /* @__PURE__ */ e.jsx("span", { className: "px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono", children: n.dropdownColumns.length })
+                  (((k = n.dropdownColumns) == null ? void 0 : k.length) ?? 0) > 0 && /* @__PURE__ */ e.jsx("span", { className: "px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono", children: n.dropdownColumns.length })
                 ]
               }
             ),
@@ -3593,7 +3925,7 @@ const Hr = ({
                 onClick: () => i("events"),
                 className: `px-5 py-2.5 border-b-2 transition-colors flex items-center gap-1.5 ${l === "events" ? "border-emerald-500 text-emerald-400 bg-emerald-500/10" : "border-transparent text-slate-400 hover:text-slate-200"}`,
                 children: [
-                  /* @__PURE__ */ e.jsx(ft, { className: "w-3.5 h-3.5 text-amber-400" }),
+                  /* @__PURE__ */ e.jsx(Tt, { className: "w-3.5 h-3.5 text-amber-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "SỰ KIỆN (EVENTS)" }),
                   g.length > 0 && /* @__PURE__ */ e.jsx("span", { className: "px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono", children: g.length })
                 ]
@@ -3617,7 +3949,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.frozen,
-                    onChange: (h) => u("frozen", h.target.checked),
+                    onChange: (m) => u("frozen", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3629,7 +3961,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.disabled,
-                    onChange: (h) => u("disabled", h.target.checked),
+                    onChange: (m) => u("disabled", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3641,7 +3973,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.hasPermission,
-                    onChange: (h) => u("hasPermission", h.target.checked),
+                    onChange: (m) => u("hasPermission", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3653,7 +3985,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.focusSearch,
-                    onChange: (h) => u("focusSearch", h.target.checked),
+                    onChange: (m) => u("focusSearch", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3665,7 +3997,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.filterEq,
-                    onChange: (h) => u("filterEq", h.target.checked),
+                    onChange: (m) => u("filterEq", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3677,7 +4009,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.filterLocal,
-                    onChange: (h) => u("filterLocal", h.target.checked),
+                    onChange: (m) => u("filterLocal", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3691,7 +4023,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.hidden,
-                    onChange: (h) => u("hidden", h.target.checked),
+                    onChange: (m) => u("hidden", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3703,7 +4035,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: n.active ?? !0,
-                    onChange: (h) => u("active", h.target.checked),
+                    onChange: (m) => u("active", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3715,7 +4047,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: n.advancedSearch ?? !0,
-                    onChange: (h) => u("advancedSearch", h.target.checked),
+                    onChange: (m) => u("advancedSearch", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3727,7 +4059,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.virtualScroll,
-                    onChange: (h) => u("virtualScroll", h.target.checked),
+                    onChange: (m) => u("virtualScroll", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3739,7 +4071,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.upperCase,
-                    onChange: (h) => u("upperCase", h.target.checked),
+                    onChange: (m) => u("upperCase", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3753,7 +4085,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: n.hasFilter ?? !0,
-                    onChange: (h) => u("hasFilter", h.target.checked),
+                    onChange: (m) => u("hasFilter", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3765,7 +4097,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.isRealtime,
-                    onChange: (h) => u("isRealtime", h.target.checked),
+                    onChange: (m) => u("isRealtime", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3777,7 +4109,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.autoFit,
-                    onChange: (h) => u("autoFit", h.target.checked),
+                    onChange: (m) => u("autoFit", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3789,7 +4121,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: n.aggregate && n.aggregate !== "none",
-                    onChange: (h) => u("aggregate", h.target.checked ? "sum" : "none"),
+                    onChange: (m) => u("aggregate", m.target.checked ? "sum" : "none"),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3801,7 +4133,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.addDate,
-                    onChange: (h) => u("addDate", h.target.checked),
+                    onChange: (m) => u("addDate", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3815,7 +4147,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: n.editable ?? !0,
-                    onChange: (h) => u("editable", h.target.checked),
+                    onChange: (m) => u("editable", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3827,7 +4159,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.isPivot,
-                    onChange: (h) => u("isPivot", h.target.checked),
+                    onChange: (m) => u("isPivot", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3839,7 +4171,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.basicSearch,
-                    onChange: (h) => u("basicSearch", h.target.checked),
+                    onChange: (m) => u("basicSearch", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3851,7 +4183,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.ignoreTrigger,
-                    onChange: (h) => u("ignoreTrigger", h.target.checked),
+                    onChange: (m) => u("ignoreTrigger", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3863,7 +4195,7 @@ const Hr = ({
                   {
                     type: "checkbox",
                     checked: !!n.hideGrid,
-                    onChange: (h) => u("hideGrid", h.target.checked),
+                    onChange: (m) => u("hideGrid", m.target.checked),
                     className: "rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500"
                   }
                 ),
@@ -3871,13 +4203,13 @@ const Hr = ({
               ] })
             ] })
           ] }),
-          l === "dropdownColumns" && N && (() => {
-            const h = n.dropdownColumns || [], y = (k) => u("dropdownColumns", k), L = (f == null ? void 0 : f.name) || n.refName || n.reference || "";
+          l === "dropdownColumns" && w && (() => {
+            const m = n.dropdownColumns || [], y = (R) => u("dropdownColumns", R), P = (x == null ? void 0 : x.name) || n.refName || n.reference || "";
             return /* @__PURE__ */ e.jsxs("div", { className: "p-4 bg-slate-950/60 space-y-4 max-h-[420px] overflow-y-auto text-xs", children: [
               /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between gap-2 border-b border-slate-800 pb-3", children: [
                 /* @__PURE__ */ e.jsxs("div", { children: [
                   /* @__PURE__ */ e.jsxs("h4", { className: "font-bold text-emerald-300 flex items-center gap-1.5", children: [
-                    /* @__PURE__ */ e.jsx(bt, { className: "w-4 h-4 text-emerald-400" }),
+                    /* @__PURE__ */ e.jsx(Nt, { className: "w-4 h-4 text-emerald-400" }),
                     /* @__PURE__ */ e.jsxs("span", { children: [
                       "Cấu Hình Bảng Chọn Đa Cột Cho Cột [",
                       n.title || n.key,
@@ -3886,21 +4218,21 @@ const Hr = ({
                   ] }),
                   /* @__PURE__ */ e.jsxs("p", { className: "text-[11px] text-slate-400 mt-0.5", children: [
                     "Khi bấm vào ô Select trên bảng, danh sách sẽ mở dạng bảng nhiều cột từ thực thể ",
-                    /* @__PURE__ */ e.jsx("span", { className: "font-mono text-cyan-300", children: f ? `${f.displayName} (${f.name})` : n.reference || n.refName || "(Chưa chọn Reference)" }),
+                    /* @__PURE__ */ e.jsx("span", { className: "font-mono text-cyan-300", children: x ? `${x.displayName} (${x.name})` : n.reference || n.refName || "(Chưa chọn Reference)" }),
                     "."
                   ] })
                 ] }),
                 /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2 shrink-0", children: [
-                  x.length > 0 && /* @__PURE__ */ e.jsxs(
+                  h.length > 0 && /* @__PURE__ */ e.jsxs(
                     "button",
                     {
                       type: "button",
                       onClick: () => {
-                        const k = x.filter((w) => w.name.toLowerCase() !== "id" && w.name.toLowerCase() !== "active").slice(0, 3), F = `${Math.floor(100 / Math.max(k.length, 1))}%`;
+                        const R = h.filter((C) => C.name.toLowerCase() !== "id" && C.name.toLowerCase() !== "active").slice(0, 3), F = `${Math.floor(100 / Math.max(R.length, 1))}%`;
                         y(
-                          k.map((w) => ({
-                            key: w.name,
-                            title: w.displayName,
+                          R.map((C) => ({
+                            key: C.name,
+                            title: C.displayName,
                             width: F,
                             align: "left"
                           }))
@@ -3910,7 +4242,7 @@ const Hr = ({
                       title: "Tự động nạp các cột tiêu biểu từ thực thể Reference đã chọn",
                       children: [
                         "⚡ Tự động nạp (",
-                        f == null ? void 0 : f.name,
+                        x == null ? void 0 : x.name,
                         ")"
                       ]
                     }
@@ -3921,10 +4253,10 @@ const Hr = ({
                       type: "button",
                       onClick: () => {
                         y([
-                          ...h,
+                          ...m,
                           {
-                            key: `col${h.length + 1}`,
-                            title: `Cột ${h.length + 1}`,
+                            key: `col${m.length + 1}`,
+                            title: `Cột ${m.length + 1}`,
                             width: "50%",
                             align: "left"
                           }
@@ -3932,7 +4264,7 @@ const Hr = ({
                       },
                       className: "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm",
                       children: [
-                        /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }),
+                        /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }),
                         /* @__PURE__ */ e.jsx("span", { children: "Thêm Cột" })
                       ]
                     }
@@ -3948,7 +4280,7 @@ const Hr = ({
                       type: "text",
                       value: n.idField ?? "",
                       placeholder: "id",
-                      onChange: (k) => u("idField", k.target.value),
+                      onChange: (R) => u("idField", R.target.value),
                       className: "w-full px-2.5 py-1 bg-[#0b1329] border border-slate-700 rounded text-xs font-mono text-slate-200 focus:border-emerald-500 focus:outline-none"
                     }
                   )
@@ -3961,27 +4293,27 @@ const Hr = ({
                       type: "text",
                       value: n.formatData ?? "",
                       placeholder: "{FullName} - {Address}",
-                      onChange: (k) => u("formatData", k.target.value),
+                      onChange: (R) => u("formatData", R.target.value),
                       className: "w-full px-2.5 py-1 bg-[#0b1329] border border-emerald-500/40 rounded text-xs font-mono text-emerald-300 focus:border-emerald-400 focus:outline-none"
                     }
                   ),
-                  h.length > 0 && /* @__PURE__ */ e.jsx("div", { className: "flex flex-wrap gap-1 mt-1.5", children: h.map((k, F) => {
-                    const w = L ? `{${L}.${k.key}}` : `{${k.key}}`;
+                  m.length > 0 && /* @__PURE__ */ e.jsx("div", { className: "flex flex-wrap gap-1 mt-1.5", children: m.map((R, F) => {
+                    const C = P ? `{${P}.${R.key}}` : `{${R.key}}`;
                     return /* @__PURE__ */ e.jsxs(
                       "button",
                       {
                         type: "button",
                         onClick: () => {
-                          const S = n.formatData || "", R = S ? `${S} - ${w}` : w;
-                          u("formatData", R);
+                          const S = n.formatData || "", L = S ? `${S} - ${C}` : C;
+                          u("formatData", L);
                         },
                         className: "text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 cursor-pointer",
                         children: [
                           "+",
-                          w
+                          C
                         ]
                       },
-                      `${k.key}-${F}`
+                      `${R.key}-${F}`
                     );
                   }) })
                 ] }),
@@ -3993,23 +4325,23 @@ const Hr = ({
                       type: "text",
                       value: n.populateField ?? "",
                       placeholder: "VendorName = FullName",
-                      onChange: (k) => u("populateField", k.target.value),
+                      onChange: (R) => u("populateField", R.target.value),
                       className: "w-full px-2.5 py-1 bg-[#0b1329] border border-slate-700 rounded text-xs font-mono text-purple-300 focus:border-purple-400 focus:outline-none"
                     }
                   )
                 ] })
               ] }),
-              /* @__PURE__ */ e.jsx("datalist", { id: "col-dropdown-field-suggestions", children: x.map((k) => /* @__PURE__ */ e.jsxs("option", { value: k.name, children: [
-                k.displayName,
+              /* @__PURE__ */ e.jsx("datalist", { id: "col-dropdown-field-suggestions", children: h.map((R) => /* @__PURE__ */ e.jsxs("option", { value: R.name, children: [
+                R.displayName,
                 " (",
-                k.dataType,
+                R.dataType,
                 ")"
-              ] }, k.name)) }),
-              h.length === 0 ? /* @__PURE__ */ e.jsxs("div", { className: "p-5 border border-dashed border-slate-700 rounded-xl text-center text-slate-400", children: [
+              ] }, R.name)) }),
+              m.length === 0 ? /* @__PURE__ */ e.jsxs("div", { className: "p-5 border border-dashed border-slate-700 rounded-xl text-center text-slate-400", children: [
                 "Chưa thiết lập cột hiển thị cho dropdown này. Nhấn ",
                 /* @__PURE__ */ e.jsx("strong", { children: '"Thêm Cột"' }),
                 " ở trên để bắt đầu."
-              ] }) : /* @__PURE__ */ e.jsx("div", { className: "space-y-2", children: h.map((k, F) => /* @__PURE__ */ e.jsxs(
+              ] }) : /* @__PURE__ */ e.jsx("div", { className: "space-y-2", children: m.map((R, F) => /* @__PURE__ */ e.jsxs(
                 "div",
                 {
                   className: "grid grid-cols-12 gap-2 items-center p-2 bg-slate-900 border border-slate-800 rounded-lg",
@@ -4021,24 +4353,24 @@ const Hr = ({
                           type: "button",
                           disabled: F === 0,
                           onClick: () => {
-                            const w = [...h], S = w[F];
-                            w[F] = w[F - 1], w[F - 1] = S, y(w);
+                            const C = [...m], S = C[F];
+                            C[F] = C[F - 1], C[F - 1] = S, y(C);
                           },
                           className: "p-0.5 text-slate-400 hover:text-white disabled:opacity-20",
-                          children: /* @__PURE__ */ e.jsx(ws, { className: "w-3.5 h-3.5" })
+                          children: /* @__PURE__ */ e.jsx(Ss, { className: "w-3.5 h-3.5" })
                         }
                       ),
                       /* @__PURE__ */ e.jsx(
                         "button",
                         {
                           type: "button",
-                          disabled: F === h.length - 1,
+                          disabled: F === m.length - 1,
                           onClick: () => {
-                            const w = [...h], S = w[F];
-                            w[F] = w[F + 1], w[F + 1] = S, y(w);
+                            const C = [...m], S = C[F];
+                            C[F] = C[F + 1], C[F + 1] = S, y(C);
                           },
                           className: "p-0.5 text-slate-400 hover:text-white disabled:opacity-20",
-                          children: /* @__PURE__ */ e.jsx(St, { className: "w-3.5 h-3.5" })
+                          children: /* @__PURE__ */ e.jsx(wt, { className: "w-3.5 h-3.5" })
                         }
                       )
                     ] }),
@@ -4047,14 +4379,14 @@ const Hr = ({
                       {
                         type: "text",
                         list: "col-dropdown-field-suggestions",
-                        value: k.key,
+                        value: R.key,
                         placeholder: "Key (vd: FullName)",
-                        onChange: (w) => {
-                          const S = w.target.value, R = x.find((Q) => Q.name === S), $ = [...h];
+                        onChange: (C) => {
+                          const S = C.target.value, L = h.find((se) => se.name === S), $ = [...m];
                           $[F] = {
                             ...$[F],
                             key: S,
-                            title: R && (!$[F].title || $[F].title.startsWith("Cột ")) ? R.displayName : $[F].title
+                            title: L && (!$[F].title || $[F].title.startsWith("Cột ")) ? L.displayName : $[F].title
                           }, y($);
                         },
                         className: "w-full px-2 py-1 bg-[#0b1329] border border-slate-700 rounded text-xs font-mono text-cyan-300"
@@ -4064,11 +4396,11 @@ const Hr = ({
                       "input",
                       {
                         type: "text",
-                        value: k.title,
+                        value: R.title,
                         placeholder: "Tiêu đề cột",
-                        onChange: (w) => {
-                          const S = [...h];
-                          S[F] = { ...S[F], title: w.target.value }, y(S);
+                        onChange: (C) => {
+                          const S = [...m];
+                          S[F] = { ...S[F], title: C.target.value }, y(S);
                         },
                         className: "w-full px-2 py-1 bg-[#0b1329] border border-slate-700 rounded text-xs text-slate-100"
                       }
@@ -4077,11 +4409,11 @@ const Hr = ({
                       "input",
                       {
                         type: "text",
-                        value: k.width || "50%",
+                        value: R.width || "50%",
                         placeholder: "Width",
-                        onChange: (w) => {
-                          const S = [...h];
-                          S[F] = { ...S[F], width: w.target.value }, y(S);
+                        onChange: (C) => {
+                          const S = [...m];
+                          S[F] = { ...S[F], width: C.target.value }, y(S);
                         },
                         className: "w-full px-2 py-1 bg-[#0b1329] border border-slate-700 rounded text-xs font-mono text-slate-200"
                       }
@@ -4089,10 +4421,10 @@ const Hr = ({
                     /* @__PURE__ */ e.jsx("div", { className: "col-span-1", children: /* @__PURE__ */ e.jsxs(
                       "select",
                       {
-                        value: k.align || "left",
-                        onChange: (w) => {
-                          const S = [...h];
-                          S[F] = { ...S[F], align: w.target.value }, y(S);
+                        value: R.align || "left",
+                        onChange: (C) => {
+                          const S = [...m];
+                          S[F] = { ...S[F], align: C.target.value }, y(S);
                         },
                         className: "w-full px-1 py-1 bg-[#0b1329] border border-slate-700 rounded text-[11px] text-slate-200",
                         children: [
@@ -4106,9 +4438,9 @@ const Hr = ({
                       "button",
                       {
                         type: "button",
-                        onClick: () => y(h.filter((w, S) => S !== F)),
+                        onClick: () => y(m.filter((C, S) => S !== F)),
                         className: "p-1 text-slate-400 hover:text-red-400",
-                        children: /* @__PURE__ */ e.jsx(ot, { className: "w-3.5 h-3.5" })
+                        children: /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5" })
                       }
                     ) })
                   ]
@@ -4118,12 +4450,12 @@ const Hr = ({
             ] });
           })(),
           l === "events" && /* @__PURE__ */ e.jsx("div", { className: "p-4 bg-slate-950/60 max-h-[380px] overflow-y-auto", children: /* @__PURE__ */ e.jsx(
-            _r,
+            Jr,
             {
               events: g,
-              onChange: (h) => {
-                u("events", h);
-                const y = h.find((L) => L.trigger === "click" || L.trigger === "actionClick");
+              onChange: (m) => {
+                u("events", m);
+                const y = m.find((P) => P.trigger === "click" || P.trigger === "actionClick");
                 y && u("action", y.handlerName || y.action);
               },
               scriptFile: (p == null ? void 0 : p.scriptFile) || "transactionList.bl.ts",
@@ -4146,10 +4478,10 @@ const Hr = ({
           ) }),
           l === "permissions" && /* @__PURE__ */ e.jsxs("div", { className: "p-4 space-y-3 text-xs", children: [
             /* @__PURE__ */ e.jsx("div", { className: "text-slate-300", children: "Cấu hình phân quyền hiển thị / chỉnh sửa cột theo vai trò (Roles):" }),
-            /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-3 gap-3", children: ["Admin", "Manager", "Dispatcher", "Sales", "Customer"].map((h) => /* @__PURE__ */ e.jsxs("label", { className: "flex items-center gap-2 p-2 rounded bg-slate-800/80 border border-slate-700 cursor-pointer", children: [
-              /* @__PURE__ */ e.jsx("input", { type: "checkbox", defaultChecked: h === "Admin" || h === "Manager", className: "rounded text-emerald-500" }),
-              /* @__PURE__ */ e.jsx("span", { className: "font-semibold text-slate-200", children: h })
-            ] }, h)) })
+            /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-3 gap-3", children: ["Admin", "Manager", "Dispatcher", "Sales", "Customer"].map((m) => /* @__PURE__ */ e.jsxs("label", { className: "flex items-center gap-2 p-2 rounded bg-slate-800/80 border border-slate-700 cursor-pointer", children: [
+              /* @__PURE__ */ e.jsx("input", { type: "checkbox", defaultChecked: m === "Admin" || m === "Manager", className: "rounded text-emerald-500" }),
+              /* @__PURE__ */ e.jsx("span", { className: "font-semibold text-slate-200", children: m })
+            ] }, m)) })
           ] })
         ] })
       ] }),
@@ -4170,7 +4502,7 @@ const Hr = ({
             onClick: () => v(),
             className: "flex items-center gap-2 px-5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-950/40 transition-all",
             children: [
-              /* @__PURE__ */ e.jsx(At, { className: "w-3.5 h-3.5" }),
+              /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
               /* @__PURE__ */ e.jsx("span", { children: "Lưu Thuộc Tính Cột" })
             ]
           }
@@ -4179,7 +4511,7 @@ const Hr = ({
     ] }) }),
     document.body
   );
-}, ul = ({
+}, Ol = ({
   columns: t,
   data: r,
   showRowNumber: s = !0,
@@ -4189,21 +4521,21 @@ const Hr = ({
   if (!t.some((i) => i.aggregate && i.aggregate !== "none")) return null;
   const l = (i) => {
     if (!i.aggregate || i.aggregate === "none") return null;
-    const d = r.map((f) => f[i.key]).filter((f) => f != null && f !== "");
+    const d = r.map((x) => x[i.key]).filter((x) => x != null && x !== "");
     if (i.aggregate === "count") {
-      const f = d.length;
-      return `${i.summaryPrefix || ""}${f}${i.summarySuffix || " dòng"}`;
+      const x = d.length;
+      return `${i.summaryPrefix || ""}${x}${i.summarySuffix || " dòng"}`;
     }
-    const c = d.map((f) => {
-      if (typeof f == "number") return f;
-      const x = parseFloat(String(f).replace(/,/g, ""));
-      return isNaN(x) ? 0 : x;
+    const c = d.map((x) => {
+      if (typeof x == "number") return x;
+      const h = parseFloat(String(x).replace(/,/g, ""));
+      return isNaN(h) ? 0 : h;
     });
     if (c.length === 0) return "—";
     let p = 0;
-    i.aggregate === "sum" ? p = c.reduce((f, x) => f + x, 0) : i.aggregate === "avg" ? p = c.reduce((f, x) => f + x, 0) / c.length : i.aggregate === "min" ? p = Math.min(...c) : i.aggregate === "max" && (p = Math.max(...c));
-    const g = i.precision ?? (i.format === "number_thousands" ? 0 : 2), I = g > 0 ? p.toLocaleString("en-US", { minimumFractionDigits: g, maximumFractionDigits: g }) : p.toLocaleString("en-US");
-    return `${i.summaryPrefix || ""}${I}${i.summarySuffix || ""}`;
+    i.aggregate === "sum" ? p = c.reduce((x, h) => x + h, 0) : i.aggregate === "avg" ? p = c.reduce((x, h) => x + h, 0) / c.length : i.aggregate === "min" ? p = Math.min(...c) : i.aggregate === "max" && (p = Math.max(...c));
+    const g = i.precision ?? (i.format === "number_thousands" ? 0 : 2), T = g > 0 ? p.toLocaleString("en-US", { minimumFractionDigits: g, maximumFractionDigits: g }) : p.toLocaleString("en-US");
+    return `${i.summaryPrefix || ""}${T}${i.summarySuffix || ""}`;
   };
   return /* @__PURE__ */ e.jsxs("tr", { className: "border-t-2 border-emerald-500/50 bg-slate-900/95 font-bold text-xs text-emerald-400 select-none shadow-inner", children: [
     s && /* @__PURE__ */ e.jsx(
@@ -4215,16 +4547,16 @@ const Hr = ({
       }
     ),
     t.filter((i) => !i.hidden).map((i, d) => {
-      const c = l(i), p = d === 0, g = i.sticky === "left" || !!i.frozen, I = g && n[i.key] !== void 0 ? n[i.key] : void 0, f = i.align === "right" ? "text-right" : i.align === "center" ? "text-center" : "text-left";
+      const c = l(i), p = d === 0, g = i.sticky === "left" || !!i.frozen, T = g && n[i.key] !== void 0 ? n[i.key] : void 0, x = i.align === "right" ? "text-right" : i.align === "center" ? "text-center" : "text-left";
       return /* @__PURE__ */ e.jsx(
         "td",
         {
-          className: `px-3 py-2.5 border-r border-slate-800/80 whitespace-nowrap ${f} ${g ? "sticky z-20 bg-slate-900 shadow-[2px_0_5px_rgba(0,0,0,0.3)]" : ""}`,
+          className: `px-3 py-2.5 border-r border-slate-800/80 whitespace-nowrap ${x} ${g ? "sticky z-20 bg-slate-900 shadow-[2px_0_5px_rgba(0,0,0,0.3)]" : ""}`,
           style: {
             width: i.width,
             minWidth: i.minWidth || i.width || "100px",
             maxWidth: i.maxWidth,
-            left: I !== void 0 ? `${I}px` : void 0
+            left: T !== void 0 ? `${T}px` : void 0
           },
           children: p && !c ? /* @__PURE__ */ e.jsx("span", { className: "text-[11px] text-slate-300 font-bold uppercase tracking-wider", children: "TỔNG CỘNG:" }) : c ? /* @__PURE__ */ e.jsx("span", { className: "font-mono text-emerald-300 bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-500/20", children: c }) : "—"
         },
@@ -4233,7 +4565,7 @@ const Hr = ({
     })
   ] });
 };
-function js(t) {
+function ws(t) {
   if (!t || typeof t != "string" || !t.trim()) return null;
   const r = t.trim(), s = r.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
   if (s) {
@@ -4250,11 +4582,11 @@ function js(t) {
   const n = new Date(t);
   return isNaN(n.getTime()) ? null : { year: n.getFullYear(), month: n.getMonth(), day: n.getDate() };
 }
-function rs(t, r, s) {
+function cs(t, r, s) {
   const a = String(s).padStart(2, "0"), n = String(r + 1).padStart(2, "0");
   return `${a}/${n}/${t}`;
 }
-const pl = [
+const _l = [
   "Tháng 01",
   "Tháng 02",
   "Tháng 03",
@@ -4267,7 +4599,7 @@ const pl = [
   "Tháng 10",
   "Tháng 11",
   "Tháng 12"
-], xl = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"], Vr = ({
+], Hl = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"], Qr = ({
   value: t,
   onChange: r,
   placeholder: s = "DD/MM/YYYY",
@@ -4280,120 +4612,120 @@ const pl = [
   tabIndex: c,
   onKeyDown: p,
   onFocus: g,
-  onBlur: I,
-  autoFocus: f = !1,
-  isGridCell: x = !1
+  onBlur: T,
+  autoFocus: x = !1,
+  isGridCell: h = !1
 }) => {
-  const N = Je(null), u = Je(null), v = Je(null), [C, h] = A(!1), [y, L] = A(() => {
-    const Y = js(t);
-    return Y ? rs(Y.year, Y.month, Y.day) : t || "";
-  }), k = Ve(() => js(t), [t]), F = Ve(() => {
-    const Y = /* @__PURE__ */ new Date();
-    return { year: Y.getFullYear(), month: Y.getMonth(), day: Y.getDate() };
-  }, []), [w, S] = A((k == null ? void 0 : k.year) || F.year), [R, $] = A((k == null ? void 0 : k.month) ?? F.month), [Q, O] = A({
+  const w = tt(null), u = tt(null), v = tt(null), [k, m] = D(!1), [y, P] = D(() => {
+    const W = ws(t);
+    return W ? cs(W.year, W.month, W.day) : t || "";
+  }), R = Ae(() => ws(t), [t]), F = Ae(() => {
+    const W = /* @__PURE__ */ new Date();
+    return { year: W.getFullYear(), month: W.getMonth(), day: W.getDate() };
+  }, []), [C, S] = D((R == null ? void 0 : R.year) || F.year), [L, $] = D((R == null ? void 0 : R.month) ?? F.month), [se, V] = D({
     top: 0,
     left: 0,
     openUpwards: !1
   });
-  Be(() => {
-    const Y = js(t);
-    Y ? (L(rs(Y.year, Y.month, Y.day)), S(Y.year), $(Y.month)) : L(t || "");
+  He(() => {
+    const W = ws(t);
+    W ? (P(cs(W.year, W.month, W.day)), S(W.year), $(W.month)) : P(t || "");
   }, [t]);
-  const V = () => {
-    if (!N.current) return;
-    const Y = N.current.getBoundingClientRect(), z = 310, xe = 280, T = window.innerHeight - Y.bottom < z && Y.top > z;
-    let B = T ? Y.top - z - 4 : Y.bottom + 4, ee = Y.left;
-    ee + xe > window.innerWidth - 10 && (ee = Math.max(10, window.innerWidth - xe - 10)), O({ top: B, left: ee, openUpwards: T });
-  }, P = () => {
-    a || n || (V(), h(!0));
-  }, K = () => {
-    h(!1);
+  const U = () => {
+    if (!w.current) return;
+    const W = w.current.getBoundingClientRect(), q = 310, ie = 280, j = window.innerHeight - W.bottom < q && W.top > q;
+    let A = j ? W.top - q - 4 : W.bottom + 4, ne = W.left;
+    ne + ie > window.innerWidth - 10 && (ne = Math.max(10, window.innerWidth - ie - 10)), V({ top: A, left: ne, openUpwards: j });
+  }, E = () => {
+    a || n || (U(), m(!0));
+  }, Y = () => {
+    m(!1);
   };
-  Be(() => {
-    if (!C) return;
-    const Y = (xe) => {
-      const ve = xe.target;
-      N.current && !N.current.contains(ve) && v.current && !v.current.contains(ve) && K();
-    }, z = () => {
-      C && V();
+  He(() => {
+    if (!k) return;
+    const W = (ie) => {
+      const Ne = ie.target;
+      w.current && !w.current.contains(Ne) && v.current && !v.current.contains(Ne) && Y();
+    }, q = () => {
+      k && U();
     };
-    return document.addEventListener("mousedown", Y, !0), window.addEventListener("resize", z, !0), window.addEventListener("scroll", z, !0), () => {
-      document.removeEventListener("mousedown", Y, !0), window.removeEventListener("resize", z, !0), window.removeEventListener("scroll", z, !0);
+    return document.addEventListener("mousedown", W, !0), window.addEventListener("resize", q, !0), window.addEventListener("scroll", q, !0), () => {
+      document.removeEventListener("mousedown", W, !0), window.removeEventListener("resize", q, !0), window.removeEventListener("scroll", q, !0);
     };
-  }, [C]);
-  const G = (Y) => {
-    Y.stopPropagation(), R === 0 ? ($(11), S((z) => z - 1)) : $((z) => z - 1);
-  }, b = (Y) => {
-    Y.stopPropagation(), R === 11 ? ($(0), S((z) => z + 1)) : $((z) => z + 1);
-  }, se = (Y, z = 0) => {
-    var B;
-    let xe = w, ve = R + z;
-    ve < 0 ? (ve = 11, xe -= 1) : ve > 11 && (ve = 0, xe += 1);
-    const T = rs(xe, ve, Y);
-    L(T), r(T), K(), (B = u.current) == null || B.focus();
-  }, de = (Y) => {
-    var xe;
-    Y.stopPropagation();
-    const z = rs(F.year, F.month, F.day);
-    L(z), S(F.year), $(F.month), r(z), K(), (xe = u.current) == null || xe.focus();
-  }, me = (Y) => {
-    var z;
-    Y.stopPropagation(), L(""), r(""), K(), (z = u.current) == null || z.focus();
-  }, Ce = (Y) => {
-    const z = Y.target.value;
-    L(z);
-    const xe = js(z);
-    if (xe) {
-      const ve = rs(xe.year, xe.month, xe.day);
-      r(ve), S(xe.year), $(xe.month);
-    } else z === "" && r("");
-  }, he = (Y) => {
-    if (Y.key === "Escape")
-      C && (Y.stopPropagation(), K());
-    else if (Y.key === "Enter") {
-      const z = js(y);
-      if (z) {
-        const xe = rs(z.year, z.month, z.day);
-        L(xe), r(xe);
+  }, [k]);
+  const z = (W) => {
+    W.stopPropagation(), L === 0 ? ($(11), S((q) => q - 1)) : $((q) => q - 1);
+  }, b = (W) => {
+    W.stopPropagation(), L === 11 ? ($(0), S((q) => q + 1)) : $((q) => q + 1);
+  }, ae = (W, q = 0) => {
+    var A;
+    let ie = C, Ne = L + q;
+    Ne < 0 ? (Ne = 11, ie -= 1) : Ne > 11 && (Ne = 0, ie += 1);
+    const j = cs(ie, Ne, W);
+    P(j), r(j), Y(), (A = u.current) == null || A.focus();
+  }, O = (W) => {
+    var ie;
+    W.stopPropagation();
+    const q = cs(F.year, F.month, F.day);
+    P(q), S(F.year), $(F.month), r(q), Y(), (ie = u.current) == null || ie.focus();
+  }, _ = (W) => {
+    var q;
+    W.stopPropagation(), P(""), r(""), Y(), (q = u.current) == null || q.focus();
+  }, me = (W) => {
+    const q = W.target.value;
+    P(q);
+    const ie = ws(q);
+    if (ie) {
+      const Ne = cs(ie.year, ie.month, ie.day);
+      r(Ne), S(ie.year), $(ie.month);
+    } else q === "" && r("");
+  }, ce = (W) => {
+    if (W.key === "Escape")
+      k && (W.stopPropagation(), Y());
+    else if (W.key === "Enter") {
+      const q = ws(y);
+      if (q) {
+        const ie = cs(q.year, q.month, q.day);
+        P(ie), r(ie);
       }
-      C && K();
-    } else (Y.key === "F4" || Y.altKey && Y.key === "ArrowDown") && (Y.preventDefault(), Y.stopPropagation(), C ? K() : P());
-    p && p(Y);
-  }, we = Ve(() => {
-    const Y = (new Date(w, R, 1).getDay() + 6) % 7, z = new Date(w, R + 1, 0).getDate(), xe = new Date(w, R, 0).getDate(), ve = [];
-    for (let ee = Y - 1; ee >= 0; ee--)
-      ve.push({
-        day: xe - ee,
+      k && Y();
+    } else (W.key === "F4" || W.altKey && W.key === "ArrowDown") && (W.preventDefault(), W.stopPropagation(), k ? Y() : E());
+    p && p(W);
+  }, ye = Ae(() => {
+    const W = (new Date(C, L, 1).getDay() + 6) % 7, q = new Date(C, L + 1, 0).getDate(), ie = new Date(C, L, 0).getDate(), Ne = [];
+    for (let ne = W - 1; ne >= 0; ne--)
+      Ne.push({
+        day: ie - ne,
         monthOffset: -1,
         isCurrentMonth: !1
       });
-    for (let ee = 1; ee <= z; ee++)
-      ve.push({
-        day: ee,
+    for (let ne = 1; ne <= q; ne++)
+      Ne.push({
+        day: ne,
         monthOffset: 0,
         isCurrentMonth: !0
       });
-    const B = (ve.length <= 35 ? 35 : 42) - ve.length;
-    for (let ee = 1; ee <= B; ee++)
-      ve.push({
-        day: ee,
+    const A = (Ne.length <= 35 ? 35 : 42) - Ne.length;
+    for (let ne = 1; ne <= A; ne++)
+      Ne.push({
+        day: ne,
         monthOffset: 1,
         isCurrentMonth: !1
       });
-    return ve;
-  }, [w, R]), Oe = () => C ? Tt(
+    return Ne;
+  }, [C, L]), ue = () => k ? It(
     /* @__PURE__ */ e.jsxs(
       "div",
       {
         ref: v,
         style: {
           position: "fixed",
-          top: `${Q.top}px`,
-          left: `${Q.left}px`,
+          top: `${se.top}px`,
+          left: `${se.left}px`,
           zIndex: 99999,
           width: "280px"
         },
-        onClick: (Y) => Y.stopPropagation(),
+        onClick: (W) => W.stopPropagation(),
         className: "bg-slate-900 border border-slate-700/90 rounded-xl shadow-2xl p-3 text-slate-100 text-xs animate-in fade-in zoom-in-95 duration-100 select-none backdrop-blur-md",
         children: [
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between pb-2.5 mb-2 border-b border-slate-800", children: [
@@ -4401,29 +4733,29 @@ const pl = [
               "button",
               {
                 type: "button",
-                onClick: G,
+                onClick: z,
                 title: "Tháng trước",
                 className: "p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-100 transition-colors cursor-pointer",
-                children: /* @__PURE__ */ e.jsx(jr, { className: "w-4 h-4" })
+                children: /* @__PURE__ */ e.jsx(kr, { className: "w-4 h-4" })
               }
             ),
             /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1.5 font-bold", children: [
               /* @__PURE__ */ e.jsx(
                 "select",
                 {
-                  value: R,
-                  onChange: (Y) => $(parseInt(Y.target.value, 10)),
+                  value: L,
+                  onChange: (W) => $(parseInt(W.target.value, 10)),
                   className: "bg-slate-800/80 border border-slate-700/80 rounded px-1.5 py-0.5 text-xs text-slate-200 cursor-pointer focus:outline-none focus:border-emerald-500",
-                  children: pl.map((Y, z) => /* @__PURE__ */ e.jsx("option", { value: z, children: Y }, z))
+                  children: _l.map((W, q) => /* @__PURE__ */ e.jsx("option", { value: q, children: W }, q))
                 }
               ),
               /* @__PURE__ */ e.jsx(
                 "select",
                 {
-                  value: w,
-                  onChange: (Y) => S(parseInt(Y.target.value, 10)),
+                  value: C,
+                  onChange: (W) => S(parseInt(W.target.value, 10)),
                   className: "bg-slate-800/80 border border-slate-700/80 rounded px-1.5 py-0.5 text-xs text-slate-200 cursor-pointer focus:outline-none focus:border-emerald-500 font-mono",
-                  children: Array.from({ length: 41 }, (Y, z) => w - 20 + z).map((Y) => /* @__PURE__ */ e.jsx("option", { value: Y, children: Y }, Y))
+                  children: Array.from({ length: 41 }, (W, q) => C - 20 + q).map((W) => /* @__PURE__ */ e.jsx("option", { value: W, children: W }, W))
                 }
               )
             ] }),
@@ -4434,22 +4766,22 @@ const pl = [
                 onClick: b,
                 title: "Tháng sau",
                 className: "p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-100 transition-colors cursor-pointer",
-                children: /* @__PURE__ */ e.jsx(Ds, { className: "w-4 h-4" })
+                children: /* @__PURE__ */ e.jsx(es, { className: "w-4 h-4" })
               }
             )
           ] }),
-          /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-7 gap-1 text-center font-semibold text-[11px] text-slate-400 mb-1", children: xl.map((Y, z) => /* @__PURE__ */ e.jsx("div", { className: z >= 5 ? "text-amber-400/80" : "", children: Y }, z)) }),
-          /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-7 gap-1 text-center text-xs", children: we.map((Y, z) => {
-            const xe = k && Y.isCurrentMonth && k.year === w && k.month === R && k.day === Y.day, ve = Y.isCurrentMonth && F.year === w && F.month === R && F.day === Y.day;
+          /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-7 gap-1 text-center font-semibold text-[11px] text-slate-400 mb-1", children: Hl.map((W, q) => /* @__PURE__ */ e.jsx("div", { className: q >= 5 ? "text-amber-400/80" : "", children: W }, q)) }),
+          /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-7 gap-1 text-center text-xs", children: ye.map((W, q) => {
+            const ie = R && W.isCurrentMonth && R.year === C && R.month === L && R.day === W.day, Ne = W.isCurrentMonth && F.year === C && F.month === L && F.day === W.day;
             return /* @__PURE__ */ e.jsx(
               "button",
               {
                 type: "button",
-                onClick: () => se(Y.day, Y.monthOffset),
-                className: `h-7 w-7 mx-auto flex items-center justify-center rounded-lg font-mono text-xs transition-all cursor-pointer ${xe ? "bg-emerald-500 text-white font-bold shadow-md shadow-emerald-500/20 scale-105" : ve ? "border border-emerald-400 text-emerald-300 font-bold bg-emerald-500/10 hover:bg-emerald-500/20" : Y.isCurrentMonth ? "text-slate-200 hover:bg-slate-800 hover:text-white" : "text-slate-600 hover:bg-slate-800/40"}`,
-                children: Y.day
+                onClick: () => ae(W.day, W.monthOffset),
+                className: `h-7 w-7 mx-auto flex items-center justify-center rounded-lg font-mono text-xs transition-all cursor-pointer ${ie ? "bg-emerald-500 text-white font-bold shadow-md shadow-emerald-500/20 scale-105" : Ne ? "border border-emerald-400 text-emerald-300 font-bold bg-emerald-500/10 hover:bg-emerald-500/20" : W.isCurrentMonth ? "text-slate-200 hover:bg-slate-800 hover:text-white" : "text-slate-600 hover:bg-slate-800/40"}`,
+                children: W.day
               },
-              z
+              q
             );
           }) }),
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between pt-2.5 mt-2 border-t border-slate-800 text-[11px]", children: [
@@ -4457,10 +4789,10 @@ const pl = [
               "button",
               {
                 type: "button",
-                onClick: de,
+                onClick: O,
                 className: "flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-medium px-2 py-1 rounded hover:bg-emerald-500/10 transition-colors cursor-pointer",
                 children: [
-                  /* @__PURE__ */ e.jsx(da, { className: "w-3 h-3" }),
+                  /* @__PURE__ */ e.jsx(ga, { className: "w-3 h-3" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Hôm nay" })
                 ]
               }
@@ -4469,10 +4801,10 @@ const pl = [
               "button",
               {
                 type: "button",
-                onClick: me,
+                onClick: _,
                 className: "flex items-center gap-1 text-rose-400 hover:text-rose-300 font-medium px-2 py-1 rounded hover:bg-rose-500/10 transition-colors cursor-pointer",
                 children: [
-                  /* @__PURE__ */ e.jsx(ct, { className: "w-3 h-3" }),
+                  /* @__PURE__ */ e.jsx(dt, { className: "w-3 h-3" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Xóa" })
                 ]
               }
@@ -4481,7 +4813,7 @@ const pl = [
               "button",
               {
                 type: "button",
-                onClick: K,
+                onClick: Y,
                 className: "text-slate-400 hover:text-slate-200 px-2 py-1 rounded hover:bg-slate-800 transition-colors cursor-pointer",
                 children: "Đóng"
               }
@@ -4491,28 +4823,28 @@ const pl = [
       }
     ),
     document.body
-  ) : null, U = x ? "relative flex items-center w-full h-7" : "relative flex items-center w-full", oe = x ? `w-full h-7 pl-2 pr-6 py-0.5 rounded bg-slate-900/80 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 font-mono text-xs border ${i ? "border-red-500/90 text-red-200" : "border-slate-700/80 focus:border-emerald-500"} focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed ${l}` : `w-full px-3 py-1.5 pr-8 bg-slate-900 border rounded-lg text-xs text-slate-100 font-mono transition-all disabled:opacity-50 ${i ? "border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none" : "border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"} ${l}`;
-  return /* @__PURE__ */ e.jsxs("div", { ref: N, className: `${U} ${o}`, children: [
+  ) : null, M = h ? "relative flex items-center w-full h-7" : "relative flex items-center w-full", Q = h ? `w-full h-7 pl-2 pr-6 py-0.5 rounded bg-slate-900/80 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 font-mono text-xs border ${i ? "border-red-500/90 text-red-200" : "border-slate-700/80 focus:border-emerald-500"} focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed ${l}` : `w-full px-3 py-1.5 pr-8 bg-slate-900 border rounded-lg text-xs text-slate-100 font-mono transition-all disabled:opacity-50 ${i ? "border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none" : "border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"} ${l}`;
+  return /* @__PURE__ */ e.jsxs("div", { ref: w, className: `${M} ${o}`, children: [
     /* @__PURE__ */ e.jsx(
       "input",
       {
         ref: u,
         type: "text",
         tabIndex: c,
-        autoFocus: f,
+        autoFocus: x,
         disabled: a,
         readOnly: n,
         placeholder: s,
         title: i || d,
         value: y,
-        onChange: Ce,
-        onKeyDown: he,
+        onChange: me,
+        onKeyDown: ce,
         onFocus: g,
-        onBlur: I,
-        onClick: (Y) => {
-          Y.stopPropagation(), C || P();
+        onBlur: T,
+        onClick: (W) => {
+          W.stopPropagation(), k || E();
         },
-        className: oe
+        className: Q
       }
     ),
     /* @__PURE__ */ e.jsx(
@@ -4521,16 +4853,16 @@ const pl = [
         type: "button",
         tabIndex: -1,
         disabled: a,
-        onClick: (Y) => {
-          Y.stopPropagation(), C ? K() : P();
+        onClick: (W) => {
+          W.stopPropagation(), k ? Y() : E();
         },
         className: "absolute right-1.5 p-1 rounded text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
-        children: /* @__PURE__ */ e.jsx(yr, { className: "w-3.5 h-3.5" })
+        children: /* @__PURE__ */ e.jsx(Mn, { className: "w-3.5 h-3.5" })
       }
     ),
-    Oe()
+    ue()
   ] });
-}, hl = ({
+}, Gl = ({
   column: t,
   value: r,
   row: s,
@@ -4543,48 +4875,48 @@ const pl = [
   onChange: c,
   onActionClick: p,
   onKeyDown: g,
-  onFocus: I
+  onFocus: T
 }) => {
-  const f = (t.editable ?? !0) && !t.disabled && t.componentType !== "Label", x = r === "—" || r === "-" ? "" : r ?? "", u = o ? "border-red-500/90 bg-red-950/40 text-red-100 ring-1 ring-red-500/70 focus:border-red-400 focus:ring-red-400 placeholder:text-red-400/50" : l ? "border-emerald-400 ring-2 ring-emerald-400/50 shadow-[0_0_8px_rgba(52,211,153,0.3)]" : "border-slate-700/70 hover:border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40", v = (L) => {
-    g && g(L, a, n, t.key);
-  }, C = () => {
-    I && I(a, n, t.key);
-  }, h = {
+  const x = (t.editable ?? !0) && !t.disabled && t.componentType !== "Label", h = r === "—" || r === "-" ? "" : r ?? "", u = o ? "border-red-500/90 bg-red-950/40 text-red-100 ring-1 ring-red-500/70 focus:border-red-400 focus:ring-red-400 placeholder:text-red-400/50" : l ? "border-emerald-400 ring-2 ring-emerald-400/50 shadow-[0_0_8px_rgba(52,211,153,0.3)]" : "border-slate-700/70 hover:border-emerald-500/70 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40", v = (P) => {
+    g && g(P, a, n, t.key);
+  }, k = () => {
+    T && T(a, n, t.key);
+  }, m = {
     "data-grid-cell": `${a}_${n}`,
     "data-grid-row": a,
     "data-grid-col": n,
     "data-grid-colkey": t.key
   };
   if (t.componentType === "Checkbox")
-    return /* @__PURE__ */ e.jsx("div", { className: "w-full flex items-center justify-center py-1", ...h, children: /* @__PURE__ */ e.jsx(
+    return /* @__PURE__ */ e.jsx("div", { className: "w-full flex items-center justify-center py-1", ...m, children: /* @__PURE__ */ e.jsx(
       "input",
       {
         type: "checkbox",
         checked: !!r,
-        disabled: t.disabled || !f,
-        onClick: (L) => L.stopPropagation(),
-        onChange: (L) => c(L.target.checked),
+        disabled: t.disabled || !x,
+        onClick: (P) => P.stopPropagation(),
+        onChange: (P) => c(P.target.checked),
         onKeyDown: v,
-        onFocus: C,
-        ...h,
+        onFocus: k,
+        ...m,
         className: `w-4 h-4 rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 ${l ? "ring-2 ring-emerald-400" : ""}`
       }
     ) });
   if (t.componentType === "Button") {
-    const L = t.formatCell || t.title || r || "Action";
-    return /* @__PURE__ */ e.jsx("div", { className: "w-full flex items-center justify-center py-0.5", ...h, children: /* @__PURE__ */ e.jsx(
+    const P = t.formatCell || t.title || r || "Action";
+    return /* @__PURE__ */ e.jsx("div", { className: "w-full flex items-center justify-center py-0.5", ...m, children: /* @__PURE__ */ e.jsx(
       "button",
       {
         type: "button",
         disabled: t.disabled,
-        onClick: (k) => {
-          k.stopPropagation(), p && p(t.key, s);
+        onClick: (R) => {
+          R.stopPropagation(), p && p(t.key, s);
         },
         onKeyDown: v,
-        onFocus: C,
-        ...h,
+        onFocus: k,
+        ...m,
         className: `px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 hover:text-white border border-blue-500/40 text-[11px] font-semibold transition-colors disabled:opacity-50 cursor-pointer shadow-sm hover:shadow-blue-500/20 ${l ? "ring-2 ring-emerald-400 border-emerald-400" : ""}`,
-        children: L
+        children: P
       }
     ) });
   }
@@ -4593,50 +4925,50 @@ const pl = [
       "a",
       {
         href: "#",
-        onClick: (L) => {
-          L.preventDefault(), L.stopPropagation(), p && p(t.key, s);
+        onClick: (P) => {
+          P.preventDefault(), P.stopPropagation(), p && p(t.key, s);
         },
         onKeyDown: v,
-        onFocus: C,
-        ...h,
+        onFocus: k,
+        ...m,
         className: `text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 font-medium truncate ${l ? "ring-2 ring-emerald-400/80 rounded px-1" : ""}`,
         children: [
           /* @__PURE__ */ e.jsx("span", { className: "truncate", children: r || "—" }),
-          /* @__PURE__ */ e.jsx(Nr, { className: "w-3 h-3 flex-shrink-0" })
+          /* @__PURE__ */ e.jsx(Sr, { className: "w-3 h-3 flex-shrink-0" })
         ]
       }
     );
-  if (!f) {
+  if (!x) {
     if (t.precision !== void 0 && typeof r == "number") {
-      const L = t.precision > 0 ? r.toLocaleString("en-US", { minimumFractionDigits: t.precision, maximumFractionDigits: t.precision }) : r.toLocaleString("en-US");
+      const P = t.precision > 0 ? r.toLocaleString("en-US", { minimumFractionDigits: t.precision, maximumFractionDigits: t.precision }) : r.toLocaleString("en-US");
       return /* @__PURE__ */ e.jsxs(
         "span",
         {
           tabIndex: 0,
           onKeyDown: v,
-          onFocus: C,
-          ...h,
+          onFocus: k,
+          ...m,
           className: `font-mono text-slate-200 outline-none rounded px-1 ${l ? "ring-2 ring-emerald-400/80 bg-emerald-950/30" : "focus:ring-1 focus:ring-emerald-400/50"}`,
           children: [
-            L,
+            P,
             t.summarySuffix ? ` ${t.summarySuffix}` : ""
           ]
         }
       );
     }
     if (t.formatCell && r !== void 0 && r !== null) {
-      let L = t.formatCell.replace("{0}", String(r));
-      return typeof s == "object" && s !== null && Object.keys(s).forEach((k) => {
-        L = L.replace(new RegExp(`\\{${k}\\}`, "gi"), String(s[k] ?? ""));
+      let P = t.formatCell.replace("{0}", String(r));
+      return typeof s == "object" && s !== null && Object.keys(s).forEach((R) => {
+        P = P.replace(new RegExp(`\\{${R}\\}`, "gi"), String(s[R] ?? ""));
       }), /* @__PURE__ */ e.jsx(
         "span",
         {
           tabIndex: 0,
           onKeyDown: v,
-          onFocus: C,
-          ...h,
+          onFocus: k,
+          ...m,
           className: `truncate text-slate-200 outline-none rounded px-1 ${l ? "ring-2 ring-emerald-400/80 bg-emerald-950/30" : "focus:ring-1 focus:ring-emerald-400/50"}`,
-          children: L
+          children: P
         }
       );
     }
@@ -4645,23 +4977,23 @@ const pl = [
       {
         tabIndex: 0,
         onKeyDown: v,
-        onFocus: C,
-        ...h,
+        onFocus: k,
+        ...m,
         className: `truncate text-slate-200 outline-none rounded px-1 ${l ? "ring-2 ring-emerald-400/80 bg-emerald-950/30" : "focus:ring-1 focus:ring-emerald-400/50"}`,
         children: r != null ? String(r) : "—"
       }
     );
   }
   if (t.componentType === "Select" || t.componentType === "Dropdown") {
-    let L = t.options || [];
-    const k = t.reference || t.refName;
-    if (L.length === 0 && k) {
-      const F = fe.getState().getDataset(k);
+    let P = t.options || [];
+    const R = t.reference || t.refName;
+    if (P.length === 0 && R) {
+      const F = Te.getState().getDataset(R);
       if (Array.isArray(F) && F.length > 0) {
-        const w = t.valueField || t.idField || "code", S = t.displayField || t.selectField || "name";
-        L = F.map((R) => ({
-          value: String(R[w] ?? R.code ?? R.id ?? ""),
-          label: String(R[S] ?? R.name ?? R[w] ?? "")
+        const C = t.valueField || t.idField || "code", S = t.displayField || t.selectField || "name";
+        P = F.map((L) => ({
+          value: String(L[C] ?? L.code ?? L.id ?? ""),
+          label: String(L[S] ?? L.name ?? L[C] ?? "")
         }));
       }
     }
@@ -4674,28 +5006,28 @@ const pl = [
         onClick: (F) => F.stopPropagation(),
         onChange: (F) => c(F.target.value),
         onKeyDown: v,
-        onFocus: C,
-        ...h,
+        onFocus: k,
+        ...m,
         className: `w-full h-7 px-2 py-0.5 rounded bg-slate-900/80 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 text-xs border ${u} focus:outline-none transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`,
         children: [
           /* @__PURE__ */ e.jsx("option", { value: "", children: "— Chọn —" }),
-          L.map((F) => /* @__PURE__ */ e.jsx("option", { value: F.value, className: "bg-slate-900 text-slate-100", children: F.label }, F.value))
+          P.map((F) => /* @__PURE__ */ e.jsx("option", { value: F.value, className: "bg-slate-900 text-slate-100", children: F.label }, F.value))
         ]
       }
     );
   }
   if (t.componentType === "DatePicker" || t.componentType === "Datepicker")
-    return /* @__PURE__ */ e.jsx("div", { className: "w-full", title: o || void 0, ...h, children: /* @__PURE__ */ e.jsx(
-      Vr,
+    return /* @__PURE__ */ e.jsx("div", { className: "w-full", title: o || void 0, ...m, children: /* @__PURE__ */ e.jsx(
+      Qr,
       {
         isGridCell: !0,
-        value: x,
+        value: h,
         disabled: t.disabled,
         placeholder: "DD/MM/YYYY",
         error: o || void 0,
-        onChange: (L) => c(L),
+        onChange: (P) => c(P),
         onKeyDown: v,
-        onFocus: C
+        onFocus: k
       }
     ) });
   if (t.componentType === "Number")
@@ -4703,19 +5035,19 @@ const pl = [
       "input",
       {
         type: "number",
-        value: x,
+        value: h,
         placeholder: "0",
         disabled: t.disabled,
         title: o || void 0,
         step: t.precision && t.precision > 0 ? Math.pow(10, -t.precision) : 1,
-        onClick: (L) => L.stopPropagation(),
-        onChange: (L) => {
-          const k = L.target.value;
-          c(k === "" ? "" : Number(k));
+        onClick: (P) => P.stopPropagation(),
+        onChange: (P) => {
+          const R = P.target.value;
+          c(R === "" ? "" : Number(R));
         },
         onKeyDown: v,
-        onFocus: C,
-        ...h,
+        onFocus: k,
+        ...m,
         className: `w-full h-7 px-2.5 py-0.5 text-right font-mono text-xs rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 border ${u} focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed`
       }
     );
@@ -4723,19 +5055,19 @@ const pl = [
     return /* @__PURE__ */ e.jsx(
       "textarea",
       {
-        value: x,
+        value: h,
         placeholder: t.title ? `Nhập ${t.title}...` : "Nhập...",
         disabled: t.disabled,
         title: o || void 0,
         rows: 1,
-        onClick: (L) => L.stopPropagation(),
-        onChange: (L) => {
-          const k = t.upperCase ? L.target.value.toUpperCase() : L.target.value;
-          c(k);
+        onClick: (P) => P.stopPropagation(),
+        onChange: (P) => {
+          const R = t.upperCase ? P.target.value.toUpperCase() : P.target.value;
+          c(R);
         },
         onKeyDown: v,
-        onFocus: C,
-        ...h,
+        onFocus: k,
+        ...m,
         className: `w-full py-1 px-2.5 rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 text-xs border ${u} focus:outline-none transition-all resize-none placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed`
       }
     );
@@ -4744,24 +5076,24 @@ const pl = [
     "input",
     {
       type: "text",
-      value: x,
+      value: h,
       placeholder: t.title ? `Nhập ${t.title}...` : "Nhập dữ liệu...",
       disabled: t.disabled,
       title: o || void 0,
-      onClick: (L) => L.stopPropagation(),
-      onChange: (L) => {
-        const k = t.upperCase ? L.target.value.toUpperCase() : L.target.value;
-        c(k);
+      onClick: (P) => P.stopPropagation(),
+      onChange: (P) => {
+        const R = t.upperCase ? P.target.value.toUpperCase() : P.target.value;
+        c(R);
       },
       onKeyDown: v,
-      onFocus: C,
-      ...h,
+      onFocus: k,
+      ...m,
       className: `w-full h-7 px-2.5 py-0.5 rounded bg-slate-900/70 hover:bg-slate-900 focus:bg-slate-950 text-slate-100 text-xs border ${u} focus:outline-none transition-all placeholder:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed ${y} ${t.cssClass || ""}`
     }
   );
 };
-function ml(t, r) {
-  var l, i, d, c, p, g, I, f;
+function Vl(t, r) {
+  var l, i, d, c, p, g, T, x;
   if (t.value !== r.value || t.error !== r.error || t.rowIndex !== r.rowIndex || t.columnIndex !== r.columnIndex || !!t.isFocused != !!r.isFocused || !!t.isEditing != !!r.isEditing || !!t.isSelected != !!r.isSelected)
     return !1;
   const s = t.column, a = r.column;
@@ -4771,18 +5103,18 @@ function ml(t, r) {
   if (n !== void 0 && o !== void 0 && n !== o)
     return !1;
   if (a.formatCell && typeof a.formatCell == "string") {
-    const x = a.formatCell.match(/\{([a-zA-Z0-9_]+)\}/g);
-    if (x)
-      for (const N of x) {
-        const u = N.slice(1, -1);
-        if (u !== "0" && ((I = t.row) == null ? void 0 : I[u]) !== ((f = r.row) == null ? void 0 : f[u]))
+    const h = a.formatCell.match(/\{([a-zA-Z0-9_]+)\}/g);
+    if (h)
+      for (const w of h) {
+        const u = w.slice(1, -1);
+        if (u !== "0" && ((T = t.row) == null ? void 0 : T[u]) !== ((x = r.row) == null ? void 0 : x[u]))
           return !1;
       }
   }
   return !((a.componentType === "Button" || a.componentType === "Link") && t.row !== r.row);
 }
-const rr = Mt.memo(hl, ml);
-function bl({
+const pr = Zt.memo(Gl, Vl);
+function Wl({
   tableRef: t,
   rows: r,
   visibleColumns: s,
@@ -4795,96 +5127,96 @@ function bl({
   onDeleteRow: c,
   onDuplicateRow: p,
   onToggleAll: g,
-  onFilterByCell: I,
-  onQuickSum: f,
-  onToggleColumnFilters: x,
-  isEditableTable: N = !0,
+  onFilterByCell: T,
+  onQuickSum: x,
+  onToggleColumnFilters: h,
+  isEditableTable: w = !0,
   onPasteExcel: u
 }) {
-  const [v, C] = A(null), h = bs(
-    (w, S) => {
-      if (w < 0 || w >= r.length || S < 0 || S >= s.length) return;
-      const R = s[S], $ = r[w], Q = ($ == null ? void 0 : $.id) ?? ($ == null ? void 0 : $.Id) ?? w;
-      if (n(Q), C({ rowIndex: w, colIndex: S, colKey: R.key }), t.current) {
-        const O = `[data-grid-cell="${w}_${S}"]`, V = t.current.querySelector(O);
-        if (V) {
-          V.scrollIntoView({ block: "nearest", inline: "nearest" });
-          const P = V.tagName === "INPUT" || V.tagName === "SELECT" || V.tagName === "TEXTAREA" || V.tagName === "BUTTON" ? V : V.querySelector("input, select, textarea, button") || V;
-          P.focus(), P instanceof HTMLInputElement && (P.type === "text" || P.type === "number") && P.select();
+  const [v, k] = D(null), m = vs(
+    (C, S) => {
+      if (C < 0 || C >= r.length || S < 0 || S >= s.length) return;
+      const L = s[S], $ = r[C], se = ($ == null ? void 0 : $.id) ?? ($ == null ? void 0 : $.Id) ?? C;
+      if (n(se), k({ rowIndex: C, colIndex: S, colKey: L.key }), t.current) {
+        const V = `[data-grid-cell="${C}_${S}"]`, U = t.current.querySelector(V);
+        if (U) {
+          U.scrollIntoView({ block: "nearest", inline: "nearest" });
+          const E = U.tagName === "INPUT" || U.tagName === "SELECT" || U.tagName === "TEXTAREA" || U.tagName === "BUTTON" ? U : U.querySelector("input, select, textarea, button") || U;
+          E.focus(), E instanceof HTMLInputElement && (E.type === "text" || E.type === "number") && E.select();
         }
       }
     },
     [r, s, t, n]
-  ), y = bs(
-    (w) => {
+  ), y = vs(
+    (C) => {
       if (!t.current) return;
-      const S = t.current.querySelector(`[data-row-index="${w}"]`);
+      const S = t.current.querySelector(`[data-row-index="${C}"]`);
       S && S.scrollIntoView({ block: "nearest" });
     },
     [t]
-  ), L = bs(
-    (w) => {
-      if (w.key === "F1") {
-        w.preventDefault(), w.stopPropagation(), g == null || g();
+  ), P = vs(
+    (C) => {
+      if (C.key === "F1") {
+        C.preventDefault(), C.stopPropagation(), g == null || g();
         return;
       }
-      if (w.key === "F2") {
-        w.preventDefault(), w.stopPropagation(), I == null || I();
+      if (C.key === "F2") {
+        C.preventDefault(), C.stopPropagation(), T == null || T();
         return;
       }
-      if (w.key === "F3") {
-        w.preventDefault(), w.stopPropagation(), f == null || f();
+      if (C.key === "F3") {
+        C.preventDefault(), C.stopPropagation(), x == null || x();
         return;
       }
-      if (w.key === "F4") {
-        w.preventDefault(), w.stopPropagation(), d == null || d();
+      if (C.key === "F4") {
+        C.preventDefault(), C.stopPropagation(), d == null || d();
         return;
       }
-      if (w.key === "F6") {
-        w.preventDefault(), w.stopPropagation(), x == null || x();
+      if (C.key === "F6") {
+        C.preventDefault(), C.stopPropagation(), h == null || h();
         return;
       }
-      if (w.key === "ArrowDown") {
-        w.preventDefault();
-        const S = r.findIndex(($, Q) => ($.id ?? $.Id ?? Q) === a), R = S < r.length - 1 ? S + 1 : S;
-        if (R >= 0 && R !== S) {
-          const $ = r[R];
-          n($.id ?? $.Id ?? R), l(/* @__PURE__ */ new Set([$.id ?? $.Id ?? R])), y(R);
+      if (C.key === "ArrowDown") {
+        C.preventDefault();
+        const S = r.findIndex(($, se) => ($.id ?? $.Id ?? se) === a), L = S < r.length - 1 ? S + 1 : S;
+        if (L >= 0 && L !== S) {
+          const $ = r[L];
+          n($.id ?? $.Id ?? L), l(/* @__PURE__ */ new Set([$.id ?? $.Id ?? L])), y(L);
         }
         return;
       }
-      if (w.key === "ArrowUp") {
-        w.preventDefault();
-        const S = r.findIndex(($, Q) => ($.id ?? $.Id ?? Q) === a), R = S > 0 ? S - 1 : 0;
-        if (R >= 0 && R !== S) {
-          const $ = r[R];
-          n($.id ?? $.Id ?? R), l(/* @__PURE__ */ new Set([$.id ?? $.Id ?? R])), y(R);
+      if (C.key === "ArrowUp") {
+        C.preventDefault();
+        const S = r.findIndex(($, se) => ($.id ?? $.Id ?? se) === a), L = S > 0 ? S - 1 : 0;
+        if (L >= 0 && L !== S) {
+          const $ = r[L];
+          n($.id ?? $.Id ?? L), l(/* @__PURE__ */ new Set([$.id ?? $.Id ?? L])), y(L);
         }
         return;
       }
-      if (w.key === "Enter") {
-        w.preventDefault();
-        const S = r.findIndex((R, $) => (R.id ?? R.Id ?? $) === a);
+      if (C.key === "Enter") {
+        C.preventDefault();
+        const S = r.findIndex((L, $) => (L.id ?? L.Id ?? $) === a);
         S >= 0 && i && i(r[S], S);
         return;
       }
-      if (w.key === "Delete") {
-        const S = r.findIndex((R, $) => (R.id ?? R.Id ?? $) === a);
-        S >= 0 && c && (w.preventDefault(), c(S));
+      if (C.key === "Delete") {
+        const S = r.findIndex((L, $) => (L.id ?? L.Id ?? $) === a);
+        S >= 0 && c && (C.preventDefault(), c(S));
         return;
       }
-      if ((w.ctrlKey || w.metaKey) && (w.key === "d" || w.key === "D")) {
-        w.preventDefault();
-        const S = r.findIndex((R, $) => (R.id ?? R.Id ?? $) === a);
+      if ((C.ctrlKey || C.metaKey) && (C.key === "d" || C.key === "D")) {
+        C.preventDefault();
+        const S = r.findIndex((L, $) => (L.id ?? L.Id ?? $) === a);
         S >= 0 && p && p(S);
         return;
       }
-      if ((w.ctrlKey || w.metaKey) && (w.key === "v" || w.key === "V")) {
-        const S = w.target;
-        !(S && (S.tagName === "INPUT" || S.tagName === "TEXTAREA")) && u && typeof navigator < "u" && navigator.clipboard && typeof navigator.clipboard.readText == "function" && (w.preventDefault(), navigator.clipboard.readText().then(($) => {
+      if ((C.ctrlKey || C.metaKey) && (C.key === "v" || C.key === "V")) {
+        const S = C.target;
+        !(S && (S.tagName === "INPUT" || S.tagName === "TEXTAREA")) && u && typeof navigator < "u" && navigator.clipboard && typeof navigator.clipboard.readText == "function" && (C.preventDefault(), navigator.clipboard.readText().then(($) => {
           if ($) {
-            const Q = v ? v.rowIndex : a !== null ? Math.max(0, r.findIndex((V, P) => (V.id ?? V.Id ?? P) === a)) : 0, O = v ? v.colIndex : 0;
-            u($, Q, O);
+            const se = v ? v.rowIndex : a !== null ? Math.max(0, r.findIndex((U, E) => (U.id ?? U.Id ?? E) === a)) : 0, V = v ? v.colIndex : 0;
+            u($, se, V);
           }
         }).catch(() => {
         }));
@@ -4897,107 +5229,107 @@ function bl({
       l,
       y,
       g,
-      I,
-      f,
-      d,
+      T,
       x,
+      d,
+      h,
       i,
       c,
       p,
       v,
       u
     ]
-  ), k = bs(
-    (w, S, R, $) => {
-      var Q, O, V;
-      if (w.key === "F1") {
-        w.preventDefault(), w.stopPropagation(), g == null || g();
+  ), R = vs(
+    (C, S, L, $) => {
+      var se, V, U;
+      if (C.key === "F1") {
+        C.preventDefault(), C.stopPropagation(), g == null || g();
         return;
       }
-      if (w.key === "F2") {
-        w.preventDefault(), w.stopPropagation(), I == null || I();
+      if (C.key === "F2") {
+        C.preventDefault(), C.stopPropagation(), T == null || T();
         return;
       }
-      if (w.key === "F3") {
-        w.preventDefault(), w.stopPropagation(), f == null || f();
+      if (C.key === "F3") {
+        C.preventDefault(), C.stopPropagation(), x == null || x();
         return;
       }
-      if (w.key === "F4") {
-        w.preventDefault(), w.stopPropagation(), d == null || d();
+      if (C.key === "F4") {
+        C.preventDefault(), C.stopPropagation(), d == null || d();
         return;
       }
-      if (w.key === "F6") {
-        w.preventDefault(), w.stopPropagation(), x == null || x();
+      if (C.key === "F6") {
+        C.preventDefault(), C.stopPropagation(), h == null || h();
         return;
       }
-      if (w.key === "ArrowDown") {
-        w.preventDefault(), S < r.length - 1 && h(S + 1, R);
+      if (C.key === "ArrowDown") {
+        C.preventDefault(), S < r.length - 1 && m(S + 1, L);
         return;
       }
-      if (w.key === "ArrowUp") {
-        w.preventDefault(), S > 0 && h(S - 1, R);
+      if (C.key === "ArrowUp") {
+        C.preventDefault(), S > 0 && m(S - 1, L);
         return;
       }
-      if (w.key === "ArrowLeft") {
-        const P = w.target, K = P && P.selectionStart === 0 && P.selectionEnd === 0, G = P && P.selectionStart === 0 && P.selectionEnd === ((Q = P.value) == null ? void 0 : Q.length), b = !P || P.tagName === "SELECT" || P.type === "checkbox" || P.tagName === "BUTTON";
-        (K || G || b) && R > 0 && (w.preventDefault(), h(S, R - 1));
+      if (C.key === "ArrowLeft") {
+        const E = C.target, Y = E && E.selectionStart === 0 && E.selectionEnd === 0, z = E && E.selectionStart === 0 && E.selectionEnd === ((se = E.value) == null ? void 0 : se.length), b = !E || E.tagName === "SELECT" || E.type === "checkbox" || E.tagName === "BUTTON";
+        (Y || z || b) && L > 0 && (C.preventDefault(), m(S, L - 1));
         return;
       }
-      if (w.key === "ArrowRight") {
-        const P = w.target, K = P && P.selectionStart === ((O = P.value) == null ? void 0 : O.length), G = P && P.selectionStart === 0 && P.selectionEnd === ((V = P.value) == null ? void 0 : V.length), b = !P || P.tagName === "SELECT" || P.type === "checkbox" || P.tagName === "BUTTON";
-        (K || G || b) && R < s.length - 1 && (w.preventDefault(), h(S, R + 1));
+      if (C.key === "ArrowRight") {
+        const E = C.target, Y = E && E.selectionStart === ((V = E.value) == null ? void 0 : V.length), z = E && E.selectionStart === 0 && E.selectionEnd === ((U = E.value) == null ? void 0 : U.length), b = !E || E.tagName === "SELECT" || E.type === "checkbox" || E.tagName === "BUTTON";
+        (Y || z || b) && L < s.length - 1 && (C.preventDefault(), m(S, L + 1));
         return;
       }
-      if (w.key === "Tab") {
-        w.preventDefault(), w.shiftKey ? R > 0 ? h(S, R - 1) : S > 0 && h(S - 1, s.length - 1) : R < s.length - 1 ? h(S, R + 1) : S < r.length - 1 ? h(S + 1, 0) : d && (d(), setTimeout(() => {
-          h(r.length, 0);
+      if (C.key === "Tab") {
+        C.preventDefault(), C.shiftKey ? L > 0 ? m(S, L - 1) : S > 0 && m(S - 1, s.length - 1) : L < s.length - 1 ? m(S, L + 1) : S < r.length - 1 ? m(S + 1, 0) : d && (d(), setTimeout(() => {
+          m(r.length, 0);
         }, 60));
         return;
       }
-      if (w.key === "Enter") {
-        if (w.preventDefault(), w.shiftKey) {
-          S > 0 && h(S - 1, R);
+      if (C.key === "Enter") {
+        if (C.preventDefault(), C.shiftKey) {
+          S > 0 && m(S - 1, L);
           return;
         }
-        S < r.length - 1 ? h(S + 1, R) : d && (d(), setTimeout(() => {
-          h(r.length, R);
+        S < r.length - 1 ? m(S + 1, L) : d && (d(), setTimeout(() => {
+          m(r.length, L);
         }, 60));
         return;
       }
-      if (w.key === "Escape") {
-        w.preventDefault();
-        const P = w.target;
-        P == null || P.blur();
+      if (C.key === "Escape") {
+        C.preventDefault();
+        const E = C.target;
+        E == null || E.blur();
         return;
       }
     },
-    [r, s, h, g, I, f, d, x]
-  ), F = bs(
-    (w) => {
-      var P;
-      const S = (P = w.clipboardData) == null ? void 0 : P.getData("text/plain");
+    [r, s, m, g, T, x, d, h]
+  ), F = vs(
+    (C) => {
+      var E;
+      const S = (E = C.clipboardData) == null ? void 0 : E.getData("text/plain");
       if (!S || !u) return;
-      const R = S.includes("	") || S.includes(`
-`), $ = w.target;
-      if ($ && ($.tagName === "INPUT" || $.tagName === "TEXTAREA") && !R)
+      const L = S.includes("	") || S.includes(`
+`), $ = C.target;
+      if ($ && ($.tagName === "INPUT" || $.tagName === "TEXTAREA") && !L)
         return;
-      w.preventDefault(), w.stopPropagation();
-      const O = v ? v.rowIndex : a !== null ? Math.max(0, r.findIndex((K, G) => (K.id ?? K.Id ?? G) === a)) : 0, V = v ? v.colIndex : 0;
-      u(S, O, V);
+      C.preventDefault(), C.stopPropagation();
+      const V = v ? v.rowIndex : a !== null ? Math.max(0, r.findIndex((Y, z) => (Y.id ?? Y.Id ?? z) === a)) : 0, U = v ? v.colIndex : 0;
+      u(S, V, U);
     },
     [v, a, r, u]
   );
   return {
     focusedCell: v,
-    setFocusedCell: C,
-    focusCell: h,
+    setFocusedCell: k,
+    focusCell: m,
     scrollToRow: y,
-    handleTableContainerKeyDown: L,
-    handleCellKeyDown: k,
+    handleTableContainerKeyDown: P,
+    handleCellKeyDown: R,
     handlePaste: F
   };
 }
-function Wr(t) {
+function Zr(t) {
   return [...t].sort((r, s) => {
     const a = !!(r.frozen || r.sticky === "left"), n = !!(s.frozen || s.sticky === "left");
     if (a && !n) return -1;
@@ -5006,8 +5338,8 @@ function Wr(t) {
     return o !== l ? o - l : 0;
   });
 }
-function Ns(t) {
-  return Wr(t).map((s, a) => ({
+function ks(t) {
+  return Zr(t).map((s, a) => ({
     ...s,
     order: a + 1,
     // Đồng bộ thuộc tính frozen và sticky
@@ -5015,7 +5347,7 @@ function Ns(t) {
     sticky: s.frozen || s.sticky === "left" ? "left" : "none"
   }));
 }
-function Cn(t, r, s) {
+function Fn(t, r, s) {
   if (s < 0 || s >= t.length || r === s) return t;
   const a = [...t], [n] = a.splice(r, 1), o = a.filter((p) => p.frozen || p.sticky === "left").length, l = !!(n.frozen || n.sticky === "left");
   !l && s < o ? (n.frozen = !0, n.sticky = "left") : l && s >= o && (n.frozen = !1, n.sticky = "none"), a.splice(s, 0, n);
@@ -5027,7 +5359,7 @@ function Cn(t, r, s) {
     sticky: p.frozen || p.sticky === "left" ? "left" : "none"
   }));
 }
-function Kr(t, r) {
+function ea(t, r) {
   const s = t.map((a) => {
     if (a.key === r) {
       const n = !(a.frozen || a.sticky === "left");
@@ -5039,9 +5371,9 @@ function Kr(t, r) {
     }
     return a;
   });
-  return Ns(s);
+  return ks(s);
 }
-function fl(t, r = 55) {
+function Kl(t, r = 55) {
   const s = {};
   let a = r, n = null;
   return t.forEach((o) => {
@@ -5052,10 +5384,10 @@ function fl(t, r = 55) {
     }
   }), { offsets: s, lastFrozenKey: n };
 }
-class gl {
+class Ul {
   constructor() {
-    rn(this, "cascadeResolvers", /* @__PURE__ */ new Map());
-    rn(this, "populateResolvers", /* @__PURE__ */ new Map());
+    pn(this, "cascadeResolvers", /* @__PURE__ */ new Map());
+    pn(this, "populateResolvers", /* @__PURE__ */ new Map());
   }
   /**
    * Đăng ký bộ lọc phụ thuộc giữa 2 trường (VD: country -> city, category -> product)
@@ -5090,14 +5422,14 @@ class gl {
     return o ? o(s, a) || {} : {};
   }
 }
-const Gr = new gl();
-function ho(t, r, s) {
-  return Gr.getCascadedOptions(t, r, s);
+const ta = new Ul();
+function Ho(t, r, s) {
+  return ta.getCascadedOptions(t, r, s);
 }
-function vl(t, r, s) {
-  return Gr.calculateAutoPopulatedFields(t, r, s);
+function zl(t, r, s) {
+  return ta.calculateAutoPopulatedFields(t, r, s);
 }
-function kn(t) {
+function Rn(t) {
   const r = String(t || "").trim().toUpperCase();
   if (!r)
     return { isValid: !1, message: "Số Container không được để trống" };
@@ -5162,7 +5494,7 @@ function kn(t) {
     message: `Số Container ${r} sai Check Digit: Tính toán là [${o}] nhưng nhập là [${l}]`
   };
 }
-function ar(t) {
+function hr(t) {
   if (!t || typeof t != "string") return null;
   const r = t.trim();
   if (!r || r === "—" || r === "-") return null;
@@ -5177,14 +5509,14 @@ function ar(t) {
   }
   return null;
 }
-function Sn(t, r, s = "Ngày bắt đầu", a = "Ngày kết thúc") {
-  const n = ar(t), o = ar(r);
+function Ln(t, r, s = "Ngày bắt đầu", a = "Ngày kết thúc") {
+  const n = hr(t), o = hr(r);
   return !n || !o ? { isValid: !0 } : n.getTime() > o.getTime() ? {
     isValid: !1,
     message: `${s} (${t}) không thể xảy ra sau ${a} (${r})`
   } : { isValid: !0 };
 }
-function yl(t, r, s = [], a = {}) {
+function ql(t, r, s = [], a = {}) {
   const n = [];
   for (const o of s) {
     if (o.rule === "required" && (r == null || typeof r == "string" && r.trim() === "" || Array.isArray(r) && r.length === 0)) {
@@ -5207,13 +5539,13 @@ function yl(t, r, s = [], a = {}) {
           console.warn("[ValidationEngine] Biểu thức Regex không hợp lệ:", o.value);
         }
       if (o.rule === "containerNo") {
-        const l = kn(String(r));
+        const l = Rn(String(r));
         l.isValid || n.push(o.message || l.message);
       }
       if (o.rule === "dateSequence" && o.targetField) {
         const l = a[o.targetField];
         if (l) {
-          const i = Sn(String(r), String(l), t, o.targetField);
+          const i = Ln(String(r), String(l), t, o.targetField);
           !i.isValid && i.message && n.push(o.message || i.message);
         }
       }
@@ -5228,15 +5560,15 @@ function yl(t, r, s = [], a = {}) {
     errors: n
   };
 }
-function mo(t, r) {
+function Go(t, r) {
   const s = {};
   for (const [a, n] of Object.entries(r)) {
-    const o = t[a], l = yl(a, o, n, t);
+    const o = t[a], l = ql(a, o, n, t);
     l.isValid || (s[a] = l.errors);
   }
   return s;
 }
-const at = {
+const ht = {
   "FCLI-26020005": {
     master: {
       jobNo: "FCLI-26020005",
@@ -5515,7 +5847,7 @@ const at = {
       }
     ]
   }
-}, jl = {
+}, Yl = {
   fld_job_no: "jobNo",
   fld_shipment_date: "shipmentDate",
   fld_mbl_no: "mblNo",
@@ -5538,20 +5870,20 @@ const at = {
   fld_total_vgm: "totalVgm",
   fld_po_no: "poNo",
   fld_notes: "notes"
-}, Rt = cs()(
-  Is((t, r) => ({
+}, qt = xs()(
+  Ps((t, r) => ({
     jobs: ["FCLI-26020005", "FCLI-26020006", "FCLI-26020007"],
     activeJobNo: "FCLI-26020005",
-    masterRecord: { ...at["FCLI-26020005"].master },
+    masterRecord: { ...ht["FCLI-26020005"].master },
     detailGrids: {
-      grid_shipping_info: [...at["FCLI-26020005"].shippingInfo],
-      grid_container_info: [...at["FCLI-26020005"].containerInfo],
-      grid_shipment_detail: [...at["FCLI-26020005"].shipmentDetail]
+      grid_shipping_info: [...ht["FCLI-26020005"].shippingInfo],
+      grid_container_info: [...ht["FCLI-26020005"].containerInfo],
+      grid_shipment_detail: [...ht["FCLI-26020005"].shipmentDetail]
     },
     validationErrors: {},
     // 1. Chuyển Job No (Master-Detail Switching)
     selectJob: (s) => {
-      const a = at[s];
+      const a = ht[s];
       a && t({
         activeJobNo: s,
         masterRecord: { ...a.master },
@@ -5589,7 +5921,7 @@ const at = {
         poNo: "",
         notes: ""
       };
-      return at[n] = {
+      return ht[n] = {
         master: o,
         shippingInfo: [],
         containerInfo: [],
@@ -5608,7 +5940,7 @@ const at = {
     },
     // 3. Cập nhật trường trên Master Form (kèm Cascading, Auto-Populate & Validation)
     updateMasterField: (s, a) => {
-      const n = String(jl[s] || s), l = { ...r().masterRecord, [n]: a }, i = vl(n, a, l);
+      const n = String(Yl[s] || s), l = { ...r().masterRecord, [n]: a }, i = zl(n, a, l);
       Object.assign(l, i);
       const d = { ...r().validationErrors };
       if (n === "mblNo") {
@@ -5618,8 +5950,8 @@ const at = {
       if (n === "jobNo" && (String(a || "").trim() ? delete d.jobNo : d.jobNo = "Job No không được để trống"), n === "mblIssuedDate" || n === "shipmentDate") {
         const p = l.mblIssuedDate, g = l.shipmentDate;
         if (p && g) {
-          const I = Sn(p, g, "Ngày phát hành M-B/L", "Ngày khởi hành (S.Date)");
-          I.isValid ? delete d.mblIssuedDate : d.mblIssuedDate = I.message || "Ngày phát hành phải trước ngày khởi hành";
+          const T = Ln(p, g, "Ngày phát hành M-B/L", "Ngày khởi hành (S.Date)");
+          T.isValid ? delete d.mblIssuedDate : d.mblIssuedDate = T.message || "Ngày phát hành phải trước ngày khởi hành";
         }
       }
       t({
@@ -5627,20 +5959,20 @@ const at = {
         validationErrors: d
       });
       const c = r().activeJobNo;
-      at[c] && (at[c].master = l);
+      ht[c] && (ht[c].master = l);
     },
     // 4. Cập nhật ô trong Lưới (Grid Cell Editing + Reactive Totals + Cell Validation)
     updateGridCell: (s, a, n, o) => {
-      const l = r().detailGrids, i = l[s] || [], d = { ...r().validationErrors }, c = `${s}_${a}_${n}`, p = i.map((I, f) => I.id !== void 0 && I.id === a || I.id === void 0 && f === a ? { ...I, [n]: o } : I);
+      const l = r().detailGrids, i = l[s] || [], d = { ...r().validationErrors }, c = `${s}_${a}_${n}`, p = i.map((T, x) => T.id !== void 0 && T.id === a || T.id === void 0 && x === a ? { ...T, [n]: o } : T);
       if (n === "containerNo") {
-        const I = kn(String(o));
-        I.isValid ? delete d[c] : d[c] = I.message;
+        const T = Rn(String(o));
+        T.isValid ? delete d[c] : d[c] = T.message;
       }
       if (s === "grid_shipping_info" && (n === "etd" || n === "eta")) {
-        const I = p.find((f) => f.id === a);
-        if (I && I.etd && I.eta) {
-          const f = Sn(I.etd, I.eta, "ETD", "ETA"), x = `${s}_${a}_etd_eta`;
-          f.isValid ? delete d[x] : d[x] = f.message || "ETD phải trước ETA";
+        const T = p.find((x) => x.id === a);
+        if (T && T.etd && T.eta) {
+          const x = Ln(T.etd, T.eta, "ETD", "ETA"), h = `${s}_${a}_etd_eta`;
+          x.isValid ? delete d[h] : d[h] = x.message || "ETD phải trước ETA";
         }
       }
       t({
@@ -5648,7 +5980,7 @@ const at = {
         validationErrors: d
       }), s === "grid_container_info" && r().recalculateTotals();
       const g = r().activeJobNo;
-      at[g] && (s === "grid_shipping_info" && (at[g].shippingInfo = p), s === "grid_container_info" && (at[g].containerInfo = p), s === "grid_shipment_detail" && (at[g].shipmentDetail = p));
+      ht[g] && (s === "grid_shipping_info" && (ht[g].shippingInfo = p), s === "grid_container_info" && (ht[g].containerInfo = p), s === "grid_shipment_detail" && (ht[g].shipmentDetail = p));
     },
     // 5. Thêm dòng mới vào Lưới con (kèm gán khóa ngoại JobNo)
     addGridRow: (s, a) => {
@@ -5732,14 +6064,14 @@ const at = {
       };
       t({ masterRecord: d });
       const c = r().activeJobNo;
-      at[c] && (at[c].master = d);
+      ht[c] && (ht[c].master = d);
     },
     // 9. Kiểm tra toàn bộ dữ liệu (Validate All)
     validateAll: () => {
       var o, l;
       const s = r().masterRecord, a = {};
       return (o = s.jobNo) != null && o.trim() || (a.jobNo = "Job No không được để trống"), (l = s.mblNo) != null && l.trim() ? /^[A-Z0-9]{8,18}$/i.test(s.mblNo.trim()) || (a.mblNo = "Số M-B/L phải gồm 8 - 18 ký tự chữ và số") : a.mblNo = "Số M-B/L không được để trống", (r().detailGrids.grid_container_info || []).forEach((i) => {
-        const d = kn(i.containerNo);
+        const d = Rn(i.containerNo);
         d.isValid || (a[`grid_container_info_${i.id}_containerNo`] = d.message);
       }), t({ validationErrors: a }), Object.keys(a).length === 0;
     },
@@ -5781,52 +6113,52 @@ const at = {
     }
   }))
 );
-function Nl({
+function Jl({
   fileName: t = "Du_Lieu_Bang",
   sheetName: r = "Sheet1",
   columns: s,
   rows: a,
   includeSummary: n = !0
 }) {
-  const o = s.filter((N) => !N.hidden);
+  const o = s.filter((w) => !w.hidden);
   let l = "<tr>";
   l += '<th style="background-color:#1e293b;color:#f8fafc;font-weight:bold;border:1px solid #475569;text-align:center;padding:8px 12px;font-size:11pt;">STT</th>';
-  for (const N of o) {
-    const u = N.align || "left";
-    l += `<th style="background-color:#1e293b;color:#f8fafc;font-weight:bold;border:1px solid #475569;text-align:${u};padding:8px 12px;font-size:11pt;">${N.title || N.key}</th>`;
+  for (const w of o) {
+    const u = w.align || "left";
+    l += `<th style="background-color:#1e293b;color:#f8fafc;font-weight:bold;border:1px solid #475569;text-align:${u};padding:8px 12px;font-size:11pt;">${w.title || w.key}</th>`;
   }
   l += "</tr>";
   let i = "";
-  a.forEach((N, u) => {
+  a.forEach((w, u) => {
     const v = u % 2 === 0 ? "#ffffff" : "#f8fafc";
     i += `<tr style="background-color:${v};">`, i += `<td style="border:1px solid #cbd5e1;text-align:center;padding:6px 10px;font-family:Arial,sans-serif;font-size:10pt;">${u + 1}</td>`;
-    for (const C of o) {
-      const h = N[C.key], y = C.align || "left";
-      let L = h != null ? String(h) : "";
-      typeof h == "number" && (L = h.toLocaleString("vi-VN")), i += `<td style="border:1px solid #cbd5e1;text-align:${y};padding:6px 10px;font-family:Arial,sans-serif;font-size:10pt;">${lr(L)}</td>`;
+    for (const k of o) {
+      const m = w[k.key], y = k.align || "left";
+      let P = m != null ? String(m) : "";
+      typeof m == "number" && (P = m.toLocaleString("vi-VN")), i += `<td style="border:1px solid #cbd5e1;text-align:${y};padding:6px 10px;font-family:Arial,sans-serif;font-size:10pt;">${mr(P)}</td>`;
     }
     i += "</tr>";
   });
   let d = "";
-  const c = o.some((N) => N.aggregate);
+  const c = o.some((w) => w.aggregate);
   if (n && c && a.length > 0) {
     d += '<tr style="background-color:#0f172a;color:#f8fafc;font-weight:bold;">', d += '<td style="border:1px solid #334155;text-align:center;padding:8px 10px;font-weight:bold;">TỔNG</td>';
-    for (const N of o) {
-      const u = N.align || "left";
-      if (N.aggregate === "sum") {
-        const v = a.reduce((h, y) => {
-          const L = Number(y[N.key]);
-          return h + (isNaN(L) ? 0 : L);
-        }, 0), C = v % 1 !== 0 ? v.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toLocaleString("vi-VN");
-        d += `<td style="border:1px solid #334155;text-align:${u};padding:8px 10px;font-weight:bold;">${C}${N.summarySuffix ? ` ${N.summarySuffix}` : ""}</td>`;
-      } else if (N.aggregate === "count")
+    for (const w of o) {
+      const u = w.align || "left";
+      if (w.aggregate === "sum") {
+        const v = a.reduce((m, y) => {
+          const P = Number(y[w.key]);
+          return m + (isNaN(P) ? 0 : P);
+        }, 0), k = v % 1 !== 0 ? v.toLocaleString("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v.toLocaleString("vi-VN");
+        d += `<td style="border:1px solid #334155;text-align:${u};padding:8px 10px;font-weight:bold;">${k}${w.summarySuffix ? ` ${w.summarySuffix}` : ""}</td>`;
+      } else if (w.aggregate === "count")
         d += `<td style="border:1px solid #334155;text-align:${u};padding:8px 10px;font-weight:bold;">${a.length}</td>`;
-      else if (N.aggregate === "avg") {
-        const v = a.reduce((h, y) => {
-          const L = Number(y[N.key]);
-          return h + (isNaN(L) ? 0 : L);
-        }, 0), C = a.length > 0 ? (v / a.length).toFixed(2) : "0";
-        d += `<td style="border:1px solid #334155;text-align:${u};padding:8px 10px;font-weight:bold;">${C}</td>`;
+      else if (w.aggregate === "avg") {
+        const v = a.reduce((m, y) => {
+          const P = Number(y[w.key]);
+          return m + (isNaN(P) ? 0 : P);
+        }, 0), k = a.length > 0 ? (v / a.length).toFixed(2) : "0";
+        d += `<td style="border:1px solid #334155;text-align:${u};padding:8px 10px;font-weight:bold;">${k}</td>`;
       } else
         d += '<td style="border:1px solid #334155;"></td>';
     }
@@ -5841,7 +6173,7 @@ function Nl({
           <x:ExcelWorkbook>
             <x:ExcelWorksheets>
               <x:ExcelWorksheet>
-                <x:Name>${lr(r)}</x:Name>
+                <x:Name>${mr(r)}</x:Name>
                 <x:WorksheetOptions>
                   <x:DisplayGridlines/>
                 </x:WorksheetOptions>
@@ -5867,13 +6199,13 @@ function Nl({
     </html>
   `.trim(), g = new Blob(["\uFEFF", p], {
     type: "application/vnd.ms-excel;charset=utf-8"
-  }), I = t.endsWith(".xls") || t.endsWith(".xlsx") ? t : `${t}_${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)}.xls`, f = URL.createObjectURL(g), x = document.createElement("a");
-  x.href = f, x.download = I, document.body.appendChild(x), x.click(), document.body.removeChild(x), URL.revokeObjectURL(f);
+  }), T = t.endsWith(".xls") || t.endsWith(".xlsx") ? t : `${t}_${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)}.xls`, x = URL.createObjectURL(g), h = document.createElement("a");
+  h.href = x, h.download = T, document.body.appendChild(h), h.click(), document.body.removeChild(h), URL.revokeObjectURL(x);
 }
-function lr(t) {
+function mr(t) {
   return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
-function Ur(t) {
+function sa(t) {
   const {
     title: r,
     subtitle: s,
@@ -5883,34 +6215,34 @@ function Ur(t) {
     companyName: l = "HỆ THỐNG QUẢN TRỊ DOANH NGHIỆP ERP",
     metadata: i = {},
     showSignatures: d = !0
-  } = t, c = a.filter((h) => !h.hidden), p = window.open("", "_blank", "width=1100,height=850");
+  } = t, c = a.filter((m) => !m.hidden), p = window.open("", "_blank", "width=1100,height=850");
   if (!p) {
     alert("Trình duyệt đang chặn mở Popup. Vui lòng cho phép mở popup để xem bản in.");
     return;
   }
-  const g = /* @__PURE__ */ new Date(), I = `Ngày in: ${g.toLocaleDateString("vi-VN")} lúc ${g.toLocaleTimeString("vi-VN")}`, f = Object.entries(i).map(
-    ([h, y]) => `<div style="display: flex; gap: 8px; margin-bottom: 4px;">
-          <strong style="color: #475569;">${jt(h)}:</strong>
-          <span>${jt(String(y))}</span>
+  const g = /* @__PURE__ */ new Date(), T = `Ngày in: ${g.toLocaleDateString("vi-VN")} lúc ${g.toLocaleTimeString("vi-VN")}`, x = Object.entries(i).map(
+    ([m, y]) => `<div style="display: flex; gap: 8px; margin-bottom: 4px;">
+          <strong style="color: #475569;">${Pt(m)}:</strong>
+          <span>${Pt(String(y))}</span>
         </div>`
-  ).join(""), x = c.map((h) => `<th style="padding: 8px 10px; border: 1px solid #cbd5e1; background-color: #f1f5f9; text-align: ${h.align || "left"}; font-size: 11px; text-transform: uppercase;">
-        ${jt(h.title || h.key)}
-      </th>`).join(""), N = n.map((h, y) => {
-    const L = y % 2 === 0 ? "#ffffff" : "#f8fafc", k = c.map((F) => {
-      const w = h[F.key] ?? "", S = F.align || (typeof w == "number" ? "right" : "left");
-      let R = w;
-      return typeof w == "number" && (R = w.toLocaleString("vi-VN")), `<td style="padding: 6px 10px; border: 1px solid #cbd5e1; text-align: ${S}; font-size: 11px;">
-            ${jt(String(R))}
+  ).join(""), h = c.map((m) => `<th style="padding: 8px 10px; border: 1px solid #cbd5e1; background-color: #f1f5f9; text-align: ${m.align || "left"}; font-size: 11px; text-transform: uppercase;">
+        ${Pt(m.title || m.key)}
+      </th>`).join(""), w = n.map((m, y) => {
+    const P = y % 2 === 0 ? "#ffffff" : "#f8fafc", R = c.map((F) => {
+      const C = m[F.key] ?? "", S = F.align || (typeof C == "number" ? "right" : "left");
+      let L = C;
+      return typeof C == "number" && (L = C.toLocaleString("vi-VN")), `<td style="padding: 6px 10px; border: 1px solid #cbd5e1; text-align: ${S}; font-size: 11px;">
+            ${Pt(String(L))}
           </td>`;
     }).join("");
-    return `<tr style="background-color: ${L};">${k}</tr>`;
+    return `<tr style="background-color: ${P};">${R}</tr>`;
   }).join("");
   let u = "";
-  o && (u = `<tfoot><tr>${c.map((y, L) => {
-    const k = o[y.key] ?? (L === 0 ? "TỔNG CỘNG" : ""), F = y.align || "left";
-    let w = k;
-    return typeof k == "number" && (w = k.toLocaleString("vi-VN")), `<td style="padding: 8px 10px; border: 1px solid #cbd5e1; background-color: #e2e8f0; font-weight: bold; text-align: ${F}; font-size: 11px;">
-          ${jt(String(w))}
+  o && (u = `<tfoot><tr>${c.map((y, P) => {
+    const R = o[y.key] ?? (P === 0 ? "TỔNG CỘNG" : ""), F = y.align || "left";
+    let C = R;
+    return typeof R == "number" && (C = R.toLocaleString("vi-VN")), `<td style="padding: 8px 10px; border: 1px solid #cbd5e1; background-color: #e2e8f0; font-weight: bold; text-align: ${F}; font-size: 11px;">
+          ${Pt(String(C))}
         </td>`;
   }).join("")}</tr></tfoot>`);
   const v = d ? `
@@ -5931,12 +6263,12 @@ function Ur(t) {
           <div style="height: 60px;"></div>
         </div>
       </div>
-    ` : "", C = `
+    ` : "", k = `
     <!DOCTYPE html>
     <html lang="vi">
     <head>
       <meta charset="UTF-8">
-      <title>${jt(r)} - UIForge Report</title>
+      <title>${Pt(r)} - UIForge Report</title>
       <style>
         @page {
           size: A4 landscape;
@@ -5974,27 +6306,27 @@ function Ur(t) {
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
           <div>
             <div style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: #0284c7; letter-spacing: 0.5px;">
-              ${jt(l)}
+              ${Pt(l)}
             </div>
             <h1 style="margin: 6px 0 2px 0; font-size: 20px; font-weight: 800; color: #0f172a;">
-              ${jt(r)}
+              ${Pt(r)}
             </h1>
-            ${s ? `<div style="font-size: 12px; color: #475569;">${jt(s)}</div>` : ""}
+            ${s ? `<div style="font-size: 12px; color: #475569;">${Pt(s)}</div>` : ""}
           </div>
           <div style="text-align: right; font-size: 10px; color: #64748b;">
-            <div>${jt(I)}</div>
+            <div>${Pt(T)}</div>
             <div>Tổng số bản ghi: <strong>${n.length}</strong></div>
           </div>
         </div>
-        ${f ? `<div style="margin-top: 10px; font-size: 11px; background: #f8fafc; padding: 8px 12px; border-radius: 6px;">${f}</div>` : ""}
+        ${x ? `<div style="margin-top: 10px; font-size: 11px; background: #f8fafc; padding: 8px 12px; border-radius: 6px;">${x}</div>` : ""}
       </div>
 
       <table>
         <thead>
-          <tr>${x}</tr>
+          <tr>${h}</tr>
         </thead>
         <tbody>
-          ${N}
+          ${w}
         </tbody>
         ${u}
       </table>
@@ -6018,12 +6350,12 @@ function Ur(t) {
     </body>
     </html>
   `;
-  p.document.open(), p.document.write(C), p.document.close();
+  p.document.open(), p.document.write(k), p.document.close();
 }
-function jt(t) {
+function Pt(t) {
   return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
-async function bo(t) {
+async function Vo(t) {
   const r = t.columns.filter((a) => !a.hidden), s = {
     title: t.title,
     subtitle: t.subtitle,
@@ -6050,9 +6382,9 @@ async function bo(t) {
     }
   } catch {
   }
-  Ur(t);
+  sa(t);
 }
-async function fo(t) {
+async function Wo(t) {
   const r = t.fileName || "Bieu_Mau_Chung_Tu", s = {
     templateName: t.templateName,
     placeholders: t.placeholders
@@ -6072,7 +6404,7 @@ async function fo(t) {
   }
   return !1;
 }
-function wl(t) {
+function Xl(t) {
   if (!t || typeof t != "string") return [];
   const s = t.replace(/\r\n/g, `
 `).replace(/\r/g, `
@@ -6083,7 +6415,7 @@ function wl(t) {
     return l.startsWith('"') && l.endsWith('"') && l.length >= 2 && (l = l.slice(1, -1).replace(/""/g, '"').trim()), l;
   }));
 }
-function Cl(t, r) {
+function Ql(t, r) {
   if (t == null) return "";
   const s = String(t).trim();
   if (r.componentType === "Number" || r.format === "number" || r.format === "currency_vnd" || r.format === "currency_usd" || r.dataType === "number" || r.precision !== void 0 || ["totalgw", "totalcbm", "totalvgm", "gw", "cbm", "vgm", "packages", "amount", "price", "quantity"].some(
@@ -6108,7 +6440,7 @@ function Cl(t, r) {
   }
   return s;
 }
-function kl({
+function Zl({
   currentRows: t,
   visibleColumns: r,
   allColumns: s,
@@ -6118,30 +6450,30 @@ function kl({
 }) {
   if (!a || a.length === 0)
     return { updatedRows: t, pastedRowCount: 0, pastedColCount: 0, newRowsCreated: 0 };
-  const l = [...t.map((f) => ({ ...f }))], i = a.length;
+  const l = [...t.map((x) => ({ ...x }))], i = a.length;
   let d = 0, c = 0;
-  const p = Math.max(0, n), g = Math.max(0, o), I = (f) => {
-    const x = { id: f };
-    return s.forEach((N) => {
-      N.componentType === "Number" || N.dataType === "number" ? x[N.key] = 0 : N.componentType === "Checkbox" || N.dataType === "boolean" ? x[N.key] = !1 : (N.componentType === "DatePicker" || N.dataType, x[N.key] = "");
-    }), x;
+  const p = Math.max(0, n), g = Math.max(0, o), T = (x) => {
+    const h = { id: x };
+    return s.forEach((w) => {
+      w.componentType === "Number" || w.dataType === "number" ? h[w.key] = 0 : w.componentType === "Checkbox" || w.dataType === "boolean" ? h[w.key] = !1 : (w.componentType === "DatePicker" || w.dataType, h[w.key] = "");
+    }), h;
   };
-  for (let f = 0; f < i; f++) {
-    const x = p + f, N = a[f];
-    if (N.length > d && (d = N.length), x >= l.length) {
-      const v = l.length > 0 ? Math.max(...l.map((h) => Number(h.id) || 0)) : 0, C = I(v + 1);
-      l.push(C), c++;
+  for (let x = 0; x < i; x++) {
+    const h = p + x, w = a[x];
+    if (w.length > d && (d = w.length), h >= l.length) {
+      const v = l.length > 0 ? Math.max(...l.map((m) => Number(m.id) || 0)) : 0, k = T(v + 1);
+      l.push(k), c++;
     }
-    const u = l[x];
-    for (let v = 0; v < N.length; v++) {
-      const C = g + v;
-      if (C >= r.length)
+    const u = l[h];
+    for (let v = 0; v < w.length; v++) {
+      const k = g + v;
+      if (k >= r.length)
         break;
-      const h = r[C];
-      if (!((h.editable ?? !0) && !h.disabled && h.componentType !== "Label"))
+      const m = r[k];
+      if (!((m.editable ?? !0) && !m.disabled && m.componentType !== "Label"))
         continue;
-      const L = N[v], k = Cl(L, h);
-      u[h.key] = k;
+      const P = w[v], R = Ql(P, m);
+      u[m.key] = R;
     }
   }
   return {
@@ -6151,308 +6483,308 @@ function kl({
     newRowsCreated: c
   };
 }
-const or = [
+const br = [
   { id: 1, name: "Bản ghi mẫu 01", status: "Hoạt động" },
   { id: 2, name: "Bản ghi mẫu 02", status: "Chờ duyệt" }
-], Sl = ({ node: t }) => {
-  var ds, us, ps, xs, hs;
-  const { props: r, style: s } = t, a = Z((m) => m.updateComponentProps), n = Ve(() => r.columns && Array.isArray(r.columns) ? r.columns : [
+], eo = ({ node: t }) => {
+  var ps, hs, ms, bs, fs;
+  const { props: r, style: s } = t, a = Z((f) => f.updateComponentProps), n = Ae(() => r.columns && Array.isArray(r.columns) ? r.columns : [
     { key: "id", title: "Mã", width: "80px", sortable: !0, order: 1 },
     { key: "name", title: "Tên mục", width: "220px", sortable: !0, editable: !0, componentType: "TextBox", order: 2 },
     { key: "status", title: "Trạng thái", width: "140px", sortable: !0, order: 3 }
-  ], [r.columns]), o = Ve(() => Wr(n), [n]), l = Ve(() => o.filter((m) => !m.hidden), [o]), i = Rt((m) => m.detailGrids), d = Rt((m) => m.updateGridCell), c = Rt((m) => m.addGridRow), p = Rt((m) => m.deleteGridRow), g = Rt((m) => m.duplicateGridRow), I = Rt((m) => m.validationErrors), f = !!(i && i[t.id]), x = r.reference || r.refName || ((ds = t.dataBinding) == null ? void 0 : ds.refName) || ((us = t.dataBinding) == null ? void 0 : us.entityName) || "", N = r.query || ((ps = t.dataBinding) == null ? void 0 : ps.query) || r.dataSource || ((xs = t.dataBinding) == null ? void 0 : xs.dataSource) || r.sqlWhere || ((hs = t.dataBinding) == null ? void 0 : hs.sqlWhere) || r.filter || "", u = fe((m) => x ? m.datasets[x] : void 0), [v, C] = A(() => f && i && i[t.id] ? i[t.id] : r.data && Array.isArray(r.data) ? r.data : u && Array.isArray(u) ? u : or);
-  Be(() => {
-    r.data && Array.isArray(r.data) && r.data.length > 0 && C(r.data);
-  }, [r.data]), Be(() => {
-    u && Array.isArray(u) && u.length > 0 && C(u);
+  ], [r.columns]), o = Ae(() => Zr(n), [n]), l = Ae(() => o.filter((f) => !f.hidden), [o]), i = qt((f) => f.detailGrids), d = qt((f) => f.updateGridCell), c = qt((f) => f.addGridRow), p = qt((f) => f.deleteGridRow), g = qt((f) => f.duplicateGridRow), T = qt((f) => f.validationErrors), x = !!(i && i[t.id]), h = r.reference || r.refName || ((ps = t.dataBinding) == null ? void 0 : ps.refName) || ((hs = t.dataBinding) == null ? void 0 : hs.entityName) || "", w = r.query || ((ms = t.dataBinding) == null ? void 0 : ms.query) || r.dataSource || ((bs = t.dataBinding) == null ? void 0 : bs.dataSource) || r.sqlWhere || ((fs = t.dataBinding) == null ? void 0 : fs.sqlWhere) || r.filter || "", u = Te((f) => h ? f.datasets[h] : void 0), [v, k] = D(() => x && i && i[t.id] ? i[t.id] : r.data && Array.isArray(r.data) ? r.data : u && Array.isArray(u) ? u : br);
+  He(() => {
+    r.data && Array.isArray(r.data) && r.data.length > 0 && k(r.data);
+  }, [r.data]), He(() => {
+    u && Array.isArray(u) && u.length > 0 && k(u);
   }, [u]);
-  const h = Ve(() => f && i && i[t.id] && i[t.id].length > 0 ? i[t.id] : v && Array.isArray(v) && v.length > 0 ? v : u && Array.isArray(u) && u.length > 0 ? u : r.data && Array.isArray(r.data) ? r.data : or, [f, i, t.id, v, u, r.data]);
-  Be(() => {
+  const m = Ae(() => x && i && i[t.id] && i[t.id].length > 0 ? i[t.id] : v && Array.isArray(v) && v.length > 0 ? v : u && Array.isArray(u) && u.length > 0 ? u : r.data && Array.isArray(r.data) ? r.data : br, [x, i, t.id, v, u, r.data]);
+  He(() => {
     if (r.data && Array.isArray(r.data) && r.data.length > 0) return;
-    let m = !0;
-    return x && fe.getState().queryEntity(x, N).then((M) => {
-      m && M && M.length > 0 && C(M);
+    let f = !0;
+    return h && Te.getState().queryEntity(h, w).then((H) => {
+      f && H && H.length > 0 && k(H);
     }), () => {
-      m = !1;
+      f = !1;
     };
-  }, [x, N, r.data]);
-  const [y, L] = A(""), [k, F] = A(null), [w, S] = A("asc"), [R, $] = A(!1), [Q, O] = A({}), [V, P] = A({
+  }, [h, w, r.data]);
+  const [y, P] = D(""), [R, F] = D(null), [C, S] = D("asc"), [L, $] = D(!1), [se, V] = D({}), [U, E] = D({
     isOpen: !1,
     x: 0,
     y: 0,
     column: null,
     columnIndex: -1
-  }), [K, G] = A({
+  }), [Y, z] = D({
     isOpen: !1,
     column: null
-  }), [b, se] = A({
+  }), [b, ae] = D({
     isOpen: !1,
     x: 0,
     y: 0,
     row: null,
     rowIndex: -1
-  }), [de, me] = A(null), [Ce, he] = A(null), [we, Oe] = A(null), U = 55, { offsets: oe, lastFrozenKey: Y } = Ve(() => fl(o, U), [o]), z = Ve(() => {
-    let m = [...h];
+  }), [O, _] = D(null), [me, ce] = D(null), [ye, ue] = D(null), M = 55, { offsets: Q, lastFrozenKey: W } = Ae(() => Kl(o, M), [o]), q = Ae(() => {
+    let f = [...m];
     if (y.trim()) {
-      const M = y.toLowerCase();
-      m = m.filter(
-        (E) => Object.values(E).some(
-          (H) => String(H).toLowerCase().includes(M)
+      const H = y.toLowerCase();
+      f = f.filter(
+        (B) => Object.values(B).some(
+          (J) => String(J).toLowerCase().includes(H)
         )
       );
     }
-    return R && Object.entries(Q).forEach(([M, E]) => {
-      if (E && E.trim()) {
-        const H = E.toLowerCase().trim();
-        m = m.filter((_) => {
-          const X = _[M];
-          return X != null && String(X).toLowerCase().includes(H);
+    return L && Object.entries(se).forEach(([H, B]) => {
+      if (B && B.trim()) {
+        const J = B.toLowerCase().trim();
+        f = f.filter((K) => {
+          const re = K[H];
+          return re != null && String(re).toLowerCase().includes(J);
         });
       }
-    }), k && m.sort((M, E) => {
-      const H = M[k], _ = E[k];
-      if (H === _) return 0;
-      if (H == null) return 1;
-      if (_ == null) return -1;
-      let X = 0;
-      return typeof H == "number" && typeof _ == "number" ? X = H - _ : X = String(H).localeCompare(String(_)), w === "asc" ? X : -X;
-    }), m;
-  }, [h, y, R, Q, k, w]), xe = (m) => {
-    C(m), a(t.id, { data: m });
-  }, [ve, T] = A(r.groupBy || null), [B, ee] = A(/* @__PURE__ */ new Set()), je = Ve(() => {
-    if (!ve) return [];
-    const m = /* @__PURE__ */ new Map();
-    z.forEach((H) => {
-      const _ = H[ve], X = _ == null || _ === "" ? "(Trống)" : String(_);
-      m.has(X) || m.set(X, []), m.get(X).push(H);
+    }), R && f.sort((H, B) => {
+      const J = H[R], K = B[R];
+      if (J === K) return 0;
+      if (J == null) return 1;
+      if (K == null) return -1;
+      let re = 0;
+      return typeof J == "number" && typeof K == "number" ? re = J - K : re = String(J).localeCompare(String(K)), C === "asc" ? re : -re;
+    }), f;
+  }, [m, y, L, se, R, C]), ie = (f) => {
+    k(f), a(t.id, { data: f });
+  }, [Ne, j] = D(r.groupBy || null), [A, ne] = D(/* @__PURE__ */ new Set()), Ce = Ae(() => {
+    if (!Ne) return [];
+    const f = /* @__PURE__ */ new Map();
+    q.forEach((J) => {
+      const K = J[Ne], re = K == null || K === "" ? "(Trống)" : String(K);
+      f.has(re) || f.set(re, []), f.get(re).push(J);
     });
-    let M = 0;
-    const E = [];
-    return m.forEach((H, _) => {
-      const X = {};
-      l.forEach((re) => {
-        if (re.componentType === "Number" || re.precision !== void 0 || re.isSummary || re.summary) {
-          const Re = H.reduce((We, qe) => {
-            const pt = Number(qe[re.key]);
-            return We + (isNaN(pt) ? 0 : pt);
+    let H = 0;
+    const B = [];
+    return f.forEach((J, K) => {
+      const re = {};
+      l.forEach((he) => {
+        if (he.componentType === "Number" || he.precision !== void 0 || he.isSummary || he.summary) {
+          const Be = J.reduce((Ue, Je) => {
+            const jt = Number(Je[he.key]);
+            return Ue + (isNaN(jt) ? 0 : jt);
           }, 0);
-          X[re.key] = Re;
+          re[he.key] = Be;
         }
-      }), E.push({
-        groupKey: _,
-        groupLabel: _,
-        rows: H,
-        subtotals: X,
-        startIndex: M
-      }), M += H.length;
-    }), E;
-  }, [ve, z, l]), te = 38, Se = 10, ce = !ve && (z.length > 80 || !!r.virtual || !!r.virtualScroll), [Ne, le] = A(0), [ue, Pe] = A(550);
-  Be(() => {
-    const m = Ye.current;
-    if (!m || !ce) return;
-    const M = () => {
-      le(m.scrollTop);
-    }, E = () => {
-      m.clientHeight > 0 && Pe(m.clientHeight);
+      }), B.push({
+        groupKey: K,
+        groupLabel: K,
+        rows: J,
+        subtotals: re,
+        startIndex: H
+      }), H += J.length;
+    }), B;
+  }, [Ne, q, l]), le = 38, Fe = 10, fe = !Ne && (q.length > 80 || !!r.virtual || !!r.virtualScroll), [Ie, pe] = D(0), [ge, Me] = D(550);
+  He(() => {
+    const f = qe.current;
+    if (!f || !fe) return;
+    const H = () => {
+      pe(f.scrollTop);
+    }, B = () => {
+      f.clientHeight > 0 && Me(f.clientHeight);
     };
-    return m.addEventListener("scroll", M, { passive: !0 }), E(), window.addEventListener("resize", E), () => {
-      m.removeEventListener("scroll", M), window.removeEventListener("resize", E);
+    return f.addEventListener("scroll", H, { passive: !0 }), B(), window.addEventListener("resize", B), () => {
+      f.removeEventListener("scroll", H), window.removeEventListener("resize", B);
     };
-  }, [ce]);
-  const { virtualStartIndex: ye, virtualEndIndex: pe, topPaddingHeight: W, bottomPaddingHeight: ae, virtualRows: it } = Ve(() => {
-    if (!ce)
+  }, [fe]);
+  const { virtualStartIndex: De, virtualEndIndex: we, topPaddingHeight: X, bottomPaddingHeight: xe, virtualRows: ot } = Ae(() => {
+    if (!fe)
       return {
         virtualStartIndex: 0,
-        virtualEndIndex: z.length,
+        virtualEndIndex: q.length,
         topPaddingHeight: 0,
         bottomPaddingHeight: 0,
-        virtualRows: z
+        virtualRows: q
       };
-    const m = z.length, M = Math.ceil(ue / te), E = Math.floor(Ne / te), H = Math.max(0, E - Se), _ = Math.min(m, E + M + Se), X = H * te, re = Math.max(0, (m - _) * te), Re = z.slice(H, _);
+    const f = q.length, H = Math.ceil(ge / le), B = Math.floor(Ie / le), J = Math.max(0, B - Fe), K = Math.min(f, B + H + Fe), re = J * le, he = Math.max(0, (f - K) * le), Be = q.slice(J, K);
     return {
-      virtualStartIndex: H,
-      virtualEndIndex: _,
-      topPaddingHeight: X,
-      bottomPaddingHeight: re,
-      virtualRows: Re
+      virtualStartIndex: J,
+      virtualEndIndex: K,
+      topPaddingHeight: re,
+      bottomPaddingHeight: he,
+      virtualRows: Be
     };
-  }, [ce, z, Ne, ue]), gt = `uiforge_user_gridpolicy_${String(t.pageId || "default")}_${t.id}`;
-  Be(() => {
-    let m = !0;
-    const M = String(t.pageId || "default");
+  }, [fe, q, Ie, ge]), ft = `uiforge_user_gridpolicy_${String(t.pageId || "default")}_${t.id}`;
+  He(() => {
+    let f = !0;
+    const H = String(t.pageId || "default");
     try {
-      const E = localStorage.getItem(gt);
-      if (E) {
-        const H = JSON.parse(E);
-        Array.isArray(H) && H.length > 0 && a(t.id, { columns: H });
+      const B = localStorage.getItem(ft);
+      if (B) {
+        const J = JSON.parse(B);
+        Array.isArray(J) && J.length > 0 && a(t.id, { columns: J });
       }
     } catch {
     }
     return fetch(
       `http://localhost:5048/api/core/user-settings?featureCode=${encodeURIComponent(
-        M
+        H
       )}&componentId=${encodeURIComponent(t.id)}&settingType=GridPolicy`
-    ).then((E) => E.ok ? E.json() : null).then((E) => {
-      if (!m || !E) return;
-      const H = E.settingJson || E.SettingJson;
-      if (H) {
-        const _ = JSON.parse(H);
-        if (Array.isArray(_) && _.length > 0) {
-          a(t.id, { columns: _ });
+    ).then((B) => B.ok ? B.json() : null).then((B) => {
+      if (!f || !B) return;
+      const J = B.settingJson || B.SettingJson;
+      if (J) {
+        const K = JSON.parse(J);
+        if (Array.isArray(K) && K.length > 0) {
+          a(t.id, { columns: K });
           try {
-            localStorage.setItem(gt, H);
+            localStorage.setItem(ft, J);
           } catch {
           }
         }
       }
     }).catch(() => {
     }), () => {
-      m = !1;
+      f = !1;
     };
   }, [t.id, t.pageId]);
-  const rt = (m) => {
-    const M = Ns(m);
-    a(t.id, { columns: M });
+  const nt = (f) => {
+    const H = ks(f);
+    a(t.id, { columns: H });
     try {
-      localStorage.setItem(gt, JSON.stringify(M));
+      localStorage.setItem(ft, JSON.stringify(H));
     } catch {
     }
-    const E = String(t.pageId || "default");
+    const B = String(t.pageId || "default");
     fetch("http://localhost:5048/api/core/user-settings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        featureCode: E,
+        featureCode: B,
         componentId: t.id,
         settingType: "GridPolicy",
-        settingJson: JSON.stringify(M)
+        settingJson: JSON.stringify(H)
       })
     }).catch(() => {
     });
-  }, xt = Je(h);
-  xt.current = h;
-  const q = (m, M, E) => {
-    f && d(t.id, m, M, E);
-    const _ = (f && i && i[t.id] ? i[t.id] : xt.current).map((X, re) => X.id !== void 0 && X.id === m || X.id === void 0 && re === m ? { ...X, [M]: E } : X);
-    xe(_), x && fe.getState().registerDataset(x, _);
-  }, ge = (m, M, E) => {
-    const _ = Z.getState().features.find((We) => String(We.id) === String(t.pageId)), X = _ == null ? void 0 : _.scriptFile, re = (E == null ? void 0 : E.action) || m;
-    let Re = !1;
-    E != null && E.events && (Array.isArray(E.events) ? E.events : typeof E.events == "string" ? (() => {
+  }, pt = tt(m);
+  pt.current = m;
+  const ee = (f, H, B) => {
+    x && d(t.id, f, H, B);
+    const K = (x && i && i[t.id] ? i[t.id] : pt.current).map((re, he) => re.id !== void 0 && re.id === f || re.id === void 0 && he === f ? { ...re, [H]: B } : re);
+    ie(K), h && Te.getState().registerDataset(h, K);
+  }, Se = (f, H, B) => {
+    const K = Z.getState().features.find((Ue) => String(Ue.id) === String(t.pageId)), re = K == null ? void 0 : K.scriptFile, he = (B == null ? void 0 : B.action) || f;
+    let Be = !1;
+    B != null && B.events && (Array.isArray(B.events) ? B.events : typeof B.events == "string" ? (() => {
       try {
-        return JSON.parse(E.events);
+        return JSON.parse(B.events);
       } catch {
         return [];
       }
-    })() : []).forEach((qe) => {
-      Re = !0, Ss(
-        qe,
-        E.title || E.key,
-        X,
-        { row: M, col: E, column: E, action: qe.action || qe.handlerName || re, value: M[(E == null ? void 0 : E.key) || ""] }
+    })() : []).forEach((Je) => {
+      Be = !0, Ds(
+        Je,
+        B.title || B.key,
+        re,
+        { row: H, col: B, column: B, action: Je.action || Je.handlerName || he, value: H[(B == null ? void 0 : B.key) || ""] }
       );
-    }), !Re && re && Ss(
-      { id: `col_act_${(E == null ? void 0 : E.key) || m}`, trigger: "actionClick", action: re, handlerName: re },
+    }), !Be && he && Ds(
+      { id: `col_act_${(B == null ? void 0 : B.key) || f}`, trigger: "actionClick", action: he, handlerName: he },
       t.props.label || "Bảng dữ liệu",
-      X,
-      { row: M, col: E, column: E, action: re, value: M[(E == null ? void 0 : E.key) || ""] }
-    ), t.events && t.events.length > 0 && ze(t.events, "actionClick", t.props.label || "Bảng dữ liệu", X, {
-      action: re,
-      row: M,
-      col: E,
-      column: E,
-      colKey: E == null ? void 0 : E.key,
-      value: M[(E == null ? void 0 : E.key) || ""]
+      re,
+      { row: H, col: B, column: B, action: he, value: H[(B == null ? void 0 : B.key) || ""] }
+    ), t.events && t.events.length > 0 && Ye(t.events, "actionClick", t.props.label || "Bảng dữ liệu", re, {
+      action: he,
+      row: H,
+      col: B,
+      column: B,
+      colKey: B == null ? void 0 : B.key,
+      value: H[(B == null ? void 0 : B.key) || ""]
     });
-  }, [Ee, ke] = A(null), [Me, Te] = A(/* @__PURE__ */ new Set()), Ye = Je(null), Ie = (m, M, E = "info") => {
-    const H = document.createElement("div"), _ = E === "success" ? "border-emerald-500 shadow-emerald-500/30" : E === "warning" ? "border-amber-500 shadow-amber-500/30" : "border-blue-500 shadow-blue-500/30", X = E === "success" ? "⚡" : E === "warning" ? "⚠️" : "ℹ️", re = E === "success" ? "bg-emerald-600/25 text-emerald-400" : E === "warning" ? "bg-amber-600/25 text-amber-400" : "bg-blue-600/20 text-blue-400";
-    H.className = `fixed bottom-6 right-6 z-50 bg-slate-900 border ${_} text-white px-4 py-3 rounded-2xl shadow-2xl text-xs flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200 max-w-md pointer-events-none`, H.innerHTML = `
-      <div class="w-8 h-8 rounded-xl ${re} flex items-center justify-center font-bold text-base flex-shrink-0">
-        ${X}
+  }, [Ee, Re] = D(null), [_e, Le] = D(/* @__PURE__ */ new Set()), qe = tt(null), $e = (f, H, B = "info") => {
+    const J = document.createElement("div"), K = B === "success" ? "border-emerald-500 shadow-emerald-500/30" : B === "warning" ? "border-amber-500 shadow-amber-500/30" : "border-blue-500 shadow-blue-500/30", re = B === "success" ? "⚡" : B === "warning" ? "⚠️" : "ℹ️", he = B === "success" ? "bg-emerald-600/25 text-emerald-400" : B === "warning" ? "bg-amber-600/25 text-amber-400" : "bg-blue-600/20 text-blue-400";
+    J.className = `fixed bottom-6 right-6 z-50 bg-slate-900 border ${K} text-white px-4 py-3 rounded-2xl shadow-2xl text-xs flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200 max-w-md pointer-events-none`, J.innerHTML = `
+      <div class="w-8 h-8 rounded-xl ${he} flex items-center justify-center font-bold text-base flex-shrink-0">
+        ${re}
       </div>
       <div class="min-w-0">
         <div class="font-bold text-slate-100 flex items-center gap-1.5 flex-wrap">
-          <span>${m}</span>
+          <span>${f}</span>
         </div>
-        <div class="text-[11px] text-slate-300 mt-0.5 leading-relaxed font-mono">${M}</div>
+        <div class="text-[11px] text-slate-300 mt-0.5 leading-relaxed font-mono">${H}</div>
       </div>
-    `, document.body.appendChild(H), setTimeout(() => {
-      H.classList.add("opacity-0", "transition-opacity", "duration-300"), setTimeout(() => H.remove(), 300);
+    `, document.body.appendChild(J), setTimeout(() => {
+      J.classList.add("opacity-0", "transition-opacity", "duration-300"), setTimeout(() => J.remove(), 300);
     }, 3800);
-  }, ht = () => {
-    if (Me.size === z.length && z.length > 0)
-      Te(/* @__PURE__ */ new Set()), Ie("F1 (Toggle All)", "Đã bỏ chọn tất cả các dòng", "info");
+  }, rt = () => {
+    if (_e.size === q.length && q.length > 0)
+      Le(/* @__PURE__ */ new Set()), $e("F1 (Toggle All)", "Đã bỏ chọn tất cả các dòng", "info");
     else {
-      const m = new Set(z.map((M, E) => M.id ?? M.Id ?? E));
-      Te(m), z.length > 0 && ke(z[0].id ?? z[0].Id ?? 0), Ie("F1 (Toggle All)", `Đã chọn tất cả ${m.size} dòng trong bảng`, "success");
+      const f = new Set(q.map((H, B) => H.id ?? H.Id ?? B));
+      Le(f), q.length > 0 && Re(q[0].id ?? q[0].Id ?? 0), $e("F1 (Toggle All)", `Đã chọn tất cả ${f.size} dòng trong bảng`, "success");
     }
-  }, dt = () => {
-    var _;
-    let m = _e == null ? void 0 : _e.colKey, M = (_e == null ? void 0 : _e.rowIndex) ?? 0;
-    !m && l.length > 0 && (m = l[0].key);
-    const E = z[M], H = E && m ? E[m] : null;
-    if (H != null && String(H).trim() !== "" && String(H) !== "—") {
-      O((re) => ({ ...re, [m]: String(H) })), $(!0);
-      const X = ((_ = l.find((re) => re.key === m)) == null ? void 0 : _.title) || m;
-      Ie("F2 (Lọc theo ô)", `Đã lọc cột [${X}] với giá trị "${H}"`, "success");
+  }, ut = () => {
+    var K;
+    let f = Ge == null ? void 0 : Ge.colKey, H = (Ge == null ? void 0 : Ge.rowIndex) ?? 0;
+    !f && l.length > 0 && (f = l[0].key);
+    const B = q[H], J = B && f ? B[f] : null;
+    if (J != null && String(J).trim() !== "" && String(J) !== "—") {
+      V((he) => ({ ...he, [f]: String(J) })), $(!0);
+      const re = ((K = l.find((he) => he.key === f)) == null ? void 0 : K.title) || f;
+      $e("F2 (Lọc theo ô)", `Đã lọc cột [${re}] với giá trị "${J}"`, "success");
     } else
-      $(!0), Ie("F2 (Lọc theo ô)", "Vui lòng chọn hoặc click vào một ô có dữ liệu để lọc nhanh", "warning");
-  }, Nt = () => {
-    const m = Me.size > 0 ? z.filter((H, _) => Me.has(H.id ?? H.Id ?? _)) : z;
-    if (m.length === 0) {
-      Ie("F3 (Tính tổng nhanh)", "Không có bản ghi nào để tính toán", "warning");
+      $(!0), $e("F2 (Lọc theo ô)", "Vui lòng chọn hoặc click vào một ô có dữ liệu để lọc nhanh", "warning");
+  }, Ct = () => {
+    const f = _e.size > 0 ? q.filter((J, K) => _e.has(J.id ?? J.Id ?? K)) : q;
+    if (f.length === 0) {
+      $e("F3 (Tính tổng nhanh)", "Không có bản ghi nào để tính toán", "warning");
       return;
     }
-    const M = l.filter(
-      (H) => H.componentType === "Number" || H.precision !== void 0 || ["totalgw", "totalcbm", "totalvgm", "gw", "cbm", "vgm", "packages", "amount"].some(
-        (_) => H.key.toLowerCase().includes(_)
+    const H = l.filter(
+      (J) => J.componentType === "Number" || J.precision !== void 0 || ["totalgw", "totalcbm", "totalvgm", "gw", "cbm", "vgm", "packages", "amount"].some(
+        (K) => J.key.toLowerCase().includes(K)
       )
     );
-    if (M.length === 0) {
-      Ie("F3 (Tính tổng nhanh)", "Bảng hiện tại không có cột số liệu nào (GW, CBM, VGM, v.v.)", "warning");
+    if (H.length === 0) {
+      $e("F3 (Tính tổng nhanh)", "Bảng hiện tại không có cột số liệu nào (GW, CBM, VGM, v.v.)", "warning");
       return;
     }
-    const E = M.map((H) => {
-      const _ = m.reduce((re, Re) => {
-        const We = Number(Re[H.key]);
-        return re + (isNaN(We) ? 0 : We);
-      }, 0), X = _ % 1 !== 0 ? _.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : _.toLocaleString("en-US");
-      return `${H.title || H.key}: ${X}${H.summarySuffix ? ` ${H.summarySuffix}` : ""}`;
+    const B = H.map((J) => {
+      const K = f.reduce((he, Be) => {
+        const Ue = Number(Be[J.key]);
+        return he + (isNaN(Ue) ? 0 : Ue);
+      }, 0), re = K % 1 !== 0 ? K.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : K.toLocaleString("en-US");
+      return `${J.title || J.key}: ${re}${J.summarySuffix ? ` ${J.summarySuffix}` : ""}`;
     });
-    Ie(
-      `F3 (Tổng ${m.length} dòng)`,
-      E.join(" | "),
+    $e(
+      `F3 (Tổng ${f.length} dòng)`,
+      B.join(" | "),
       "success"
     );
-  }, vt = () => {
-    Kt();
-    const m = z.length;
-    Ie("F4 (Thêm dòng)", `Đã thêm dòng mới số #${m + 1}`, "success"), setTimeout(() => {
-      Yt(m, 0);
+  }, gt = () => {
+    Bt();
+    const f = q.length;
+    $e("F4 (Thêm dòng)", `Đã thêm dòng mới số #${f + 1}`, "success"), setTimeout(() => {
+      Ut(f, 0);
     }, 60);
-  }, Ot = async () => {
-    const m = r.label ? String(r.label).replace(/\s+/g, "_") : "Du_Lieu_Bang", M = r.label ? String(r.label).slice(0, 30) : "Sheet1";
+  }, xt = async () => {
+    const f = r.label ? String(r.label).replace(/\s+/g, "_") : "Du_Lieu_Bang", H = r.label ? String(r.label).slice(0, 30) : "Sheet1";
     try {
-      const E = {
+      const B = {
         title: r.label ? String(r.label) : "BẢNG DỮ LIỆU",
-        sheetName: M,
-        columns: l.map((_) => ({
-          key: _.key,
-          title: _.title || _.key,
-          align: _.align || "left",
-          dataType: _.componentType === "Number" || _.precision !== void 0 || _.format === "number" ? "number" : _.componentType === "Checkbox" ? "boolean" : "string"
+        sheetName: H,
+        columns: l.map((K) => ({
+          key: K.key,
+          title: K.title || K.key,
+          align: K.align || "left",
+          dataType: K.componentType === "Number" || K.precision !== void 0 || K.format === "number" ? "number" : K.componentType === "Checkbox" ? "boolean" : "string"
         })),
-        rows: z
-      }, H = await fetch("http://localhost:5048/api/core/export/excel", {
+        rows: q
+      }, J = await fetch("http://localhost:5048/api/core/export/excel", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(E)
+        body: JSON.stringify(B)
       });
-      if (H.ok) {
-        const _ = await H.blob(), X = window.URL.createObjectURL(_), re = document.createElement("a");
-        re.href = X, re.download = `${m}.xlsx`, document.body.appendChild(re), re.click(), document.body.removeChild(re), window.URL.revokeObjectURL(X), Ie(
+      if (J.ok) {
+        const K = await J.blob(), re = window.URL.createObjectURL(K), he = document.createElement("a");
+        he.href = re, he.download = `${f}.xlsx`, document.body.appendChild(he), he.click(), document.body.removeChild(he), window.URL.revokeObjectURL(re), $e(
           "Xuất Excel Backend (.xlsx)",
-          `Đã xuất file Excel chuẩn OpenXML từ server thành công (${z.length} bản ghi)`,
+          `Đã xuất file Excel chuẩn OpenXML từ server thành công (${q.length} bản ghi)`,
           "success"
         );
         return;
@@ -6460,331 +6792,331 @@ const or = [
     } catch {
     }
     try {
-      Nl({
-        fileName: m,
-        sheetName: M,
+      Jl({
+        fileName: f,
+        sheetName: H,
         columns: l,
-        rows: z,
+        rows: q,
         includeSummary: !0
-      }), Ie("Xuất Excel Client", `Đã xuất ${z.length} dòng dữ liệu ra file Excel thành công`, "success");
-    } catch (E) {
-      Ie("Lỗi xuất Excel", (E == null ? void 0 : E.message) || "Không thể tạo file Excel", "warning");
+      }), $e("Xuất Excel Client", `Đã xuất ${q.length} dòng dữ liệu ra file Excel thành công`, "success");
+    } catch (B) {
+      $e("Lỗi xuất Excel", (B == null ? void 0 : B.message) || "Không thể tạo file Excel", "warning");
     }
-  }, zt = () => {
+  }, Wt = () => {
     try {
-      const m = {};
-      l.forEach((M) => {
-        if (M.aggregate === "sum") {
-          const E = z.reduce((H, _) => H + (Number(_[M.key]) || 0), 0);
-          m[M.key] = E;
-        } else M.aggregate === "count" && (m[M.key] = z.length);
-      }), Ur({
+      const f = {};
+      l.forEach((H) => {
+        if (H.aggregate === "sum") {
+          const B = q.reduce((J, K) => J + (Number(K[H.key]) || 0), 0);
+          f[H.key] = B;
+        } else H.aggregate === "count" && (f[H.key] = q.length);
+      }), sa({
         title: r.label ? String(r.label) : "Báo Cáo Bảng Dữ Liệu",
-        subtitle: `Dữ liệu trích xuất từ phân hệ UIForge - ${z.length} bản ghi`,
+        subtitle: `Dữ liệu trích xuất từ phân hệ UIForge - ${q.length} bản ghi`,
         columns: l,
-        rows: z,
-        summaryRow: Object.keys(m).length > 0 ? m : void 0,
+        rows: q,
+        summaryRow: Object.keys(f).length > 0 ? f : void 0,
         metadata: {
           "Thời điểm xuất": (/* @__PURE__ */ new Date()).toLocaleString("vi-VN"),
-          "Số lượng dòng": `${z.length} dòng`,
+          "Số lượng dòng": `${q.length} dòng`,
           "Bộ lọc áp dụng": y ? `Tìm kiếm: "${y}"` : "Tất cả dữ liệu"
         }
-      }), Ie("In Báo Cáo", "Đã mở cửa sổ in ấn và xuất PDF báo cáo thành công", "info");
-    } catch (m) {
-      Ie("Lỗi In Báo Cáo", (m == null ? void 0 : m.message) || "Không thể tạo bản in báo cáo", "warning");
+      }), $e("In Báo Cáo", "Đã mở cửa sổ in ấn và xuất PDF báo cáo thành công", "info");
+    } catch (f) {
+      $e("Lỗi In Báo Cáo", (f == null ? void 0 : f.message) || "Không thể tạo bản in báo cáo", "warning");
     }
-  }, _t = async () => {
-    if (L(""), O({}), x) {
-      const m = await fe.getState().queryEntity(x, N);
-      m && m.length > 0 && (C(m), Ie("Làm mới dữ liệu", `Đã tải lại ${m.length} bản ghi từ máy chủ`, "info"));
+  }, Dt = async () => {
+    if (P(""), V({}), h) {
+      const f = await Te.getState().queryEntity(h, w);
+      f && f.length > 0 && (k(f), $e("Làm mới dữ liệu", `Đã tải lại ${f.length} bản ghi từ máy chủ`, "info"));
     }
-  }, wt = (m, M, E) => {
-    const H = wl(m);
-    if (H.length === 0) return;
-    const _ = f && i && i[t.id] ? i[t.id] : h, { updatedRows: X, pastedRowCount: re, pastedColCount: Re, newRowsCreated: We } = kl({
-      currentRows: _,
+  }, vt = (f, H, B) => {
+    const J = Xl(f);
+    if (J.length === 0) return;
+    const K = x && i && i[t.id] ? i[t.id] : m, { updatedRows: re, pastedRowCount: he, pastedColCount: Be, newRowsCreated: Ue } = Zl({
+      currentRows: K,
       visibleColumns: l,
       allColumns: o,
-      clipMatrix: H,
-      startRowIndex: M,
-      startColIndex: E
+      clipMatrix: J,
+      startRowIndex: H,
+      startColIndex: B
     });
-    xe(X), x && fe.getState().registerDataset(x, X), f && Rt.setState((pt) => ({
+    ie(re), h && Te.getState().registerDataset(h, re), x && qt.setState((jt) => ({
       detailGrids: {
-        ...pt.detailGrids,
-        [t.id]: X
+        ...jt.detailGrids,
+        [t.id]: re
       }
     }));
-    const qe = We > 0 ? `Đã dán thành công ${re} dòng × ${Re} cột (tự động tạo thêm ${We} dòng mới)` : `Đã dán thành công ${re} dòng × ${Re} cột vào bảng`;
-    Ie("Dán từ Excel (Ctrl+V)", qe, "success");
-  }, Ht = (m) => {
-    typeof navigator < "u" && navigator.clipboard && typeof navigator.clipboard.readText == "function" ? navigator.clipboard.readText().then((M) => {
-      M ? wt(M, m, 0) : Ie("Dán từ Excel", "Clipboard hiện đang trống", "warning");
+    const Je = Ue > 0 ? `Đã dán thành công ${he} dòng × ${Be} cột (tự động tạo thêm ${Ue} dòng mới)` : `Đã dán thành công ${he} dòng × ${Be} cột vào bảng`;
+    $e("Dán từ Excel (Ctrl+V)", Je, "success");
+  }, kt = (f) => {
+    typeof navigator < "u" && navigator.clipboard && typeof navigator.clipboard.readText == "function" ? navigator.clipboard.readText().then((H) => {
+      H ? vt(H, f, 0) : $e("Dán từ Excel", "Clipboard hiện đang trống", "warning");
     }).catch(() => {
-      Ie("Dán từ Excel", "Hãy bấm chọn ô và nhấn phím Ctrl+V để dán dữ liệu", "info");
-    }) : Ie("Dán từ Excel", "Hãy bấm chọn ô và nhấn phím Ctrl+V để dán dữ liệu", "info");
+      $e("Dán từ Excel", "Hãy bấm chọn ô và nhấn phím Ctrl+V để dán dữ liệu", "info");
+    }) : $e("Dán từ Excel", "Hãy bấm chọn ô và nhấn phím Ctrl+V để dán dữ liệu", "info");
   }, {
-    focusedCell: _e,
-    setFocusedCell: qt,
-    focusCell: Yt,
-    handleTableContainerKeyDown: Vt,
-    handleCellKeyDown: It,
-    handlePaste: Jt
-  } = bl({
-    tableRef: Ye,
-    rows: z,
+    focusedCell: Ge,
+    setFocusedCell: Kt,
+    focusCell: Ut,
+    handleTableContainerKeyDown: Ft,
+    handleCellKeyDown: Rt,
+    handlePaste: Lt
+  } = Wl({
+    tableRef: qe,
+    rows: q,
     visibleColumns: l,
     selectedRowId: Ee,
-    setSelectedRowId: ke,
-    selectedRowIds: Me,
-    setSelectedRowIds: Te,
-    onRowDoubleClick: (m, M) => Wt(m, M),
-    onAddRow: vt,
-    onDeleteRow: (m) => $e(m),
-    onDuplicateRow: (m) => be(m),
-    onToggleAll: ht,
-    onFilterByCell: dt,
-    onQuickSum: Nt,
-    onToggleColumnFilters: () => $((m) => !m),
-    onPasteExcel: wt
-  }), Xt = (m, M, E) => {
-    const H = m.id ?? m.Id ?? M;
-    if (ke(H), E != null && E.ctrlKey || E != null && E.metaKey)
-      Te((Re) => {
-        const We = new Set(Re);
-        return We.has(H) ? We.delete(H) : We.add(H), We;
+    setSelectedRowId: Re,
+    selectedRowIds: _e,
+    setSelectedRowIds: Le,
+    onRowDoubleClick: (f, H) => Mt(f, H),
+    onAddRow: gt,
+    onDeleteRow: (f) => G(f),
+    onDuplicateRow: (f) => ve(f),
+    onToggleAll: rt,
+    onFilterByCell: ut,
+    onQuickSum: Ct,
+    onToggleColumnFilters: () => $((f) => !f),
+    onPasteExcel: vt
+  }), At = (f, H, B) => {
+    const J = f.id ?? f.Id ?? H;
+    if (Re(J), B != null && B.ctrlKey || B != null && B.metaKey)
+      Le((Be) => {
+        const Ue = new Set(Be);
+        return Ue.has(J) ? Ue.delete(J) : Ue.add(J), Ue;
       });
-    else if (E != null && E.shiftKey && Ee !== null) {
-      const Re = z.findIndex((We, qe) => (We.id ?? We.Id ?? qe) === Ee);
-      if (Re !== -1) {
-        const We = Math.min(Re, M), qe = Math.max(Re, M), pt = /* @__PURE__ */ new Set();
-        for (let yt = We; yt <= qe; yt++)
-          pt.add(z[yt].id ?? z[yt].Id ?? yt);
-        Te(pt);
+    else if (B != null && B.shiftKey && Ee !== null) {
+      const Be = q.findIndex((Ue, Je) => (Ue.id ?? Ue.Id ?? Je) === Ee);
+      if (Be !== -1) {
+        const Ue = Math.min(Be, H), Je = Math.max(Be, H), jt = /* @__PURE__ */ new Set();
+        for (let $t = Ue; $t <= Je; $t++)
+          jt.add(q[$t].id ?? q[$t].Id ?? $t);
+        Le(jt);
       }
     } else
-      Te(/* @__PURE__ */ new Set([H]));
-    const X = Z.getState().features.find((Re) => String(Re.id) === String(t.pageId)), re = X == null ? void 0 : X.scriptFile;
-    x && fe.getState().setSelectedRecord(x, m), t.events && t.events.length > 0 && (ze(t.events, "rowClick", t.props.label || "Bảng dữ liệu", re, {
-      row: m,
-      rowIndex: M,
+      Le(/* @__PURE__ */ new Set([J]));
+    const re = Z.getState().features.find((Be) => String(Be.id) === String(t.pageId)), he = re == null ? void 0 : re.scriptFile;
+    h && Te.getState().setSelectedRecord(h, f), t.events && t.events.length > 0 && (Ye(t.events, "rowClick", t.props.label || "Bảng dữ liệu", he, {
+      row: f,
+      rowIndex: H,
       action: "rowClick"
-    }), ze(t.events, "click", t.props.label || "Bảng dữ liệu", re, {
-      row: m,
-      rowIndex: M,
+    }), Ye(t.events, "click", t.props.label || "Bảng dữ liệu", he, {
+      row: f,
+      rowIndex: H,
       action: "click"
-    }), ze(t.events, "select", t.props.label || "Bảng dữ liệu", re, {
-      row: m,
-      rowIndex: M,
+    }), Ye(t.events, "select", t.props.label || "Bảng dữ liệu", he, {
+      row: f,
+      rowIndex: H,
       action: "select"
     }));
-  }, Wt = (m, M) => {
-    const H = Z.getState().features.find((X) => String(X.id) === String(t.pageId)), _ = H == null ? void 0 : H.scriptFile;
-    t.events && t.events.length > 0 && ze(t.events, "dblclick", t.props.label || "Bảng dữ liệu", _, {
-      row: m,
-      rowIndex: M,
-      id: m.id ?? m.Id,
+  }, Mt = (f, H) => {
+    const J = Z.getState().features.find((re) => String(re.id) === String(t.pageId)), K = J == null ? void 0 : J.scriptFile;
+    t.events && t.events.length > 0 && Ye(t.events, "dblclick", t.props.label || "Bảng dữ liệu", K, {
+      row: f,
+      rowIndex: H,
+      id: f.id ?? f.Id,
       action: "dblclick"
     });
-  }, Kt = () => {
-    f && c(t.id);
-    const m = f && i && i[t.id] ? i[t.id] : h, E = { id: m.length > 0 ? Math.max(...m.map((_) => Number(_.id) || 0)) + 1 : 1 };
-    o.forEach((_) => {
-      _.componentType === "Number" ? E[_.key] = 0 : _.componentType === "Checkbox" ? E[_.key] = !1 : _.componentType === "DatePicker" ? E[_.key] = "08/11/2026" : E[_.key] = "";
+  }, Bt = () => {
+    x && c(t.id);
+    const f = x && i && i[t.id] ? i[t.id] : m, B = { id: f.length > 0 ? Math.max(...f.map((K) => Number(K.id) || 0)) + 1 : 1 };
+    o.forEach((K) => {
+      K.componentType === "Number" ? B[K.key] = 0 : K.componentType === "Checkbox" ? B[K.key] = !1 : K.componentType === "DatePicker" ? B[K.key] = "08/11/2026" : B[K.key] = "";
     });
-    const H = [...m, E];
-    xe(H), x && fe.getState().registerDataset(x, H);
-  }, [D, J] = A({}), ne = (m, M) => {
-    if (M != null && String(M).trim() !== "") {
-      const E = f && i && i[t.id] ? i[t.id] : h, _ = { id: E.length > 0 ? Math.max(...E.map((re) => Number(re.id) || 0)) + 1 : 1, ...D, [m]: M };
-      o.forEach((re) => {
-        _[re.key] === void 0 && (re.componentType === "Number" || re.dataType === "number" ? _[re.key] = 0 : re.componentType === "Checkbox" || re.dataType === "boolean" ? _[re.key] = !1 : (re.componentType === "DatePicker" || re.dataType, _[re.key] = ""));
+    const J = [...f, B];
+    ie(J), h && Te.getState().registerDataset(h, J);
+  }, [I, te] = D({}), de = (f, H) => {
+    if (H != null && String(H).trim() !== "") {
+      const B = x && i && i[t.id] ? i[t.id] : m, K = { id: B.length > 0 ? Math.max(...B.map((he) => Number(he.id) || 0)) + 1 : 1, ...I, [f]: H };
+      o.forEach((he) => {
+        K[he.key] === void 0 && (he.componentType === "Number" || he.dataType === "number" ? K[he.key] = 0 : he.componentType === "Checkbox" || he.dataType === "boolean" ? K[he.key] = !1 : (he.componentType === "DatePicker" || he.dataType, K[he.key] = ""));
       });
-      const X = [...E, _];
-      xe(X), x && fe.getState().registerDataset(x, X), f && Rt.setState((re) => ({
+      const re = [...B, K];
+      ie(re), h && Te.getState().registerDataset(h, re), x && qt.setState((he) => ({
         detailGrids: {
-          ...re.detailGrids,
-          [t.id]: X
+          ...he.detailGrids,
+          [t.id]: re
         }
-      })), J({}), Ie("Dòng mới tự động", `Đã tự động khởi tạo dòng #${X.length} vào bảng`, "success");
+      })), te({}), $e("Dòng mới tự động", `Đã tự động khởi tạo dòng #${re.length} vào bảng`, "success");
     } else
-      J((E) => ({ ...E, [m]: M }));
-  }, be = (m) => {
-    f && g(t.id, m);
-    const M = f && i && i[t.id] ? i[t.id] : h, E = M[m], H = Math.max(...M.map((re) => Number(re.id) || 0)) + 1, _ = { ...E, id: H }, X = [...M];
-    X.splice(m + 1, 0, _), xe(X), x && fe.getState().registerDataset(x, X);
-  }, $e = (m) => {
-    f && p(t.id, m);
-    const M = f && i && i[t.id] ? i[t.id] : h;
-    if (M.length <= 1 && !confirm("Bạn có chắc muốn xóa dòng cuối cùng này không?"))
+      te((B) => ({ ...B, [f]: H }));
+  }, ve = (f) => {
+    x && g(t.id, f);
+    const H = x && i && i[t.id] ? i[t.id] : m, B = H[f], J = Math.max(...H.map((he) => Number(he.id) || 0)) + 1, K = { ...B, id: J }, re = [...H];
+    re.splice(f + 1, 0, K), ie(re), h && Te.getState().registerDataset(h, re);
+  }, G = (f) => {
+    x && p(t.id, f);
+    const H = x && i && i[t.id] ? i[t.id] : m;
+    if (H.length <= 1 && !confirm("Bạn có chắc muốn xóa dòng cuối cùng này không?"))
       return;
-    const E = M.filter((H, _) => _ !== m);
-    xe(E), x && fe.getState().registerDataset(x, E);
-  }, Ae = (m, M, E) => {
-    m.preventDefault(), m.stopPropagation(), se({
+    const B = H.filter((J, K) => K !== f);
+    ie(B), h && Te.getState().registerDataset(h, B);
+  }, je = (f, H, B) => {
+    f.preventDefault(), f.stopPropagation(), ae({
       isOpen: !0,
-      x: m.clientX,
-      y: m.clientY,
-      row: M,
-      rowIndex: E
+      x: f.clientX,
+      y: f.clientY,
+      row: H,
+      rowIndex: B
     });
-  }, Fe = (m) => {
-    const M = f && i && i[t.id] ? i[t.id] : h, H = { id: M.length > 0 ? Math.max(...M.map((X) => Number(X.id) || 0)) + 1 : 1 };
-    o.forEach((X) => {
-      X.componentType === "Number" ? H[X.key] = 0 : X.componentType === "Checkbox" ? H[X.key] = !1 : (X.componentType, H[X.key] = "");
+  }, ke = (f) => {
+    const H = x && i && i[t.id] ? i[t.id] : m, J = { id: H.length > 0 ? Math.max(...H.map((re) => Number(re.id) || 0)) + 1 : 1 };
+    o.forEach((re) => {
+      re.componentType === "Number" ? J[re.key] = 0 : re.componentType === "Checkbox" ? J[re.key] = !1 : (re.componentType, J[re.key] = "");
     });
-    const _ = [...M];
-    _.splice(m + 1, 0, H), xe(_), x && fe.getState().registerDataset(x, _);
-  }, De = (m) => {
-    if (m <= 0) return;
-    const E = [...f && i && i[t.id] ? i[t.id] : h], [H] = E.splice(m, 1);
-    E.splice(m - 1, 0, H), xe(E), x && fe.getState().registerDataset(x, E);
-  }, Xe = (m) => {
-    const M = f && i && i[t.id] ? i[t.id] : h;
-    if (m >= M.length - 1) return;
-    const E = [...M], [H] = E.splice(m, 1);
-    E.splice(m + 1, 0, H), xe(E), x && fe.getState().registerDataset(x, E);
-  }, Ke = (m, M) => {
-    me(M), m.dataTransfer.effectAllowed = "move", m.dataTransfer.setData("text/plain", M);
-  }, Ue = (m, M) => {
-    if (m.preventDefault(), m.dataTransfer.dropEffect = "move", de === M) return;
-    const E = m.currentTarget.getBoundingClientRect(), H = m.clientX < E.left + E.width / 2;
-    he(M), Oe(H ? "left" : "right");
-  }, tt = (m) => {
-    const M = m.relatedTarget;
-    m.currentTarget.contains(M) || (he(null), Oe(null));
-  }, mt = (m, M) => {
-    if (m.preventDefault(), !de || de === M) {
-      me(null), he(null), Oe(null);
+    const K = [...H];
+    K.splice(f + 1, 0, J), ie(K), h && Te.getState().registerDataset(h, K);
+  }, oe = (f) => {
+    if (f <= 0) return;
+    const B = [...x && i && i[t.id] ? i[t.id] : m], [J] = B.splice(f, 1);
+    B.splice(f - 1, 0, J), ie(B), h && Te.getState().registerDataset(h, B);
+  }, Ve = (f) => {
+    const H = x && i && i[t.id] ? i[t.id] : m;
+    if (f >= H.length - 1) return;
+    const B = [...H], [J] = B.splice(f, 1);
+    B.splice(f + 1, 0, J), ie(B), h && Te.getState().registerDataset(h, B);
+  }, We = (f, H) => {
+    _(H), f.dataTransfer.effectAllowed = "move", f.dataTransfer.setData("text/plain", H);
+  }, Pe = (f, H) => {
+    if (f.preventDefault(), f.dataTransfer.dropEffect = "move", O === H) return;
+    const B = f.currentTarget.getBoundingClientRect(), J = f.clientX < B.left + B.width / 2;
+    ce(H), ue(J ? "left" : "right");
+  }, Xe = (f) => {
+    const H = f.relatedTarget;
+    f.currentTarget.contains(H) || (ce(null), ue(null));
+  }, at = (f, H) => {
+    if (f.preventDefault(), !O || O === H) {
+      _(null), ce(null), ue(null);
       return;
     }
-    const E = o.findIndex((X) => X.key === de);
-    let H = o.findIndex((X) => X.key === M);
-    if (E === -1 || H === -1) {
-      me(null), he(null), Oe(null);
+    const B = o.findIndex((re) => re.key === O);
+    let J = o.findIndex((re) => re.key === H);
+    if (B === -1 || J === -1) {
+      _(null), ce(null), ue(null);
       return;
     }
-    we === "right" && E > H ? H = H + 1 : we === "left" && E < H && (H = H - 1), H = Math.max(0, Math.min(o.length - 1, H));
-    const _ = Cn(o, E, H);
-    rt(_), me(null), he(null), Oe(null);
-  }, ut = () => {
-    me(null), he(null), Oe(null);
-  }, Qe = (m) => {
-    m.sortable && (k === m.key ? w === "asc" ? S("desc") : F(null) : (F(m.key), S("asc")));
-  }, Ft = (m, M, E) => {
-    m.preventDefault(), m.stopPropagation(), P({
+    ye === "right" && B > J ? J = J + 1 : ye === "left" && B < J && (J = J - 1), J = Math.max(0, Math.min(o.length - 1, J));
+    const K = Fn(o, B, J);
+    nt(K), _(null), ce(null), ue(null);
+  }, it = () => {
+    _(null), ce(null), ue(null);
+  }, Ze = (f) => {
+    f.sortable && (R === f.key ? C === "asc" ? S("desc") : F(null) : (F(f.key), S("asc")));
+  }, St = (f, H, B) => {
+    f.preventDefault(), f.stopPropagation(), E({
       isOpen: !0,
-      x: m.clientX,
-      y: m.clientY,
-      column: M,
-      columnIndex: E
+      x: f.clientX,
+      y: f.clientY,
+      column: H,
+      columnIndex: B
     });
-  }, Qt = (m) => {
-    const M = o.map(
-      (E) => E.key === m ? { ...E, hidden: !E.hidden } : E
+  }, Ot = (f) => {
+    const H = o.map(
+      (B) => B.key === f ? { ...B, hidden: !B.hidden } : B
     );
-    rt(M);
-  }, Zt = (m) => {
-    const M = Kr(o, m);
-    rt(M);
-  }, Fs = (m) => {
-    G({
+    nt(H);
+  }, zt = (f) => {
+    const H = ea(o, f);
+    nt(H);
+  }, Es = (f) => {
+    z({
       isOpen: !0,
-      column: m
+      column: f
     });
-  }, Rs = (m) => {
-    const M = o.findIndex((X) => X.key === m);
-    if (M === -1) return;
-    const E = o[M], H = {
-      ...E,
-      key: `${E.key}_copy`,
-      title: `${E.title} (Bản sao)`,
-      order: (E.order ?? M) + 1
-    }, _ = [...o];
-    _.splice(M + 1, 0, H), rt(_);
-  }, $s = (m) => {
+  }, As = (f) => {
+    const H = o.findIndex((re) => re.key === f);
+    if (H === -1) return;
+    const B = o[H], J = {
+      ...B,
+      key: `${B.key}_copy`,
+      title: `${B.title} (Bản sao)`,
+      order: (B.order ?? H) + 1
+    }, K = [...o];
+    K.splice(H + 1, 0, J), nt(K);
+  }, Ms = (f) => {
     if (o.length <= 1) {
       alert("Bảng phải có ít nhất 1 cột!");
       return;
     }
-    const M = o.filter((E) => E.key !== m);
-    rt(M);
-  }, Ls = (m) => {
-    const M = o.map(
-      (E) => E.key === m.key ? m : E
+    const H = o.filter((B) => B.key !== f);
+    nt(H);
+  }, Bs = (f) => {
+    const H = o.map(
+      (B) => B.key === f.key ? f : B
     );
-    rt(M);
-  }, es = (m, M) => {
-    const E = Ee === (m.id ?? m.Id ?? M), H = Me.has(m.id ?? m.Id ?? M);
+    nt(H);
+  }, as = (f, H) => {
+    const B = Ee === (f.id ?? f.Id ?? H), J = _e.has(f.id ?? f.Id ?? H);
     return /* @__PURE__ */ e.jsxs(
       "tr",
       {
-        "data-row-index": M,
-        onClick: (_) => Xt(m, M, _),
-        onDoubleClick: () => Wt(m, M),
-        onContextMenu: (_) => Ae(_, m, M),
-        className: `transition-colors group cursor-pointer ${E || H ? "bg-blue-600/25 hover:bg-blue-600/35 border-l-2 border-l-blue-400" : "hover:bg-slate-800/40"}`,
+        "data-row-index": H,
+        onClick: (K) => At(f, H, K),
+        onDoubleClick: () => Mt(f, H),
+        onContextMenu: (K) => je(K, f, H),
+        className: `transition-colors group cursor-pointer ${B || J ? "bg-blue-600/25 hover:bg-blue-600/35 border-l-2 border-l-blue-400" : "hover:bg-slate-800/40"}`,
         children: [
           /* @__PURE__ */ e.jsx(
             "td",
             {
-              onClick: (_) => {
-                _.stopPropagation();
-                const X = m.id ?? m.Id ?? M;
-                Te((re) => {
-                  const Re = new Set(re);
-                  return Re.has(X) ? Re.delete(X) : Re.add(X), Re;
-                }), ke(X);
+              onClick: (K) => {
+                K.stopPropagation();
+                const re = f.id ?? f.Id ?? H;
+                Le((he) => {
+                  const Be = new Set(he);
+                  return Be.has(re) ? Be.delete(re) : Be.add(re), Be;
+                }), Re(re);
               },
-              className: `px-2 py-1 text-center font-mono text-[11px] sticky left-0 z-20 border-r border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] text-slate-400 select-none cursor-pointer ${H ? "bg-blue-900/60 text-blue-200 font-bold" : "bg-[#0f172a] group-hover:bg-slate-800/90"}`,
-              style: { width: `${U}px`, minWidth: `${U}px` },
+              className: `px-2 py-1 text-center font-mono text-[11px] sticky left-0 z-20 border-r border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] text-slate-400 select-none cursor-pointer ${J ? "bg-blue-900/60 text-blue-200 font-bold" : "bg-[#0f172a] group-hover:bg-slate-800/90"}`,
+              style: { width: `${M}px`, minWidth: `${M}px` },
               title: "Click chọn dòng | Chuột phải mở menu thao tác",
               children: /* @__PURE__ */ e.jsxs("span", { className: "flex items-center justify-center gap-1.5", children: [
-                H ? /* @__PURE__ */ e.jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" }) : null,
-                /* @__PURE__ */ e.jsx("span", { children: M + 1 })
+                J ? /* @__PURE__ */ e.jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" }) : null,
+                /* @__PURE__ */ e.jsx("span", { children: H + 1 })
               ] })
             }
           ),
-          l.map((_, X) => {
-            const re = !!(_.frozen || _.sticky === "left"), Re = re && oe[_.key] !== void 0 ? oe[_.key] : void 0, We = _.key === Y, qe = m[_.key], pt = _.align === "right" ? "text-right" : _.align === "center" ? "text-center" : "text-left", yt = I[`${t.id}_${m.id}_${_.key}`];
+          l.map((K, re) => {
+            const he = !!(K.frozen || K.sticky === "left"), Be = he && Q[K.key] !== void 0 ? Q[K.key] : void 0, Ue = K.key === W, Je = f[K.key], jt = K.align === "right" ? "text-right" : K.align === "center" ? "text-center" : "text-left", $t = T[`${t.id}_${f.id}_${K.key}`];
             return /* @__PURE__ */ e.jsx(
               "td",
               {
-                className: `px-2 py-1 whitespace-nowrap transition-colors ${pt} ${re ? `sticky z-10 bg-[#0f172a] group-hover:bg-slate-800/90 ${We ? "border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]" : "border-r border-slate-800/60"}` : "border-r border-slate-800/60"}`,
+                className: `px-2 py-1 whitespace-nowrap transition-colors ${jt} ${he ? `sticky z-10 bg-[#0f172a] group-hover:bg-slate-800/90 ${Ue ? "border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]" : "border-r border-slate-800/60"}` : "border-r border-slate-800/60"}`,
                 style: {
-                  width: _.width,
-                  minWidth: _.minWidth || _.width || "100px",
-                  maxWidth: _.maxWidth,
-                  left: Re !== void 0 ? `${Re}px` : void 0
+                  width: K.width,
+                  minWidth: K.minWidth || K.width || "100px",
+                  maxWidth: K.maxWidth,
+                  left: Be !== void 0 ? `${Be}px` : void 0
                 },
                 children: /* @__PURE__ */ e.jsx(
-                  rr,
+                  pr,
                   {
-                    column: _,
-                    value: qe,
-                    row: m,
-                    rowIndex: M,
-                    columnIndex: X,
-                    isFocused: (_e == null ? void 0 : _e.rowIndex) === M && (_e == null ? void 0 : _e.colIndex) === X,
-                    isSelected: E,
-                    error: yt,
-                    onChange: (Ct) => q(m.id ?? M, _.key, Ct),
-                    onActionClick: (Ct) => ge(Ct, m, _),
-                    onKeyDown: It,
-                    onFocus: (Ct, Ps, As) => {
-                      ke(m.id ?? m.Id ?? Ct), qt({ rowIndex: Ct, colIndex: Ps, colKey: As });
+                    column: K,
+                    value: Je,
+                    row: f,
+                    rowIndex: H,
+                    columnIndex: re,
+                    isFocused: (Ge == null ? void 0 : Ge.rowIndex) === H && (Ge == null ? void 0 : Ge.colIndex) === re,
+                    isSelected: B,
+                    error: $t,
+                    onChange: (_t) => ee(f.id ?? H, K.key, _t),
+                    onActionClick: (_t) => Se(_t, f, K),
+                    onKeyDown: Rt,
+                    onFocus: (_t, _s, Hs) => {
+                      Re(f.id ?? f.Id ?? _t), Kt({ rowIndex: _t, colIndex: _s, colKey: Hs });
                     }
                   }
                 )
               },
-              _.key
+              K.key
             );
           })
         ]
       },
-      m.id ?? m.Id ?? M
+      f.id ?? f.Id ?? H
     );
-  }, { flex: Js, flexGrow: Xs, flexShrink: Qs, flexBasis: Zs, minWidth: en, maxWidth: tn, width: sn, ...Es } = s || {};
+  }, { flex: rn, flexGrow: an, flexShrink: ln, flexBasis: on, minWidth: cn, maxWidth: dn, width: un, ...Os } = s || {};
   return /* @__PURE__ */ e.jsxs(
     "div",
     {
@@ -6792,44 +7124,44 @@ const or = [
       style: {
         width: "100%",
         maxWidth: "100%",
-        ...Es
+        ...Os
       },
       children: [
         /* @__PURE__ */ e.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-slate-950/80 border-b border-slate-800 text-xs", children: [
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2.5", children: [
             /* @__PURE__ */ e.jsx("span", { className: "font-bold text-slate-100 uppercase tracking-wider flex items-center gap-1.5", children: /* @__PURE__ */ e.jsx("span", { children: r.label || "BẢNG DỮ LIỆU" }) }),
             /* @__PURE__ */ e.jsxs("span", { className: "px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-mono text-[10px] font-semibold border border-emerald-500/20", children: [
-              z.length,
+              q.length,
               " bản ghi"
             ] }),
-            ce && /* @__PURE__ */ e.jsxs(
+            fe && /* @__PURE__ */ e.jsxs(
               "span",
               {
                 className: "hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-mono text-[10px] font-semibold border border-blue-500/30",
                 title: "Cơ chế cuộn ảo Virtual Windowing đang hoạt động (TSK-4.1)",
                 children: [
-                  /* @__PURE__ */ e.jsx(ft, { className: "w-3 h-3 text-cyan-400" }),
+                  /* @__PURE__ */ e.jsx(Tt, { className: "w-3 h-3 text-cyan-400" }),
                   /* @__PURE__ */ e.jsxs("span", { children: [
                     "Virtual (",
-                    ye + 1,
+                    De + 1,
                     "..",
-                    pe,
+                    we,
                     "/",
-                    z.length,
+                    q.length,
                     ")"
                   ] })
                 ]
               }
             ),
-            ve && /* @__PURE__ */ e.jsxs(
+            Ne && /* @__PURE__ */ e.jsxs(
               "span",
               {
                 className: "hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-mono text-[10px] font-semibold border border-amber-500/30",
                 title: "Cơ chế gom nhóm dòng đang hoạt động (TSK-4.2)",
                 children: [
-                  /* @__PURE__ */ e.jsx(bn, { className: "w-3 h-3 text-amber-400" }),
+                  /* @__PURE__ */ e.jsx(wn, { className: "w-3 h-3 text-amber-400" }),
                   /* @__PURE__ */ e.jsxs("span", { children: [
-                    je.length,
+                    Ce.length,
                     " nhóm"
                   ] })
                 ]
@@ -6838,14 +7170,14 @@ const or = [
           ] }),
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
             /* @__PURE__ */ e.jsxs("div", { className: "relative flex items-center", children: [
-              /* @__PURE__ */ e.jsx(Bt, { className: "w-3.5 h-3.5 absolute left-2.5 text-slate-400 pointer-events-none" }),
+              /* @__PURE__ */ e.jsx(Et, { className: "w-3.5 h-3.5 absolute left-2.5 text-slate-400 pointer-events-none" }),
               /* @__PURE__ */ e.jsx(
                 "input",
                 {
                   type: "text",
                   placeholder: "Tìm kiếm trong bảng...",
                   value: y,
-                  onChange: (m) => L(m.target.value),
+                  onChange: (f) => P(f.target.value),
                   className: "h-7 w-44 rounded-md border border-slate-700 bg-slate-800/80 pl-8 pr-2.5 text-slate-100 text-xs focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder:text-slate-500 transition-all focus:w-56"
                 }
               )
@@ -6854,11 +7186,11 @@ const or = [
               "button",
               {
                 type: "button",
-                onClick: () => $((m) => !m),
+                onClick: () => $((f) => !f),
                 title: "Bật/Tắt dòng lọc nhanh tại từng cột (FilterLocal)",
-                className: `flex items-center gap-1 h-7 px-2 rounded-md border text-xs font-medium transition-colors ${R ? "border-emerald-500 bg-emerald-500/20 text-emerald-300" : "border-slate-700 bg-slate-800 text-slate-400 hover:text-slate-200"}`,
+                className: `flex items-center gap-1 h-7 px-2 rounded-md border text-xs font-medium transition-colors ${L ? "border-emerald-500 bg-emerald-500/20 text-emerald-300" : "border-slate-700 bg-slate-800 text-slate-400 hover:text-slate-200"}`,
                 children: [
-                  /* @__PURE__ */ e.jsx(mr, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ e.jsx(Nr, { className: "w-3.5 h-3.5" }),
                   /* @__PURE__ */ e.jsx("span", { className: "text-[11px] hidden sm:inline", children: "Lọc Cột" })
                 ]
               }
@@ -6867,11 +7199,11 @@ const or = [
               "button",
               {
                 type: "button",
-                onClick: Kt,
+                onClick: Bt,
                 title: "Thêm dòng mới vào bảng",
                 className: "flex items-center gap-1 h-7 px-2.5 rounded-md border border-emerald-600/40 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 font-medium transition-colors",
                 children: [
-                  /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }),
                   /* @__PURE__ */ e.jsx("span", { className: "text-[11px]", children: "Thêm dòng" })
                 ]
               }
@@ -6880,21 +7212,21 @@ const or = [
               "button",
               {
                 type: "button",
-                onClick: _t,
+                onClick: Dt,
                 title: "Làm mới dữ liệu & Đặt lại bộ lọc (Refresh)",
                 className: "h-7 w-7 flex items-center justify-center rounded-md border border-slate-700 bg-slate-800 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/60 hover:bg-slate-800/90 transition-all cursor-pointer shadow-sm active:scale-95",
-                children: /* @__PURE__ */ e.jsx(ua, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(va, { className: "w-3.5 h-3.5" })
               }
             ),
             /* @__PURE__ */ e.jsxs(
               "button",
               {
                 type: "button",
-                onClick: Ot,
+                onClick: xt,
                 title: "Xuất toàn bộ dữ liệu bảng ra file Excel (.xls)",
                 className: "flex items-center gap-1.5 h-7 px-2.5 rounded-md border border-slate-700 bg-slate-800 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/60 hover:bg-slate-800/90 transition-all text-xs font-medium cursor-pointer shadow-sm active:scale-95",
                 children: [
-                  /* @__PURE__ */ e.jsx(pa, { className: "w-3.5 h-3.5 text-emerald-400" }),
+                  /* @__PURE__ */ e.jsx(ya, { className: "w-3.5 h-3.5 text-emerald-400" }),
                   /* @__PURE__ */ e.jsx("span", { className: "hidden md:inline", children: "Xuất Excel" })
                 ]
               }
@@ -6904,20 +7236,20 @@ const or = [
               {
                 type: "button",
                 onClick: () => {
-                  typeof navigator < "u" && navigator.clipboard && typeof navigator.clipboard.readText == "function" ? navigator.clipboard.readText().then((m) => {
-                    if (m) {
-                      const M = _e ? _e.rowIndex : Ee !== null ? Math.max(0, z.findIndex((H, _) => (H.id ?? H.Id ?? _) === Ee)) : 0, E = _e ? _e.colIndex : 0;
-                      wt(m, M, E);
+                  typeof navigator < "u" && navigator.clipboard && typeof navigator.clipboard.readText == "function" ? navigator.clipboard.readText().then((f) => {
+                    if (f) {
+                      const H = Ge ? Ge.rowIndex : Ee !== null ? Math.max(0, q.findIndex((J, K) => (J.id ?? J.Id ?? K) === Ee)) : 0, B = Ge ? Ge.colIndex : 0;
+                      vt(f, H, B);
                     } else
-                      Ie("Dán từ Excel", "Clipboard hiện đang trống", "warning");
+                      $e("Dán từ Excel", "Clipboard hiện đang trống", "warning");
                   }).catch(() => {
-                    Ie("Dán từ Excel", "Hãy bấm chọn một ô và nhấn phím Ctrl+V để dán dữ liệu", "info");
-                  }) : Ie("Dán từ Excel", "Hãy bấm chọn một ô và nhấn phím Ctrl+V để dán dữ liệu", "info");
+                    $e("Dán từ Excel", "Hãy bấm chọn một ô và nhấn phím Ctrl+V để dán dữ liệu", "info");
+                  }) : $e("Dán từ Excel", "Hãy bấm chọn một ô và nhấn phím Ctrl+V để dán dữ liệu", "info");
                 },
                 title: "Dán dữ liệu sao chép từ Excel / Google Sheets vào bảng (Ctrl+V)",
                 className: "flex items-center gap-1.5 h-7 px-2.5 rounded-md border border-slate-700 bg-slate-800 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/60 hover:bg-slate-800/90 transition-all text-xs font-medium cursor-pointer shadow-sm active:scale-95",
                 children: [
-                  /* @__PURE__ */ e.jsx(br, { className: "w-3.5 h-3.5 text-emerald-400" }),
+                  /* @__PURE__ */ e.jsx(wr, { className: "w-3.5 h-3.5 text-emerald-400" }),
                   /* @__PURE__ */ e.jsx("span", { className: "hidden md:inline", children: "Dán Excel" })
                 ]
               }
@@ -6926,43 +7258,43 @@ const or = [
               "button",
               {
                 type: "button",
-                onClick: zt,
+                onClick: Wt,
                 title: "In báo cáo / Xuất PDF trực tiếp dữ liệu bảng",
                 className: "flex items-center gap-1.5 h-7 px-2.5 rounded-md border border-slate-700 bg-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/60 hover:bg-slate-800/90 transition-all text-xs font-medium cursor-pointer shadow-sm active:scale-95",
                 children: [
-                  /* @__PURE__ */ e.jsx(pr, { className: "w-3.5 h-3.5 text-cyan-400" }),
+                  /* @__PURE__ */ e.jsx(yr, { className: "w-3.5 h-3.5 text-cyan-400" }),
                   /* @__PURE__ */ e.jsx("span", { className: "hidden md:inline", children: "In / PDF" })
                 ]
               }
             ),
             /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1.5 h-7 px-2 rounded-md border border-slate-700 bg-slate-800 text-slate-300", children: [
-              /* @__PURE__ */ e.jsx(bn, { className: "w-3.5 h-3.5 text-amber-400 flex-shrink-0" }),
+              /* @__PURE__ */ e.jsx(wn, { className: "w-3.5 h-3.5 text-amber-400 flex-shrink-0" }),
               /* @__PURE__ */ e.jsxs(
                 "select",
                 {
-                  value: ve || "",
-                  onChange: (m) => {
-                    const M = m.target.value || null;
-                    T(M), ee(/* @__PURE__ */ new Set());
+                  value: Ne || "",
+                  onChange: (f) => {
+                    const H = f.target.value || null;
+                    j(H), ne(/* @__PURE__ */ new Set());
                   },
                   title: "Gom nhóm bảng theo cột (Group By - GroupGridView.cs)",
                   className: "bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer max-w-[130px] truncate",
                   children: [
                     /* @__PURE__ */ e.jsx("option", { value: "", className: "bg-slate-900 text-slate-300", children: "-- Không nhóm --" }),
-                    l.map((m) => /* @__PURE__ */ e.jsxs("option", { value: m.key, className: "bg-slate-900 text-slate-200", children: [
+                    l.map((f) => /* @__PURE__ */ e.jsxs("option", { value: f.key, className: "bg-slate-900 text-slate-200", children: [
                       "Nhóm: ",
-                      m.title || m.key
-                    ] }, m.key))
+                      f.title || f.key
+                    ] }, f.key))
                   ]
                 }
               )
             ] }),
-            ve && /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1", children: [
+            Ne && /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1", children: [
               /* @__PURE__ */ e.jsx(
                 "button",
                 {
                   type: "button",
-                  onClick: () => ee(/* @__PURE__ */ new Set()),
+                  onClick: () => ne(/* @__PURE__ */ new Set()),
                   title: "Mở rộng tất cả các nhóm",
                   className: "h-7 px-2 rounded-md border border-slate-700 bg-slate-800 text-[11px] text-slate-300 hover:text-emerald-400 hover:border-emerald-500/60 transition-colors",
                   children: "Mở rộng"
@@ -6972,7 +7304,7 @@ const or = [
                 "button",
                 {
                   type: "button",
-                  onClick: () => ee(new Set(je.map((m) => m.groupKey))),
+                  onClick: () => ne(new Set(Ce.map((f) => f.groupKey))),
                   title: "Thu gọn tất cả các nhóm",
                   className: "h-7 px-2 rounded-md border border-slate-700 bg-slate-800 text-[11px] text-slate-300 hover:text-amber-400 hover:border-amber-500/60 transition-colors",
                   children: "Thu gọn"
@@ -6984,7 +7316,7 @@ const or = [
                 "button",
                 {
                   type: "button",
-                  onClick: ht,
+                  onClick: rt,
                   title: "F1: Chọn tất cả / Bỏ chọn tất cả dòng (Toggle All)",
                   className: "px-2 py-0.5 rounded bg-slate-800/80 hover:bg-emerald-600/30 text-slate-300 hover:text-emerald-300 border border-slate-700/80 hover:border-emerald-500/60 transition-all font-bold cursor-pointer shadow-sm active:scale-95",
                   children: "F1"
@@ -6994,7 +7326,7 @@ const or = [
                 "button",
                 {
                   type: "button",
-                  onClick: dt,
+                  onClick: ut,
                   title: "F2: Lọc nhanh theo giá trị ô đang chọn (Filter by Cell)",
                   className: "px-2 py-0.5 rounded bg-slate-800/80 hover:bg-emerald-600/30 text-slate-300 hover:text-emerald-300 border border-slate-700/80 hover:border-emerald-500/60 transition-all font-bold cursor-pointer shadow-sm active:scale-95",
                   children: "F2"
@@ -7004,7 +7336,7 @@ const or = [
                 "button",
                 {
                   type: "button",
-                  onClick: Nt,
+                  onClick: Ct,
                   title: "F3: Tính tổng nhanh số liệu (GW, CBM, VGM) các dòng chọn",
                   className: "px-2 py-0.5 rounded bg-slate-800/80 hover:bg-emerald-600/30 text-slate-300 hover:text-emerald-300 border border-slate-700/80 hover:border-emerald-500/60 transition-all font-bold cursor-pointer shadow-sm active:scale-95",
                   children: "F3"
@@ -7014,7 +7346,7 @@ const or = [
                 "button",
                 {
                   type: "button",
-                  onClick: vt,
+                  onClick: gt,
                   title: "F4: Thêm dòng mới vào bảng (Add Row)",
                   className: "px-2 py-0.5 rounded bg-slate-800/80 hover:bg-emerald-600/30 text-slate-300 hover:text-emerald-300 border border-slate-700/80 hover:border-emerald-500/60 transition-all font-bold cursor-pointer shadow-sm active:scale-95",
                   children: "F4"
@@ -7024,7 +7356,7 @@ const or = [
                 "button",
                 {
                   type: "button",
-                  onClick: () => $((m) => !m),
+                  onClick: () => $((f) => !f),
                   title: "F6: Bật / Tắt bộ lọc từng cột (Toggle Column Filters)",
                   className: "px-2 py-0.5 rounded bg-slate-800/80 hover:bg-emerald-600/30 text-slate-300 hover:text-emerald-300 border border-slate-700/80 hover:border-emerald-500/60 transition-all font-bold cursor-pointer shadow-sm active:scale-95",
                   children: "F6"
@@ -7036,122 +7368,122 @@ const or = [
         /* @__PURE__ */ e.jsx(
           "div",
           {
-            ref: Ye,
+            ref: qe,
             tabIndex: 0,
-            onKeyDown: Vt,
-            onPaste: Jt,
+            onKeyDown: Ft,
+            onPaste: Lt,
             style: {
-              maxHeight: ce ? r.maxHeight || r.height || "550px" : r.maxHeight || void 0
+              maxHeight: fe ? r.maxHeight || r.height || "550px" : r.maxHeight || void 0
             },
-            className: `w-full overflow-x-auto select-none relative focus:outline-none ${ce ? "overflow-y-auto" : ""}`,
+            className: `w-full overflow-x-auto select-none relative focus:outline-none ${fe ? "overflow-y-auto" : ""}`,
             children: /* @__PURE__ */ e.jsxs("table", { className: "w-full text-left text-xs border-collapse", children: [
               /* @__PURE__ */ e.jsxs("thead", { className: "bg-[#0b1329] text-slate-300 font-semibold tracking-wider border-b border-emerald-500/40 uppercase", children: [
                 /* @__PURE__ */ e.jsxs("tr", { children: [
                   /* @__PURE__ */ e.jsx(
                     "th",
                     {
-                      onClick: ht,
+                      onClick: rt,
                       className: "px-2 py-2.5 text-center text-slate-400 font-mono text-[11px] sticky left-0 z-30 bg-[#0b1329] border-r border-slate-800/90 shadow-[2px_0_5px_rgba(0,0,0,0.3)] cursor-pointer hover:bg-slate-800 transition-colors select-none",
-                      style: { width: `${U}px`, minWidth: `${U}px` },
+                      style: { width: `${M}px`, minWidth: `${M}px` },
                       title: "Click hoặc nhấn F1 để Chọn tất cả / Bỏ chọn dòng",
                       children: /* @__PURE__ */ e.jsx("span", { className: "flex items-center justify-center gap-1", children: /* @__PURE__ */ e.jsx(
                         "input",
                         {
                           type: "checkbox",
                           readOnly: !0,
-                          checked: z.length > 0 && Me.size === z.length,
+                          checked: q.length > 0 && _e.size === q.length,
                           className: "w-3.5 h-3.5 rounded border-slate-700 bg-slate-800 text-emerald-500 cursor-pointer pointer-events-none"
                         }
                       ) })
                     }
                   ),
-                  l.map((m, M) => {
-                    const E = !!(m.frozen || m.sticky === "left"), H = E && oe[m.key] !== void 0 ? oe[m.key] : void 0, _ = m.key === Y, X = de === m.key, re = Ce === m.key;
-                    let Re = "";
-                    re && we === "left" ? Re = "border-l-4 border-l-emerald-400 bg-emerald-500/20" : re && we === "right" && (Re = "border-r-4 border-r-emerald-400 bg-emerald-500/20");
-                    const We = m.align === "right" ? "text-right" : m.align === "center" ? "text-center" : "text-left";
+                  l.map((f, H) => {
+                    const B = !!(f.frozen || f.sticky === "left"), J = B && Q[f.key] !== void 0 ? Q[f.key] : void 0, K = f.key === W, re = O === f.key, he = me === f.key;
+                    let Be = "";
+                    he && ye === "left" ? Be = "border-l-4 border-l-emerald-400 bg-emerald-500/20" : he && ye === "right" && (Be = "border-r-4 border-r-emerald-400 bg-emerald-500/20");
+                    const Ue = f.align === "right" ? "text-right" : f.align === "center" ? "text-center" : "text-left";
                     return /* @__PURE__ */ e.jsx(
                       "th",
                       {
                         draggable: !0,
-                        onDragStart: (qe) => Ke(qe, m.key),
-                        onDragOver: (qe) => Ue(qe, m.key),
-                        onDragLeave: tt,
-                        onDrop: (qe) => mt(qe, m.key),
-                        onDragEnd: ut,
-                        onContextMenu: (qe) => Ft(qe, m, M),
-                        onClick: () => Qe(m),
-                        className: `group px-3 py-2.5 cursor-grab active:cursor-grabbing select-none transition-all hover:bg-slate-800/60 ${We} ${E ? `sticky z-20 bg-[#0b1329] ${_ ? "border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]" : "border-r border-slate-800/90"}` : "border-r border-slate-800/90"} ${X ? "opacity-30 bg-slate-800/80" : ""} ${Re}`,
+                        onDragStart: (Je) => We(Je, f.key),
+                        onDragOver: (Je) => Pe(Je, f.key),
+                        onDragLeave: Xe,
+                        onDrop: (Je) => at(Je, f.key),
+                        onDragEnd: it,
+                        onContextMenu: (Je) => St(Je, f, H),
+                        onClick: () => Ze(f),
+                        className: `group px-3 py-2.5 cursor-grab active:cursor-grabbing select-none transition-all hover:bg-slate-800/60 ${Ue} ${B ? `sticky z-20 bg-[#0b1329] ${K ? "border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]" : "border-r border-slate-800/90"}` : "border-r border-slate-800/90"} ${re ? "opacity-30 bg-slate-800/80" : ""} ${Be}`,
                         style: {
-                          width: m.width,
-                          minWidth: m.minWidth || m.width || "100px",
-                          maxWidth: m.maxWidth,
-                          left: H !== void 0 ? `${H}px` : void 0
+                          width: f.width,
+                          minWidth: f.minWidth || f.width || "100px",
+                          maxWidth: f.maxWidth,
+                          left: J !== void 0 ? `${J}px` : void 0
                         },
-                        title: `Kéo thả để di chuyển đổi thứ tự cột. Click để sắp xếp. Chuột phải để mở menu (Order: ${m.order ?? M + 1})`,
-                        children: /* @__PURE__ */ e.jsxs("div", { className: `flex items-center gap-1.5 ${m.align === "right" ? "justify-end" : m.align === "center" ? "justify-center" : "justify-between"}`, children: [
+                        title: `Kéo thả để di chuyển đổi thứ tự cột. Click để sắp xếp. Chuột phải để mở menu (Order: ${f.order ?? H + 1})`,
+                        children: /* @__PURE__ */ e.jsxs("div", { className: `flex items-center gap-1.5 ${f.align === "right" ? "justify-end" : f.align === "center" ? "justify-center" : "justify-between"}`, children: [
                           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1 truncate", children: [
-                            E && /* @__PURE__ */ e.jsx(xr, { className: "w-2.5 h-2.5 text-emerald-400 fill-emerald-400 flex-shrink-0" }),
-                            /* @__PURE__ */ e.jsx("span", { className: "truncate", children: m.title || m.key }),
-                            m.order && /* @__PURE__ */ e.jsxs("span", { className: "text-[9px] font-mono text-slate-500 font-normal", children: [
+                            B && /* @__PURE__ */ e.jsx(jr, { className: "w-2.5 h-2.5 text-emerald-400 fill-emerald-400 flex-shrink-0" }),
+                            /* @__PURE__ */ e.jsx("span", { className: "truncate", children: f.title || f.key }),
+                            f.order && /* @__PURE__ */ e.jsxs("span", { className: "text-[9px] font-mono text-slate-500 font-normal", children: [
                               "#",
-                              m.order
+                              f.order
                             ] })
                           ] }),
-                          m.sortable && /* @__PURE__ */ e.jsx("div", { className: "flex items-center opacity-60 group-hover:opacity-100 transition-opacity", children: k === m.key ? w === "asc" ? /* @__PURE__ */ e.jsx(gr, { className: "w-3 h-3 text-emerald-400" }) : /* @__PURE__ */ e.jsx(vr, { className: "w-3 h-3 text-emerald-400" }) : /* @__PURE__ */ e.jsx(In, { className: "w-2.5 h-2.5 text-slate-500" }) })
+                          f.sortable && /* @__PURE__ */ e.jsx("div", { className: "flex items-center opacity-60 group-hover:opacity-100 transition-opacity", children: R === f.key ? C === "asc" ? /* @__PURE__ */ e.jsx(En, { className: "w-3 h-3 text-emerald-400" }) : /* @__PURE__ */ e.jsx(An, { className: "w-3 h-3 text-emerald-400" }) : /* @__PURE__ */ e.jsx(Bn, { className: "w-2.5 h-2.5 text-slate-500" }) })
                         ] })
                       },
-                      m.key
+                      f.key
                     );
                   })
                 ] }),
-                R && /* @__PURE__ */ e.jsxs("tr", { className: "bg-[#080d1a] border-b border-slate-800", children: [
+                L && /* @__PURE__ */ e.jsxs("tr", { className: "bg-[#080d1a] border-b border-slate-800", children: [
                   /* @__PURE__ */ e.jsx("th", { className: "px-2 py-1 sticky left-0 z-30 bg-[#080d1a] border-r border-slate-800 text-center text-slate-500 font-mono text-[10px]", children: "🔍" }),
-                  l.map((m) => {
-                    const M = !!(m.frozen || m.sticky === "left"), E = M && oe[m.key] !== void 0 ? oe[m.key] : void 0, H = m.key === Y;
+                  l.map((f) => {
+                    const H = !!(f.frozen || f.sticky === "left"), B = H && Q[f.key] !== void 0 ? Q[f.key] : void 0, J = f.key === W;
                     return /* @__PURE__ */ e.jsx(
                       "th",
                       {
-                        className: `px-1.5 py-1 border-r border-slate-800 ${M ? `sticky z-20 bg-[#080d1a] ${H ? "border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]" : ""}` : ""}`,
+                        className: `px-1.5 py-1 border-r border-slate-800 ${H ? `sticky z-20 bg-[#080d1a] ${J ? "border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]" : ""}` : ""}`,
                         style: {
-                          left: E !== void 0 ? `${E}px` : void 0
+                          left: B !== void 0 ? `${B}px` : void 0
                         },
                         children: /* @__PURE__ */ e.jsx(
                           "input",
                           {
                             type: "text",
                             placeholder: "Lọc...",
-                            value: Q[m.key] || "",
-                            onChange: (_) => O((X) => ({ ...X, [m.key]: _.target.value })),
+                            value: se[f.key] || "",
+                            onChange: (K) => V((re) => ({ ...re, [f.key]: K.target.value })),
                             className: "w-full h-6 px-1.5 rounded bg-slate-900 border border-slate-700 text-slate-100 text-[11px] focus:border-emerald-500 focus:outline-none"
                           }
                         )
                       },
-                      `filter_${m.key}`
+                      `filter_${f.key}`
                     );
                   })
                 ] })
               ] }),
               /* @__PURE__ */ e.jsxs("tbody", { className: "divide-y divide-slate-800/70 text-slate-300", children: [
-                z.length === 0 ? /* @__PURE__ */ e.jsx("tr", { children: /* @__PURE__ */ e.jsx(
+                q.length === 0 ? /* @__PURE__ */ e.jsx("tr", { children: /* @__PURE__ */ e.jsx(
                   "td",
                   {
                     colSpan: l.length + 1,
                     className: "px-6 py-8 text-center text-slate-500 italic",
                     children: 'Không tìm thấy bản ghi nào. Bấm nút "+ Thêm dòng" để nhập dữ liệu.'
                   }
-                ) }) : ve ? (
+                ) }) : Ne ? (
                   // ── 1. CHẾ ĐỘ GOM NHÓM DÒNG (COLLAPSIBLE GROUP-BY ROWS - TSK-4.2 & GroupGridView.cs) ──
-                  je.map((m) => {
-                    const M = B.has(m.groupKey), E = l.find((_) => _.key === ve), H = (E == null ? void 0 : E.title) || ve;
-                    return /* @__PURE__ */ e.jsxs(Mt.Fragment, { children: [
+                  Ce.map((f) => {
+                    const H = A.has(f.groupKey), B = l.find((K) => K.key === Ne), J = (B == null ? void 0 : B.title) || Ne;
+                    return /* @__PURE__ */ e.jsxs(Zt.Fragment, { children: [
                       /* @__PURE__ */ e.jsx(
                         "tr",
                         {
                           onClick: () => {
-                            ee((_) => {
-                              const X = new Set(_);
-                              return X.has(m.groupKey) ? X.delete(m.groupKey) : X.add(m.groupKey), X;
+                            ne((K) => {
+                              const re = new Set(K);
+                              return re.has(f.groupKey) ? re.delete(f.groupKey) : re.add(f.groupKey), re;
                             });
                           },
                           className: "bg-slate-900/95 hover:bg-slate-850 border-y border-amber-500/30 cursor-pointer select-none group transition-colors sticky top-0 z-15",
@@ -7166,50 +7498,50 @@ const or = [
                                   {
                                     type: "button",
                                     className: "w-5 h-5 flex items-center justify-center rounded bg-slate-800 text-amber-400 group-hover:bg-amber-500 group-hover:text-slate-950 transition-colors",
-                                    children: M ? /* @__PURE__ */ e.jsx(Ds, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ e.jsx(St, { className: "w-3.5 h-3.5" })
+                                    children: H ? /* @__PURE__ */ e.jsx(es, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ e.jsx(wt, { className: "w-3.5 h-3.5" })
                                   }
                                 ),
                                 /* @__PURE__ */ e.jsxs("span", { className: "text-slate-400 font-normal", children: [
                                   "Gom nhóm theo ",
-                                  /* @__PURE__ */ e.jsx("strong", { className: "text-amber-300 font-semibold", children: H }),
+                                  /* @__PURE__ */ e.jsx("strong", { className: "text-amber-300 font-semibold", children: J }),
                                   ":"
                                 ] }),
-                                /* @__PURE__ */ e.jsx("span", { className: "text-amber-400 font-bold font-mono text-sm", children: m.groupLabel }),
+                                /* @__PURE__ */ e.jsx("span", { className: "text-amber-400 font-bold font-mono text-sm", children: f.groupLabel }),
                                 /* @__PURE__ */ e.jsxs("span", { className: "px-2 py-0.5 rounded-full bg-amber-950/60 border border-amber-500/40 text-amber-300 text-[10px] font-mono font-bold", children: [
-                                  m.rows.length,
+                                  f.rows.length,
                                   " bản ghi"
                                 ] }),
-                                /* @__PURE__ */ e.jsx("div", { className: "ml-auto flex items-center gap-3 text-[11px] font-mono text-slate-400", children: l.filter((_) => m.subtotals[_.key] !== void 0 && m.subtotals[_.key] > 0).slice(0, 3).map((_) => /* @__PURE__ */ e.jsxs("span", { className: "flex items-center gap-1", children: [
+                                /* @__PURE__ */ e.jsx("div", { className: "ml-auto flex items-center gap-3 text-[11px] font-mono text-slate-400", children: l.filter((K) => f.subtotals[K.key] !== void 0 && f.subtotals[K.key] > 0).slice(0, 3).map((K) => /* @__PURE__ */ e.jsxs("span", { className: "flex items-center gap-1", children: [
                                   /* @__PURE__ */ e.jsxs("span", { children: [
-                                    _.title,
+                                    K.title,
                                     ":"
                                   ] }),
-                                  /* @__PURE__ */ e.jsx("strong", { className: "text-emerald-400 font-bold", children: m.subtotals[_.key].toLocaleString("en-US") })
-                                ] }, _.key)) })
+                                  /* @__PURE__ */ e.jsx("strong", { className: "text-emerald-400 font-bold", children: f.subtotals[K.key].toLocaleString("en-US") })
+                                ] }, K.key)) })
                               ] })
                             }
                           )
                         }
                       ),
-                      !M && m.rows.map((_, X) => {
-                        const re = m.startIndex + X;
-                        return es(_, re);
+                      !H && f.rows.map((K, re) => {
+                        const he = f.startIndex + re;
+                        return as(K, he);
                       })
-                    ] }, `group_${m.groupKey}`);
+                    ] }, `group_${f.groupKey}`);
                   })
-                ) : ce ? (
+                ) : fe ? (
                   // ── 2. CHẾ ĐỘ CUỘN ẢO (VIRTUAL SCROLLING WINDOWING - TSK-4.1) ──
                   /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
-                    W > 0 && /* @__PURE__ */ e.jsx("tr", { style: { height: `${W}px`, pointerEvents: "none" }, children: /* @__PURE__ */ e.jsx("td", { colSpan: l.length + 1, style: { padding: 0, border: "none" } }) }),
-                    it.map((m, M) => {
-                      const E = ye + M;
-                      return es(m, E);
+                    X > 0 && /* @__PURE__ */ e.jsx("tr", { style: { height: `${X}px`, pointerEvents: "none" }, children: /* @__PURE__ */ e.jsx("td", { colSpan: l.length + 1, style: { padding: 0, border: "none" } }) }),
+                    ot.map((f, H) => {
+                      const B = De + H;
+                      return as(f, B);
                     }),
-                    ae > 0 && /* @__PURE__ */ e.jsx("tr", { style: { height: `${ae}px`, pointerEvents: "none" }, children: /* @__PURE__ */ e.jsx("td", { colSpan: l.length + 1, style: { padding: 0, border: "none" } }) })
+                    xe > 0 && /* @__PURE__ */ e.jsx("tr", { style: { height: `${xe}px`, pointerEvents: "none" }, children: /* @__PURE__ */ e.jsx("td", { colSpan: l.length + 1, style: { padding: 0, border: "none" } }) })
                   ] })
                 ) : (
                   // ── 3. CHẾ ĐỘ RENDER TIÊU CHUẨN (NORMAL RENDERING) ──
-                  z.map((m, M) => es(m, M))
+                  q.map((f, H) => as(f, H))
                 ),
                 /* @__PURE__ */ e.jsxs(
                   "tr",
@@ -7221,40 +7553,40 @@ const or = [
                         "td",
                         {
                           className: "px-2 py-1 text-center font-mono text-[11px] sticky left-0 z-20 border-r border-slate-800 shadow-[2px_0_5px_rgba(0,0,0,0.3)] text-emerald-400/80 bg-[#0c1222] select-none font-bold",
-                          style: { width: `${U}px`, minWidth: `${U}px` },
+                          style: { width: `${M}px`, minWidth: `${M}px` },
                           children: /* @__PURE__ */ e.jsxs("span", { className: "flex items-center justify-center gap-1", children: [
-                            /* @__PURE__ */ e.jsx(et, { className: "w-3 h-3 text-emerald-400" }),
-                            /* @__PURE__ */ e.jsx("span", { children: z.length + 1 })
+                            /* @__PURE__ */ e.jsx(Qe, { className: "w-3 h-3 text-emerald-400" }),
+                            /* @__PURE__ */ e.jsx("span", { children: q.length + 1 })
                           ] })
                         }
                       ),
-                      l.map((m, M) => {
-                        const E = !!(m.frozen || m.sticky === "left"), H = E && oe[m.key] !== void 0 ? oe[m.key] : void 0, _ = m.key === Y, X = D[m.key] ?? "", re = m.align === "right" ? "text-right" : m.align === "center" ? "text-center" : "text-left";
+                      l.map((f, H) => {
+                        const B = !!(f.frozen || f.sticky === "left"), J = B && Q[f.key] !== void 0 ? Q[f.key] : void 0, K = f.key === W, re = I[f.key] ?? "", he = f.align === "right" ? "text-right" : f.align === "center" ? "text-center" : "text-left";
                         return /* @__PURE__ */ e.jsx(
                           "td",
                           {
-                            className: `px-2 py-1 whitespace-nowrap transition-colors ${re} ${E ? `sticky z-10 bg-[#0c1222] ${_ ? "border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]" : "border-r border-slate-800/60"}` : "border-r border-slate-800/60"}`,
+                            className: `px-2 py-1 whitespace-nowrap transition-colors ${he} ${B ? `sticky z-10 bg-[#0c1222] ${K ? "border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]" : "border-r border-slate-800/60"}` : "border-r border-slate-800/60"}`,
                             style: {
-                              width: m.width,
-                              minWidth: m.minWidth || m.width || "100px",
-                              maxWidth: m.maxWidth,
-                              left: H !== void 0 ? `${H}px` : void 0
+                              width: f.width,
+                              minWidth: f.minWidth || f.width || "100px",
+                              maxWidth: f.maxWidth,
+                              left: J !== void 0 ? `${J}px` : void 0
                             },
                             children: /* @__PURE__ */ e.jsx(
-                              rr,
+                              pr,
                               {
-                                column: m,
-                                value: X,
-                                row: D,
-                                rowIndex: z.length,
-                                columnIndex: M,
-                                isFocused: (_e == null ? void 0 : _e.rowIndex) === z.length && (_e == null ? void 0 : _e.colIndex) === M,
-                                onChange: (Re) => ne(m.key, Re),
-                                onKeyDown: It
+                                column: f,
+                                value: re,
+                                row: I,
+                                rowIndex: q.length,
+                                columnIndex: H,
+                                isFocused: (Ge == null ? void 0 : Ge.rowIndex) === q.length && (Ge == null ? void 0 : Ge.colIndex) === H,
+                                onChange: (Be) => de(f.key, Be),
+                                onKeyDown: Rt
                               }
                             )
                           },
-                          `ghost_${m.key}`
+                          `ghost_${f.key}`
                         );
                       })
                     ]
@@ -7262,47 +7594,47 @@ const or = [
                 )
               ] }),
               /* @__PURE__ */ e.jsx("tfoot", { children: /* @__PURE__ */ e.jsx(
-                ul,
+                Ol,
                 {
                   columns: l,
-                  data: z,
+                  data: q,
                   showRowNumber: !0,
-                  rowNumberWidth: U,
-                  leftOffsets: oe
+                  rowNumberWidth: M,
+                  leftOffsets: Q
                 }
               ) })
             ] })
           }
         ),
-        V.isOpen && V.column && /* @__PURE__ */ e.jsx(
-          il,
+        U.isOpen && U.column && /* @__PURE__ */ e.jsx(
+          Al,
           {
-            isOpen: V.isOpen,
-            x: V.x,
-            y: V.y,
-            column: V.column,
-            columnIndex: V.columnIndex,
+            isOpen: U.isOpen,
+            x: U.x,
+            y: U.y,
+            column: U.column,
+            columnIndex: U.columnIndex,
             allColumns: o,
-            onClose: () => P((m) => ({ ...m, isOpen: !1 })),
-            onToggleHide: Qt,
-            onSetFreeze: Zt,
-            onOpenProperties: Fs,
-            onCloneColumn: Rs,
-            onRemoveColumn: $s,
-            onToggleFilter: () => $((m) => !m)
+            onClose: () => E((f) => ({ ...f, isOpen: !1 })),
+            onToggleHide: Ot,
+            onSetFreeze: zt,
+            onOpenProperties: Es,
+            onCloneColumn: As,
+            onRemoveColumn: Ms,
+            onToggleFilter: () => $((f) => !f)
           }
         ),
-        K.isOpen && K.column && /* @__PURE__ */ e.jsx(
-          Hr,
+        Y.isOpen && Y.column && /* @__PURE__ */ e.jsx(
+          Xr,
           {
-            isOpen: K.isOpen,
-            column: K.column,
-            onClose: () => G({ isOpen: !1, column: null }),
-            onSave: Ls
+            isOpen: Y.isOpen,
+            column: Y.column,
+            onClose: () => z({ isOpen: !1, column: null }),
+            onSave: Bs
           }
         ),
         b.isOpen && b.row && /* @__PURE__ */ e.jsx(
-          cl,
+          Ml,
           {
             isOpen: b.isOpen,
             x: b.x,
@@ -7310,19 +7642,19 @@ const or = [
             row: b.row,
             rowIndex: b.rowIndex,
             totalRows: v.length,
-            onClose: () => se((m) => ({ ...m, isOpen: !1, row: null })),
-            onDuplicateRow: be,
-            onDeleteRow: $e,
-            onInsertRowBelow: Fe,
-            onMoveRowUp: De,
-            onMoveRowDown: Xe,
-            onPasteExcel: Ht
+            onClose: () => ae((f) => ({ ...f, isOpen: !1, row: null })),
+            onDuplicateRow: ve,
+            onDeleteRow: G,
+            onInsertRowBelow: ke,
+            onMoveRowUp: oe,
+            onMoveRowDown: Ve,
+            onPasteExcel: kt
           }
         )
       ]
     }
   );
-}, go = ({ node: t }) => {
+}, Ko = ({ node: t }) => {
   const { props: r, style: s } = t, { flex: a, flexGrow: n, flexShrink: o, flexBasis: l, minWidth: i, maxWidth: d, width: c, ...p } = s || {}, g = [
     { key: "code", title: "Mã số", width: "130px", sticky: "left", sortable: !0 },
     { key: "name", title: "Tên mục", width: "180px", sortable: !0 },
@@ -7332,40 +7664,40 @@ const or = [
     { key: "price", title: "Đơn giá", width: "120px", align: "right", aggregate: "sum", sortable: !0 },
     { key: "amount", title: "Thành tiền", width: "130px", align: "right", aggregate: "sum", sortable: !0 },
     { key: "status", title: "Trạng thái", width: "130px", align: "center" }
-  ], I = r.columns && r.columns.length > 0 ? r.columns : g, f = [
+  ], T = r.columns && r.columns.length > 0 ? r.columns : g, x = [
     { id: "1", code: "REC-001", name: "Mục dữ liệu A1", category: "Loại 1", docDate: "26/01/2026", quantity: 12, price: 100, amount: 1200, status: "Hoàn thành" },
     { id: "2", code: "REC-002", name: "Mục dữ liệu B2", category: "Loại 2", docDate: "28/01/2026", quantity: 25, price: 150, amount: 3750, status: "Đang xử lý" },
     { id: "3", code: "REC-003", name: "Mục dữ liệu C3", category: "Loại 1", docDate: "02/02/2026", quantity: 8, price: 80, amount: 640, status: "Chờ duyệt" },
     { id: "4", code: "REC-004", name: "Mục dữ liệu D4", category: "Loại 3", docDate: "05/02/2026", quantity: 40, price: 200, amount: 8e3, status: "Hoàn thành" }
-  ], [x, N] = A(""), [u, v] = A(null), [C, h] = A("asc"), [y, L] = A(1), k = Number(r.pageSize) || 10, F = Ve(() => {
-    if (!x.trim()) return f;
-    const O = x.toLowerCase();
-    return f.filter(
-      (V) => Object.values(V).some((P) => String(P).toLowerCase().includes(O))
+  ], [h, w] = D(""), [u, v] = D(null), [k, m] = D("asc"), [y, P] = D(1), R = Number(r.pageSize) || 10, F = Ae(() => {
+    if (!h.trim()) return x;
+    const V = h.toLowerCase();
+    return x.filter(
+      (U) => Object.values(U).some((E) => String(E).toLowerCase().includes(V))
     );
-  }, [x]), w = Ve(() => u ? [...F].sort((O, V) => {
-    const P = O[u], K = V[u];
-    if (P === K) return 0;
-    const G = P > K ? 1 : -1;
-    return C === "asc" ? G : -G;
-  }) : F, [F, u, C]), S = Math.ceil(w.length / k) || 1, R = Ve(() => {
-    const O = (y - 1) * k;
-    return w.slice(O, O + k);
-  }, [w, y, k]), $ = Ve(() => {
-    const O = {};
-    for (const V of I)
-      if (V.aggregate === "sum") {
-        const P = F.reduce((K, G) => K + (Number(G[V.key]) || 0), 0);
-        O[V.key] = P.toLocaleString("en-US");
-      } else if (V.aggregate === "count")
-        O[V.key] = F.length;
-      else if (V.aggregate === "avg") {
-        const P = F.length ? F.reduce((K, G) => K + (Number(G[V.key]) || 0), 0) / F.length : 0;
-        O[V.key] = P.toFixed(1);
+  }, [h]), C = Ae(() => u ? [...F].sort((V, U) => {
+    const E = V[u], Y = U[u];
+    if (E === Y) return 0;
+    const z = E > Y ? 1 : -1;
+    return k === "asc" ? z : -z;
+  }) : F, [F, u, k]), S = Math.ceil(C.length / R) || 1, L = Ae(() => {
+    const V = (y - 1) * R;
+    return C.slice(V, V + R);
+  }, [C, y, R]), $ = Ae(() => {
+    const V = {};
+    for (const U of T)
+      if (U.aggregate === "sum") {
+        const E = F.reduce((Y, z) => Y + (Number(z[U.key]) || 0), 0);
+        V[U.key] = E.toLocaleString("en-US");
+      } else if (U.aggregate === "count")
+        V[U.key] = F.length;
+      else if (U.aggregate === "avg") {
+        const E = F.length ? F.reduce((Y, z) => Y + (Number(z[U.key]) || 0), 0) / F.length : 0;
+        V[U.key] = E.toFixed(1);
       }
-    return O;
-  }, [I, F]), Q = (O) => {
-    u === O ? h(C === "asc" ? "desc" : "asc") : (v(O), h("asc"));
+    return V;
+  }, [T, F]), se = (V) => {
+    u === V ? m(k === "asc" ? "desc" : "asc") : (v(V), m("asc"));
   };
   return /* @__PURE__ */ e.jsxs(
     "div",
@@ -7386,15 +7718,15 @@ const or = [
             ] })
           ] }),
           /* @__PURE__ */ e.jsxs("div", { className: "relative w-64 max-w-full", children: [
-            /* @__PURE__ */ e.jsx(Bt, { className: "w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" }),
+            /* @__PURE__ */ e.jsx(Et, { className: "w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" }),
             /* @__PURE__ */ e.jsx(
               "input",
               {
                 type: "text",
                 placeholder: "Tìm kiếm trong bảng...",
-                value: x,
-                onChange: (O) => {
-                  N(O.target.value), L(1);
+                value: h,
+                onChange: (V) => {
+                  w(V.target.value), P(1);
                 },
                 className: "w-full pl-8 pr-3 py-1 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
               }
@@ -7402,82 +7734,82 @@ const or = [
           ] })
         ] }),
         /* @__PURE__ */ e.jsx("div", { className: "w-full overflow-x-auto", children: /* @__PURE__ */ e.jsxs("table", { className: "w-full text-left border-collapse", children: [
-          /* @__PURE__ */ e.jsx("thead", { className: "bg-slate-900/90 text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-800 select-none", children: /* @__PURE__ */ e.jsx("tr", { children: I.map((O) => {
-            const V = O.sticky === "left", P = O.align === "right" ? "text-right" : O.align === "center" ? "text-center" : "text-left";
+          /* @__PURE__ */ e.jsx("thead", { className: "bg-slate-900/90 text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-800 select-none", children: /* @__PURE__ */ e.jsx("tr", { children: T.map((V) => {
+            const U = V.sticky === "left", E = V.align === "right" ? "text-right" : V.align === "center" ? "text-center" : "text-left";
             return /* @__PURE__ */ e.jsx(
               "th",
               {
-                onClick: () => O.sortable !== !1 && Q(O.key),
+                onClick: () => V.sortable !== !1 && se(V.key),
                 style: {
-                  width: O.width,
-                  minWidth: O.minWidth || O.width
+                  width: V.width,
+                  minWidth: V.minWidth || V.width
                 },
-                className: `px-3.5 py-2.5 transition-colors cursor-pointer hover:text-slate-200 ${P} ${V ? "sticky left-0 z-20 bg-slate-900 shadow-[2px_0_5px_rgba(0,0,0,0.3)]" : ""}`,
-                children: /* @__PURE__ */ e.jsxs("div", { className: `flex items-center gap-1.5 ${O.align === "right" ? "justify-end" : O.align === "center" ? "justify-center" : "justify-start"}`, children: [
-                  O.sticky === "left" && /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-blue-400 font-normal", title: "Cột cố định (Frozen)", children: "📌" }),
-                  /* @__PURE__ */ e.jsx("span", { children: O.title }),
-                  O.sortable !== !1 && /* @__PURE__ */ e.jsx(In, { className: "w-3 h-3 opacity-40 hover:opacity-100" })
+                className: `px-3.5 py-2.5 transition-colors cursor-pointer hover:text-slate-200 ${E} ${U ? "sticky left-0 z-20 bg-slate-900 shadow-[2px_0_5px_rgba(0,0,0,0.3)]" : ""}`,
+                children: /* @__PURE__ */ e.jsxs("div", { className: `flex items-center gap-1.5 ${V.align === "right" ? "justify-end" : V.align === "center" ? "justify-center" : "justify-start"}`, children: [
+                  V.sticky === "left" && /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-blue-400 font-normal", title: "Cột cố định (Frozen)", children: "📌" }),
+                  /* @__PURE__ */ e.jsx("span", { children: V.title }),
+                  V.sortable !== !1 && /* @__PURE__ */ e.jsx(Bn, { className: "w-3 h-3 opacity-40 hover:opacity-100" })
                 ] })
               },
-              O.key
+              V.key
             );
           }) }) }),
-          /* @__PURE__ */ e.jsx("tbody", { className: "divide-y divide-slate-800/60 font-mono text-[11px]", children: R.length > 0 ? R.map((O, V) => /* @__PURE__ */ e.jsx("tr", { className: "hover:bg-slate-800/40 transition-colors", children: I.map((P) => {
-            const K = P.sticky === "left", G = O[P.key], b = P.align === "right" ? "text-right" : P.align === "center" ? "text-center" : "text-left";
+          /* @__PURE__ */ e.jsx("tbody", { className: "divide-y divide-slate-800/60 font-mono text-[11px]", children: L.length > 0 ? L.map((V, U) => /* @__PURE__ */ e.jsx("tr", { className: "hover:bg-slate-800/40 transition-colors", children: T.map((E) => {
+            const Y = E.sticky === "left", z = V[E.key], b = E.align === "right" ? "text-right" : E.align === "center" ? "text-center" : "text-left";
             return /* @__PURE__ */ e.jsx(
               "td",
               {
-                className: `px-3.5 py-2 text-slate-300 truncate ${b} ${K ? "sticky left-0 z-10 bg-slate-950 font-medium text-blue-400 shadow-[2px_0_5px_rgba(0,0,0,0.3)]" : ""}`,
+                className: `px-3.5 py-2 text-slate-300 truncate ${b} ${Y ? "sticky left-0 z-10 bg-slate-950 font-medium text-blue-400 shadow-[2px_0_5px_rgba(0,0,0,0.3)]" : ""}`,
                 children: (() => {
-                  if (G == null) return "—";
-                  if (P.componentType === "Checkbox") {
-                    const se = G === !0 || G === "true" || G === 1;
+                  if (z == null) return "—";
+                  if (E.componentType === "Checkbox") {
+                    const ae = z === !0 || z === "true" || z === 1;
                     return /* @__PURE__ */ e.jsx(
                       "input",
                       {
                         type: "checkbox",
-                        checked: se,
+                        checked: ae,
                         readOnly: !0,
                         className: "w-3.5 h-3.5 rounded text-blue-600 bg-slate-900 border-slate-700 pointer-events-none"
                       }
                     );
                   }
-                  if (P.componentType === "Button")
+                  if (E.componentType === "Button")
                     return /* @__PURE__ */ e.jsx(
                       "button",
                       {
                         type: "button",
                         className: "px-2 py-0.5 rounded bg-blue-600/30 text-blue-400 hover:bg-blue-600 hover:text-white border border-blue-500/40 text-[10px] font-sans font-medium transition-colors",
-                        children: String(G)
+                        children: String(z)
                       }
                     );
-                  if (P.componentType === "DatePicker" || P.format === "date_dmy")
+                  if (E.componentType === "DatePicker" || E.format === "date_dmy")
                     return /* @__PURE__ */ e.jsxs("span", { className: "inline-flex items-center gap-1 text-slate-200", children: [
                       /* @__PURE__ */ e.jsx("span", { className: "opacity-60 text-[10px]", children: "📅" }),
-                      /* @__PURE__ */ e.jsx("span", { children: String(G) })
+                      /* @__PURE__ */ e.jsx("span", { children: String(z) })
                     ] });
-                  if (P.componentType === "Number" || typeof G == "number") {
-                    const se = Number(G);
-                    if (!isNaN(se)) {
-                      const de = P.precision !== void 0 ? P.precision : se % 1 !== 0 ? 2 : 0;
-                      return /* @__PURE__ */ e.jsx("span", { className: "text-slate-100 font-mono", children: se.toLocaleString("en-US", { minimumFractionDigits: de, maximumFractionDigits: de }) });
+                  if (E.componentType === "Number" || typeof z == "number") {
+                    const ae = Number(z);
+                    if (!isNaN(ae)) {
+                      const O = E.precision !== void 0 ? E.precision : ae % 1 !== 0 ? 2 : 0;
+                      return /* @__PURE__ */ e.jsx("span", { className: "text-slate-100 font-mono", children: ae.toLocaleString("en-US", { minimumFractionDigits: O, maximumFractionDigits: O }) });
                     }
                   }
-                  return P.key === "status" || P.componentType === "Select" ? /* @__PURE__ */ e.jsx("span", { className: `inline-block px-2 py-0.5 rounded text-[10px] font-sans font-medium ${G === "Hoàn thành" ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800/40" : "bg-amber-950/60 text-amber-400 border border-amber-800/40"}`, children: String(G) }) : String(G);
+                  return E.key === "status" || E.componentType === "Select" ? /* @__PURE__ */ e.jsx("span", { className: `inline-block px-2 py-0.5 rounded text-[10px] font-sans font-medium ${z === "Hoàn thành" ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800/40" : "bg-amber-950/60 text-amber-400 border border-amber-800/40"}`, children: String(z) }) : String(z);
                 })()
               },
-              P.key
+              E.key
             );
-          }) }, O.id || V)) : /* @__PURE__ */ e.jsx("tr", { children: /* @__PURE__ */ e.jsx("td", { colSpan: I.length, className: "px-4 py-8 text-center text-slate-500 font-sans", children: "Không tìm thấy dữ liệu phù hợp." }) }) }),
-          /* @__PURE__ */ e.jsx("tfoot", { className: "bg-slate-900 border-t-2 border-slate-700 font-semibold text-xs text-slate-200", children: /* @__PURE__ */ e.jsx("tr", { children: I.map((O, V) => {
-            const P = O.sticky === "left", K = O.align === "right" ? "text-right" : O.align === "center" ? "text-center" : "text-left", G = $[O.key];
+          }) }, V.id || U)) : /* @__PURE__ */ e.jsx("tr", { children: /* @__PURE__ */ e.jsx("td", { colSpan: T.length, className: "px-4 py-8 text-center text-slate-500 font-sans", children: "Không tìm thấy dữ liệu phù hợp." }) }) }),
+          /* @__PURE__ */ e.jsx("tfoot", { className: "bg-slate-900 border-t-2 border-slate-700 font-semibold text-xs text-slate-200", children: /* @__PURE__ */ e.jsx("tr", { children: T.map((V, U) => {
+            const E = V.sticky === "left", Y = V.align === "right" ? "text-right" : V.align === "center" ? "text-center" : "text-left", z = $[V.key];
             return /* @__PURE__ */ e.jsx(
               "td",
               {
-                className: `px-3.5 py-2.5 font-mono ${K} ${P ? "sticky left-0 z-20 bg-slate-900 text-blue-400 font-bold shadow-[2px_0_5px_rgba(0,0,0,0.3)]" : ""}`,
-                children: V === 0 && !G ? /* @__PURE__ */ e.jsx("span", { className: "font-sans uppercase text-[10px] text-slate-400", children: "Tổng cộng:" }) : G !== void 0 ? G : ""
+                className: `px-3.5 py-2.5 font-mono ${Y} ${E ? "sticky left-0 z-20 bg-slate-900 text-blue-400 font-bold shadow-[2px_0_5px_rgba(0,0,0,0.3)]" : ""}`,
+                children: U === 0 && !z ? /* @__PURE__ */ e.jsx("span", { className: "font-sans uppercase text-[10px] text-slate-400", children: "Tổng cộng:" }) : z !== void 0 ? z : ""
               },
-              O.key
+              V.key
             );
           }) }) })
         ] }) }),
@@ -7494,9 +7826,9 @@ const or = [
               {
                 type: "button",
                 disabled: y <= 1,
-                onClick: () => L((O) => Math.max(1, O - 1)),
+                onClick: () => P((V) => Math.max(1, V - 1)),
                 className: "p-1 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 transition-colors cursor-pointer",
-                children: /* @__PURE__ */ e.jsx(jr, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(kr, { className: "w-3.5 h-3.5" })
               }
             ),
             /* @__PURE__ */ e.jsx(
@@ -7504,9 +7836,9 @@ const or = [
               {
                 type: "button",
                 disabled: y >= S,
-                onClick: () => L((O) => Math.min(S, O + 1)),
+                onClick: () => P((V) => Math.min(S, V + 1)),
                 className: "p-1 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 transition-colors cursor-pointer",
-                children: /* @__PURE__ */ e.jsx(Ds, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(es, { className: "w-3.5 h-3.5" })
               }
             )
           ] })
@@ -7515,7 +7847,7 @@ const or = [
     }
   );
 };
-function Tl(t, r, s = "") {
+function to(t, r, s = "") {
   if (!r || typeof r != "object")
     return s;
   if (!t || typeof t != "string" || t.trim() === "") {
@@ -7524,7 +7856,7 @@ function Tl(t, r, s = "") {
   }
   const a = t.trim();
   if (!a.includes("{") || !a.includes("}")) {
-    const d = kt(r, a);
+    const d = Ht(r, a);
     return d != null ? String(d) : a;
   }
   const n = /\{([^{}]+)\}/g;
@@ -7533,12 +7865,12 @@ function Tl(t, r, s = "") {
     const p = c.trim();
     o = !0;
     const g = p.includes(".") ? p.split(".").pop().trim() : p;
-    let I = kt(r, p);
-    return I == null && (I = kt(r, g)), I != null ? String(I) : "";
+    let T = Ht(r, p);
+    return T == null && (T = Ht(r, g)), T != null ? String(T) : "";
   });
   return o ? l.replace(/\s*[-|,:/]\s*[-|,:/]\s*/g, " - ").replace(/^[\s\-|,:/]+/, "").replace(/[\s\-|,:/]+$/, "").trim() || s : a;
 }
-function kt(t, r) {
+function Ht(t, r) {
   if (!t || typeof t != "object" || !r) return;
   if (r in t && t[r] !== void 0 && t[r] !== null)
     return t[r];
@@ -7552,7 +7884,7 @@ function kt(t, r) {
   if (i && t[i] !== void 0 && t[i] !== null)
     return t[i];
 }
-const Dl = ({
+const so = ({
   value: t,
   onChange: r,
   options: s,
@@ -7565,110 +7897,110 @@ const Dl = ({
   selectField: c = "name",
   dropdownColumns: p,
   formatData: g,
-  populateField: I,
-  formId: f,
-  placeholder: x = "— Chọn —",
-  disabled: N = !1,
+  populateField: T,
+  formId: x,
+  placeholder: h = "— Chọn —",
+  disabled: w = !1,
   readOnly: u = !1,
   isGridCell: v = !1,
-  error: C,
-  className: h = "",
+  error: k,
+  className: m = "",
   onKeyDown: y,
-  onFocus: L,
-  onBlur: k,
+  onFocus: P,
+  onBlur: R,
   onQuickAdd: F
 }) => {
-  const [w, S] = A(!1), [R, $] = A(""), [Q, O] = A(0), [V, P] = A(!1), [K, G] = A([]), [b, se] = A(!1), [de, me] = A(""), [Ce, he] = A(""), [we, Oe] = A(""), [U, oe] = A(!1), Y = Je(null), z = Je(null), xe = Je(null), ve = Je(null), T = fe((q) => q.queryEntity), B = fe((q) => q.getDataset), ee = fe((q) => q.applyPopulate), je = fe((q) => n ? q.getDataset(n).length : 0), te = () => {
+  const [C, S] = D(!1), [L, $] = D(""), [se, V] = D(0), [U, E] = D(!1), [Y, z] = D([]), [b, ae] = D(!1), [O, _] = D(""), [me, ce] = D(""), [ye, ue] = D(""), [M, Q] = D(!1), W = tt(null), q = tt(null), ie = tt(null), Ne = tt(null), j = Te((ee) => ee.queryEntity), A = Te((ee) => ee.getDataset), ne = Te((ee) => ee.applyPopulate), Ce = Te((ee) => n ? ee.getDataset(n).length : 0), le = () => {
     if (F) {
       F(), S(!1);
       return;
     }
     if (o) {
-      Br(o, {}, `Tạo mới ${n || o}`), S(!1);
+      zr(o, {}, `Tạo mới ${n || o}`), S(!1);
       return;
     }
-    const q = R.trim();
-    me(q ? q.toUpperCase().replace(/\s+/g, "_") : ""), he(q), Oe(""), se(!0);
-  }, Se = async () => {
-    if (!de.trim() || !Ce.trim()) return;
-    const q = (n || "").trim();
-    if (q) {
-      oe(!0);
+    const ee = L.trim();
+    _(ee ? ee.toUpperCase().replace(/\s+/g, "_") : ""), ce(ee), ue(""), ae(!0);
+  }, Fe = async () => {
+    if (!O.trim() || !me.trim()) return;
+    const ee = (n || "").trim();
+    if (ee) {
+      Q(!0);
       try {
-        const ge = {
-          code: de.trim(),
-          name: Ce.trim(),
-          fullName: Ce.trim(),
-          description: we.trim(),
+        const Se = {
+          code: O.trim(),
+          name: me.trim(),
+          fullName: me.trim(),
+          description: ye.trim(),
           active: !0
-        }, Ee = await fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(q)}`, {
+        }, Ee = await fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(ee)}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(ge)
+          body: JSON.stringify(Se)
         });
         if (Ee.ok) {
-          const ke = await Ee.json(), Me = {
-            ...ge,
-            ...ke,
-            id: ke.id ?? ke.Id ?? Date.now()
-          }, Te = await T(q, i);
-          Array.isArray(Te) && Te.length > 0 ? G(Te) : G((Ye) => [Me, ...Ye]), ae(Me), se(!1), S(!1);
+          const Re = await Ee.json(), _e = {
+            ...Se,
+            ...Re,
+            id: Re.id ?? Re.Id ?? Date.now()
+          }, Le = await j(ee, i);
+          Array.isArray(Le) && Le.length > 0 ? z(Le) : z((qe) => [_e, ...qe]), xe(_e), ae(!1), S(!1);
         } else
           alert("Không thể lưu bản ghi mới vào server. Vui lòng kiểm tra lại thông tin.");
-      } catch (ge) {
-        console.error("[EnterpriseSelect] Lỗi tạo nhanh bản ghi:", ge);
+      } catch (Se) {
+        console.error("[EnterpriseSelect] Lỗi tạo nhanh bản ghi:", Se);
         const Ee = {
           id: `mock-${Date.now()}`,
-          code: de.trim(),
-          name: Ce.trim(),
-          fullName: Ce.trim(),
-          description: we.trim(),
+          code: O.trim(),
+          name: me.trim(),
+          fullName: me.trim(),
+          description: ye.trim(),
           active: !0
         };
-        G((ke) => [Ee, ...ke]), ae(Ee), se(!1), S(!1);
+        z((Re) => [Ee, ...Re]), xe(Ee), ae(!1), S(!1);
       } finally {
-        oe(!1);
+        Q(!1);
       }
     }
   };
-  Be(() => {
-    let q = !0;
-    const ge = (n || "").trim();
+  He(() => {
+    let ee = !0;
+    const Se = (n || "").trim();
     if (a && Array.isArray(a) && a.length > 0) {
-      G(a);
+      z(a);
       return;
     }
-    if (ge)
-      P(!0), T(ge, i).then((Ee) => {
-        q && (Array.isArray(Ee) && Ee.length > 0 ? G(Ee) : G([]));
+    if (Se)
+      E(!0), j(Se, i).then((Ee) => {
+        ee && (Array.isArray(Ee) && Ee.length > 0 ? z(Ee) : z([]));
       }).catch(() => {
-        if (q) {
-          const Ee = B(ge);
-          G(Array.isArray(Ee) ? Ee : []);
+        if (ee) {
+          const Ee = A(Se);
+          z(Array.isArray(Ee) ? Ee : []);
         }
       }).finally(() => {
-        q && P(!1);
+        ee && E(!1);
       });
     else if (s && Array.isArray(s) && s.length > 0) {
-      const Ee = s.map((ke) => ke.rawItem && typeof ke.rawItem == "object" ? ke.rawItem : {
-        [d]: ke.value,
-        [c]: ke.label,
-        id: ke.value,
-        name: ke.label,
-        fullName: ke.label
+      const Ee = s.map((Re) => Re.rawItem && typeof Re.rawItem == "object" ? Re.rawItem : {
+        [d]: Re.value,
+        [c]: Re.label,
+        id: Re.value,
+        name: Re.label,
+        fullName: Re.label
       });
-      G(Ee);
+      z(Ee);
     } else
-      G([]);
+      z([]);
     return () => {
-      q = !1;
+      ee = !1;
     };
-  }, [n, i, a, s, d, c, T, B, je]);
-  const ce = Ve(() => {
+  }, [n, i, a, s, d, c, j, A, Ce]);
+  const fe = Ae(() => {
     if (p && p.length > 0)
       return p;
-    if (K.length > 0) {
-      const q = K[0], ge = Object.keys(q), ke = [
+    if (Y.length > 0) {
+      const ee = Y[0], Se = Object.keys(ee), Re = [
         "code",
         "id",
         "name",
@@ -7684,25 +8016,25 @@ const Dl = ({
         "portName",
         "carrierName"
       ].filter(
-        (Te) => ge.some((Ye) => Ye.toLowerCase() === Te.toLowerCase())
+        (Le) => Se.some((qe) => qe.toLowerCase() === Le.toLowerCase())
       );
-      if (ke.length > 0)
-        return ke.slice(0, 3).map((Te) => {
-          const Ye = ge.find((Ie) => Ie.toLowerCase() === Te.toLowerCase()) || Te;
+      if (Re.length > 0)
+        return Re.slice(0, 3).map((Le) => {
+          const qe = Se.find(($e) => $e.toLowerCase() === Le.toLowerCase()) || Le;
           return {
-            key: Ye,
-            title: Ye.charAt(0).toUpperCase() + Ye.slice(1),
-            width: Ye.toLowerCase().includes("name") ? "60%" : "40%",
+            key: qe,
+            title: qe.charAt(0).toUpperCase() + qe.slice(1),
+            width: qe.toLowerCase().includes("name") ? "60%" : "40%",
             align: "left"
           };
         });
-      const Me = ge.filter(
-        (Te) => typeof q[Te] != "object" && !Te.startsWith("_")
+      const _e = Se.filter(
+        (Le) => typeof ee[Le] != "object" && !Le.startsWith("_")
       ).slice(0, 2);
-      if (Me.length > 0)
-        return Me.map((Te) => ({
-          key: Te,
-          title: Te.charAt(0).toUpperCase() + Te.slice(1),
+      if (_e.length > 0)
+        return _e.map((Le) => ({
+          key: Le,
+          title: Le.charAt(0).toUpperCase() + Le.slice(1),
           width: "50%",
           align: "left"
         }));
@@ -7711,144 +8043,144 @@ const Dl = ({
       { key: d, title: "Mã", width: "35%", align: "left" },
       { key: c, title: "Tên", width: "65%", align: "left" }
     ];
-  }, [p, K, d, c]), Ne = Ve(() => t == null || t === "" ? null : K.find((q) => {
-    const ge = kt(q, d) ?? q.id ?? q.Id ?? q.code ?? q.Code;
-    return ge !== void 0 && String(ge) === String(t);
-  }) || null, [t, K, d]), le = Ve(() => Ne ? Tl(g, Ne, String(t ?? "")) : t != null && t !== "" ? String(t) : "", [Ne, g, t]), [ue, Pe] = A({
+  }, [p, Y, d, c]), Ie = Ae(() => t == null || t === "" ? null : Y.find((ee) => {
+    const Se = Ht(ee, d) ?? ee.id ?? ee.Id ?? ee.code ?? ee.Code;
+    return Se !== void 0 && String(Se) === String(t);
+  }) || null, [t, Y, d]), pe = Ae(() => Ie ? to(g, Ie, String(t ?? "")) : t != null && t !== "" ? String(t) : "", [Ie, g, t]), [ge, Me] = D({
     top: 0,
     left: 0,
     width: 320,
     openUpwards: !1
-  }), ye = () => {
-    if (!Y.current) return;
-    const q = Y.current.getBoundingClientRect(), ge = 300, ke = Math.max(q.width, 360), Te = window.innerHeight - q.bottom < ge && q.top > ge;
-    let Ye = Te ? q.top - ge - 4 : q.bottom + 4, Ie = q.left;
-    Ie + ke > window.innerWidth - 12 && (Ie = Math.max(12, window.innerWidth - ke - 12)), Pe({ top: Ye, left: Ie, width: ke, openUpwards: Te });
-  }, pe = () => {
-    N || u || (ye(), S(!0), $(""), O(0));
+  }), De = () => {
+    if (!W.current) return;
+    const ee = W.current.getBoundingClientRect(), Se = 300, Re = Math.max(ee.width, 360), Le = window.innerHeight - ee.bottom < Se && ee.top > Se;
+    let qe = Le ? ee.top - Se - 4 : ee.bottom + 4, $e = ee.left;
+    $e + Re > window.innerWidth - 12 && ($e = Math.max(12, window.innerWidth - Re - 12)), Me({ top: qe, left: $e, width: Re, openUpwards: Le });
+  }, we = () => {
+    w || u || (De(), S(!0), $(""), V(0));
   };
-  Be(() => {
-    w && (ye(), setTimeout(() => {
-      var q;
-      (q = xe.current) == null || q.focus();
+  He(() => {
+    C && (De(), setTimeout(() => {
+      var ee;
+      (ee = ie.current) == null || ee.focus();
     }, 50));
-  }, [w]), Be(() => {
-    if (!w) return;
-    const q = (Ee) => {
-      var Me, Te;
-      const ke = Ee.target;
-      (Me = Y.current) != null && Me.contains(ke) || (Te = z.current) != null && Te.contains(ke) || (S(!1), k && k());
-    }, ge = () => {
-      ye();
+  }, [C]), He(() => {
+    if (!C) return;
+    const ee = (Ee) => {
+      var _e, Le;
+      const Re = Ee.target;
+      (_e = W.current) != null && _e.contains(Re) || (Le = q.current) != null && Le.contains(Re) || (S(!1), R && R());
+    }, Se = () => {
+      De();
     };
-    return window.addEventListener("mousedown", q), window.addEventListener("scroll", ge, !0), window.addEventListener("resize", ge), () => {
-      window.removeEventListener("mousedown", q), window.removeEventListener("scroll", ge, !0), window.removeEventListener("resize", ge);
+    return window.addEventListener("mousedown", ee), window.addEventListener("scroll", Se, !0), window.addEventListener("resize", Se), () => {
+      window.removeEventListener("mousedown", ee), window.removeEventListener("scroll", Se, !0), window.removeEventListener("resize", Se);
     };
-  }, [w, k]);
-  const W = Ve(() => {
-    if (!R.trim()) return K;
-    const q = R.toLowerCase().trim();
-    return K.filter((ge) => ce.some((ke) => {
-      const Me = kt(ge, ke.key);
-      return Me != null && String(Me).toLowerCase().includes(q);
-    }) ? !0 : ["id", "code", "name", "fullName", "title", "address"].some((ke) => {
-      const Me = kt(ge, ke);
-      return Me != null && String(Me).toLowerCase().includes(q);
+  }, [C, R]);
+  const X = Ae(() => {
+    if (!L.trim()) return Y;
+    const ee = L.toLowerCase().trim();
+    return Y.filter((Se) => fe.some((Re) => {
+      const _e = Ht(Se, Re.key);
+      return _e != null && String(_e).toLowerCase().includes(ee);
+    }) ? !0 : ["id", "code", "name", "fullName", "title", "address"].some((Re) => {
+      const _e = Ht(Se, Re);
+      return _e != null && String(_e).toLowerCase().includes(ee);
     }));
-  }, [K, R, ce]);
-  Be(() => {
-    if (ve.current && W.length > 0) {
-      const q = ve.current.querySelector(`[data-index="${Q}"]`);
-      q && q.scrollIntoView({ block: "nearest" });
+  }, [Y, L, fe]);
+  He(() => {
+    if (Ne.current && X.length > 0) {
+      const ee = Ne.current.querySelector(`[data-index="${se}"]`);
+      ee && ee.scrollIntoView({ block: "nearest" });
     }
-  }, [Q, W]);
-  const ae = (q) => {
-    const ge = kt(q, d) ?? q.id ?? q.Id ?? q.code ?? q.Code;
-    r(ge, q), I && f && ee(f, I, q), S(!1);
-  }, it = (q) => {
-    q.stopPropagation(), r("", null);
-  }, gt = (q) => {
-    q.key === "ArrowDown" ? (q.preventDefault(), O((ge) => ge < W.length - 1 ? ge + 1 : ge)) : q.key === "ArrowUp" ? (q.preventDefault(), O((ge) => ge > 0 ? ge - 1 : 0)) : q.key === "Enter" ? (q.preventDefault(), W.length > 0 && Q >= 0 && Q < W.length && ae(W[Q])) : q.key === "Escape" && (q.preventDefault(), S(!1));
-  }, rt = (q) => {
-    if (q.key === "Enter" || q.key === " " || q.key === "F4" || q.altKey && q.key === "ArrowDown") {
-      q.preventDefault(), pe();
+  }, [se, X]);
+  const xe = (ee) => {
+    const Se = Ht(ee, d) ?? ee.id ?? ee.Id ?? ee.code ?? ee.Code;
+    r(Se, ee), T && x && ne(x, T, ee), S(!1);
+  }, ot = (ee) => {
+    ee.stopPropagation(), r("", null);
+  }, ft = (ee) => {
+    ee.key === "ArrowDown" ? (ee.preventDefault(), V((Se) => Se < X.length - 1 ? Se + 1 : Se)) : ee.key === "ArrowUp" ? (ee.preventDefault(), V((Se) => Se > 0 ? Se - 1 : 0)) : ee.key === "Enter" ? (ee.preventDefault(), X.length > 0 && se >= 0 && se < X.length && xe(X[se])) : ee.key === "Escape" && (ee.preventDefault(), S(!1));
+  }, nt = (ee) => {
+    if (ee.key === "Enter" || ee.key === " " || ee.key === "F4" || ee.altKey && ee.key === "ArrowDown") {
+      ee.preventDefault(), we();
       return;
     }
-    y && y(q);
-  }, xt = C ? "border-red-500/90 bg-red-950/40 text-red-100 ring-1 ring-red-500/70" : "border-slate-700/70 hover:border-emerald-500/70 focus-within:border-emerald-400 focus-within:ring-1 focus-within:ring-emerald-400/40";
+    y && y(ee);
+  }, pt = k ? "border-red-500/90 bg-red-950/40 text-red-100 ring-1 ring-red-500/70" : "border-slate-700/70 hover:border-emerald-500/70 focus-within:border-emerald-400 focus-within:ring-1 focus-within:ring-emerald-400/40";
   return /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
     /* @__PURE__ */ e.jsxs(
       "div",
       {
-        ref: Y,
-        tabIndex: N ? -1 : 0,
-        onClick: pe,
-        onKeyDown: rt,
-        onFocus: L,
-        className: `relative flex items-center justify-between transition-all select-none cursor-pointer ${v ? `w-full h-7 px-2 text-xs rounded bg-slate-900/80 hover:bg-slate-900 text-slate-100 border ${xt}` : `w-full min-h-[34px] px-3 py-1.5 text-xs rounded-lg bg-slate-900/90 text-slate-100 border ${xt} shadow-sm`} ${N ? "opacity-50 cursor-not-allowed" : ""} ${h}`,
+        ref: W,
+        tabIndex: w ? -1 : 0,
+        onClick: we,
+        onKeyDown: nt,
+        onFocus: P,
+        className: `relative flex items-center justify-between transition-all select-none cursor-pointer ${v ? `w-full h-7 px-2 text-xs rounded bg-slate-900/80 hover:bg-slate-900 text-slate-100 border ${pt}` : `w-full min-h-[34px] px-3 py-1.5 text-xs rounded-lg bg-slate-900/90 text-slate-100 border ${pt} shadow-sm`} ${w ? "opacity-50 cursor-not-allowed" : ""} ${m}`,
         children: [
-          /* @__PURE__ */ e.jsx("div", { className: "flex-1 truncate mr-1.5", children: le ? /* @__PURE__ */ e.jsx("span", { className: "font-medium text-slate-100 truncate block", children: le }) : /* @__PURE__ */ e.jsx("span", { className: "text-slate-500 truncate block italic", children: x }) }),
+          /* @__PURE__ */ e.jsx("div", { className: "flex-1 truncate mr-1.5", children: pe ? /* @__PURE__ */ e.jsx("span", { className: "font-medium text-slate-100 truncate block", children: pe }) : /* @__PURE__ */ e.jsx("span", { className: "text-slate-500 truncate block italic", children: h }) }),
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1 flex-shrink-0", children: [
-            !!le && !N && !u && /* @__PURE__ */ e.jsx(
+            !!pe && !w && !u && /* @__PURE__ */ e.jsx(
               "button",
               {
                 type: "button",
                 tabIndex: -1,
-                onClick: it,
+                onClick: ot,
                 className: "p-0.5 rounded text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors",
                 title: "Xóa lựa chọn",
-                children: /* @__PURE__ */ e.jsx(ct, { className: "w-3 h-3" })
+                children: /* @__PURE__ */ e.jsx(dt, { className: "w-3 h-3" })
               }
             ),
             /* @__PURE__ */ e.jsx(
-              St,
+              wt,
               {
-                className: `w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${w ? "rotate-180 text-emerald-400" : ""}`
+                className: `w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${C ? "rotate-180 text-emerald-400" : ""}`
               }
             )
           ] })
         ]
       }
     ),
-    w && Tt(
+    C && It(
       /* @__PURE__ */ e.jsxs(
         "div",
         {
-          ref: z,
+          ref: q,
           style: {
             position: "fixed",
-            top: `${ue.top}px`,
-            left: `${ue.left}px`,
-            width: `${ue.width}px`,
+            top: `${ge.top}px`,
+            left: `${ge.left}px`,
+            width: `${ge.width}px`,
             zIndex: 99999
           },
           className: "flex flex-col bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-xl shadow-2xl overflow-hidden animate-in fade-in-50 zoom-in-95 duration-100 text-xs font-sans ring-1 ring-black/40",
-          onClick: (q) => q.stopPropagation(),
+          onClick: (ee) => ee.stopPropagation(),
           children: [
             /* @__PURE__ */ e.jsxs("div", { className: "p-2 border-b border-slate-800/90 bg-slate-950/60 flex items-center gap-2", children: [
               /* @__PURE__ */ e.jsxs("div", { className: "relative flex-1", children: [
-                /* @__PURE__ */ e.jsx(Bt, { className: "w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" }),
+                /* @__PURE__ */ e.jsx(Et, { className: "w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" }),
                 /* @__PURE__ */ e.jsx(
                   "input",
                   {
-                    ref: xe,
+                    ref: ie,
                     type: "text",
-                    value: R,
-                    onChange: (q) => {
-                      $(q.target.value), O(0);
+                    value: L,
+                    onChange: (ee) => {
+                      $(ee.target.value), V(0);
                     },
-                    onKeyDown: gt,
+                    onKeyDown: ft,
                     placeholder: "Tìm kiếm theo mã, tên, địa chỉ...",
                     className: "w-full h-8 pl-8 pr-7 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all"
                   }
                 ),
-                R && /* @__PURE__ */ e.jsx(
+                L && /* @__PURE__ */ e.jsx(
                   "button",
                   {
                     type: "button",
                     onClick: () => $(""),
                     className: "absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded text-slate-400 hover:text-slate-200",
-                    children: /* @__PURE__ */ e.jsx(ct, { className: "w-3 h-3" })
+                    children: /* @__PURE__ */ e.jsx(dt, { className: "w-3 h-3" })
                   }
                 )
               ] }),
@@ -7856,82 +8188,82 @@ const Dl = ({
                 "button",
                 {
                   type: "button",
-                  onClick: te,
+                  onClick: le,
                   title: `Tạo nhanh bản ghi mới cho ${n || "danh mục"}`,
                   className: "flex items-center gap-1 h-8 px-2.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-[11px] font-medium transition-all shrink-0 cursor-pointer shadow-sm active:scale-95",
                   children: [
-                    /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }),
+                    /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }),
                     /* @__PURE__ */ e.jsx("span", { className: "hidden sm:inline", children: "Tạo nhanh" })
                   ]
                 }
               ),
-              V && /* @__PURE__ */ e.jsxs("div", { className: "flex items-center text-emerald-400 text-[11px] gap-1 px-1", children: [
-                /* @__PURE__ */ e.jsx(fn, { className: "w-3 h-3 animate-spin" }),
+              U && /* @__PURE__ */ e.jsxs("div", { className: "flex items-center text-emerald-400 text-[11px] gap-1 px-1", children: [
+                /* @__PURE__ */ e.jsx(Cn, { className: "w-3 h-3 animate-spin" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Đang tải..." })
               ] })
             ] }),
             /* @__PURE__ */ e.jsxs("div", { className: "flex items-center bg-slate-950/80 border-b border-slate-800 text-[11px] font-semibold text-slate-400 px-3 py-1.5 select-none", children: [
-              ce.map((q, ge) => /* @__PURE__ */ e.jsx(
+              fe.map((ee, Se) => /* @__PURE__ */ e.jsx(
                 "div",
                 {
-                  style: { width: q.width || `${100 / ce.length}%` },
-                  className: `px-1.5 truncate ${q.align === "right" ? "text-right" : q.align === "center" ? "text-center" : "text-left"}`,
-                  children: q.title
+                  style: { width: ee.width || `${100 / fe.length}%` },
+                  className: `px-1.5 truncate ${ee.align === "right" ? "text-right" : ee.align === "center" ? "text-center" : "text-left"}`,
+                  children: ee.title
                 },
-                q.key || ge
+                ee.key || Se
               )),
               /* @__PURE__ */ e.jsx("div", { className: "w-6 flex-shrink-0" })
             ] }),
             /* @__PURE__ */ e.jsx(
               "div",
               {
-                ref: ve,
+                ref: Ne,
                 className: "max-h-[220px] overflow-y-auto divide-y divide-slate-800/40 select-none",
-                children: W.length === 0 ? /* @__PURE__ */ e.jsxs("div", { className: "py-6 px-4 text-center text-slate-500 flex flex-col items-center justify-center gap-2", children: [
-                  /* @__PURE__ */ e.jsx(Bt, { className: "w-5 h-5 text-slate-600 opacity-60" }),
-                  /* @__PURE__ */ e.jsx("span", { children: V ? "Đang truy vấn dữ liệu..." : "Không tìm thấy kết quả phù hợp" }),
+                children: X.length === 0 ? /* @__PURE__ */ e.jsxs("div", { className: "py-6 px-4 text-center text-slate-500 flex flex-col items-center justify-center gap-2", children: [
+                  /* @__PURE__ */ e.jsx(Et, { className: "w-5 h-5 text-slate-600 opacity-60" }),
+                  /* @__PURE__ */ e.jsx("span", { children: U ? "Đang truy vấn dữ liệu..." : "Không tìm thấy kết quả phù hợp" }),
                   l && (n || o) && /* @__PURE__ */ e.jsxs(
                     "button",
                     {
                       type: "button",
-                      onClick: te,
+                      onClick: le,
                       className: "mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-950 transition-all cursor-pointer active:scale-95",
                       children: [
-                        /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }),
+                        /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }),
                         /* @__PURE__ */ e.jsxs("span", { children: [
                           'Thêm nhanh "',
-                          R || n,
+                          L || n,
                           '"'
                         ] })
                       ]
                     }
                   )
-                ] }) : W.map((q, ge) => {
-                  const Ee = kt(q, d) ?? q.id ?? q.Id ?? q.code ?? q.Code, ke = Ee !== void 0 && String(Ee) === String(t), Me = ge === Q;
+                ] }) : X.map((ee, Se) => {
+                  const Ee = Ht(ee, d) ?? ee.id ?? ee.Id ?? ee.code ?? ee.Code, Re = Ee !== void 0 && String(Ee) === String(t), _e = Se === se;
                   return /* @__PURE__ */ e.jsxs(
                     "div",
                     {
-                      "data-index": ge,
-                      onClick: () => ae(q),
-                      onMouseEnter: () => O(ge),
-                      className: `flex items-center px-3 py-1.5 cursor-pointer transition-colors ${ke ? "bg-emerald-950/60 text-emerald-200 font-medium" : Me ? "bg-slate-800/70 text-slate-100" : "text-slate-300 hover:bg-slate-800/40"}`,
+                      "data-index": Se,
+                      onClick: () => xe(ee),
+                      onMouseEnter: () => V(Se),
+                      className: `flex items-center px-3 py-1.5 cursor-pointer transition-colors ${Re ? "bg-emerald-950/60 text-emerald-200 font-medium" : _e ? "bg-slate-800/70 text-slate-100" : "text-slate-300 hover:bg-slate-800/40"}`,
                       children: [
-                        ce.map((Te, Ye) => {
-                          const Ie = kt(q, Te.key), ht = Ie != null ? String(Ie) : "—";
+                        fe.map((Le, qe) => {
+                          const $e = Ht(ee, Le.key), rt = $e != null ? String($e) : "—";
                           return /* @__PURE__ */ e.jsx(
                             "div",
                             {
-                              style: { width: Te.width || `${100 / ce.length}%` },
-                              className: `px-1.5 truncate ${Te.align === "right" ? "text-right font-mono" : Te.align === "center" ? "text-center" : "text-left"}`,
-                              children: ht
+                              style: { width: Le.width || `${100 / fe.length}%` },
+                              className: `px-1.5 truncate ${Le.align === "right" ? "text-right font-mono" : Le.align === "center" ? "text-center" : "text-left"}`,
+                              children: rt
                             },
-                            Te.key || Ye
+                            Le.key || qe
                           );
                         }),
-                        /* @__PURE__ */ e.jsx("div", { className: "w-6 flex items-center justify-center flex-shrink-0", children: ke && /* @__PURE__ */ e.jsx(Fn, { className: "w-3.5 h-3.5 text-emerald-400" }) })
+                        /* @__PURE__ */ e.jsx("div", { className: "w-6 flex items-center justify-center flex-shrink-0", children: Re && /* @__PURE__ */ e.jsx(Qs, { className: "w-3.5 h-3.5 text-emerald-400" }) })
                       ]
                     },
-                    Ee ?? ge
+                    Ee ?? Se
                   );
                 })
               }
@@ -7939,9 +8271,9 @@ const Dl = ({
             /* @__PURE__ */ e.jsxs("div", { className: "px-3 py-1.5 bg-slate-950/90 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-500", children: [
               /* @__PURE__ */ e.jsxs("div", { children: [
                 /* @__PURE__ */ e.jsxs("span", { children: [
-                  W.length,
+                  X.length,
                   " / ",
-                  K.length,
+                  Y.length,
                   " bản ghi"
                 ] }),
                 n && /* @__PURE__ */ e.jsxs("span", { className: "ml-2 font-mono text-[9px] text-slate-400 bg-slate-800/60 px-1 py-0.5 rounded", children: [
@@ -7962,16 +8294,16 @@ const Dl = ({
       ),
       document.body
     ),
-    b && Tt(
+    b && It(
       /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-[999999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-100", children: /* @__PURE__ */ e.jsxs(
         "div",
         {
           className: "w-full max-w-md rounded-2xl border border-emerald-500/50 bg-slate-900 p-6 shadow-2xl text-slate-100 space-y-4",
-          onClick: (q) => q.stopPropagation(),
+          onClick: (ee) => ee.stopPropagation(),
           children: [
             /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between pb-3 border-b border-slate-800", children: [
               /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
-                /* @__PURE__ */ e.jsx("div", { className: "w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold", children: /* @__PURE__ */ e.jsx(et, { className: "w-4 h-4" }) }),
+                /* @__PURE__ */ e.jsx("div", { className: "w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold", children: /* @__PURE__ */ e.jsx(Qe, { className: "w-4 h-4" }) }),
                 /* @__PURE__ */ e.jsxs("div", { children: [
                   /* @__PURE__ */ e.jsxs("h3", { className: "text-sm font-bold text-slate-100", children: [
                     "Tạo nhanh danh mục: ",
@@ -7984,9 +8316,9 @@ const Dl = ({
                 "button",
                 {
                   type: "button",
-                  onClick: () => se(!1),
+                  onClick: () => ae(!1),
                   className: "p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors",
-                  children: /* @__PURE__ */ e.jsx(ct, { className: "w-4 h-4" })
+                  children: /* @__PURE__ */ e.jsx(dt, { className: "w-4 h-4" })
                 }
               )
             ] }),
@@ -8000,8 +8332,8 @@ const Dl = ({
                   "input",
                   {
                     type: "text",
-                    value: de,
-                    onChange: (q) => me(q.target.value),
+                    value: O,
+                    onChange: (ee) => _(ee.target.value),
                     placeholder: "VD: SITC, V-001...",
                     className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 font-mono text-xs focus:border-emerald-500 focus:outline-none"
                   }
@@ -8016,8 +8348,8 @@ const Dl = ({
                   "input",
                   {
                     type: "text",
-                    value: Ce,
-                    onChange: (q) => he(q.target.value),
+                    value: me,
+                    onChange: (ee) => ce(ee.target.value),
                     placeholder: "VD: CÔNG TY CỔ PHẦN...",
                     className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                   }
@@ -8029,8 +8361,8 @@ const Dl = ({
                   "textarea",
                   {
                     rows: 2,
-                    value: we,
-                    onChange: (q) => Oe(q.target.value),
+                    value: ye,
+                    onChange: (ee) => ue(ee.target.value),
                     placeholder: "Thông tin bổ sung...",
                     className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                   }
@@ -8042,7 +8374,7 @@ const Dl = ({
                 "button",
                 {
                   type: "button",
-                  onClick: () => se(!1),
+                  onClick: () => ae(!1),
                   className: "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors",
                   children: "Hủy"
                 }
@@ -8051,11 +8383,11 @@ const Dl = ({
                 "button",
                 {
                   type: "button",
-                  disabled: U || !de.trim() || !Ce.trim(),
-                  onClick: Se,
+                  disabled: M || !O.trim() || !me.trim(),
+                  onClick: Fe,
                   className: "flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-900/40 transition-all disabled:opacity-50 cursor-pointer",
                   children: [
-                    U ? /* @__PURE__ */ e.jsx(fn, { className: "w-3.5 h-3.5 animate-spin" }) : /* @__PURE__ */ e.jsx(At, { className: "w-3.5 h-3.5" }),
+                    M ? /* @__PURE__ */ e.jsx(Cn, { className: "w-3.5 h-3.5 animate-spin" }) : /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
                     /* @__PURE__ */ e.jsx("span", { children: "Lưu & Chọn ngay" })
                   ]
                 }
@@ -8067,18 +8399,18 @@ const Dl = ({
       document.body
     )
   ] });
-}, Il = ({ node: t, isEditing: r }) => {
-  var P, K, G, b, se, de, me, Ce, he, we, Oe;
-  const { props: s, style: a } = t, n = Z((U) => U.features), o = Z((U) => U.activeFeatureId), l = n.find((U) => String(U.id) === String(t.pageId)) || n.find((U) => String(U.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: I, maxWidth: f, width: x, ...N } = a || {}, u = String(t.pageId || o || "default"), v = String(((P = t.dataBinding) == null ? void 0 : P.fieldName) || t.props.name || t.id), C = fe((U) => Dt(U, u, v, void 0)), h = fe((U) => U.setFieldValue), y = C !== void 0 ? C : s.value ?? "", L = s.reference || s.refName || ((K = t.dataBinding) == null ? void 0 : K.refName) || ((G = t.dataBinding) == null ? void 0 : G.entityName) || "", k = s.dataSource || ((b = t.dataBinding) == null ? void 0 : b.dataSource) || s.query || ((se = t.dataBinding) == null ? void 0 : se.query) || s.sqlWhere || ((de = t.dataBinding) == null ? void 0 : de.sqlWhere) || "", F = s.idField || ((me = t.dataBinding) == null ? void 0 : me.idField) || "id", w = s.textField || s.selectField || ((Ce = t.dataBinding) == null ? void 0 : Ce.selectField) || "name", S = s.dropdownColumns || ((he = t.dataBinding) == null ? void 0 : he.dropdownColumns), R = s.formatData || ((we = t.dataBinding) == null ? void 0 : we.formatData) || "", $ = s.populateField || ((Oe = t.dataBinding) == null ? void 0 : Oe.populateField) || "", Q = s.options || [], O = !!s.validationError, V = (U, oe) => {
-    h(u, v, U), r || ze(t.events, "change", s.label || "Chọn mục", i, {
+}, no = ({ node: t, isEditing: r }) => {
+  var E, Y, z, b, ae, O, _, me, ce, ye, ue;
+  const { props: s, style: a } = t, n = Z((M) => M.features), o = Z((M) => M.activeFeatureId), l = n.find((M) => String(M.id) === String(t.pageId)) || n.find((M) => String(M.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: T, maxWidth: x, width: h, ...w } = a || {}, u = String(t.pageId || o || "default"), v = String(((E = t.dataBinding) == null ? void 0 : E.fieldName) || t.props.name || t.id), k = Te((M) => Vt(M, u, v, void 0)), m = Te((M) => M.setFieldValue), y = k !== void 0 ? k : s.value ?? "", P = s.reference || s.refName || ((Y = t.dataBinding) == null ? void 0 : Y.refName) || ((z = t.dataBinding) == null ? void 0 : z.entityName) || "", R = s.dataSource || ((b = t.dataBinding) == null ? void 0 : b.dataSource) || s.query || ((ae = t.dataBinding) == null ? void 0 : ae.query) || s.sqlWhere || ((O = t.dataBinding) == null ? void 0 : O.sqlWhere) || "", F = s.idField || ((_ = t.dataBinding) == null ? void 0 : _.idField) || "id", C = s.textField || s.selectField || ((me = t.dataBinding) == null ? void 0 : me.selectField) || "name", S = s.dropdownColumns || ((ce = t.dataBinding) == null ? void 0 : ce.dropdownColumns), L = s.formatData || ((ye = t.dataBinding) == null ? void 0 : ye.formatData) || "", $ = s.populateField || ((ue = t.dataBinding) == null ? void 0 : ue.populateField) || "", se = s.options || [], V = !!s.validationError, U = (M, Q) => {
+    m(u, v, M), r || Ye(t.events, "change", s.label || "Chọn mục", i, {
       componentId: t.id,
       fieldName: v,
-      value: U,
-      selectedItem: oe
+      value: M,
+      selectedItem: Q
     });
   };
   return /* @__PURE__ */ e.jsx(
-    Ut,
+    rs,
     {
       label: s.label,
       showLabel: s.showLabel ?? !0,
@@ -8090,33 +8422,33 @@ const Dl = ({
       style: {
         width: "100%",
         maxWidth: "100%",
-        ...N
+        ...w
       },
       children: /* @__PURE__ */ e.jsx("div", { className: "relative w-full", children: /* @__PURE__ */ e.jsx(
-        Dl,
+        so,
         {
           value: y,
-          onChange: V,
-          options: Q,
-          reference: L,
-          dataSource: k,
+          onChange: U,
+          options: se,
+          reference: P,
+          dataSource: R,
           idField: F,
-          selectField: w,
+          selectField: C,
           dropdownColumns: S,
-          formatData: R,
+          formatData: L,
           populateField: $,
           formId: u,
           placeholder: s.placeholder ? String(s.placeholder) : "— Chọn —",
           disabled: s.disabled,
-          error: O ? String(s.validationError) : void 0
+          error: V ? String(s.validationError) : void 0
         }
       ) })
     }
   );
-}, Fl = ({ node: t, isEditing: r }) => {
-  const { props: s, style: a } = t, n = Z((C) => C.features), o = Z((C) => C.activeFeatureId), l = n.find((C) => String(C.id) === String(t.pageId)) || n.find((C) => String(C.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: I, maxWidth: f, width: x, ...N } = a || {}, [u, v] = A(!!s.value);
+}, ro = ({ node: t, isEditing: r }) => {
+  const { props: s, style: a } = t, n = Z((k) => k.features), o = Z((k) => k.activeFeatureId), l = n.find((k) => String(k.id) === String(t.pageId)) || n.find((k) => String(k.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: T, maxWidth: x, width: h, ...w } = a || {}, [u, v] = D(!!s.value);
   return /* @__PURE__ */ e.jsx(
-    Ut,
+    rs,
     {
       label: s.label,
       showLabel: s.showLabel ?? !0,
@@ -8127,7 +8459,7 @@ const Dl = ({
       style: {
         width: "100%",
         maxWidth: "100%",
-        ...N
+        ...w
       },
       children: /* @__PURE__ */ e.jsxs("div", { className: "flex items-center h-8", children: [
         /* @__PURE__ */ e.jsx(
@@ -8137,10 +8469,10 @@ const Dl = ({
             disabled: s.disabled,
             checked: u,
             className: "w-4 h-4 rounded text-blue-600 focus:ring-blue-500 bg-slate-900 border-slate-700 cursor-pointer disabled:opacity-50",
-            onChange: (C) => {
-              v(C.target.checked), r || ze(t.events, "change", s.label || "Hộp kiểm", i, {
+            onChange: (k) => {
+              v(k.target.checked), r || Ye(t.events, "change", s.label || "Hộp kiểm", i, {
                 componentId: t.id,
-                value: C.target.checked
+                value: k.target.checked
               });
             }
           }
@@ -8149,17 +8481,17 @@ const Dl = ({
       ] })
     }
   );
-}, Rl = ({ node: t, isEditing: r }) => {
-  var k;
-  const { props: s, style: a } = t, n = Z((F) => F.features), o = Z((F) => F.activeFeatureId), l = n.find((F) => String(F.id) === String(t.pageId)) || n.find((F) => String(F.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: I, maxWidth: f, width: x, ...N } = a || {}, u = String(t.pageId || o || "default"), v = String(((k = t.dataBinding) == null ? void 0 : k.fieldName) || t.props.name || t.id), C = fe((F) => Dt(F, u, v, void 0)), h = fe((F) => F.setFieldValue), y = C !== void 0 ? C : s.value ?? "", L = (F) => {
-    h(u, v, F), r || ze(t.events, "change", s.label || "Chọn ngày", i, {
+}, ao = ({ node: t, isEditing: r }) => {
+  var R;
+  const { props: s, style: a } = t, n = Z((F) => F.features), o = Z((F) => F.activeFeatureId), l = n.find((F) => String(F.id) === String(t.pageId)) || n.find((F) => String(F.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: T, maxWidth: x, width: h, ...w } = a || {}, u = String(t.pageId || o || "default"), v = String(((R = t.dataBinding) == null ? void 0 : R.fieldName) || t.props.name || t.id), k = Te((F) => Vt(F, u, v, void 0)), m = Te((F) => F.setFieldValue), y = k !== void 0 ? k : s.value ?? "", P = (F) => {
+    m(u, v, F), r || Ye(t.events, "change", s.label || "Chọn ngày", i, {
       componentId: t.id,
       fieldName: v,
       value: F
     });
   };
   return /* @__PURE__ */ e.jsx(
-    Ut,
+    rs,
     {
       label: s.label,
       showLabel: s.showLabel ?? !0,
@@ -8171,13 +8503,13 @@ const Dl = ({
       style: {
         width: "100%",
         maxWidth: "100%",
-        ...N
+        ...w
       },
       children: /* @__PURE__ */ e.jsx(
-        Vr,
+        Qr,
         {
           value: y,
-          onChange: L,
+          onChange: P,
           disabled: s.disabled,
           readOnly: r || !!s.readOnly,
           placeholder: s.placeholder || "DD/MM/YYYY",
@@ -8186,16 +8518,16 @@ const Dl = ({
       )
     }
   );
-}, $l = ({ node: t, children: r }) => {
+}, lo = ({ node: t, children: r }) => {
   const { props: s } = t, a = s.title || s.label || "Hộp Thoại (Modal Dialog)";
   return /* @__PURE__ */ e.jsxs("div", { className: "w-full p-4 rounded-xl border border-dashed border-blue-500/60 bg-blue-950/10", children: [
     /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between pb-2 border-b border-slate-800", children: [
       /* @__PURE__ */ e.jsx("span", { className: "text-xs font-bold text-blue-400 uppercase tracking-wider", children: a }),
-      /* @__PURE__ */ e.jsx(ct, { className: "w-4 h-4 text-slate-500 hover:text-slate-300 cursor-pointer" })
+      /* @__PURE__ */ e.jsx(dt, { className: "w-4 h-4 text-slate-500 hover:text-slate-300 cursor-pointer" })
     ] }),
     /* @__PURE__ */ e.jsx("div", { className: "pt-3", children: r || /* @__PURE__ */ e.jsx("p", { className: "text-xs text-slate-400", children: "Kéo thả các phần tử vào hộp thoại này." }) })
   ] });
-}, Ll = ({ node: t }) => {
+}, oo = ({ node: t }) => {
   const { props: r, style: s } = t, { width: a, ...n } = s || {};
   return /* @__PURE__ */ e.jsxs(
     "div",
@@ -8212,11 +8544,11 @@ const Dl = ({
       ]
     }
   );
-}, El = ({ node: t, isEditing: r }) => {
+}, io = ({ node: t, isEditing: r }) => {
   var F;
-  const { props: s, style: a } = t, n = Z((w) => w.features), o = Z((w) => w.activeFeatureId), l = n.find((w) => String(w.id) === String(t.pageId)) || n.find((w) => String(w.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: I, maxWidth: f, width: x, ...N } = a || {}, u = String(t.pageId || o || "default"), v = String(((F = t.dataBinding) == null ? void 0 : F.fieldName) || t.props.name || t.id), C = fe((w) => Dt(w, u, v, void 0)), h = fe((w) => w.setFieldValue), y = C !== void 0 ? C : s.value !== void 0 ? String(s.value) : "", L = Number(s.rows) || 2, k = !!s.validationError;
+  const { props: s, style: a } = t, n = Z((C) => C.features), o = Z((C) => C.activeFeatureId), l = n.find((C) => String(C.id) === String(t.pageId)) || n.find((C) => String(C.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: T, maxWidth: x, width: h, ...w } = a || {}, u = String(t.pageId || o || "default"), v = String(((F = t.dataBinding) == null ? void 0 : F.fieldName) || t.props.name || t.id), k = Te((C) => Vt(C, u, v, void 0)), m = Te((C) => C.setFieldValue), y = k !== void 0 ? k : s.value !== void 0 ? String(s.value) : "", P = Number(s.rows) || 2, R = !!s.validationError;
   return /* @__PURE__ */ e.jsx(
-    Ut,
+    rs,
     {
       label: s.label || "Ghi Chú",
       showLabel: s.showLabel,
@@ -8228,89 +8560,89 @@ const Dl = ({
       children: /* @__PURE__ */ e.jsx(
         "textarea",
         {
-          rows: L,
+          rows: P,
           placeholder: s.placeholder || "Nhập nội dung...",
           value: y,
           disabled: s.disabled,
           readOnly: r || !!s.readOnly,
           style: {
             width: "100%",
-            ...N
+            ...w
           },
-          className: `w-full px-3 py-1.5 bg-slate-950 border rounded-lg text-xs font-mono transition-colors resize-y ${k ? "border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none" : "border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-100 placeholder-slate-500"} ${s.disabled ? "opacity-50 cursor-not-allowed bg-slate-900" : ""}`,
-          onChange: (w) => {
-            const S = w.target.value;
-            h(u, v, S), r || ze(t.events, "change", s.label || "Văn bản", i, {
+          className: `w-full px-3 py-1.5 bg-slate-950 border rounded-lg text-xs font-mono transition-colors resize-y ${R ? "border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none" : "border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-100 placeholder-slate-500"} ${s.disabled ? "opacity-50 cursor-not-allowed bg-slate-900" : ""}`,
+          onChange: (C) => {
+            const S = C.target.value;
+            m(u, v, S), r || Ye(t.events, "change", s.label || "Văn bản", i, {
               componentId: t.id,
               fieldName: v,
               value: S
             });
           },
           onFocus: () => {
-            r || ze(t.events, "focus", s.label || "Văn bản", i, {
+            r || Ye(t.events, "focus", s.label || "Văn bản", i, {
               componentId: t.id,
               fieldName: v
             });
           },
-          onBlur: (w) => {
-            r || ze(t.events, "blur", s.label || "Văn bản", i, {
+          onBlur: (C) => {
+            r || Ye(t.events, "blur", s.label || "Văn bản", i, {
               componentId: t.id,
               fieldName: v,
-              value: w.target.value
+              value: C.target.value
             });
           }
         }
       )
     }
   );
-}, vo = ({ node: t, isEditing: r, children: s }) => {
-  var h, y;
-  const { props: a, style: n } = t, o = Z((L) => L.updateComponentProps), { flex: l, flexGrow: i, flexShrink: d, flexBasis: c, minWidth: p, maxWidth: g, width: I, ...f } = n || {}, x = [
+}, Uo = ({ node: t, isEditing: r, children: s }) => {
+  var m, y;
+  const { props: a, style: n } = t, o = Z((P) => P.updateComponentProps), { flex: l, flexGrow: i, flexShrink: d, flexBasis: c, minWidth: p, maxWidth: g, width: T, ...x } = n || {}, h = [
     { id: "main", label: "TAB 1" }
-  ], N = a.tabs || x, [u, v] = A(
-    a.activeTabId || ((h = N[0]) == null ? void 0 : h.id) || "main"
-  ), C = a.activeTabId || u || ((y = N[0]) == null ? void 0 : y.id) || "main";
+  ], w = a.tabs || h, [u, v] = D(
+    a.activeTabId || ((m = w[0]) == null ? void 0 : m.id) || "main"
+  ), k = a.activeTabId || u || ((y = w[0]) == null ? void 0 : y.id) || "main";
   return /* @__PURE__ */ e.jsxs(
     "div",
     {
       className: "w-full flex flex-col",
       style: {
         width: "100%",
-        ...f
+        ...x
       },
       children: [
         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1 border-b border-emerald-800/60 bg-emerald-950/20 px-2 pt-1 select-none overflow-x-auto", children: [
-          N.map((L) => {
-            const k = L.id === C;
+          w.map((P) => {
+            const R = P.id === k;
             return /* @__PURE__ */ e.jsxs(
               "button",
               {
                 type: "button",
                 onClick: (F) => {
-                  F.stopPropagation(), v(L.id), o(t.id, { activeTabId: L.id });
+                  F.stopPropagation(), v(P.id), o(t.id, { activeTabId: P.id });
                 },
-                className: `px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-t-lg transition-colors flex items-center gap-1.5 cursor-pointer border-t border-x ${k ? "bg-slate-900 text-emerald-400 border-emerald-600/80 shadow-sm" : "bg-emerald-950/40 text-slate-400 border-transparent hover:text-slate-200 hover:bg-emerald-900/30"}`,
+                className: `px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-t-lg transition-colors flex items-center gap-1.5 cursor-pointer border-t border-x ${R ? "bg-slate-900 text-emerald-400 border-emerald-600/80 shadow-sm" : "bg-emerald-950/40 text-slate-400 border-transparent hover:text-slate-200 hover:bg-emerald-900/30"}`,
                 children: [
-                  /* @__PURE__ */ e.jsx("span", { children: L.label }),
-                  L.badge !== void 0 && /* @__PURE__ */ e.jsx("span", { className: `px-1.5 py-0.2 rounded-full text-[10px] text-white font-mono ${L.badgeColor || "bg-amber-600"}`, children: L.badge })
+                  /* @__PURE__ */ e.jsx("span", { children: P.label }),
+                  P.badge !== void 0 && /* @__PURE__ */ e.jsx("span", { className: `px-1.5 py-0.2 rounded-full text-[10px] text-white font-mono ${P.badgeColor || "bg-amber-600"}`, children: P.badge })
                 ]
               },
-              L.id
+              P.id
             );
           }),
           r && /* @__PURE__ */ e.jsxs(
             "button",
             {
               type: "button",
-              onClick: (L) => {
-                L.stopPropagation();
-                const k = `tab_${Date.now().toString(36)}`, F = [...N, { id: k, label: `Tab Mới ${N.length + 1}` }];
-                o(t.id, { tabs: F, activeTabId: k }), v(k);
+              onClick: (P) => {
+                P.stopPropagation();
+                const R = `tab_${Date.now().toString(36)}`, F = [...w, { id: R, label: `Tab Mới ${w.length + 1}` }];
+                o(t.id, { tabs: F, activeTabId: R }), v(R);
               },
               className: "px-2.5 py-1 text-slate-400 hover:text-emerald-400 hover:bg-emerald-900/30 rounded text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer",
               title: "Thêm Tab mới",
               children: [
-                /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }),
                 /* @__PURE__ */ e.jsx("span", { children: "+ Thêm Tab" })
               ]
             }
@@ -8320,7 +8652,7 @@ const Dl = ({
       ]
     }
   );
-}, zr = ({
+}, na = ({
   parentId: t,
   order: r,
   tabNodes: s,
@@ -8328,15 +8660,15 @@ const Dl = ({
   parentFlexConfig: n,
   renderChild: o
 }) => {
-  var f;
-  const l = Z((x) => x.addComponent), i = Z((x) => x.selectComponent), [d, c] = A(((f = s[0]) == null ? void 0 : f.id) || ""), p = s.find((x) => x.id === d) || s[0], g = (p == null ? void 0 : p.id) || "", I = (x) => {
-    var C;
-    x.stopPropagation();
-    const N = ((C = s[0]) == null ? void 0 : C.pageId) || "2", u = `tab_${Date.now().toString(36)}`, v = {
+  var x;
+  const l = Z((h) => h.addComponent), i = Z((h) => h.selectComponent), [d, c] = D(((x = s[0]) == null ? void 0 : x.id) || ""), p = s.find((h) => h.id === d) || s[0], g = (p == null ? void 0 : p.id) || "", T = (h) => {
+    var k;
+    h.stopPropagation();
+    const w = ((k = s[0]) == null ? void 0 : k.pageId) || "2", u = `tab_${Date.now().toString(36)}`, v = {
       id: u,
       type: "Container",
       parentId: t,
-      pageId: N,
+      pageId: w,
       order: r,
       // Cùng order để tự động stack vào nhóm này
       props: {
@@ -8367,33 +8699,33 @@ const Dl = ({
       className: "w-full flex flex-col my-1 box-border rounded-xl border border-emerald-900/60 bg-slate-900/30 overflow-hidden shadow-md",
       children: [
         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1 border-b border-emerald-800/60 bg-emerald-950/25 px-2 pt-1 select-none overflow-x-auto no-scrollbar", children: [
-          s.map((x) => {
-            const N = x.id === g, u = x.props.label || x.props.title || `Tab #${x.id.slice(-4)}`, v = x.props.badge;
+          s.map((h) => {
+            const w = h.id === g, u = h.props.label || h.props.title || `Tab #${h.id.slice(-4)}`, v = h.props.badge;
             return /* @__PURE__ */ e.jsxs(
               "button",
               {
                 type: "button",
-                onClick: (C) => {
-                  C.stopPropagation(), c(x.id), a && i(x.id);
+                onClick: (k) => {
+                  k.stopPropagation(), c(h.id), a && i(h.id);
                 },
-                className: `px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-t-lg transition-colors flex items-center gap-1.5 cursor-pointer border-t border-x ${N ? "bg-slate-900 text-emerald-400 border-emerald-600/80 shadow-sm" : "bg-emerald-950/40 text-slate-400 border-transparent hover:text-slate-200 hover:bg-emerald-900/30"}`,
+                className: `px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-t-lg transition-colors flex items-center gap-1.5 cursor-pointer border-t border-x ${w ? "bg-slate-900 text-emerald-400 border-emerald-600/80 shadow-sm" : "bg-emerald-950/40 text-slate-400 border-transparent hover:text-slate-200 hover:bg-emerald-900/30"}`,
                 children: [
                   /* @__PURE__ */ e.jsx("span", { children: u }),
                   v !== void 0 && /* @__PURE__ */ e.jsx("span", { className: "px-1.5 py-0.2 rounded-full text-[10px] text-white font-mono bg-amber-600", children: String(v) })
                 ]
               },
-              x.id
+              h.id
             );
           }),
           a && /* @__PURE__ */ e.jsxs(
             "button",
             {
               type: "button",
-              onClick: I,
+              onClick: T,
               className: "px-2.5 py-1 text-slate-400 hover:text-emerald-400 hover:bg-emerald-900/30 rounded text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer shrink-0 ml-1",
               title: "Thêm Tab mới vào nhóm này (cùng Order)",
               children: [
-                /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }),
                 /* @__PURE__ */ e.jsx("span", { children: "+ Thêm Tab" })
               ]
             }
@@ -8403,7 +8735,7 @@ const Dl = ({
       ]
     }
   );
-}, Pl = ({
+}, co = ({
   label: t = "Bản ghi:",
   reference: r = "Records",
   displayField: s = "code",
@@ -8415,26 +8747,26 @@ const Dl = ({
   className: d = "",
   style: c = {}
 }) => {
-  var C;
-  const p = fe(), g = [
+  var k;
+  const p = Te(), g = [
     { id: "1", code: "REC-001", name: "Bản ghi mẫu 01" },
     { id: "2", code: "REC-002", name: "Bản ghi mẫu 02" },
     { id: "3", code: "REC-003", name: "Bản ghi mẫu 03" }
-  ], [I, f] = A(a || g), [x, N] = A(n || ((C = g[0]) == null ? void 0 : C.id) || "");
-  Be(() => {
-    a && a.length > 0 && f(a);
-  }, [a]), Be(() => {
-    n !== void 0 && N(n);
+  ], [T, x] = D(a || g), [h, w] = D(n || ((k = g[0]) == null ? void 0 : k.id) || "");
+  He(() => {
+    a && a.length > 0 && x(a);
+  }, [a]), He(() => {
+    n !== void 0 && w(n);
   }, [n]);
-  const u = (h) => {
-    N(h.id), l ? l(h) : p.setFormRecord("default", h);
+  const u = (m) => {
+    w(m.id), l ? l(m) : p.setFormRecord("default", m);
   }, v = () => {
-    const h = I.length + 1, y = `REC-${String(h).padStart(3, "0")}`, L = {
+    const m = T.length + 1, y = `REC-${String(m).padStart(3, "0")}`, P = {
       id: String(Date.now()),
       code: y,
-      name: `Bản ghi mới ${h}`
-    }, k = [...I, L];
-    f(k), N(L.id), i ? i() : p.setFormRecord("default", L);
+      name: `Bản ghi mới ${m}`
+    }, R = [...T, P];
+    x(R), w(P.id), i ? i() : p.setFormRecord("default", P);
   };
   return /* @__PURE__ */ e.jsxs(
     "div",
@@ -8443,21 +8775,21 @@ const Dl = ({
       style: c,
       children: [
         t && /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1.5 font-semibold text-slate-300 pr-1 select-none", children: [
-          /* @__PURE__ */ e.jsx(wr, { className: "w-3.5 h-3.5 text-blue-400" }),
+          /* @__PURE__ */ e.jsx(Tr, { className: "w-3.5 h-3.5 text-blue-400" }),
           /* @__PURE__ */ e.jsx("span", { children: t })
         ] }),
         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center flex-wrap gap-2", children: [
-          I.map((h) => {
-            const y = String(h.id) === String(x), L = h[s] || h.code || h.name || h.id;
+          T.map((m) => {
+            const y = String(m.id) === String(h), P = m[s] || m.code || m.name || m.id;
             return /* @__PURE__ */ e.jsx(
               "button",
               {
                 type: "button",
-                onClick: () => u(h),
+                onClick: () => u(m),
                 className: `px-3 py-1 rounded text-xs font-mono font-medium transition-all cursor-pointer flex items-center gap-1.5 ${y ? "bg-blue-600 text-white border border-blue-400 shadow-md shadow-blue-900/40 ring-1 ring-blue-400/50" : "bg-slate-800/90 text-slate-300 border border-slate-700 hover:border-slate-500 hover:text-white hover:bg-slate-700/80"}`,
-                children: /* @__PURE__ */ e.jsx("span", { children: L })
+                children: /* @__PURE__ */ e.jsx("span", { children: P })
               },
-              h.id
+              m.id
             );
           }),
           o && /* @__PURE__ */ e.jsxs(
@@ -8468,7 +8800,7 @@ const Dl = ({
               className: "flex items-center gap-1 px-3 py-1 rounded text-xs font-medium border border-emerald-500/70 bg-emerald-950/40 text-emerald-400 hover:bg-emerald-900/50 hover:border-emerald-400 transition-all cursor-pointer shadow-sm",
               title: "Thêm bản ghi mới",
               children: [
-                /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Tạo mới" })
               ]
             }
@@ -8477,7 +8809,7 @@ const Dl = ({
       ]
     }
   );
-}, Al = ({
+}, uo = ({
   isOpen: t,
   title: r,
   entityName: s,
@@ -8486,26 +8818,26 @@ const Dl = ({
   onSelect: o,
   onClose: l
 }) => {
-  const i = fe(), d = fe((k) => k.datasets[s]), [c, p] = A([]), [g, I] = A(!1), [f, x] = A(""), [N, u] = A(0), v = Je(null);
-  Be(() => {
+  const i = Te(), d = Te((R) => R.datasets[s]), [c, p] = D([]), [g, T] = D(!1), [x, h] = D(""), [w, u] = D(0), v = tt(null);
+  He(() => {
     if (!t) {
-      x(""), u(0);
+      h(""), u(0);
       return;
     }
-    Array.isArray(d) && d.length > 0 ? p(d) : (I(!0), i.queryEntity(s).then((k) => {
-      Array.isArray(k) && k.length > 0 ? p(k) : p(i.getDataset(s) || []);
-    }).finally(() => I(!1))), setTimeout(() => {
-      var k, F;
-      (k = v.current) == null || k.focus(), (F = v.current) == null || F.select();
+    Array.isArray(d) && d.length > 0 ? p(d) : (T(!0), i.queryEntity(s).then((R) => {
+      Array.isArray(R) && R.length > 0 ? p(R) : p(i.getDataset(s) || []);
+    }).finally(() => T(!1))), setTimeout(() => {
+      var R, F;
+      (R = v.current) == null || R.focus(), (F = v.current) == null || F.select();
     }, 80);
   }, [t, s, d]);
-  const C = Ve(() => {
+  const k = Ae(() => {
     if (a && a.length > 0) return a;
     if (c.length > 0) {
-      const k = c[0], F = ["_id", "__v", "createdat", "updatedat", "password"];
-      return Object.keys(k).filter((w) => !F.includes(w.toLowerCase()) && typeof k[w] != "object").slice(0, 6).map((w) => ({
-        key: w,
-        title: w.charAt(0).toUpperCase() + w.slice(1).replace(/([A-Z])/g, " $1"),
+      const R = c[0], F = ["_id", "__v", "createdat", "updatedat", "password"];
+      return Object.keys(R).filter((C) => !F.includes(C.toLowerCase()) && typeof R[C] != "object").slice(0, 6).map((C) => ({
+        key: C,
+        title: C.charAt(0).toUpperCase() + C.slice(1).replace(/([A-Z])/g, " $1"),
         width: "140px",
         sortable: !0
       }));
@@ -8515,24 +8847,24 @@ const Dl = ({
       { key: "name", title: "Tên / Tiêu đề", width: "220px", sortable: !0 },
       { key: "status", title: "Trạng thái", width: "120px", sortable: !0 }
     ];
-  }, [a, c]), h = Ve(() => {
-    if (!f.trim()) return c;
-    const k = f.toLowerCase().trim();
-    return c.filter((F) => n && n.length > 0 ? n.some((w) => {
-      const S = F[w];
-      return S != null && String(S).toLowerCase().includes(k);
+  }, [a, c]), m = Ae(() => {
+    if (!x.trim()) return c;
+    const R = x.toLowerCase().trim();
+    return c.filter((F) => n && n.length > 0 ? n.some((C) => {
+      const S = F[C];
+      return S != null && String(S).toLowerCase().includes(R);
     }) : Object.values(F).some(
-      (w) => w != null && String(w).toLowerCase().includes(k)
+      (C) => C != null && String(C).toLowerCase().includes(R)
     ));
-  }, [c, f, n]);
-  Be(() => {
-    N >= h.length && u(Math.max(0, h.length - 1));
-  }, [h.length]);
-  const y = (k) => {
-    k.key === "ArrowDown" ? (k.preventDefault(), u((F) => F < h.length - 1 ? F + 1 : F)) : k.key === "ArrowUp" ? (k.preventDefault(), u((F) => F > 0 ? F - 1 : 0)) : k.key === "Enter" ? (k.preventDefault(), h[N] && (o(h[N]), l())) : k.key === "Escape" && (k.preventDefault(), l());
+  }, [c, x, n]);
+  He(() => {
+    w >= m.length && u(Math.max(0, m.length - 1));
+  }, [m.length]);
+  const y = (R) => {
+    R.key === "ArrowDown" ? (R.preventDefault(), u((F) => F < m.length - 1 ? F + 1 : F)) : R.key === "ArrowUp" ? (R.preventDefault(), u((F) => F > 0 ? F - 1 : 0)) : R.key === "Enter" ? (R.preventDefault(), m[w] && (o(m[w]), l())) : R.key === "Escape" && (R.preventDefault(), l());
   };
   if (!t) return null;
-  const L = r || `Tra cứu danh mục: ${s}`;
+  const P = r || `Tra cứu danh mục: ${s}`;
   return /* @__PURE__ */ e.jsx(
     "div",
     {
@@ -8541,11 +8873,11 @@ const Dl = ({
       children: /* @__PURE__ */ e.jsxs("div", { className: "w-full max-w-3xl bg-[#0b1120] border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]", children: [
         /* @__PURE__ */ e.jsxs("div", { className: "px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-900/90", children: [
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2.5", children: [
-            /* @__PURE__ */ e.jsx("div", { className: "p-1.5 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30", children: /* @__PURE__ */ e.jsx(gn, { className: "w-4 h-4" }) }),
+            /* @__PURE__ */ e.jsx("div", { className: "p-1.5 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30", children: /* @__PURE__ */ e.jsx(kn, { className: "w-4 h-4" }) }),
             /* @__PURE__ */ e.jsxs("div", { children: [
-              /* @__PURE__ */ e.jsx("h3", { className: "text-sm font-bold text-slate-100", children: L }),
+              /* @__PURE__ */ e.jsx("h3", { className: "text-sm font-bold text-slate-100", children: P }),
               /* @__PURE__ */ e.jsxs("p", { className: "text-[11px] text-slate-400 font-mono", children: [
-                h.length,
+                m.length,
                 " kết quả (Dùng phím ↑ ↓ để chọn, Enter để xác nhận)"
               ] })
             ] })
@@ -8556,69 +8888,69 @@ const Dl = ({
               type: "button",
               onClick: l,
               className: "w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors",
-              children: /* @__PURE__ */ e.jsx(ct, { className: "w-4 h-4" })
+              children: /* @__PURE__ */ e.jsx(dt, { className: "w-4 h-4" })
             }
           )
         ] }),
         /* @__PURE__ */ e.jsx("div", { className: "p-3 border-b border-slate-800/80 bg-slate-900/50", children: /* @__PURE__ */ e.jsxs("div", { className: "relative", children: [
-          /* @__PURE__ */ e.jsx(Bt, { className: "w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" }),
+          /* @__PURE__ */ e.jsx(Et, { className: "w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" }),
           /* @__PURE__ */ e.jsx(
             "input",
             {
               ref: v,
               type: "text",
-              value: f,
-              onChange: (k) => {
-                x(k.target.value), u(0);
+              value: x,
+              onChange: (R) => {
+                h(R.target.value), u(0);
               },
               placeholder: `Gõ từ khóa tìm kiếm theo bất kỳ cột nào trong ${s}...`,
               className: "w-full h-9 pl-9 pr-4 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-mono"
             }
           )
         ] }) }),
-        /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-auto p-3", children: g ? /* @__PURE__ */ e.jsx("div", { className: "p-8 text-center text-slate-400 text-xs italic", children: "Đang tải dữ liệu từ máy chủ..." }) : h.length === 0 ? /* @__PURE__ */ e.jsxs("div", { className: "p-8 text-center text-slate-500 text-xs italic", children: [
+        /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-auto p-3", children: g ? /* @__PURE__ */ e.jsx("div", { className: "p-8 text-center text-slate-400 text-xs italic", children: "Đang tải dữ liệu từ máy chủ..." }) : m.length === 0 ? /* @__PURE__ */ e.jsxs("div", { className: "p-8 text-center text-slate-500 text-xs italic", children: [
           'Không tìm thấy bản ghi nào khớp với từ khóa "',
-          f,
+          x,
           '".'
         ] }) : /* @__PURE__ */ e.jsx("div", { className: "border border-slate-800 rounded-xl overflow-hidden shadow-inner", children: /* @__PURE__ */ e.jsxs("table", { className: "w-full text-left text-xs border-collapse", children: [
           /* @__PURE__ */ e.jsx("thead", { className: "bg-[#0f172a] text-slate-300 font-semibold uppercase text-[11px] border-b border-slate-800", children: /* @__PURE__ */ e.jsxs("tr", { children: [
             /* @__PURE__ */ e.jsx("th", { className: "px-3 py-2 text-center w-12 text-slate-400", children: "#" }),
-            C.map((k) => /* @__PURE__ */ e.jsx(
+            k.map((R) => /* @__PURE__ */ e.jsx(
               "th",
               {
                 className: "px-3 py-2 border-r border-slate-800/80 whitespace-nowrap",
-                style: { width: k.width },
-                children: k.title || k.key
+                style: { width: R.width },
+                children: R.title || R.key
               },
-              k.key
+              R.key
             ))
           ] }) }),
-          /* @__PURE__ */ e.jsx("tbody", { className: "divide-y divide-slate-800/60 font-mono", children: h.map((k, F) => {
-            const w = F === N;
+          /* @__PURE__ */ e.jsx("tbody", { className: "divide-y divide-slate-800/60 font-mono", children: m.map((R, F) => {
+            const C = F === w;
             return /* @__PURE__ */ e.jsxs(
               "tr",
               {
                 onClick: () => u(F),
                 onDoubleClick: () => {
-                  o(k), l();
+                  o(R), l();
                 },
-                className: `transition-colors cursor-pointer ${w ? "bg-blue-600/30 text-blue-100 border-l-2 border-l-blue-400" : "hover:bg-slate-800/40 text-slate-300"}`,
+                className: `transition-colors cursor-pointer ${C ? "bg-blue-600/30 text-blue-100 border-l-2 border-l-blue-400" : "hover:bg-slate-800/40 text-slate-300"}`,
                 children: [
                   /* @__PURE__ */ e.jsx("td", { className: "px-3 py-2 text-center text-[11px] text-slate-400", children: F + 1 }),
-                  C.map((S) => {
-                    const R = k[S.key];
+                  k.map((S) => {
+                    const L = R[S.key];
                     return /* @__PURE__ */ e.jsx(
                       "td",
                       {
                         className: "px-3 py-2 border-r border-slate-800/50 whitespace-nowrap text-xs truncate max-w-[200px]",
-                        children: R != null ? String(R) : "—"
+                        children: L != null ? String(L) : "—"
                       },
                       S.key
                     );
                   })
                 ]
               },
-              k.id ?? k.Id ?? F
+              R.id ?? R.Id ?? F
             );
           }) })
         ] }) }) }),
@@ -8642,13 +8974,13 @@ const Dl = ({
               "button",
               {
                 type: "button",
-                disabled: h.length === 0,
+                disabled: m.length === 0,
                 onClick: () => {
-                  h[N] && (o(h[N]), l());
+                  m[w] && (o(m[w]), l());
                 },
                 className: "flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold shadow-md shadow-blue-900/40 transition-all cursor-pointer",
                 children: [
-                  /* @__PURE__ */ e.jsx(Fn, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ e.jsx(Qs, { className: "w-3.5 h-3.5" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Chọn bản ghi" })
                 ]
               }
@@ -8658,94 +8990,94 @@ const Dl = ({
       ] })
     }
   );
-}, Bl = ({ node: t, isEditing: r }) => {
-  var z, xe, ve, T, B, ee, je;
-  const { props: s, style: a } = t, n = Z((te) => te.features), o = Z((te) => te.activeFeatureId), l = n.find((te) => String(te.id) === String(t.pageId)) || n.find((te) => String(te.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: I, maxWidth: f, width: x, ...N } = a || {}, u = String(t.pageId || o || "default"), v = String(((z = t.dataBinding) == null ? void 0 : z.fieldName) || t.props.name || t.id), C = fe((te) => Dt(te, u, v, void 0)), h = fe((te) => te.setFieldValue), y = fe((te) => te.applyPopulate), [L, k] = A(!1), [F, w] = A(!1), [S, R] = A(""), [$, Q] = A(""), [O, V] = A(""), [P, K] = A(!1), G = C !== void 0 ? C : s.value ?? "", b = !!s.validationError, se = String(
-    s.reference || s.refName || ((xe = t.dataBinding) == null ? void 0 : xe.refName) || ((ve = t.dataBinding) == null ? void 0 : ve.entityName) || ""
-  ), de = String(
-    s.refClass || ((T = t.dataBinding) == null ? void 0 : T.refClass) || ""
+}, xo = ({ node: t, isEditing: r }) => {
+  var q, ie, Ne, j, A, ne, Ce;
+  const { props: s, style: a } = t, n = Z((le) => le.features), o = Z((le) => le.activeFeatureId), l = n.find((le) => String(le.id) === String(t.pageId)) || n.find((le) => String(le.id) === String(o)), i = l == null ? void 0 : l.scriptFile, { flex: d, flexGrow: c, flexShrink: p, flexBasis: g, minWidth: T, maxWidth: x, width: h, ...w } = a || {}, u = String(t.pageId || o || "default"), v = String(((q = t.dataBinding) == null ? void 0 : q.fieldName) || t.props.name || t.id), k = Te((le) => Vt(le, u, v, void 0)), m = Te((le) => le.setFieldValue), y = Te((le) => le.applyPopulate), [P, R] = D(!1), [F, C] = D(!1), [S, L] = D(""), [$, se] = D(""), [V, U] = D(""), [E, Y] = D(!1), z = k !== void 0 ? k : s.value ?? "", b = !!s.validationError, ae = String(
+    s.reference || s.refName || ((ie = t.dataBinding) == null ? void 0 : ie.refName) || ((Ne = t.dataBinding) == null ? void 0 : Ne.entityName) || ""
+  ), O = String(
+    s.refClass || ((j = t.dataBinding) == null ? void 0 : j.refClass) || ""
+  ), _ = String(
+    s.displayField || s.selectField || ((A = t.dataBinding) == null ? void 0 : A.selectField) || "code"
   ), me = String(
-    s.displayField || s.selectField || ((B = t.dataBinding) == null ? void 0 : B.selectField) || "code"
-  ), Ce = String(
-    s.valueField || s.idField || ((ee = t.dataBinding) == null ? void 0 : ee.idField) || "code"
-  ), he = String(
-    s.populateRule || s.populateField || ((je = t.dataBinding) == null ? void 0 : je.populateField) || ""
-  ), we = () => {
+    s.valueField || s.idField || ((ne = t.dataBinding) == null ? void 0 : ne.idField) || "code"
+  ), ce = String(
+    s.populateRule || s.populateField || ((Ce = t.dataBinding) == null ? void 0 : Ce.populateField) || ""
+  ), ye = () => {
     if (!(s.disabled || r)) {
-      if (!se) {
+      if (!ae) {
         console.warn(`[ForgeSearchEntry] Component ${t.id} chưa cấu hình reference entity`);
         return;
       }
-      k(!0);
+      R(!0);
     }
-  }, Oe = () => {
+  }, ue = () => {
     if (s.disabled || r) return;
-    if (de) {
-      Br(de, {}, `Tạo mới ${se || de}`);
+    if (O) {
+      zr(O, {}, `Tạo mới ${ae || O}`);
       return;
     }
-    const te = String(G || "").trim();
-    R(te ? te.toUpperCase().replace(/\s+/g, "_") : ""), Q(te), V(""), w(!0);
-  }, U = async () => {
+    const le = String(z || "").trim();
+    L(le ? le.toUpperCase().replace(/\s+/g, "_") : ""), se(le), U(""), C(!0);
+  }, M = async () => {
     if (!S.trim() || !$.trim()) return;
-    const te = se.trim();
-    if (te) {
-      K(!0);
+    const le = ae.trim();
+    if (le) {
+      Y(!0);
       try {
-        const Se = {
+        const Fe = {
           code: S.trim(),
           name: $.trim(),
           fullName: $.trim(),
-          description: O.trim(),
+          description: V.trim(),
           active: !0
-        }, ce = await fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(te)}`, {
+        }, fe = await fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(le)}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(Se)
+          body: JSON.stringify(Fe)
         });
-        if (ce.ok) {
-          const Ne = await ce.json(), le = {
-            ...Se,
-            ...Ne,
-            id: Ne.id ?? Ne.Id ?? Date.now()
+        if (fe.ok) {
+          const Ie = await fe.json(), pe = {
+            ...Fe,
+            ...Ie,
+            id: Ie.id ?? Ie.Id ?? Date.now()
           };
-          await fe.getState().queryEntity(te), oe(le), w(!1);
+          await Te.getState().queryEntity(le), Q(pe), C(!1);
         } else
           alert("Không thể lưu bản ghi mới vào server. Vui lòng kiểm tra lại thông tin.");
-      } catch (Se) {
-        console.error("[ForgeSearchEntry] Lỗi tạo nhanh bản ghi:", Se);
-        const ce = {
+      } catch (Fe) {
+        console.error("[ForgeSearchEntry] Lỗi tạo nhanh bản ghi:", Fe);
+        const fe = {
           id: `mock-${Date.now()}`,
           code: S.trim(),
           name: $.trim(),
           fullName: $.trim(),
-          description: O.trim(),
+          description: V.trim(),
           active: !0
         };
-        oe(ce), w(!1);
+        Q(fe), C(!1);
       } finally {
-        K(!1);
+        Y(!1);
       }
     }
-  }, oe = (te) => {
-    const Se = te[Ce] ?? te[me] ?? te.code ?? te.id;
-    te[me] ?? te.name, h(u, v, Se), he && y(u, he, te), r || (ze(t.events, "change", s.label || "Ô tra cứu", i, {
+  }, Q = (le) => {
+    const Fe = le[me] ?? le[_] ?? le.code ?? le.id;
+    le[_] ?? le.name, m(u, v, Fe), ce && y(u, ce, le), r || (Ye(t.events, "change", s.label || "Ô tra cứu", i, {
       componentId: t.id,
       fieldName: v,
-      value: Se,
-      selectedItem: te
-    }), ze(t.events, "select", s.label || "Ô tra cứu", i, {
+      value: Fe,
+      selectedItem: le
+    }), Ye(t.events, "select", s.label || "Ô tra cứu", i, {
       componentId: t.id,
       fieldName: v,
-      value: Se,
-      selectedItem: te
+      value: Fe,
+      selectedItem: le
     }));
-  }, Y = (te) => {
-    te.key === "F1" && (te.preventDefault(), te.stopPropagation(), we());
+  }, W = (le) => {
+    le.key === "F1" && (le.preventDefault(), le.stopPropagation(), ye());
   };
   return /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
     /* @__PURE__ */ e.jsx(
-      Ut,
+      rs,
       {
         label: s.label,
         showLabel: s.showLabel ?? !0,
@@ -8757,7 +9089,7 @@ const Dl = ({
         style: {
           width: "100%",
           maxWidth: "100%",
-          ...N
+          ...w
         },
         children: /* @__PURE__ */ e.jsxs("div", { className: "relative flex items-center w-full", children: [
           /* @__PURE__ */ e.jsx(
@@ -8766,31 +9098,31 @@ const Dl = ({
               type: "text",
               disabled: s.disabled,
               readOnly: r || !!s.readOnly,
-              placeholder: s.placeholder || (se ? `Tra cứu ${se} (F1)...` : "Nhập dữ liệu..."),
-              value: G,
-              onKeyDown: Y,
-              onDoubleClick: we,
+              placeholder: s.placeholder || (ae ? `Tra cứu ${ae} (F1)...` : "Nhập dữ liệu..."),
+              value: z,
+              onKeyDown: W,
+              onDoubleClick: ye,
               className: `w-full pl-3 pr-14 py-1.5 bg-slate-900 border rounded-lg text-xs text-slate-100 placeholder-slate-500 transition-all font-mono disabled:opacity-50 ${b ? "border-red-500/90 bg-red-950/20 text-red-200 ring-1 ring-red-500/60 focus:border-red-400 focus:outline-none" : "border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"}`,
-              onChange: (te) => {
-                const Se = te.target.value;
-                h(u, v, Se), r || ze(t.events, "change", s.label || "Ô tra cứu", i, {
+              onChange: (le) => {
+                const Fe = le.target.value;
+                m(u, v, Fe), r || Ye(t.events, "change", s.label || "Ô tra cứu", i, {
                   componentId: t.id,
                   fieldName: v,
-                  value: Se
+                  value: Fe
                 });
               }
             }
           ),
-          se && /* @__PURE__ */ e.jsxs("div", { className: "absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5", children: [
+          ae && /* @__PURE__ */ e.jsxs("div", { className: "absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5", children: [
             /* @__PURE__ */ e.jsx(
               "button",
               {
                 type: "button",
                 disabled: s.disabled || r,
-                onClick: Oe,
-                title: `Tạo nhanh ${se} (+)`,
+                onClick: ue,
+                title: `Tạo nhanh ${ae} (+)`,
                 className: "w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-colors cursor-pointer",
-                children: /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" })
               }
             ),
             /* @__PURE__ */ e.jsx(
@@ -8798,41 +9130,41 @@ const Dl = ({
               {
                 type: "button",
                 disabled: s.disabled || r,
-                onClick: we,
-                title: `Tra cứu ${se} (Nhấn F1 hoặc nhấp đúp)`,
+                onClick: ye,
+                title: `Tra cứu ${ae} (Nhấn F1 hoặc nhấp đúp)`,
                 className: "w-5 h-5 rounded flex items-center justify-center text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition-colors cursor-pointer",
-                children: /* @__PURE__ */ e.jsx(Bt, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(Et, { className: "w-3.5 h-3.5" })
               }
             )
           ] })
         ] })
       }
     ),
-    se && /* @__PURE__ */ e.jsx(
-      Al,
+    ae && /* @__PURE__ */ e.jsx(
+      uo,
       {
-        isOpen: L,
-        title: `Tra cứu danh mục: ${s.label || se}`,
-        entityName: se,
+        isOpen: P,
+        title: `Tra cứu danh mục: ${s.label || ae}`,
+        entityName: ae,
         columns: s.columns,
-        onSelect: oe,
-        onClose: () => k(!1)
+        onSelect: Q,
+        onClose: () => R(!1)
       }
     ),
-    F && Tt(
+    F && It(
       /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-[999999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-100", children: /* @__PURE__ */ e.jsxs(
         "div",
         {
           className: "w-full max-w-md rounded-2xl border border-emerald-500/50 bg-slate-900 p-6 shadow-2xl text-slate-100 space-y-4",
-          onClick: (te) => te.stopPropagation(),
+          onClick: (le) => le.stopPropagation(),
           children: [
             /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between pb-3 border-b border-slate-800", children: [
               /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
-                /* @__PURE__ */ e.jsx("div", { className: "w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold", children: /* @__PURE__ */ e.jsx(et, { className: "w-4 h-4" }) }),
+                /* @__PURE__ */ e.jsx("div", { className: "w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold", children: /* @__PURE__ */ e.jsx(Qe, { className: "w-4 h-4" }) }),
                 /* @__PURE__ */ e.jsxs("div", { children: [
                   /* @__PURE__ */ e.jsxs("h3", { className: "text-sm font-bold text-slate-100", children: [
                     "Tạo nhanh danh mục: ",
-                    se || "Bản ghi mới"
+                    ae || "Bản ghi mới"
                   ] }),
                   /* @__PURE__ */ e.jsx("p", { className: "text-[11px] text-slate-400", children: "Thêm mới vào cơ sở dữ liệu và tự động chọn vào ô này" })
                 ] })
@@ -8841,9 +9173,9 @@ const Dl = ({
                 "button",
                 {
                   type: "button",
-                  onClick: () => w(!1),
+                  onClick: () => C(!1),
                   className: "p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors",
-                  children: /* @__PURE__ */ e.jsx(ct, { className: "w-4 h-4" })
+                  children: /* @__PURE__ */ e.jsx(dt, { className: "w-4 h-4" })
                 }
               )
             ] }),
@@ -8858,7 +9190,7 @@ const Dl = ({
                   {
                     type: "text",
                     value: S,
-                    onChange: (te) => R(te.target.value),
+                    onChange: (le) => L(le.target.value),
                     placeholder: "VD: SITC, V-001...",
                     className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 font-mono text-xs focus:border-emerald-500 focus:outline-none"
                   }
@@ -8874,7 +9206,7 @@ const Dl = ({
                   {
                     type: "text",
                     value: $,
-                    onChange: (te) => Q(te.target.value),
+                    onChange: (le) => se(le.target.value),
                     placeholder: "VD: CÔNG TY CỔ PHẦN...",
                     className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                   }
@@ -8886,8 +9218,8 @@ const Dl = ({
                   "textarea",
                   {
                     rows: 2,
-                    value: O,
-                    onChange: (te) => V(te.target.value),
+                    value: V,
+                    onChange: (le) => U(le.target.value),
                     placeholder: "Thông tin bổ sung...",
                     className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 text-xs focus:border-emerald-500 focus:outline-none"
                   }
@@ -8899,7 +9231,7 @@ const Dl = ({
                 "button",
                 {
                   type: "button",
-                  onClick: () => w(!1),
+                  onClick: () => C(!1),
                   className: "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors",
                   children: "Hủy"
                 }
@@ -8908,11 +9240,11 @@ const Dl = ({
                 "button",
                 {
                   type: "button",
-                  disabled: P || !S.trim() || !$.trim(),
-                  onClick: U,
+                  disabled: E || !S.trim() || !$.trim(),
+                  onClick: M,
                   className: "flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-900/40 transition-all disabled:opacity-50 cursor-pointer",
                   children: [
-                    P ? /* @__PURE__ */ e.jsx(fn, { className: "w-3.5 h-3.5 animate-spin" }) : /* @__PURE__ */ e.jsx(At, { className: "w-3.5 h-3.5" }),
+                    E ? /* @__PURE__ */ e.jsx(Cn, { className: "w-3.5 h-3.5 animate-spin" }) : /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
                     /* @__PURE__ */ e.jsx("span", { children: "Lưu & Chọn ngay" })
                   ]
                 }
@@ -8924,7 +9256,7 @@ const Dl = ({
       document.body
     )
   ] });
-}, Ml = ({
+}, po = ({
   node: t,
   isEditing: r,
   label: s,
@@ -8934,8 +9266,8 @@ const Dl = ({
   maxSizeMB: l = 25,
   allowedExtensions: i
 }) => {
-  var R;
-  const d = ur(), c = Je(null), [p, g] = A(!1), [I, f] = A(null), [x, N] = A(null), [u, v] = A([
+  var L;
+  const d = vr(), c = tt(null), [p, g] = D(!1), [T, x] = D(null), [h, w] = D(null), [u, v] = D([
     {
       id: "file-demo-1",
       fileName: "Chung_Tu_Goc_2026.pdf",
@@ -8952,50 +9284,50 @@ const Dl = ({
       uploadedDate: (/* @__PURE__ */ new Date()).toLocaleDateString("vi-VN"),
       uploadedBy: "Admin"
     }
-  ]), C = a ?? u, h = ($) => {
+  ]), k = a ?? u, m = ($) => {
     a || v($), n == null || n($);
-  }, y = ($) => $ < 1024 ? `${$} B` : $ < 1024 * 1024 ? `${($ / 1024).toFixed(1)} KB` : `${($ / (1024 * 1024)).toFixed(2)} MB`, L = ($) => $.startsWith("image/") ? /* @__PURE__ */ e.jsx(xa, { className: "w-4 h-4 text-emerald-400" }) : $.includes("pdf") ? /* @__PURE__ */ e.jsx(is, { className: "w-4 h-4 text-red-400" }) : /* @__PURE__ */ e.jsx(ha, { className: "w-4 h-4 text-blue-400" }), k = ($) => {
+  }, y = ($) => $ < 1024 ? `${$} B` : $ < 1024 * 1024 ? `${($ / 1024).toFixed(1)} KB` : `${($ / (1024 * 1024)).toFixed(2)} MB`, P = ($) => $.startsWith("image/") ? /* @__PURE__ */ e.jsx(ja, { className: "w-4 h-4 text-emerald-400" }) : $.includes("pdf") ? /* @__PURE__ */ e.jsx(Qt, { className: "w-4 h-4 text-red-400" }) : /* @__PURE__ */ e.jsx(Na, { className: "w-4 h-4 text-blue-400" }), R = ($) => {
     if (!$ || $.length === 0) return;
-    const Q = (/* @__PURE__ */ new Date()).toLocaleDateString("vi-VN");
-    Array.from($).forEach((O) => {
-      if (O.size > l * 1024 * 1024) {
-        alert(`Tệp "${O.name}" vượt quá kích thước cho phép (${l}MB)`);
+    const se = (/* @__PURE__ */ new Date()).toLocaleDateString("vi-VN");
+    Array.from($).forEach((V) => {
+      if (V.size > l * 1024 * 1024) {
+        alert(`Tệp "${V.name}" vượt quá kích thước cho phép (${l}MB)`);
         return;
       }
-      const V = new FileReader(), P = `file-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-      V.onload = () => {
-        const K = {
-          id: P,
-          fileName: O.name,
-          fileSize: O.size,
-          fileType: O.type || "application/octet-stream",
-          uploadedDate: Q,
+      const U = new FileReader(), E = `file-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      U.onload = () => {
+        const Y = {
+          id: E,
+          fileName: V.name,
+          fileSize: V.size,
+          fileType: V.type || "application/octet-stream",
+          uploadedDate: se,
           uploadedBy: "User",
-          dataUrl: V.result
+          dataUrl: U.result
         };
-        h([...C, K]);
-      }, V.readAsDataURL(O);
+        m([...k, Y]);
+      }, U.readAsDataURL(V);
     });
-  }, F = ($, Q) => {
-    if (Q == null || Q.stopPropagation(), confirm("Bạn có chắc muốn xóa tệp đính kèm này?")) {
-      const O = C.filter((V) => V.id !== $);
-      h(O), I === $ && f(null);
+  }, F = ($, se) => {
+    if (se == null || se.stopPropagation(), confirm("Bạn có chắc muốn xóa tệp đính kèm này?")) {
+      const V = k.filter((U) => U.id !== $);
+      m(V), T === $ && x(null);
     }
-  }, w = ($, Q) => {
-    if (Q == null || Q.stopPropagation(), !$.dataUrl) {
+  }, C = ($, se) => {
+    if (se == null || se.stopPropagation(), !$.dataUrl) {
       alert(`Đang tải file mẫu: ${$.fileName}`);
       return;
     }
-    const O = document.createElement("a");
-    O.href = $.dataUrl, O.download = $.fileName, document.body.appendChild(O), O.click(), document.body.removeChild(O);
-  }, S = s || ((R = t == null ? void 0 : t.props) == null ? void 0 : R.label) || "Danh Sách Tệp Đính Kèm (FileUploadGrid)";
+    const V = document.createElement("a");
+    V.href = $.dataUrl, V.download = $.fileName, document.body.appendChild(V), V.click(), document.body.removeChild(V);
+  }, S = s || ((L = t == null ? void 0 : t.props) == null ? void 0 : L.label) || "Danh Sách Tệp Đính Kèm (FileUploadGrid)";
   return /* @__PURE__ */ e.jsxs("div", { className: "w-full bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg select-none flex flex-col", children: [
     /* @__PURE__ */ e.jsxs("div", { className: "px-4 py-2.5 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between", children: [
       /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ e.jsx(Cr, { className: "w-4 h-4 text-cyan-400" }),
+        /* @__PURE__ */ e.jsx(Ir, { className: "w-4 h-4 text-cyan-400" }),
         /* @__PURE__ */ e.jsx("span", { className: "text-xs font-bold text-slate-200 uppercase tracking-wider", children: S }),
         /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] bg-slate-800 text-slate-400 font-mono px-2 py-0.5 rounded-full", children: [
-          C.length,
+          k.length,
           " tệp"
         ] })
       ] }),
@@ -9008,7 +9340,7 @@ const Dl = ({
             type: "file",
             multiple: !0,
             className: "hidden",
-            onChange: ($) => k($.target.files)
+            onChange: ($) => R($.target.files)
           }
         ),
         /* @__PURE__ */ e.jsxs(
@@ -9021,7 +9353,7 @@ const Dl = ({
             },
             className: "flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold shadow transition-all active:scale-95",
             children: [
-              /* @__PURE__ */ e.jsx(qn, { className: "w-3.5 h-3.5" }),
+              /* @__PURE__ */ e.jsx(tr, { className: "w-3.5 h-3.5" }),
               /* @__PURE__ */ e.jsx("span", { children: "Đính kèm tệp" })
             ]
           }
@@ -9036,7 +9368,7 @@ const Dl = ({
         },
         onDragLeave: () => g(!1),
         onDrop: ($) => {
-          $.preventDefault(), g(!1), k($.dataTransfer.files);
+          $.preventDefault(), g(!1), R($.dataTransfer.files);
         },
         className: `p-3 border-b transition-colors flex items-center justify-center gap-2 text-xs cursor-pointer ${p ? "bg-blue-900/30 border-blue-500 text-blue-300" : "bg-slate-950/30 border-dashed border-slate-800 text-slate-500 hover:text-slate-300"}`,
         onClick: () => {
@@ -9044,7 +9376,7 @@ const Dl = ({
           return ($ = c.current) == null ? void 0 : $.click();
         },
         children: [
-          /* @__PURE__ */ e.jsx(qn, { className: "w-4 h-4 opacity-60" }),
+          /* @__PURE__ */ e.jsx(tr, { className: "w-4 h-4 opacity-60" }),
           /* @__PURE__ */ e.jsxs("span", { children: [
             "Kéo & thả tệp vào đây hoặc nhấn để chọn tệp (Tối đa ",
             l,
@@ -9062,17 +9394,17 @@ const Dl = ({
         /* @__PURE__ */ e.jsx("th", { className: "py-2.5 px-3 w-28", children: "Ngày Tải" }),
         /* @__PURE__ */ e.jsx("th", { className: "py-2.5 px-3 w-24 text-center", children: "Thao Tác" })
       ] }) }),
-      /* @__PURE__ */ e.jsx("tbody", { className: "divide-y divide-slate-800/60", children: C.length === 0 ? /* @__PURE__ */ e.jsx("tr", { children: /* @__PURE__ */ e.jsx("td", { colSpan: 6, className: "py-8 text-center text-slate-500 italic", children: "Chưa có tệp tin nào được đính kèm." }) }) : C.map(($, Q) => {
-        const O = I === $.id;
+      /* @__PURE__ */ e.jsx("tbody", { className: "divide-y divide-slate-800/60", children: k.length === 0 ? /* @__PURE__ */ e.jsx("tr", { children: /* @__PURE__ */ e.jsx("td", { colSpan: 6, className: "py-8 text-center text-slate-500 italic", children: "Chưa có tệp tin nào được đính kèm." }) }) : k.map(($, se) => {
+        const V = T === $.id;
         return /* @__PURE__ */ e.jsxs(
           "tr",
           {
-            onClick: () => f($.id),
-            className: `transition-colors cursor-pointer ${O ? "bg-blue-600/20 text-blue-200" : "hover:bg-slate-800/40 text-slate-300"}`,
+            onClick: () => x($.id),
+            className: `transition-colors cursor-pointer ${V ? "bg-blue-600/20 text-blue-200" : "hover:bg-slate-800/40 text-slate-300"}`,
             children: [
-              /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 text-center text-slate-500 font-mono text-[10px]", children: Q + 1 }),
+              /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 text-center text-slate-500 font-mono text-[10px]", children: se + 1 }),
               /* @__PURE__ */ e.jsxs("td", { className: "py-2 px-3 font-medium flex items-center gap-2", children: [
-                L($.fileType),
+                P($.fileType),
                 /* @__PURE__ */ e.jsx("span", { className: "truncate max-w-[280px]", title: $.fileName, children: $.fileName })
               ] }),
               /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 font-mono text-[11px] text-slate-400", children: y($.fileSize) }),
@@ -9083,32 +9415,32 @@ const Dl = ({
                   "button",
                   {
                     type: "button",
-                    onClick: (V) => {
-                      V.stopPropagation(), N($);
+                    onClick: (U) => {
+                      U.stopPropagation(), w($);
                     },
                     className: "p-1 hover:bg-slate-700 text-slate-400 hover:text-cyan-300 rounded transition-colors",
                     title: "Xem trước",
-                    children: /* @__PURE__ */ e.jsx(Dn, { className: "w-3.5 h-3.5" })
+                    children: /* @__PURE__ */ e.jsx(Rs, { className: "w-3.5 h-3.5" })
                   }
                 ),
                 /* @__PURE__ */ e.jsx(
                   "button",
                   {
                     type: "button",
-                    onClick: (V) => w($, V),
+                    onClick: (U) => C($, U),
                     className: "p-1 hover:bg-slate-700 text-slate-400 hover:text-emerald-300 rounded transition-colors",
                     title: "Tải xuống",
-                    children: /* @__PURE__ */ e.jsx(an, { className: "w-3.5 h-3.5" })
+                    children: /* @__PURE__ */ e.jsx(hn, { className: "w-3.5 h-3.5" })
                   }
                 ),
                 !o && /* @__PURE__ */ e.jsx(
                   "button",
                   {
                     type: "button",
-                    onClick: (V) => F($.id, V),
+                    onClick: (U) => F($.id, U),
                     className: "p-1 hover:bg-red-900/40 text-slate-400 hover:text-red-400 rounded transition-colors",
                     title: "Xóa tệp",
-                    children: /* @__PURE__ */ e.jsx(ot, { className: "w-3.5 h-3.5" })
+                    children: /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5" })
                   }
                 )
               ] }) })
@@ -9118,11 +9450,11 @@ const Dl = ({
         );
       }) })
     ] }) }),
-    x && /* @__PURE__ */ e.jsx(
+    h && /* @__PURE__ */ e.jsx(
       "div",
       {
         className: "fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4",
-        onClick: () => N(null),
+        onClick: () => w(null),
         children: /* @__PURE__ */ e.jsxs(
           "div",
           {
@@ -9131,11 +9463,11 @@ const Dl = ({
             children: [
               /* @__PURE__ */ e.jsxs("div", { className: "px-4 py-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between", children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
-                  L(x.fileType),
-                  /* @__PURE__ */ e.jsx("span", { className: "font-semibold text-sm text-slate-100", children: x.fileName }),
+                  P(h.fileType),
+                  /* @__PURE__ */ e.jsx("span", { className: "font-semibold text-sm text-slate-100", children: h.fileName }),
                   /* @__PURE__ */ e.jsxs("span", { className: "text-xs text-slate-500 font-mono", children: [
                     "(",
-                    y(x.fileSize),
+                    y(h.fileSize),
                     ")"
                   ] })
                 ] }),
@@ -9144,10 +9476,10 @@ const Dl = ({
                     "button",
                     {
                       type: "button",
-                      onClick: ($) => w(x, $),
+                      onClick: ($) => C(h, $),
                       className: "px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs flex items-center gap-1",
                       children: [
-                        /* @__PURE__ */ e.jsx(an, { className: "w-3.5 h-3.5" }),
+                        /* @__PURE__ */ e.jsx(hn, { className: "w-3.5 h-3.5" }),
                         /* @__PURE__ */ e.jsx("span", { children: "Tải về" })
                       ]
                     }
@@ -9156,43 +9488,43 @@ const Dl = ({
                     "button",
                     {
                       type: "button",
-                      onClick: () => N(null),
+                      onClick: () => w(null),
                       className: "p-1 hover:bg-slate-800 text-slate-400 hover:text-slate-100 rounded",
-                      children: /* @__PURE__ */ e.jsx(ct, { className: "w-4 h-4" })
+                      children: /* @__PURE__ */ e.jsx(dt, { className: "w-4 h-4" })
                     }
                   )
                 ] })
               ] }),
-              /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-auto p-4 flex items-center justify-center bg-slate-950/50 min-h-[350px]", children: x.fileType.startsWith("image/") && x.dataUrl ? /* @__PURE__ */ e.jsx(
+              /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-auto p-4 flex items-center justify-center bg-slate-950/50 min-h-[350px]", children: h.fileType.startsWith("image/") && h.dataUrl ? /* @__PURE__ */ e.jsx(
                 "img",
                 {
-                  src: x.dataUrl,
-                  alt: x.fileName,
+                  src: h.dataUrl,
+                  alt: h.fileName,
                   className: "max-w-full max-h-[70vh] object-contain rounded-lg border border-slate-800"
                 }
-              ) : x.fileType.includes("pdf") && x.dataUrl ? /* @__PURE__ */ e.jsx(
+              ) : h.fileType.includes("pdf") && h.dataUrl ? /* @__PURE__ */ e.jsx(
                 "iframe",
                 {
-                  src: x.dataUrl,
-                  title: x.fileName,
+                  src: h.dataUrl,
+                  title: h.fileName,
                   className: "w-full h-[65vh] rounded border border-slate-800"
                 }
               ) : /* @__PURE__ */ e.jsxs("div", { className: "text-center space-y-3 py-12", children: [
-                /* @__PURE__ */ e.jsx("div", { className: "w-16 h-16 rounded-full bg-slate-800/80 mx-auto flex items-center justify-center", children: L(x.fileType) }),
-                /* @__PURE__ */ e.jsx("div", { className: "text-sm font-medium text-slate-300", children: x.fileName }),
+                /* @__PURE__ */ e.jsx("div", { className: "w-16 h-16 rounded-full bg-slate-800/80 mx-auto flex items-center justify-center", children: P(h.fileType) }),
+                /* @__PURE__ */ e.jsx("div", { className: "text-sm font-medium text-slate-300", children: h.fileName }),
                 /* @__PURE__ */ e.jsxs("p", { className: "text-xs text-slate-500 max-w-sm", children: [
                   "Định dạng (",
-                  x.fileType,
+                  h.fileType,
                   ") không hỗ trợ xem trực tiếp trong trình duyệt. Vui lòng tải tệp về để mở."
                 ] }),
                 /* @__PURE__ */ e.jsxs(
                   "button",
                   {
                     type: "button",
-                    onClick: ($) => w(x, $),
+                    onClick: ($) => C(h, $),
                     className: "px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold inline-flex items-center gap-2",
                     children: [
-                      /* @__PURE__ */ e.jsx(an, { className: "w-4 h-4" }),
+                      /* @__PURE__ */ e.jsx(hn, { className: "w-4 h-4" }),
                       /* @__PURE__ */ e.jsx("span", { children: "Tải về tệp tin" })
                     ]
                   }
@@ -9204,7 +9536,7 @@ const Dl = ({
       }
     )
   ] });
-}, Ol = ({
+}, ho = ({
   node: t,
   isEditing: r,
   label: s,
@@ -9218,82 +9550,82 @@ const Dl = ({
   placeholder: p,
   disabled: g = !1
 }) => {
-  const I = Je(null), f = Je(null), x = ur(), N = String((t == null ? void 0 : t.pageId) || "default"), u = (t == null ? void 0 : t.props) || {}, v = u.dataBinding || u.fieldName || ((t == null ? void 0 : t.id) ?? ""), C = fe((U) => Dt(U, N, v, void 0)), h = fe((U) => U.setFieldValue), y = fe((U) => U.applyPopulate), L = fe((U) => U.getDataset), k = s ?? u.label ?? "Gợi ý tự động (Autocomplete)", F = l ?? u.reference, w = i ?? u.displayField ?? "name", S = d ?? u.valueField ?? "code", R = c ?? u.sublabelField, $ = p ?? u.placeholder ?? "Gõ để tìm kiếm...", Q = String(u.populateRule || ""), O = C ?? a ?? "", [V, P] = A(String(O)), [K, G] = A(!1), [b, se] = A(-1);
-  Be(() => {
-    O != null && P(String(O));
-  }, [O]);
-  const Ce = (o && o.length > 0 ? o : F ? (L(F) || []).map((oe) => ({
-    value: oe[S] ?? oe.id ?? oe.code ?? "",
-    label: String(oe[w] ?? oe.name ?? oe.title ?? oe.code ?? ""),
-    sublabel: R ? String(oe[R] ?? "") : void 0,
-    raw: oe
+  const T = tt(null), x = tt(null), h = vr(), w = String((t == null ? void 0 : t.pageId) || "default"), u = (t == null ? void 0 : t.props) || {}, v = u.dataBinding || u.fieldName || ((t == null ? void 0 : t.id) ?? ""), k = Te((M) => Vt(M, w, v, void 0)), m = Te((M) => M.setFieldValue), y = Te((M) => M.applyPopulate), P = Te((M) => M.getDataset), R = s ?? u.label ?? "Gợi ý tự động (Autocomplete)", F = l ?? u.reference, C = i ?? u.displayField ?? "name", S = d ?? u.valueField ?? "code", L = c ?? u.sublabelField, $ = p ?? u.placeholder ?? "Gõ để tìm kiếm...", se = String(u.populateRule || ""), V = k ?? a ?? "", [U, E] = D(String(V)), [Y, z] = D(!1), [b, ae] = D(-1);
+  He(() => {
+    V != null && E(String(V));
+  }, [V]);
+  const me = (o && o.length > 0 ? o : F ? (P(F) || []).map((Q) => ({
+    value: Q[S] ?? Q.id ?? Q.code ?? "",
+    label: String(Q[C] ?? Q.name ?? Q.title ?? Q.code ?? ""),
+    sublabel: L ? String(Q[L] ?? "") : void 0,
+    raw: Q
   })) : [
     { value: "OPT-01", label: "Lựa chọn gợi ý 01", sublabel: "Mục hệ thống" },
     { value: "OPT-02", label: "Lựa chọn gợi ý 02", sublabel: "Mục mặc định" },
     { value: "OPT-03", label: "Lựa chọn gợi ý 03", sublabel: "Mục nâng cao" }
-  ]).filter((U) => {
-    if (!V || V.trim() === "") return !0;
-    const oe = V.toLowerCase().trim();
-    return U.label.toLowerCase().includes(oe) || String(U.value).toLowerCase().includes(oe) || U.sublabel && U.sublabel.toLowerCase().includes(oe);
+  ]).filter((M) => {
+    if (!U || U.trim() === "") return !0;
+    const Q = U.toLowerCase().trim();
+    return M.label.toLowerCase().includes(Q) || String(M.value).toLowerCase().includes(Q) || M.sublabel && M.sublabel.toLowerCase().includes(Q);
   });
-  Be(() => {
-    const U = (oe) => {
-      I.current && !I.current.contains(oe.target) && G(!1);
+  He(() => {
+    const M = (Q) => {
+      T.current && !T.current.contains(Q.target) && z(!1);
     };
-    return document.addEventListener("mousedown", U), () => document.removeEventListener("mousedown", U);
+    return document.addEventListener("mousedown", M), () => document.removeEventListener("mousedown", M);
   }, []);
-  const he = (U) => {
-    P(U.label), G(!1), se(-1), n == null || n(U.value, U.raw), v && h(N, v, U.value), U.raw && Q && y(N, Q, U.raw);
-  }, we = (U) => {
-    if (!K && (U.key === "ArrowDown" || U.key === "ArrowUp")) {
-      G(!0);
+  const ce = (M) => {
+    E(M.label), z(!1), ae(-1), n == null || n(M.value, M.raw), v && m(w, v, M.value), M.raw && se && y(w, se, M.raw);
+  }, ye = (M) => {
+    if (!Y && (M.key === "ArrowDown" || M.key === "ArrowUp")) {
+      z(!0);
       return;
     }
-    U.key === "ArrowDown" ? (U.preventDefault(), se(
-      (oe) => oe < Ce.length - 1 ? oe + 1 : 0
-    )) : U.key === "ArrowUp" ? (U.preventDefault(), se(
-      (oe) => oe > 0 ? oe - 1 : Ce.length - 1
-    )) : U.key === "Enter" ? K && b >= 0 && b < Ce.length && (U.preventDefault(), he(Ce[b])) : U.key === "Escape" && (G(!1), se(-1));
-  }, Oe = (U) => {
-    var oe;
-    U.stopPropagation(), P(""), v && h(N, v, ""), n == null || n(""), (oe = f.current) == null || oe.focus();
+    M.key === "ArrowDown" ? (M.preventDefault(), ae(
+      (Q) => Q < me.length - 1 ? Q + 1 : 0
+    )) : M.key === "ArrowUp" ? (M.preventDefault(), ae(
+      (Q) => Q > 0 ? Q - 1 : me.length - 1
+    )) : M.key === "Enter" ? Y && b >= 0 && b < me.length && (M.preventDefault(), ce(me[b])) : M.key === "Escape" && (z(!1), ae(-1));
+  }, ue = (M) => {
+    var Q;
+    M.stopPropagation(), E(""), v && m(w, v, ""), n == null || n(""), (Q = x.current) == null || Q.focus();
   };
-  return /* @__PURE__ */ e.jsxs("div", { ref: I, className: "relative w-full text-xs", children: [
-    k && /* @__PURE__ */ e.jsx(
+  return /* @__PURE__ */ e.jsxs("div", { ref: T, className: "relative w-full text-xs", children: [
+    R && /* @__PURE__ */ e.jsx(
       "label",
       {
-        htmlFor: x,
+        htmlFor: h,
         className: "block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1",
-        children: k
+        children: R
       }
     ),
     /* @__PURE__ */ e.jsxs("div", { className: "relative flex items-center", children: [
       /* @__PURE__ */ e.jsx(
         "input",
         {
-          id: x,
-          ref: f,
+          id: h,
+          ref: x,
           type: "text",
           disabled: g,
-          value: V,
+          value: U,
           placeholder: $,
-          onFocus: () => G(!0),
-          onChange: (U) => {
-            P(U.target.value), G(!0), se(0), v && h(N, v, U.target.value);
+          onFocus: () => z(!0),
+          onChange: (M) => {
+            E(M.target.value), z(!0), ae(0), v && m(w, v, M.target.value);
           },
-          onKeyDown: we,
+          onKeyDown: ye,
           className: "w-full pl-3 pr-14 py-2 bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg text-slate-100 placeholder-slate-500 text-xs shadow-inner focus:outline-none transition-all disabled:opacity-50"
         }
       ),
       /* @__PURE__ */ e.jsxs("div", { className: "absolute right-2 flex items-center gap-1 text-slate-400", children: [
-        V && !g && /* @__PURE__ */ e.jsx(
+        U && !g && /* @__PURE__ */ e.jsx(
           "button",
           {
             type: "button",
-            onClick: Oe,
+            onClick: ue,
             className: "p-1 hover:text-slate-200 rounded",
             title: "Xóa giá trị",
-            children: /* @__PURE__ */ e.jsx(ct, { className: "w-3.5 h-3.5" })
+            children: /* @__PURE__ */ e.jsx(dt, { className: "w-3.5 h-3.5" })
           }
         ),
         /* @__PURE__ */ e.jsx(
@@ -9301,48 +9633,48 @@ const Dl = ({
           {
             type: "button",
             onClick: () => {
-              var U;
-              G(!K), (U = f.current) == null || U.focus();
+              var M;
+              z(!Y), (M = x.current) == null || M.focus();
             },
             className: "p-1 hover:text-slate-200 rounded",
             children: /* @__PURE__ */ e.jsx(
-              St,
+              wt,
               {
-                className: `w-3.5 h-3.5 transition-transform duration-200 ${K ? "rotate-180 text-blue-400" : ""}`
+                className: `w-3.5 h-3.5 transition-transform duration-200 ${Y ? "rotate-180 text-blue-400" : ""}`
               }
             )
           }
         )
       ] })
     ] }),
-    K && /* @__PURE__ */ e.jsx("div", { className: "absolute left-0 right-0 top-full mt-1 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto overflow-x-hidden divide-y divide-slate-800", children: Ce.length === 0 ? /* @__PURE__ */ e.jsxs("div", { className: "p-3 text-center text-slate-500 italic", children: [
+    Y && /* @__PURE__ */ e.jsx("div", { className: "absolute left-0 right-0 top-full mt-1 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto overflow-x-hidden divide-y divide-slate-800", children: me.length === 0 ? /* @__PURE__ */ e.jsxs("div", { className: "p-3 text-center text-slate-500 italic", children: [
       'Không tìm thấy mục nào khớp với "',
-      V,
+      U,
       '"'
-    ] }) : Ce.map((U, oe) => {
-      const Y = b === oe, z = String(U.value) === String(O);
+    ] }) : me.map((M, Q) => {
+      const W = b === Q, q = String(M.value) === String(V);
       return /* @__PURE__ */ e.jsxs(
         "div",
         {
-          onMouseEnter: () => se(oe),
-          onClick: () => he(U),
-          className: `px-3 py-2 flex items-center justify-between cursor-pointer transition-colors ${Y ? "bg-blue-600/25 text-blue-200" : z ? "bg-slate-800/80 text-white" : "hover:bg-slate-800/50 text-slate-300"}`,
+          onMouseEnter: () => ae(Q),
+          onClick: () => ce(M),
+          className: `px-3 py-2 flex items-center justify-between cursor-pointer transition-colors ${W ? "bg-blue-600/25 text-blue-200" : q ? "bg-slate-800/80 text-white" : "hover:bg-slate-800/50 text-slate-300"}`,
           children: [
             /* @__PURE__ */ e.jsxs("div", { className: "min-w-0 flex-1 pr-2", children: [
-              /* @__PURE__ */ e.jsx("div", { className: "font-medium truncate", children: U.label }),
-              (U.sublabel || U.value) && /* @__PURE__ */ e.jsxs("div", { className: "text-[10px] text-slate-500 font-mono truncate", children: [
-                U.sublabel ? `${U.sublabel} • ` : "",
-                U.value
+              /* @__PURE__ */ e.jsx("div", { className: "font-medium truncate", children: M.label }),
+              (M.sublabel || M.value) && /* @__PURE__ */ e.jsxs("div", { className: "text-[10px] text-slate-500 font-mono truncate", children: [
+                M.sublabel ? `${M.sublabel} • ` : "",
+                M.value
               ] })
             ] }),
-            z && /* @__PURE__ */ e.jsx(Fn, { className: "w-4 h-4 text-blue-400 shrink-0" })
+            q && /* @__PURE__ */ e.jsx(Qs, { className: "w-4 h-4 text-blue-400 shrink-0" })
           ]
         },
-        `${U.value}-${oe}`
+        `${M.value}-${Q}`
       );
     }) })
   ] });
-}, _l = ({
+}, mo = ({
   node: t,
   isEditing: r = !1,
   data: s,
@@ -9352,8 +9684,8 @@ const Dl = ({
   parentField: l = "parentId",
   onSelectNode: i
 }) => {
-  var R, $, Q, O, V;
-  const d = t.props || {}, c = a || d.reference || d.refName || ((R = t.dataBinding) == null ? void 0 : R.refName) || "", p = fe((P) => c ? P.datasets[c] : void 0), [g, I] = A(""), [f, x] = A(null), [N, u] = A(/* @__PURE__ */ new Set()), v = Ve(() => s && Array.isArray(s) && s.length > 0 ? s : d.data && Array.isArray(d.data) && d.data.length > 0 ? d.data : p && Array.isArray(p) && p.length > 0 ? p : [
+  var L, $, se, V, U;
+  const d = t.props || {}, c = a || d.reference || d.refName || ((L = t.dataBinding) == null ? void 0 : L.refName) || "", p = Te((E) => c ? E.datasets[c] : void 0), [g, T] = D(""), [x, h] = D(null), [w, u] = D(/* @__PURE__ */ new Set()), v = Ae(() => s && Array.isArray(s) && s.length > 0 ? s : d.data && Array.isArray(d.data) && d.data.length > 0 ? d.data : p && Array.isArray(p) && p.length > 0 ? p : [
     { id: "1", name: "TỔNG CÔNG TY HÀNG HẢI VIỆT NAM", code: "VIMC", parentId: null },
     { id: "10", name: "Cụm Cảng Miền Bắc", code: "NORTH_PORTS", parentId: "1" },
     { id: "101", name: "Cảng Hải Phòng (Hoàng Diệu, Chùa Vẽ, Tân Vũ)", code: "HPH", parentId: "10" },
@@ -9369,105 +9701,105 @@ const Dl = ({
     { id: "40", name: "Đội Tàu Vận Tải Biển Quốc Tế", code: "FLEET", parentId: "1" },
     { id: "401", name: "Đội tàu Container Tuyến Nội Á", code: "INTRA_ASIA", parentId: "40" },
     { id: "402", name: "Đội tàu Hàng Rời (Bulk Carrier)", code: "BULK_FLEET", parentId: "40" }
-  ], [s, d.data, p]), C = Ve(() => {
+  ], [s, d.data, p]), k = Ae(() => {
     if (!Array.isArray(v) || v.length === 0) return [];
     if (v.some((b) => Array.isArray(b.children) && b.children.length > 0))
       return v;
-    const K = /* @__PURE__ */ new Map();
+    const Y = /* @__PURE__ */ new Map();
     v.forEach((b) => {
-      const se = b[n] ?? b.id ?? b.code, de = b[o] ?? b.name ?? b.title ?? String(se), me = b[l] ?? b.parentId ?? null;
-      K.set(se, {
-        id: se,
-        name: de,
+      const ae = b[n] ?? b.id ?? b.code, O = b[o] ?? b.name ?? b.title ?? String(ae), _ = b[l] ?? b.parentId ?? null;
+      Y.set(ae, {
+        id: ae,
+        name: O,
         code: b.code,
-        parentId: me,
+        parentId: _,
         children: [],
         data: b
       });
     });
-    const G = [];
-    return K.forEach((b) => {
-      b.parentId !== null && b.parentId !== void 0 && K.has(b.parentId) ? K.get(b.parentId).children.push(b) : G.push(b);
-    }), G;
+    const z = [];
+    return Y.forEach((b) => {
+      b.parentId !== null && b.parentId !== void 0 && Y.has(b.parentId) ? Y.get(b.parentId).children.push(b) : z.push(b);
+    }), z;
   }, [v, n, o, l]);
-  Be(() => {
-    if (C.length > 0 && N.size === 0) {
-      const P = /* @__PURE__ */ new Set();
-      C.forEach((K) => {
-        P.add(K.id), K.children && K.children.forEach((G) => P.add(G.id));
-      }), u(P);
+  He(() => {
+    if (k.length > 0 && w.size === 0) {
+      const E = /* @__PURE__ */ new Set();
+      k.forEach((Y) => {
+        E.add(Y.id), Y.children && Y.children.forEach((z) => E.add(z.id));
+      }), u(E);
     }
-  }, [C]);
-  const h = (P, K) => {
-    K.stopPropagation(), u((G) => {
-      const b = new Set(G);
-      return b.has(P) ? b.delete(P) : b.add(P), b;
+  }, [k]);
+  const m = (E, Y) => {
+    Y.stopPropagation(), u((z) => {
+      const b = new Set(z);
+      return b.has(E) ? b.delete(E) : b.add(E), b;
     });
   }, y = () => {
-    const P = /* @__PURE__ */ new Set(), K = (G) => {
-      G.forEach((b) => {
-        P.add(b.id), b.children && b.children.length > 0 && K(b.children);
+    const E = /* @__PURE__ */ new Set(), Y = (z) => {
+      z.forEach((b) => {
+        E.add(b.id), b.children && b.children.length > 0 && Y(b.children);
       });
     };
-    K(C), u(P);
-  }, L = () => {
+    Y(k), u(E);
+  }, P = () => {
     u(/* @__PURE__ */ new Set());
-  }, k = (P) => {
-    var b, se;
-    x(P.id);
-    const K = String(t.pageId || "default"), G = ((b = t.dataBinding) == null ? void 0 : b.fieldName) || t.id;
-    if (fe.getState().setFieldValue(K, G, P.id), c && fe.getState().setFieldValue(K, `${c}_selected`, P.data || P), i && i(P), t.events && Array.isArray(t.events)) {
-      const de = t.events.find((me) => me.trigger === "change" || me.trigger === "select" || me.trigger === "onClick");
-      de && Ss(de, ((se = t.props) == null ? void 0 : se.label) || t.id, void 0, { node: P, value: P.id });
+  }, R = (E) => {
+    var b, ae;
+    h(E.id);
+    const Y = String(t.pageId || "default"), z = ((b = t.dataBinding) == null ? void 0 : b.fieldName) || t.id;
+    if (Te.getState().setFieldValue(Y, z, E.id), c && Te.getState().setFieldValue(Y, `${c}_selected`, E.data || E), i && i(E), t.events && Array.isArray(t.events)) {
+      const O = t.events.find((_) => _.trigger === "change" || _.trigger === "select" || _.trigger === "onClick");
+      O && Ds(O, ((ae = t.props) == null ? void 0 : ae.label) || t.id, void 0, { node: E, value: E.id });
     }
-  }, F = (P, K) => {
-    if (!K) return !0;
-    const G = K.toLowerCase(), b = P.name.toLowerCase().includes(G), se = P.code ? P.code.toLowerCase().includes(G) : !1;
-    return b || se ? !0 : P.children && P.children.length > 0 ? P.children.some((de) => F(de, K)) : !1;
-  }, w = (P, K = 0) => {
-    if (g && !F(P, g))
+  }, F = (E, Y) => {
+    if (!Y) return !0;
+    const z = Y.toLowerCase(), b = E.name.toLowerCase().includes(z), ae = E.code ? E.code.toLowerCase().includes(z) : !1;
+    return b || ae ? !0 : E.children && E.children.length > 0 ? E.children.some((O) => F(O, Y)) : !1;
+  }, C = (E, Y = 0) => {
+    if (g && !F(E, g))
       return null;
-    const G = !!(P.children && P.children.length > 0), b = N.has(P.id) || !!g, se = f === P.id;
+    const z = !!(E.children && E.children.length > 0), b = w.has(E.id) || !!g, ae = x === E.id;
     return /* @__PURE__ */ e.jsxs("div", { className: "select-none", children: [
       /* @__PURE__ */ e.jsxs(
         "div",
         {
-          onClick: () => k(P),
-          style: { paddingLeft: `${Math.max(8, K * 18 + 8)}px` },
-          className: `group flex items-center gap-1.5 py-1.5 pr-2.5 rounded-lg text-xs cursor-pointer transition-all duration-150 ${se ? "bg-blue-600/30 text-blue-200 border border-blue-500/50 shadow-sm font-semibold" : "text-slate-300 hover:bg-slate-800/60 hover:text-white"}`,
+          onClick: () => R(E),
+          style: { paddingLeft: `${Math.max(8, Y * 18 + 8)}px` },
+          className: `group flex items-center gap-1.5 py-1.5 pr-2.5 rounded-lg text-xs cursor-pointer transition-all duration-150 ${ae ? "bg-blue-600/30 text-blue-200 border border-blue-500/50 shadow-sm font-semibold" : "text-slate-300 hover:bg-slate-800/60 hover:text-white"}`,
           children: [
-            G ? /* @__PURE__ */ e.jsx(
+            z ? /* @__PURE__ */ e.jsx(
               "button",
               {
                 type: "button",
-                onClick: (de) => h(P.id, de),
+                onClick: (O) => m(E.id, O),
                 className: "w-4 h-4 flex items-center justify-center text-slate-400 hover:text-emerald-400 transition-colors",
-                children: b ? /* @__PURE__ */ e.jsx(St, { className: "w-3.5 h-3.5 text-emerald-400" }) : /* @__PURE__ */ e.jsx(Ds, { className: "w-3.5 h-3.5" })
+                children: b ? /* @__PURE__ */ e.jsx(wt, { className: "w-3.5 h-3.5 text-emerald-400" }) : /* @__PURE__ */ e.jsx(es, { className: "w-3.5 h-3.5" })
               }
             ) : /* @__PURE__ */ e.jsx("span", { className: "w-4 h-4" }),
-            /* @__PURE__ */ e.jsx("span", { className: "flex-shrink-0", children: G ? b ? /* @__PURE__ */ e.jsx(ma, { className: "w-4 h-4 text-amber-400" }) : /* @__PURE__ */ e.jsx(ba, { className: "w-4 h-4 text-amber-500/80" }) : /* @__PURE__ */ e.jsx(is, { className: "w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-400" }) }),
-            /* @__PURE__ */ e.jsx("span", { className: "truncate flex-1 font-medium", children: P.name }),
-            P.code && /* @__PURE__ */ e.jsx("span", { className: "px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-900 border border-slate-700/80 text-cyan-300", children: P.code }),
-            G && /* @__PURE__ */ e.jsx("span", { className: "px-1.5 py-0.2 rounded-full text-[9px] font-mono bg-slate-800 text-slate-400 border border-slate-700", children: P.children.length })
+            /* @__PURE__ */ e.jsx("span", { className: "flex-shrink-0", children: z ? b ? /* @__PURE__ */ e.jsx(wa, { className: "w-4 h-4 text-amber-400" }) : /* @__PURE__ */ e.jsx(Zs, { className: "w-4 h-4 text-amber-500/80" }) : /* @__PURE__ */ e.jsx(Qt, { className: "w-3.5 h-3.5 text-slate-400 group-hover:text-cyan-400" }) }),
+            /* @__PURE__ */ e.jsx("span", { className: "truncate flex-1 font-medium", children: E.name }),
+            E.code && /* @__PURE__ */ e.jsx("span", { className: "px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-900 border border-slate-700/80 text-cyan-300", children: E.code }),
+            z && /* @__PURE__ */ e.jsx("span", { className: "px-1.5 py-0.2 rounded-full text-[9px] font-mono bg-slate-800 text-slate-400 border border-slate-700", children: E.children.length })
           ]
         }
       ),
-      G && b && /* @__PURE__ */ e.jsx("div", { className: "relative border-l border-slate-800/80 ml-4 pl-1 mt-0.5 space-y-0.5", children: P.children.map((de) => w(de, K + 1)) })
-    ] }, P.id);
+      z && b && /* @__PURE__ */ e.jsx("div", { className: "relative border-l border-slate-800/80 ml-4 pl-1 mt-0.5 space-y-0.5", children: E.children.map((O) => C(O, Y + 1)) })
+    ] }, E.id);
   }, S = d.title || (($ = t.props) == null ? void 0 : $.label) || "Cấu Trúc Cây Phân Cấp";
   return /* @__PURE__ */ e.jsxs(
     "div",
     {
       className: "w-full h-full flex flex-col bg-slate-950/80 border border-slate-800 rounded-xl overflow-hidden shadow-md font-sans",
       style: {
-        width: ((Q = t.style) == null ? void 0 : Q.width) || "100%",
-        minHeight: ((O = t.style) == null ? void 0 : O.minHeight) || "320px",
-        maxHeight: ((V = t.style) == null ? void 0 : V.maxHeight) || "560px"
+        width: ((se = t.style) == null ? void 0 : se.width) || "100%",
+        minHeight: ((V = t.style) == null ? void 0 : V.minHeight) || "320px",
+        maxHeight: ((U = t.style) == null ? void 0 : U.maxHeight) || "560px"
       },
       children: [
         /* @__PURE__ */ e.jsxs("div", { className: "px-3.5 py-2.5 bg-[#0b1329] border-b border-slate-800 flex items-center justify-between gap-2", children: [
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ e.jsx(Pt, { className: "w-4 h-4 text-emerald-400" }),
+            /* @__PURE__ */ e.jsx(yt, { className: "w-4 h-4 text-emerald-400" }),
             /* @__PURE__ */ e.jsx("span", { className: "text-xs font-bold text-slate-200 tracking-wide uppercase", children: S }),
             c && /* @__PURE__ */ e.jsx("span", { className: "text-[10px] px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-500/40 font-mono", children: c })
           ] }),
@@ -9479,50 +9811,50 @@ const Dl = ({
                 onClick: y,
                 title: "Mở rộng tất cả các nhánh",
                 className: "p-1 rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer",
-                children: /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" })
               }
             ),
             /* @__PURE__ */ e.jsx(
               "button",
               {
                 type: "button",
-                onClick: L,
+                onClick: P,
                 title: "Thu gọn tất cả các nhánh",
                 className: "p-1 rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer",
-                children: /* @__PURE__ */ e.jsx(kr, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(Dr, { className: "w-3.5 h-3.5" })
               }
             )
           ] })
         ] }),
         /* @__PURE__ */ e.jsx("div", { className: "p-2 border-b border-slate-800/80 bg-slate-900/40", children: /* @__PURE__ */ e.jsxs("div", { className: "relative", children: [
-          /* @__PURE__ */ e.jsx(Bt, { className: "w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" }),
+          /* @__PURE__ */ e.jsx(Et, { className: "w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" }),
           /* @__PURE__ */ e.jsx(
             "input",
             {
               type: "text",
               value: g,
-              onChange: (P) => I(P.target.value),
+              onChange: (E) => T(E.target.value),
               placeholder: "Tìm kiếm danh mục theo tên, mã...",
               className: "w-full pl-8 pr-3 py-1 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
             }
           )
         ] }) }),
-        /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-y-auto p-2 space-y-0.5", children: C.length > 0 ? C.map((P) => w(P)) : /* @__PURE__ */ e.jsx("div", { className: "py-8 text-center text-xs text-slate-500 italic", children: "Chưa có dữ liệu danh mục phân cấp" }) }),
+        /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-y-auto p-2 space-y-0.5", children: k.length > 0 ? k.map((E) => C(E)) : /* @__PURE__ */ e.jsx("div", { className: "py-8 text-center text-xs text-slate-500 italic", children: "Chưa có dữ liệu danh mục phân cấp" }) }),
         /* @__PURE__ */ e.jsxs("div", { className: "px-3 py-1.5 bg-[#0b1329] border-t border-slate-800/80 text-[10px] text-slate-400 flex items-center justify-between", children: [
           /* @__PURE__ */ e.jsxs("span", { className: "font-mono", children: [
             "Tổng số: ",
             /* @__PURE__ */ e.jsx("strong", { className: "text-slate-200", children: v.length }),
             " phần tử"
           ] }),
-          f && /* @__PURE__ */ e.jsxs("span", { className: "text-emerald-400 font-mono font-medium", children: [
+          x && /* @__PURE__ */ e.jsxs("span", { className: "text-emerald-400 font-mono font-medium", children: [
             "Đang chọn ID: #",
-            String(f)
+            String(x)
           ] })
         ] })
       ]
     }
   );
-}, ir = [
+}, fr = [
   "#10B981",
   // Emerald
   "#06B6D4",
@@ -9539,7 +9871,7 @@ const Dl = ({
   // Amber
   "#14B8A6"
   // Teal
-], Hl = ({
+], bo = ({
   node: t,
   isEditing: r = !1,
   data: s,
@@ -9547,10 +9879,10 @@ const Dl = ({
   title: n,
   reference: o
 }) => {
-  var k, F, w, S;
-  const l = t.props || {}, i = a || l.chartType || l.type || "bar", [d, c] = A(i), [p, g] = A(null), I = o || l.reference || l.refName || ((k = t.dataBinding) == null ? void 0 : k.refName) || "", f = fe((R) => I ? R.datasets[I] : void 0), x = Ve(() => {
-    let R = [];
-    s && Array.isArray(s) && s.length > 0 ? R = s : l.data && Array.isArray(l.data) && l.data.length > 0 ? R = l.data : f && Array.isArray(f) && f.length > 0 ? R = f : R = [
+  var R, F, C, S;
+  const l = t.props || {}, i = a || l.chartType || l.type || "bar", [d, c] = D(i), [p, g] = D(null), T = o || l.reference || l.refName || ((R = t.dataBinding) == null ? void 0 : R.refName) || "", x = Te((L) => T ? L.datasets[T] : void 0), h = Ae(() => {
+    let L = [];
+    s && Array.isArray(s) && s.length > 0 ? L = s : l.data && Array.isArray(l.data) && l.data.length > 0 ? L = l.data : x && Array.isArray(x) && x.length > 0 ? L = x : L = [
       { label: "Cát Lái (CTL)", value: 4850 },
       { label: "Cái Mép (TCIT)", value: 3620 },
       { label: "Hải Phòng (HPH)", value: 2980 },
@@ -9558,60 +9890,60 @@ const Dl = ({
       { label: "Đà Nẵng (DAN)", value: 1680 },
       { label: "Quy Nhơn (QNH)", value: 1120 }
     ];
-    const $ = l.labelField || "label", Q = l.valueField || "value";
-    return R.map((O, V) => {
-      const P = String(O[$] ?? O.label ?? O.name ?? O.code ?? `Mục ${V + 1}`), K = O[Q] ?? O.value ?? O.amount ?? O.total ?? 0, G = Math.max(0, Number(K) || 0), b = O.color || ir[V % ir.length];
-      return { label: P, value: G, color: b };
+    const $ = l.labelField || "label", se = l.valueField || "value";
+    return L.map((V, U) => {
+      const E = String(V[$] ?? V.label ?? V.name ?? V.code ?? `Mục ${U + 1}`), Y = V[se] ?? V.value ?? V.amount ?? V.total ?? 0, z = Math.max(0, Number(Y) || 0), b = V.color || fr[U % fr.length];
+      return { label: E, value: z, color: b };
     });
-  }, [s, l.data, f, l.labelField, l.valueField]), N = Ve(() => x.reduce((R, $) => R + $.value, 0), [x]), u = Ve(() => Math.max(...x.map((R) => R.value), 1), [x]), v = n || l.title || ((F = t.props) == null ? void 0 : F.label) || "Biểu Đồ Thống Kê Sản Lượng", C = l.subtitle || (I ? `Nguồn dữ liệu: ${I}` : "Đơn vị: TEUs"), h = () => {
-    const R = Math.max(20, Math.min(48, Math.floor(400 / (x.length || 1))));
+  }, [s, l.data, x, l.labelField, l.valueField]), w = Ae(() => h.reduce((L, $) => L + $.value, 0), [h]), u = Ae(() => Math.max(...h.map((L) => L.value), 1), [h]), v = n || l.title || ((F = t.props) == null ? void 0 : F.label) || "Biểu Đồ Thống Kê Sản Lượng", k = l.subtitle || (T ? `Nguồn dữ liệu: ${T}` : "Đơn vị: TEUs"), m = () => {
+    const L = Math.max(20, Math.min(48, Math.floor(400 / (h.length || 1))));
     return /* @__PURE__ */ e.jsxs("div", { className: "w-full flex flex-col justify-end h-64 pt-6 pb-2 px-4", children: [
       /* @__PURE__ */ e.jsxs("div", { className: "flex-1 flex items-end justify-between gap-3 border-b border-slate-700/80 relative", children: [
         /* @__PURE__ */ e.jsx("div", { className: "absolute inset-x-0 top-0 border-t border-dashed border-slate-800 pointer-events-none" }),
         /* @__PURE__ */ e.jsx("div", { className: "absolute inset-x-0 top-1/2 border-t border-dashed border-slate-800 pointer-events-none" }),
-        x.map(($, Q) => {
-          const O = u > 0 ? $.value / u * 100 : 0, V = p === Q;
+        h.map(($, se) => {
+          const V = u > 0 ? $.value / u * 100 : 0, U = p === se;
           return /* @__PURE__ */ e.jsxs(
             "div",
             {
-              onMouseEnter: () => g(Q),
+              onMouseEnter: () => g(se),
               onMouseLeave: () => g(null),
               className: "flex-1 flex flex-col items-center justify-end h-full relative group cursor-pointer",
               children: [
-                V && /* @__PURE__ */ e.jsxs("div", { className: "absolute -top-12 z-20 bg-slate-900 border border-slate-700 text-slate-100 text-[11px] px-2.5 py-1 rounded shadow-xl whitespace-nowrap pointer-events-none animate-in fade-in zoom-in-95", children: [
+                U && /* @__PURE__ */ e.jsxs("div", { className: "absolute -top-12 z-20 bg-slate-900 border border-slate-700 text-slate-100 text-[11px] px-2.5 py-1 rounded shadow-xl whitespace-nowrap pointer-events-none animate-in fade-in zoom-in-95", children: [
                   /* @__PURE__ */ e.jsx("p", { className: "font-bold text-emerald-400", children: $.label }),
                   /* @__PURE__ */ e.jsxs("p", { className: "font-mono", children: [
                     $.value.toLocaleString("en-US"),
                     " (",
-                    ($.value / (N || 1) * 100).toFixed(1),
+                    ($.value / (w || 1) * 100).toFixed(1),
                     "%)"
                   ] })
                 ] }),
-                /* @__PURE__ */ e.jsx("span", { className: `text-[10px] font-mono mb-1 transition-all ${V ? "text-emerald-300 font-bold -translate-y-0.5" : "text-slate-400"}`, children: $.value > 1e3 ? `${($.value / 1e3).toFixed(1)}k` : $.value }),
+                /* @__PURE__ */ e.jsx("span", { className: `text-[10px] font-mono mb-1 transition-all ${U ? "text-emerald-300 font-bold -translate-y-0.5" : "text-slate-400"}`, children: $.value > 1e3 ? `${($.value / 1e3).toFixed(1)}k` : $.value }),
                 /* @__PURE__ */ e.jsx(
                   "div",
                   {
                     style: {
-                      height: `${Math.max(4, O)}%`,
+                      height: `${Math.max(4, V)}%`,
                       backgroundColor: $.color,
-                      maxWidth: `${R}px`
+                      maxWidth: `${L}px`
                     },
-                    className: `w-full rounded-t-md transition-all duration-300 shadow-md ${V ? "brightness-125 ring-2 ring-white/40 shadow-lg scale-x-105" : "hover:brightness-110"}`
+                    className: `w-full rounded-t-md transition-all duration-300 shadow-md ${U ? "brightness-125 ring-2 ring-white/40 shadow-lg scale-x-105" : "hover:brightness-110"}`
                   }
                 )
               ]
             },
-            Q
+            se
           );
         })
       ] }),
-      /* @__PURE__ */ e.jsx("div", { className: "flex items-center justify-between gap-3 pt-2", children: x.map(($, Q) => /* @__PURE__ */ e.jsx("div", { className: "flex-1 text-center truncate", title: $.label, children: /* @__PURE__ */ e.jsx("span", { className: `text-[11px] truncate block ${p === Q ? "text-emerald-400 font-bold" : "text-slate-400"}`, children: $.label }) }, Q)) })
+      /* @__PURE__ */ e.jsx("div", { className: "flex items-center justify-between gap-3 pt-2", children: h.map(($, se) => /* @__PURE__ */ e.jsx("div", { className: "flex-1 text-center truncate", title: $.label, children: /* @__PURE__ */ e.jsx("span", { className: `text-[11px] truncate block ${p === se ? "text-emerald-400 font-bold" : "text-slate-400"}`, children: $.label }) }, se)) })
     ] });
   }, y = () => {
-    const V = x.length, P = x.map((b, se) => {
-      const de = V > 1 ? 40 + se / (V - 1) * 520 : 300, me = 175 - (u > 0 ? b.value / u * (200 - 2 * 25) : 0);
-      return { x: de, y: me, item: b, idx: se };
-    }), K = P.reduce((b, se, de) => de === 0 ? `M ${se.x} ${se.y}` : `${b} L ${se.x} ${se.y}`, ""), G = P.length > 0 ? `${K} L ${P[P.length - 1].x} 175 L ${P[0].x} 175 Z` : "";
+    const U = h.length, E = h.map((b, ae) => {
+      const O = U > 1 ? 40 + ae / (U - 1) * 520 : 300, _ = 175 - (u > 0 ? b.value / u * (200 - 2 * 25) : 0);
+      return { x: O, y: _, item: b, idx: ae };
+    }), Y = E.reduce((b, ae, O) => O === 0 ? `M ${ae.x} ${ae.y}` : `${b} L ${ae.x} ${ae.y}`, ""), z = E.length > 0 ? `${Y} L ${E[E.length - 1].x} 175 L ${E[0].x} 175 Z` : "";
     return /* @__PURE__ */ e.jsxs("div", { className: "w-full flex flex-col items-center justify-center h-64 px-2", children: [
       /* @__PURE__ */ e.jsxs("svg", { viewBox: "0 0 600 200", className: "w-full h-48 overflow-visible", children: [
         /* @__PURE__ */ e.jsx("defs", { children: /* @__PURE__ */ e.jsxs("linearGradient", { id: `lineGrad_${t.id}`, x1: "0", y1: "0", x2: "0", y2: "1", children: [
@@ -9621,10 +9953,10 @@ const Dl = ({
         /* @__PURE__ */ e.jsx("line", { x1: 40, y1: 25, x2: 560, y2: 25, stroke: "#334155", strokeDasharray: "4 4" }),
         /* @__PURE__ */ e.jsx("line", { x1: 40, y1: 200 / 2, x2: 560, y2: 200 / 2, stroke: "#334155", strokeDasharray: "4 4" }),
         /* @__PURE__ */ e.jsx("line", { x1: 40, y1: 175, x2: 560, y2: 175, stroke: "#475569" }),
-        G && /* @__PURE__ */ e.jsx("path", { d: G, fill: `url(#lineGrad_${t.id})` }),
-        K && /* @__PURE__ */ e.jsx("path", { d: K, fill: "none", stroke: "#10B981", strokeWidth: "3", strokeLinecap: "round", strokeLinejoin: "round" }),
-        P.map((b) => {
-          const se = p === b.idx;
+        z && /* @__PURE__ */ e.jsx("path", { d: z, fill: `url(#lineGrad_${t.id})` }),
+        Y && /* @__PURE__ */ e.jsx("path", { d: Y, fill: "none", stroke: "#10B981", strokeWidth: "3", strokeLinecap: "round", strokeLinejoin: "round" }),
+        E.map((b) => {
+          const ae = p === b.idx;
           return /* @__PURE__ */ e.jsxs(
             "g",
             {
@@ -9637,75 +9969,75 @@ const Dl = ({
                   {
                     cx: b.x,
                     cy: b.y,
-                    r: se ? 6 : 4,
-                    fill: se ? "#34D399" : "#10B981",
+                    r: ae ? 6 : 4,
+                    fill: ae ? "#34D399" : "#10B981",
                     stroke: "#0F172A",
                     strokeWidth: "2",
                     className: "transition-all"
                   }
                 ),
-                se && /* @__PURE__ */ e.jsx("circle", { cx: b.x, cy: b.y, r: 10, fill: "none", stroke: "#34D399", strokeWidth: "1.5", strokeDasharray: "2 2", className: "animate-spin" })
+                ae && /* @__PURE__ */ e.jsx("circle", { cx: b.x, cy: b.y, r: 10, fill: "none", stroke: "#34D399", strokeWidth: "1.5", strokeDasharray: "2 2", className: "animate-spin" })
               ]
             },
             b.idx
           );
         })
       ] }),
-      /* @__PURE__ */ e.jsx("div", { className: "w-full flex items-center justify-between px-6 pt-2", children: x.map((b, se) => /* @__PURE__ */ e.jsx("div", { className: "text-center truncate flex-1", children: /* @__PURE__ */ e.jsx("span", { className: `text-[10px] truncate block ${p === se ? "text-emerald-400 font-bold" : "text-slate-400"}`, children: b.label }) }, se)) })
+      /* @__PURE__ */ e.jsx("div", { className: "w-full flex items-center justify-between px-6 pt-2", children: h.map((b, ae) => /* @__PURE__ */ e.jsx("div", { className: "text-center truncate flex-1", children: /* @__PURE__ */ e.jsx("span", { className: `text-[10px] truncate block ${p === ae ? "text-emerald-400 font-bold" : "text-slate-400"}`, children: b.label }) }, ae)) })
     ] });
-  }, L = () => {
-    let V = 0;
-    const P = x.map((K, G) => {
-      const b = N > 0 ? K.value / N * 360 : 0, se = V, de = V + b;
-      V += b;
-      const me = (se - 90) * Math.PI / 180, Ce = (de - 90) * Math.PI / 180, he = 90 + 70 * Math.cos(me), we = 90 + 70 * Math.sin(me), Oe = 90 + 70 * Math.cos(Ce), U = 90 + 70 * Math.sin(Ce), oe = 90 + 45 * Math.cos(me), Y = 90 + 45 * Math.sin(me), z = 90 + 45 * Math.cos(Ce), xe = 90 + 45 * Math.sin(Ce), ve = b > 180 ? 1 : 0, T = b >= 359.9 ? "M 90 20 A 70 70 0 1 1 90 160 A 70 70 0 1 1 90 20 M 90 45 A 45 45 0 1 0 90 135 A 45 45 0 1 0 90 45" : `M ${he} ${we} A 70 70 0 ${ve} 1 ${Oe} ${U} L ${z} ${xe} A 45 45 0 ${ve} 0 ${oe} ${Y} Z`;
-      return { item: K, idx: G, pathData: T, percentage: (K.value / (N || 1) * 100).toFixed(1) };
+  }, P = () => {
+    let U = 0;
+    const E = h.map((Y, z) => {
+      const b = w > 0 ? Y.value / w * 360 : 0, ae = U, O = U + b;
+      U += b;
+      const _ = (ae - 90) * Math.PI / 180, me = (O - 90) * Math.PI / 180, ce = 90 + 70 * Math.cos(_), ye = 90 + 70 * Math.sin(_), ue = 90 + 70 * Math.cos(me), M = 90 + 70 * Math.sin(me), Q = 90 + 45 * Math.cos(_), W = 90 + 45 * Math.sin(_), q = 90 + 45 * Math.cos(me), ie = 90 + 45 * Math.sin(me), Ne = b > 180 ? 1 : 0, j = b >= 359.9 ? "M 90 20 A 70 70 0 1 1 90 160 A 70 70 0 1 1 90 20 M 90 45 A 45 45 0 1 0 90 135 A 45 45 0 1 0 90 45" : `M ${ce} ${ye} A 70 70 0 ${Ne} 1 ${ue} ${M} L ${q} ${ie} A 45 45 0 ${Ne} 0 ${Q} ${W} Z`;
+      return { item: Y, idx: z, pathData: j, percentage: (Y.value / (w || 1) * 100).toFixed(1) };
     });
     return /* @__PURE__ */ e.jsxs("div", { className: "w-full flex items-center justify-around h-64 px-4 py-2", children: [
       /* @__PURE__ */ e.jsxs("div", { className: "relative flex items-center justify-center", children: [
-        /* @__PURE__ */ e.jsx("svg", { width: 180, height: 180, viewBox: "0 0 180 180", children: P.map((K) => {
-          const G = p === K.idx;
+        /* @__PURE__ */ e.jsx("svg", { width: 180, height: 180, viewBox: "0 0 180 180", children: E.map((Y) => {
+          const z = p === Y.idx;
           return /* @__PURE__ */ e.jsx(
             "path",
             {
-              d: K.pathData,
-              fill: K.item.color,
-              onMouseEnter: () => g(K.idx),
+              d: Y.pathData,
+              fill: Y.item.color,
+              onMouseEnter: () => g(Y.idx),
               onMouseLeave: () => g(null),
-              className: `transition-all duration-200 cursor-pointer ${G ? "scale-105 origin-center brightness-125 stroke-white stroke-1" : "hover:opacity-90"}`
+              className: `transition-all duration-200 cursor-pointer ${z ? "scale-105 origin-center brightness-125 stroke-white stroke-1" : "hover:opacity-90"}`
             },
-            K.idx
+            Y.idx
           );
         }) }),
-        /* @__PURE__ */ e.jsx("div", { className: "absolute inset-0 flex flex-col items-center justify-center pointer-events-none", children: p !== null && x[p] ? /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
-          /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-400 font-medium truncate max-w-[80px]", children: x[p].label }),
+        /* @__PURE__ */ e.jsx("div", { className: "absolute inset-0 flex flex-col items-center justify-center pointer-events-none", children: p !== null && h[p] ? /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
+          /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-400 font-medium truncate max-w-[80px]", children: h[p].label }),
           /* @__PURE__ */ e.jsxs("span", { className: "text-xs font-bold font-mono text-emerald-400", children: [
-            (x[p].value / (N || 1) * 100).toFixed(1),
+            (h[p].value / (w || 1) * 100).toFixed(1),
             "%"
           ] })
         ] }) : /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
           /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-400 uppercase tracking-wider font-semibold", children: "TỔNG" }),
-          /* @__PURE__ */ e.jsx("span", { className: "text-xs font-bold font-mono text-slate-100", children: N > 1e4 ? `${(N / 1e3).toFixed(0)}k` : N })
+          /* @__PURE__ */ e.jsx("span", { className: "text-xs font-bold font-mono text-slate-100", children: w > 1e4 ? `${(w / 1e3).toFixed(0)}k` : w })
         ] }) })
       ] }),
-      /* @__PURE__ */ e.jsx("div", { className: "flex flex-col gap-1.5 max-h-52 overflow-y-auto pr-2", children: x.map((K, G) => {
-        const b = p === G, se = (K.value / (N || 1) * 100).toFixed(1);
+      /* @__PURE__ */ e.jsx("div", { className: "flex flex-col gap-1.5 max-h-52 overflow-y-auto pr-2", children: h.map((Y, z) => {
+        const b = p === z, ae = (Y.value / (w || 1) * 100).toFixed(1);
         return /* @__PURE__ */ e.jsxs(
           "div",
           {
-            onMouseEnter: () => g(G),
+            onMouseEnter: () => g(z),
             onMouseLeave: () => g(null),
             className: `flex items-center gap-2 px-2 py-1 rounded cursor-pointer transition-colors ${b ? "bg-slate-800/80 text-white" : "text-slate-300 hover:bg-slate-800/40"}`,
             children: [
-              /* @__PURE__ */ e.jsx("span", { className: "w-2.5 h-2.5 rounded-full flex-shrink-0", style: { backgroundColor: K.color } }),
-              /* @__PURE__ */ e.jsx("span", { className: "text-xs truncate max-w-[110px]", children: K.label }),
+              /* @__PURE__ */ e.jsx("span", { className: "w-2.5 h-2.5 rounded-full flex-shrink-0", style: { backgroundColor: Y.color } }),
+              /* @__PURE__ */ e.jsx("span", { className: "text-xs truncate max-w-[110px]", children: Y.label }),
               /* @__PURE__ */ e.jsxs("span", { className: "text-[11px] font-mono text-slate-400 ml-auto", children: [
-                se,
+                ae,
                 "%"
               ] })
             ]
           },
-          G
+          z
         );
       }) })
     ] });
@@ -9715,16 +10047,16 @@ const Dl = ({
     {
       className: "w-full h-full flex flex-col bg-slate-950/80 border border-slate-800 rounded-xl overflow-hidden shadow-md font-sans",
       style: {
-        width: ((w = t.style) == null ? void 0 : w.width) || "100%",
+        width: ((C = t.style) == null ? void 0 : C.width) || "100%",
         minHeight: ((S = t.style) == null ? void 0 : S.minHeight) || "320px"
       },
       children: [
         /* @__PURE__ */ e.jsxs("div", { className: "px-3.5 py-2.5 bg-[#0b1329] border-b border-slate-800 flex items-center justify-between gap-2", children: [
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ e.jsx(fa, { className: "w-4 h-4 text-emerald-400" }),
+            /* @__PURE__ */ e.jsx(Ca, { className: "w-4 h-4 text-emerald-400" }),
             /* @__PURE__ */ e.jsxs("div", { children: [
               /* @__PURE__ */ e.jsx("h3", { className: "text-xs font-bold text-slate-200 tracking-wide uppercase", children: v }),
-              /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-400 font-mono block", children: C })
+              /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-400 font-mono block", children: k })
             ] })
           ] }),
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center bg-slate-900 border border-slate-700/80 rounded-lg p-0.5 gap-0.5", children: [
@@ -9735,7 +10067,7 @@ const Dl = ({
                 onClick: () => c("bar"),
                 title: "Biểu đồ Cột (Bar Chart)",
                 className: `p-1.5 rounded transition-all cursor-pointer ${d === "bar" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-400 hover:text-slate-200"}`,
-                children: /* @__PURE__ */ e.jsx(Sr, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(Fr, { className: "w-3.5 h-3.5" })
               }
             ),
             /* @__PURE__ */ e.jsx(
@@ -9745,7 +10077,7 @@ const Dl = ({
                 onClick: () => c("line"),
                 title: "Biểu đồ Đường (Line Chart)",
                 className: `p-1.5 rounded transition-all cursor-pointer ${d === "line" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-400 hover:text-slate-200"}`,
-                children: /* @__PURE__ */ e.jsx(ga, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(ka, { className: "w-3.5 h-3.5" })
               }
             ),
             /* @__PURE__ */ e.jsx(
@@ -9755,19 +10087,19 @@ const Dl = ({
                 onClick: () => c("donut"),
                 title: "Biểu đồ Tròn (Donut Chart)",
                 className: `p-1.5 rounded transition-all cursor-pointer ${d === "donut" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-400 hover:text-slate-200"}`,
-                children: /* @__PURE__ */ e.jsx(va, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(Sa, { className: "w-3.5 h-3.5" })
               }
             )
           ] })
         ] }),
-        /* @__PURE__ */ e.jsx("div", { className: "flex-1 flex items-center justify-center p-2", children: x.length === 0 ? /* @__PURE__ */ e.jsx("div", { className: "py-12 text-center text-xs text-slate-500 italic", children: "Không có dữ liệu số liệu để vẽ biểu đồ" }) : d === "bar" ? h() : d === "line" ? y() : L() }),
+        /* @__PURE__ */ e.jsx("div", { className: "flex-1 flex items-center justify-center p-2", children: h.length === 0 ? /* @__PURE__ */ e.jsx("div", { className: "py-12 text-center text-xs text-slate-500 italic", children: "Không có dữ liệu số liệu để vẽ biểu đồ" }) : d === "bar" ? m() : d === "line" ? y() : P() }),
         /* @__PURE__ */ e.jsxs("div", { className: "px-3.5 py-1.5 bg-[#0b1329] border-t border-slate-800/80 text-[10px] text-slate-400 flex items-center justify-between font-mono", children: [
           /* @__PURE__ */ e.jsxs("span", { children: [
             "Tổng cộng: ",
-            /* @__PURE__ */ e.jsx("strong", { className: "text-slate-200", children: N.toLocaleString("en-US") })
+            /* @__PURE__ */ e.jsx("strong", { className: "text-slate-200", children: w.toLocaleString("en-US") })
           ] }),
           /* @__PURE__ */ e.jsxs("span", { children: [
-            x.length,
+            h.length,
             " danh mục"
           ] })
         ] })
@@ -9775,7 +10107,7 @@ const Dl = ({
     }
   );
 };
-function qr(t) {
+function ra(t) {
   var a, n;
   if (!t || t.length === 0) return [];
   const r = [...t].sort((o, l) => (o.order ?? 1) - (l.order ?? 1)), s = [];
@@ -9797,58 +10129,47 @@ function qr(t) {
   }
   return s;
 }
-const En = cs()(
-  Ya(
-    (t) => ({
-      token: null,
-      branch: null,
-      user: null,
-      setAuth: ({ token: r, branch: s, user: a }) => t({ token: r, branch: s, user: a }),
-      logout: () => t({ token: null, branch: null, user: null })
-    }),
-    { name: "uiforge-auth" }
-  )
-), _s = ({ node: t, isEditing: r, children: s }) => {
-  var c, p, g, I, f;
-  const a = En((x) => x.user), n = (a == null ? void 0 : a.role) || "User", o = t.permissions;
+const Ks = ({ node: t, isEditing: r, children: s }) => {
+  var c, p, g, T, x;
+  const a = _n((h) => h.user), n = (a == null ? void 0 : a.role) || "User", o = t.permissions;
   if (!o || !((c = o.allowedRoles) != null && c.length) && !((p = o.readOnlyRoles) != null && p.length))
     return /* @__PURE__ */ e.jsx(e.Fragment, { children: s });
   if (r)
-    return !((g = o.allowedRoles) != null && g.length || (I = o.readOnlyRoles) != null && I.length) ? /* @__PURE__ */ e.jsx(e.Fragment, { children: s }) : /* @__PURE__ */ e.jsxs("div", { className: "relative group/perm w-full", children: [
+    return !((g = o.allowedRoles) != null && g.length || (T = o.readOnlyRoles) != null && T.length) ? /* @__PURE__ */ e.jsx(e.Fragment, { children: s }) : /* @__PURE__ */ e.jsxs("div", { className: "relative group/perm w-full", children: [
       s,
       /* @__PURE__ */ e.jsx("div", { className: "absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 opacity-0 group-hover/perm:opacity-100 transition-opacity z-20 pointer-events-none", children: /* @__PURE__ */ e.jsxs("span", { className: "bg-amber-600/90 text-white text-[9px] font-mono px-1.5 py-0.5 rounded shadow", children: [
         "🔒 ",
-        ((f = o.allowedRoles) == null ? void 0 : f.join(",")) || "RBAC"
+        ((x = o.allowedRoles) == null ? void 0 : x.join(",")) || "RBAC"
       ] }) })
     ] });
   const l = o.allowedRoles, i = o.readOnlyRoles, d = o.deniedBehavior || "hide";
-  return l && l.length > 0 && !l.some((N) => N.toLowerCase() === n.toLowerCase()) ? d === "disable" ? /* @__PURE__ */ e.jsx("div", { className: "opacity-50 pointer-events-none cursor-not-allowed select-none filter grayscale", children: s }) : null : i && i.length > 0 && i.some((N) => N.toLowerCase() === n.toLowerCase()) ? /* @__PURE__ */ e.jsx("div", { className: "opacity-75 pointer-events-none cursor-default", children: s }) : /* @__PURE__ */ e.jsx(e.Fragment, { children: s });
+  return l && l.length > 0 && !l.some((w) => w.toLowerCase() === n.toLowerCase()) ? d === "disable" ? /* @__PURE__ */ e.jsx("div", { className: "opacity-50 pointer-events-none cursor-not-allowed select-none filter grayscale", children: s }) : null : i && i.length > 0 && i.some((w) => w.toLowerCase() === n.toLowerCase()) ? /* @__PURE__ */ e.jsx("div", { className: "opacity-75 pointer-events-none cursor-default", children: s }) : /* @__PURE__ */ e.jsx(e.Fragment, { children: s });
 };
-function Yr(t, r) {
-  var g, I;
-  const s = t.style || {}, a = ((g = t.props) == null ? void 0 : g.colSpan) !== void 0 && ((I = t.props) == null ? void 0 : I.colSpan) !== null ? Number(t.props.colSpan) : void 0;
+function aa(t, r) {
+  var g, T;
+  const s = t.style || {}, a = ((g = t.props) == null ? void 0 : g.colSpan) !== void 0 && ((T = t.props) == null ? void 0 : T.colSpan) !== null ? Number(t.props.colSpan) : void 0;
   let n = s.width, o = s.flex, l = s.maxWidth, i = s.minWidth ?? 0, d;
   const c = (r == null ? void 0 : r.mode) || "grid", p = (r == null ? void 0 : r.gridColumns) || 12;
   if (c === "grid") {
-    let f;
+    let x;
     if (a !== void 0 && !isNaN(a) && a > 0)
-      f = Math.min(a, p);
+      x = Math.min(a, p);
     else if (r != null && r.columnsPerRow && r.columnsPerRow !== "auto") {
-      const x = Number(r.columnsPerRow);
-      !isNaN(x) && x > 0 ? f = Math.max(1, Math.floor(p / x)) : f = Math.min(4, p);
+      const h = Number(r.columnsPerRow);
+      !isNaN(h) && h > 0 ? x = Math.max(1, Math.floor(p / h)) : x = Math.min(4, p);
     } else
-      f = Math.min(4, p);
-    d = `span ${f} / span ${f}`, n = s.width !== void 0 ? s.width : "100%", l = s.maxWidth !== void 0 ? s.maxWidth : "100%", o = s.flex !== void 0 ? s.flex : "none";
+      x = Math.min(4, p);
+    d = `span ${x} / span ${x}`, n = s.width !== void 0 ? s.width : "100%", l = s.maxWidth !== void 0 ? s.maxWidth : "100%", o = s.flex !== void 0 ? s.flex : "none";
   } else {
-    const f = parseInt((r == null ? void 0 : r.gap) || "12", 10) || 12;
+    const x = parseInt((r == null ? void 0 : r.gap) || "12", 10) || 12;
     if (((r == null ? void 0 : r.direction) || "row") === "row")
       if (a !== void 0 && !isNaN(a) && a > 0) {
-        const N = Math.min(100, Math.max(2, a / p * 100)), u = a >= p ? "100%" : `calc(${N}% - ${Math.round(f * (1 - a / p))}px)`;
+        const w = Math.min(100, Math.max(2, a / p * 100)), u = a >= p ? "100%" : `calc(${w}% - ${Math.round(x * (1 - a / p))}px)`;
         s.width === void 0 && s.flex === void 0 && (n = u, l = u, o = `0 0 ${u}`);
       } else if (r != null && r.columnsPerRow && r.columnsPerRow !== "auto") {
-        const N = Number(r.columnsPerRow);
-        if (!isNaN(N) && N > 0) {
-          const u = N === 1 ? "100%" : `calc((100% - ${(N - 1) * f}px) / ${N})`;
+        const w = Number(r.columnsPerRow);
+        if (!isNaN(w) && w > 0) {
+          const u = w === 1 ? "100%" : `calc((100% - ${(w - 1) * x}px) / ${w})`;
           s.width === void 0 && s.flex === void 0 && (n = u, l = u, o = `0 0 ${u}`);
         }
       } else
@@ -9868,7 +10189,7 @@ function Yr(t, r) {
     alignSelf: s.alignSelf
   };
 }
-const Ts = ({
+const Fs = ({
   node: t,
   isEditing: r = !1,
   onContextMenu: s,
@@ -9883,53 +10204,53 @@ const Ts = ({
     r && (u.preventDefault(), u.stopPropagation(), d(t.id), s && s(u, t));
   };
   if (t.type === "Container" || t.type === "Section" || t.type === "Tabs") {
-    const u = t.props.layoutMode || (t.type === "Section" ? "grid" : "flex"), v = t.props.flexConfig || {}, C = t.props.gridConfig || {}, h = {
+    const u = t.props.layoutMode || (t.type === "Section" ? "grid" : "flex"), v = t.props.flexConfig || {}, k = t.props.gridConfig || {}, m = {
       direction: v.direction || "row",
       wrap: v.wrap || "wrap",
       gap: v.gap || "12px",
       columnsPerRow: v.columnsPerRow || "auto"
     }, y = Number(
-      C.columns || (typeof v.columnsPerRow == "number" ? v.columnsPerRow : 12)
-    ) || 12, L = {
+      k.columns || (typeof v.columnsPerRow == "number" ? v.columnsPerRow : 12)
+    ) || 12, P = {
       mode: u === "flex" ? "flex" : "grid",
       direction: v.direction || "row",
       columnsPerRow: v.columnsPerRow || "auto",
-      gap: v.gap || C.gap || "12px",
+      gap: v.gap || k.gap || "12px",
       wrap: v.wrap || "wrap",
       gridColumns: y
-    }, k = () => {
+    }, R = () => {
       const F = t.children || [];
-      return F.length === 0 ? /* @__PURE__ */ e.jsx("div", { className: "w-full text-center py-6 text-xs text-slate-500 italic select-none col-span-12 border border-dashed border-slate-800 rounded-lg bg-slate-950/40", children: "Chuột phải vào đây để thêm nút, textbox, khoảng trắng con..." }) : qr(F).map((S, R) => {
+      return F.length === 0 ? /* @__PURE__ */ e.jsx("div", { className: "w-full text-center py-6 text-xs text-slate-500 italic select-none col-span-12 border border-dashed border-slate-800 rounded-lg bg-slate-950/40", children: "Chuột phải vào đây để thêm nút, textbox, khoảng trắng con..." }) : ra(F).map((S, L) => {
         if (S.type === "tab_stack")
           return /* @__PURE__ */ e.jsx(
-            zr,
+            na,
             {
               parentId: t.id,
               order: S.order,
               tabNodes: S.nodes,
               isEditing: r,
-              parentFlexConfig: h,
+              parentFlexConfig: m,
               onContextMenu: s,
               renderChild: l
             },
-            `tab_stack_${t.id}_${S.order}_${R}`
+            `tab_stack_${t.id}_${S.order}_${L}`
           );
         const $ = S.node;
-        return l ? /* @__PURE__ */ e.jsx(Mt.Fragment, { children: l($, L) }, $.id) : /* @__PURE__ */ e.jsx(
-          Ts,
+        return l ? /* @__PURE__ */ e.jsx(Zt.Fragment, { children: l($, P) }, $.id) : /* @__PURE__ */ e.jsx(
+          Fs,
           {
             node: $,
             isEditing: r,
             onContextMenu: s,
-            parentLayout: L,
+            parentLayout: P,
             isWrappedByDrag: !1
           },
           $.id
         );
       });
     };
-    return t.type === "Section" ? /* @__PURE__ */ e.jsx(_s, { node: t, isEditing: r, children: /* @__PURE__ */ e.jsx("div", { onClick: p, onContextMenu: g, className: "w-full", children: /* @__PURE__ */ e.jsx(ol, { node: t, isEditing: r, children: k() }) }) }) : t.type === "Tabs" ? /* @__PURE__ */ e.jsx(_s, { node: t, isEditing: r, children: /* @__PURE__ */ e.jsx(
-      nr,
+    return t.type === "Section" ? /* @__PURE__ */ e.jsx(Ks, { node: t, isEditing: r, children: /* @__PURE__ */ e.jsx("div", { onClick: p, onContextMenu: g, className: "w-full", children: /* @__PURE__ */ e.jsx(El, { node: t, isEditing: r, children: R() }) }) }) : t.type === "Tabs" ? /* @__PURE__ */ e.jsx(Ks, { node: t, isEditing: r, children: /* @__PURE__ */ e.jsx(
+      xr,
       {
         node: t,
         isEditing: r,
@@ -9938,10 +10259,10 @@ const Ts = ({
         onContextMenu: g,
         parentFlexConfig: n,
         isWrappedByDrag: o,
-        children: k()
+        children: R()
       }
-    ) }) : /* @__PURE__ */ e.jsx(_s, { node: t, isEditing: r, children: /* @__PURE__ */ e.jsx(
-      nr,
+    ) }) : /* @__PURE__ */ e.jsx(Ks, { node: t, isEditing: r, children: /* @__PURE__ */ e.jsx(
+      xr,
       {
         node: t,
         isEditing: r,
@@ -9950,84 +10271,84 @@ const Ts = ({
         onContextMenu: g,
         parentFlexConfig: n,
         isWrappedByDrag: o,
-        children: k()
+        children: R()
       }
     ) });
   }
-  const I = () => {
-    var u, v, C, h, y, L;
+  const T = () => {
+    var u, v, k, m, y, P;
     switch (t.type) {
       case "Button":
-        return /* @__PURE__ */ e.jsx(nl, { node: t, isEditing: r });
-      case "TextBox":
-        return /* @__PURE__ */ e.jsx(rl, { node: t, isEditing: r });
-      case "Textarea":
-        return /* @__PURE__ */ e.jsx(El, { node: t, isEditing: r });
-      case "Number":
-        return /* @__PURE__ */ e.jsx(al, { node: t, isEditing: r });
-      case "Label":
-        return /* @__PURE__ */ e.jsx(ll, { node: t, isEditing: r });
-      case "Table":
-        return /* @__PURE__ */ e.jsx(Sl, { node: t, isEditing: r });
-      case "Select":
-        return /* @__PURE__ */ e.jsx(Il, { node: t, isEditing: r });
-      case "Checkbox":
-        return /* @__PURE__ */ e.jsx(Fl, { node: t, isEditing: r });
-      case "DatePicker":
         return /* @__PURE__ */ e.jsx(Rl, { node: t, isEditing: r });
-      case "Divider":
+      case "TextBox":
         return /* @__PURE__ */ e.jsx(Ll, { node: t, isEditing: r });
-      case "Modal":
+      case "Textarea":
+        return /* @__PURE__ */ e.jsx(io, { node: t, isEditing: r });
+      case "Number":
         return /* @__PURE__ */ e.jsx($l, { node: t, isEditing: r });
+      case "Label":
+        return /* @__PURE__ */ e.jsx(Pl, { node: t, isEditing: r });
+      case "Table":
+        return /* @__PURE__ */ e.jsx(eo, { node: t, isEditing: r });
+      case "Select":
+        return /* @__PURE__ */ e.jsx(no, { node: t, isEditing: r });
+      case "Checkbox":
+        return /* @__PURE__ */ e.jsx(ro, { node: t, isEditing: r });
+      case "DatePicker":
+        return /* @__PURE__ */ e.jsx(ao, { node: t, isEditing: r });
+      case "Divider":
+        return /* @__PURE__ */ e.jsx(oo, { node: t, isEditing: r });
+      case "Modal":
+        return /* @__PURE__ */ e.jsx(lo, { node: t, isEditing: r });
       case "RecordSelector":
         return /* @__PURE__ */ e.jsx(
-          Pl,
+          co,
           {
             label: ((u = t.props) == null ? void 0 : u.label) ?? "Lô hàng:",
             reference: ((v = t.props) == null ? void 0 : v.reference) ?? "Transaction",
-            displayField: ((C = t.props) == null ? void 0 : C.displayField) ?? "code",
-            records: (h = t.props) == null ? void 0 : h.records,
+            displayField: ((k = t.props) == null ? void 0 : k.displayField) ?? "code",
+            records: (m = t.props) == null ? void 0 : m.records,
             activeId: (y = t.props) == null ? void 0 : y.activeId,
-            canAdd: ((L = t.props) == null ? void 0 : L.canAdd) !== !1,
+            canAdd: ((P = t.props) == null ? void 0 : P.canAdd) !== !1,
             style: t.style
           }
         );
       case "SearchEntry":
-        return /* @__PURE__ */ e.jsx(Bl, { node: t, isEditing: r });
+        return /* @__PURE__ */ e.jsx(xo, { node: t, isEditing: r });
       case "FileUploadGrid":
-        return /* @__PURE__ */ e.jsx(Ml, { node: t, isEditing: r });
+        return /* @__PURE__ */ e.jsx(po, { node: t, isEditing: r });
       case "Autocomplete":
-        return /* @__PURE__ */ e.jsx(Ol, { node: t, isEditing: r });
+        return /* @__PURE__ */ e.jsx(ho, { node: t, isEditing: r });
       case "TreeView":
-        return /* @__PURE__ */ e.jsx(_l, { node: t, isEditing: r });
+        return /* @__PURE__ */ e.jsx(mo, { node: t, isEditing: r });
       case "Chart":
-        return /* @__PURE__ */ e.jsx(Hl, { node: t, isEditing: r });
+        return /* @__PURE__ */ e.jsx(bo, { node: t, isEditing: r });
       default:
         return /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-red-950/40 border border-red-800 rounded text-red-300 text-xs", children: [
           "Unknown Component: ",
           t.type
         ] });
     }
-  }, f = a || (n ? {
+  }, x = a || (n ? {
     mode: "flex",
     direction: n.direction,
     columnsPerRow: n.columnsPerRow,
     gap: n.gap,
     wrap: n.wrap
-  } : void 0), x = Yr(t, f), N = o ? {
+  } : void 0), h = aa(t, x), w = o ? {
     width: "100%",
     height: "100%",
     boxSizing: "border-box"
   } : {
-    ...x,
+    ...h,
     boxSizing: "border-box"
   };
-  return /* @__PURE__ */ e.jsx(_s, { node: t, isEditing: r, children: /* @__PURE__ */ e.jsxs(
+  return /* @__PURE__ */ e.jsx(Ks, { node: t, isEditing: r, children: /* @__PURE__ */ e.jsxs(
     "div",
     {
       onClick: p,
       onContextMenu: g,
-      style: N,
+      style: w,
       className: `relative group transition-all duration-150 box-border ${r ? `cursor-pointer rounded-lg ${c ? "ring-2 ring-blue-500 shadow-lg shadow-blue-500/20" : "hover:outline-1 hover:outline-blue-400/40"}` : ""}`,
       children: [
         r && c && /* @__PURE__ */ e.jsxs("div", { className: "absolute -top-3 left-2 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow z-20 uppercase tracking-wider flex items-center gap-1", children: [
@@ -10037,18 +10358,18 @@ const Ts = ({
             t.id.slice(-4)
           ] })
         ] }),
-        I()
+        T()
       ]
     }
   ) });
-}, yo = ({
+}, zo = ({
   value: t,
   column: r,
   onSave: s,
   onCancel: a
 }) => {
-  const [n, o] = A(t ?? ""), l = Je(null);
-  Be(() => {
+  const [n, o] = D(t ?? ""), l = tt(null);
+  He(() => {
     l.current && (l.current.focus(), l.current.select && l.current.select());
   }, []);
   const i = (c) => {
@@ -10104,9 +10425,9 @@ const Ts = ({
     }
   );
 };
-let lt = null;
-const jo = cs()(
-  Is((t, r) => ({
+let mt = null;
+const qo = xs()(
+  Ps((t, r) => ({
     isConnected: !1,
     connectionId: null,
     lockedRecords: {},
@@ -10115,7 +10436,7 @@ const jo = cs()(
       if (!r().isConnected)
         try {
           const a = s.replace(/^http/, "ws"), n = new WebSocket(a);
-          lt = n, n.onopen = () => {
+          mt = n, n.onopen = () => {
             t({ isConnected: !0, connectionId: `conn_${Date.now()}` }), console.log("[RealtimeEngine] Đã kết nối thành công tới Hub:", s);
           }, n.onmessage = (o) => {
             try {
@@ -10143,7 +10464,7 @@ const jo = cs()(
             } catch {
             }
           }, n.onclose = () => {
-            t({ isConnected: !1, connectionId: null }), lt = null;
+            t({ isConnected: !1, connectionId: null }), mt = null;
           }, n.onerror = () => {
             t({ isConnected: !1 });
           };
@@ -10152,12 +10473,12 @@ const jo = cs()(
         }
     },
     disconnect: () => {
-      if (lt) {
+      if (mt) {
         try {
-          lt.close();
+          mt.close();
         } catch {
         }
-        lt = null;
+        mt = null;
       }
       t({ isConnected: !1, connectionId: null });
     },
@@ -10173,7 +10494,7 @@ const jo = cs()(
           ...i.lockedRecords,
           [o]: l
         }
-      })), lt && lt.readyState === WebSocket.OPEN && lt.send(
+      })), mt && mt.readyState === WebSocket.OPEN && mt.send(
         JSON.stringify({
           action: "LockRecord",
           entityName: s,
@@ -10187,7 +10508,7 @@ const jo = cs()(
       t((o) => {
         const l = { ...o.lockedRecords };
         return delete l[n], { lockedRecords: l };
-      }), lt && lt.readyState === WebSocket.OPEN && lt.send(
+      }), mt && mt.readyState === WebSocket.OPEN && mt.send(
         JSON.stringify({
           action: "UnlockRecord",
           entityName: s,
@@ -10200,7 +10521,7 @@ const jo = cs()(
       return !l || n && l.username.toLowerCase() === n.toLowerCase() ? null : l;
     },
     broadcastRecordUpdate: (s, a, n) => {
-      lt && lt.readyState === WebSocket.OPEN && lt.send(
+      mt && mt.readyState === WebSocket.OPEN && mt.send(
         JSON.stringify({
           action: "NotifyRecordUpdated",
           entityName: s,
@@ -10231,21 +10552,21 @@ const jo = cs()(
     }
   }))
 );
-function No(t = {}) {
+function Yo(t = {}) {
   const { onSaveLayout: r, isPreview: s = !1, canEdit: a = !0 } = t;
-  Be(() => {
+  He(() => {
     const n = async (o) => {
       var l;
       if (o.altKey && (o.code === "Backquote" || o.key === "`")) {
         o.preventDefault(), o.stopPropagation();
-        const i = Ze.getState(), d = i.openTabs;
+        const i = st.getState(), d = i.openTabs;
         if (d.length <= 1) return;
-        const c = i.activeTabId, g = (d.findIndex((f) => f.id === c) + 1) % d.length, I = d[g];
-        I && (i.setActiveTab(I.id), Z.getState().setActiveFeature(I.featureId, ((l = I.params) == null ? void 0 : l.id) ?? null));
+        const c = i.activeTabId, g = (d.findIndex((x) => x.id === c) + 1) % d.length, T = d[g];
+        T && (i.setActiveTab(T.id), Z.getState().setActiveFeature(T.featureId, ((l = T.params) == null ? void 0 : l.id) ?? null));
         return;
       }
       if (o.key === "Escape") {
-        const i = Ze.getState();
+        const i = st.getState();
         if (i.activePopup) {
           o.preventDefault(), o.stopPropagation(), i.closePopup();
           return;
@@ -10258,15 +10579,15 @@ function No(t = {}) {
         }
         const i = Z.getState(), d = i.features.find((p) => p.id === i.activeFeatureId), c = d == null ? void 0 : d.scriptFile;
         if (c) {
-          const p = fe.getState(), g = p.getFormRecord(d.id) || p.getFormRecord("default");
+          const p = Te.getState(), g = p.getFormRecord(d.id) || p.getFormRecord("default");
           try {
-            await sr(c, "onSave", {
+            await ur(c, "onSave", {
               record: g,
               featureId: d.id,
               trigger: "hotkey_F9"
             });
-          } catch (I) {
-            console.error("[GlobalHotkeys] Lỗi khi kích hoạt onSave:", I);
+          } catch (T) {
+            console.error("[GlobalHotkeys] Lỗi khi kích hoạt onSave:", T);
           }
         }
         return;
@@ -10276,7 +10597,7 @@ function No(t = {}) {
         const i = Z.getState(), d = i.features.find((p) => p.id === i.activeFeatureId), c = d == null ? void 0 : d.scriptFile;
         if (c)
           try {
-            await sr(c, "onApprove", {
+            await ur(c, "onApprove", {
               featureId: d.id,
               trigger: "hotkey_F8"
             });
@@ -10297,7 +10618,7 @@ function No(t = {}) {
     return window.addEventListener("keydown", n), () => window.removeEventListener("keydown", n);
   }, [r, s, a]);
 }
-const Tn = ({
+const $n = ({
   node: t,
   isEditing: r,
   onContextMenu: s,
@@ -10312,7 +10633,7 @@ const Tn = ({
     setNodeRef: c,
     transform: p,
     isDragging: g
-  } = Fr({
+  } = Er({
     id: t.id,
     disabled: !r,
     data: {
@@ -10321,30 +10642,30 @@ const Tn = ({
       type: t.type,
       node: t
     }
-  }), { setNodeRef: I, isOver: f } = Rr({
+  }), { setNodeRef: T, isOver: x } = Ar({
     id: t.id,
     disabled: !r
-  }), x = (L) => {
-    c(L), I(L);
-  }, N = a || (n ? {
+  }), h = (P) => {
+    c(P), T(P);
+  }, w = a || (n ? {
     mode: "flex",
     direction: n.direction,
     columnsPerRow: n.columnsPerRow,
     gap: n.gap,
     wrap: n.wrap
   } : void 0), v = {
-    ...Yr(t, N),
-    transform: Ba.Translate.toString(p),
+    ...aa(t, w),
+    transform: Mr.Translate.toString(p),
     opacity: g ? 0.35 : 1,
     transition: g ? void 0 : "opacity 0.15s ease",
     position: "relative",
     display: "flex",
     flexDirection: "column",
     boxSizing: "border-box"
-  }, C = t.type === "Container" || t.type === "Section" || t.type === "Tabs", h = f && C && !g, y = f && !C && !g;
-  return /* @__PURE__ */ e.jsxs("div", { ref: x, style: v, className: "group/drag relative", children: [
+  }, k = t.type === "Container" || t.type === "Section" || t.type === "Tabs", m = x && k && !g, y = x && !k && !g;
+  return /* @__PURE__ */ e.jsxs("div", { ref: h, style: v, className: "group/drag relative", children: [
     y && /* @__PURE__ */ e.jsx("div", { className: "absolute -top-2 left-0 right-0 h-1 bg-blue-500 rounded-full z-40 pointer-events-none shadow-md shadow-blue-500/60 animate-pulse", children: /* @__PURE__ */ e.jsx("div", { className: "absolute -left-1 -top-0.5 w-2 h-2 rounded-full bg-blue-400" }) }),
-    h && /* @__PURE__ */ e.jsx("div", { className: "absolute inset-0 rounded-xl border-2 border-blue-400 bg-blue-500/10 z-30 pointer-events-none shadow-lg shadow-blue-500/20 ring-2 ring-blue-400/40" }),
+    m && /* @__PURE__ */ e.jsx("div", { className: "absolute inset-0 rounded-xl border-2 border-blue-400 bg-blue-500/10 z-30 pointer-events-none shadow-lg shadow-blue-500/20 ring-2 ring-blue-400/40" }),
     r && /* @__PURE__ */ e.jsxs(
       "div",
       {
@@ -10352,41 +10673,41 @@ const Tn = ({
         ...d,
         className: "absolute top-1.5 right-1.5 z-30 opacity-0 group-hover/drag:opacity-100 transition-opacity cursor-grab active:cursor-grabbing bg-slate-900/90 hover:bg-blue-600 text-slate-400 hover:text-white px-1.5 py-0.5 rounded-md text-[10px] flex items-center gap-1 shadow-md border border-slate-700 select-none",
         title: "Giữ chuột kéo để di chuyển vị trí",
-        onMouseDown: (L) => L.stopPropagation(),
+        onMouseDown: (P) => P.stopPropagation(),
         children: [
-          /* @__PURE__ */ e.jsx(Rn, { className: "w-3.5 h-3.5" }),
+          /* @__PURE__ */ e.jsx($s, { className: "w-3.5 h-3.5" }),
           /* @__PURE__ */ e.jsx("span", { className: "font-semibold text-[9px]" })
         ]
       }
     ),
     /* @__PURE__ */ e.jsx(
-      Ts,
+      Fs,
       {
         node: t,
         isEditing: r,
         onContextMenu: s,
-        parentLayout: N,
+        parentLayout: w,
         parentFlexConfig: n,
         isWrappedByDrag: !0,
-        renderChild: (L, k) => /* @__PURE__ */ e.jsx(
-          Tn,
+        renderChild: (P, R) => /* @__PURE__ */ e.jsx(
+          $n,
           {
-            node: L,
+            node: P,
             isEditing: r,
             onContextMenu: s,
-            parentLayout: k && "mode" in k ? k : void 0,
-            parentFlexConfig: k && !("mode" in k) ? k : void 0,
+            parentLayout: R && "mode" in R ? R : void 0,
+            parentFlexConfig: R && !("mode" in R) ? R : void 0,
             activeId: o,
             overId: l
           },
-          L.id
+          P.id
         )
       }
     )
   ] });
-}, Jr = ({ x: t, y: r, items: s, onClose: a }) => {
-  const n = Je(null);
-  Be(() => {
+}, la = ({ x: t, y: r, items: s, onClose: a }) => {
+  const n = tt(null);
+  He(() => {
     const i = (c) => {
       n.current && !n.current.contains(c.target) && a();
     }, d = (c) => {
@@ -10425,36 +10746,36 @@ const Tn = ({
       })
     }
   );
-}, wo = ({
+}, Jo = ({
   isEditing: t,
   activeId: r,
   overId: s
 }) => {
   const a = Z((S) => S.features), n = Z((S) => S.activeFeatureId), o = Z((S) => S.activeRecordId), l = Z((S) => S.addComponent), i = Z((S) => S.selectComponent), d = Z((S) => S.removeComponent), c = Z((S) => S.updateComponentProps);
   Z((S) => S.updateFeatureLayout);
-  const p = Z((S) => S.updateFeatureScriptFile), g = a.find((S) => S.id === n), I = (g == null ? void 0 : g.layoutConfig) || {
+  const p = Z((S) => S.updateFeatureScriptFile), g = a.find((S) => S.id === n), T = (g == null ? void 0 : g.layoutConfig) || {
     direction: "column",
     gap: "16px",
     wrap: "wrap"
   };
-  Mt.useEffect(() => {
-    var R;
-    if ($r(g) && n) {
+  Zt.useEffect(() => {
+    var L;
+    if (Hr(g) && n) {
       let $ = o;
       !$ && typeof window < "u" && ($ = new URLSearchParams(window.location.search).get("id"));
-      const Q = $ || "1", O = fe.getState().formRecords[n], V = (O == null ? void 0 : O.id) || (O == null ? void 0 : O.Id);
-      if (String(V) !== String(Q)) {
-        const { module: P } = $n(g == null ? void 0 : g.scriptFile), K = (P == null ? void 0 : P.loadDetail) || ((R = P == null ? void 0 : P.transactionDetailBL) == null ? void 0 : R.loadDetail);
-        typeof K == "function" && K(Q).then((G) => {
-          G && n && (fe.getState().setFormRecord(n, G), fe.getState().setFormRecord("default", G), o !== String(G.id || Q) && Z.getState().setActiveRecordId(String(G.id || Q)));
+      const se = $ || "1", V = Te.getState().formRecords[n], U = (V == null ? void 0 : V.id) || (V == null ? void 0 : V.Id);
+      if (String(U) !== String(se)) {
+        const { module: E } = Hn(g == null ? void 0 : g.scriptFile), Y = (E == null ? void 0 : E.loadDetail) || ((L = E == null ? void 0 : E.transactionDetailBL) == null ? void 0 : L.loadDetail);
+        typeof Y == "function" && Y(se).then((z) => {
+          z && n && (Te.getState().setFormRecord(n, z), Te.getState().setFormRecord("default", z), o !== String(z.id || se) && Z.getState().setActiveRecordId(String(z.id || se)));
         });
       }
     }
   }, [n, o, g == null ? void 0 : g.scriptFile, g == null ? void 0 : g.route, g == null ? void 0 : g.name, g == null ? void 0 : g.isDetail]);
-  const { setNodeRef: f, isOver: x } = Rr({
+  const { setNodeRef: x, isOver: h } = Ar({
     id: "canvas-root",
     disabled: !t
-  }), [N, u] = A(""), v = !!(g != null && g.scriptFile && g.scriptFile.trim().length > 0), [C, h] = A(null), y = (S, R = {}, $ = {}) => ({
+  }), [w, u] = D(""), v = !!(g != null && g.scriptFile && g.scriptFile.trim().length > 0), [k, m] = D(null), y = (S, L = {}, $ = {}) => ({
     id: `${S.toLowerCase()}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
     type: S,
     parentId: null,
@@ -10464,51 +10785,51 @@ const Tn = ({
       variant: S === "Button" ? "primary" : void 0,
       size: S === "Button" ? "md" : void 0,
       placeholder: S === "TextBox" ? "Nhập nội dung..." : void 0,
-      ...R
+      ...L
     },
     style: {
       ...$
     },
     events: [],
     order: ((g == null ? void 0 : g.components.length) || 0) + 1
-  }), L = (S) => {
-    !t || !v || (S.preventDefault(), i(null), h({
+  }), P = (S) => {
+    !t || !v || (S.preventDefault(), i(null), m({
       x: S.clientX,
       y: S.clientY,
       targetContainerId: null,
       selectedNode: null
     }));
-  }, k = (S, R) => {
+  }, R = (S, L) => {
     if (!t) return;
-    S.preventDefault(), S.stopPropagation(), i(R.id);
-    const $ = R.type === "Container" || R.type === "Section" || R.type === "Tabs";
-    h({
+    S.preventDefault(), S.stopPropagation(), i(L.id);
+    const $ = L.type === "Container" || L.type === "Section" || L.type === "Tabs";
+    m({
       x: S.clientX,
       y: S.clientY,
-      targetContainerId: $ ? R.id : R.parentId,
-      selectedNode: R
+      targetContainerId: $ ? L.id : L.parentId,
+      selectedNode: L
     });
   }, F = () => {
-    var O, V, P;
-    if (!C) return [];
-    const { targetContainerId: S, selectedNode: R } = C, $ = R && (R.type === "Container" || R.type === "Section" || R.type === "Tabs");
-    if (R && $) {
-      const K = R.props.layoutMode === "grid", G = ((O = R.props.flexConfig) == null ? void 0 : O.direction) === "row", b = !!(R.props.isTab || R.props.tab || R.type === "Tabs"), se = R.props.activeTabId || ((P = (V = R.props.tabs) == null ? void 0 : V[0]) == null ? void 0 : P.id) || "main", de = b ? { tabId: se } : {};
+    var V, U, E;
+    if (!k) return [];
+    const { targetContainerId: S, selectedNode: L } = k, $ = L && (L.type === "Container" || L.type === "Section" || L.type === "Tabs");
+    if (L && $) {
+      const Y = L.props.layoutMode === "grid", z = ((V = L.props.flexConfig) == null ? void 0 : V.direction) === "row", b = !!(L.props.isTab || L.props.tab || L.type === "Tabs"), ae = L.props.activeTabId || ((E = (U = L.props.tabs) == null ? void 0 : U[0]) == null ? void 0 : E.id) || "main", O = b ? { tabId: ae } : {};
       return [
         ...b ? [
           {
             label: "📑 + Thêm Tab Mới vào phân hệ này",
-            icon: Et,
+            icon: Xt,
             onClick: () => {
-              const me = R.props.tabs || [
+              const _ = L.props.tabs || [
                 { id: "main", label: "TAB 1" }
-              ], Ce = `tab_${Date.now().toString(36)}`, he = [
-                ...me,
-                { id: Ce, label: `Tab Mới ${me.length + 1}` }
+              ], me = `tab_${Date.now().toString(36)}`, ce = [
+                ..._,
+                { id: me, label: `Tab Mới ${_.length + 1}` }
               ];
-              c(R.id, {
-                tabs: he,
-                activeTabId: Ce
+              c(L.id, {
+                tabs: ce,
+                activeTabId: me
               });
             }
           },
@@ -10521,9 +10842,9 @@ const Tn = ({
         ] : [],
         {
           label: "📦 Thêm Khoảng Trắng con (Bố cục Flexbox)",
-          icon: Et,
+          icon: Xt,
           onClick: () => {
-            const me = y(
+            const _ = y(
               "Container",
               {
                 layoutMode: "flex",
@@ -10534,11 +10855,11 @@ const Tn = ({
                   align: "stretch",
                   gap: "12px"
                 },
-                ...de
+                ...O
               },
               {
-                flex: G ? "1" : void 0,
-                width: G ? void 0 : "100%",
+                flex: z ? "1" : void 0,
+                width: z ? void 0 : "100%",
                 minHeight: "120px",
                 backgroundColor: "rgba(15, 23, 42, 0.6)",
                 padding: "16px",
@@ -10546,23 +10867,23 @@ const Tn = ({
                 border: "1px dashed #64748b"
               }
             );
-            l(me, S);
+            l(_, S);
           }
         },
         {
           label: "📐 Thêm Khoảng Trắng con (Bố cục Grid)",
-          icon: ls,
+          icon: ds,
           onClick: () => {
-            const me = y(
+            const _ = y(
               "Container",
               {
                 layoutMode: "grid",
                 gridConfig: { columns: 2, gap: "12px" },
-                ...de
+                ...O
               },
               {
-                flex: G ? "1" : void 0,
-                width: G ? void 0 : "100%",
+                flex: z ? "1" : void 0,
+                width: z ? void 0 : "100%",
                 minHeight: "120px",
                 backgroundColor: "rgba(15, 23, 42, 0.6)",
                 padding: "16px",
@@ -10570,22 +10891,22 @@ const Tn = ({
                 border: "1px dashed #64748b"
               }
             );
-            l(me, S);
+            l(_, S);
           }
         },
         {
           label: "🗂️ Thêm Khung Card / Section (12 Cột)",
-          icon: ls,
+          icon: ds,
           onClick: () => {
-            const me = y("Section", {
+            const _ = y("Section", {
               title: "Phân Vùng Mới",
               label: "Phân Vùng Mới",
               collapsible: !0,
               boxShadow: !0,
               colSpan: 12,
-              ...de
+              ...O
             });
-            l(me, S);
+            l(_, S);
           }
         },
         {
@@ -10596,20 +10917,20 @@ const Tn = ({
         },
         {
           label: "➕ Thêm TextBox (Ô nhập liệu)",
-          icon: as,
+          icon: ns,
           onClick: () => l(
             y("TextBox", {
               label: "Ô nhập liệu",
               labelPosition: "left",
               colSpan: 4,
-              ...de
+              ...O
             }),
             S
           )
         },
         {
           label: "➕ Thêm Số (Number)",
-          icon: as,
+          icon: ns,
           onClick: () => l(
             y("Number", {
               label: "Số tiền / Lượng",
@@ -10617,27 +10938,27 @@ const Tn = ({
               colSpan: 4,
               precision: 2,
               thousandsSeparator: !0,
-              ...de
+              ...O
             }),
             S
           )
         },
         {
           label: "➕ Thêm Chọn Ngày (DatePicker)",
-          icon: as,
+          icon: ns,
           onClick: () => l(
             y("DatePicker", {
               label: "Ngày tháng",
               labelPosition: "left",
               colSpan: 4,
-              ...de
+              ...O
             }),
             S
           )
         },
         {
           label: "➕ Thêm Dropdown (Select)",
-          icon: as,
+          icon: ns,
           onClick: () => l(
             y("Select", {
               label: "Lựa chọn",
@@ -10647,54 +10968,54 @@ const Tn = ({
                 { value: "opt1", label: "Tùy chọn 1" },
                 { value: "opt2", label: "Tùy chọn 2" }
               ],
-              ...de
+              ...O
             }),
             S
           )
         },
         {
           label: "➕ Thêm Hộp Kiểm (Checkbox)",
-          icon: Hs,
+          icon: Cs,
           onClick: () => l(
             y("Checkbox", {
               label: "Kích hoạt",
               labelPosition: "left",
               colSpan: 4,
-              ...de
+              ...O
             }),
             S
           )
         },
         {
           label: "➕ Thêm Ghi Chú Nhiều Dòng (Textarea)",
-          icon: is,
+          icon: Qt,
           onClick: () => l(
             y("Textarea", {
               label: "Ghi chú",
               labelPosition: "left",
               colSpan: 12,
               rows: 3,
-              ...de
+              ...O
             }),
             S
           )
         },
         {
           label: "➕ Thêm Nút Bấm (Button)",
-          icon: Hs,
+          icon: Cs,
           onClick: () => l(
             y("Button", {
               label: "Nút bấm",
               variant: "primary",
               size: "sm",
-              ...de
+              ...O
             }),
             S
           )
         },
         {
           label: "➕ Thêm Bảng Dữ Liệu (Advanced Grid)",
-          icon: bt,
+          icon: Nt,
           onClick: () => l(
             y("Table", {
               columns: [
@@ -10702,7 +11023,7 @@ const Tn = ({
                 { key: "col2", title: "Cột 2", width: "150px" },
                 { key: "col3", title: "Cột 3", width: "120px" }
               ],
-              ...de
+              ...O
             }),
             S
           )
@@ -10714,27 +11035,27 @@ const Tn = ({
           }
         },
         {
-          label: G ? "↕ Đổi hướng: Xếp dọc (Column)" : "↔ Đổi hướng: Nằm song song (Row)",
-          icon: G ? In : Yn,
+          label: z ? "↕ Đổi hướng: Xếp dọc (Column)" : "↔ Đổi hướng: Nằm song song (Row)",
+          icon: z ? Bn : sr,
           onClick: () => {
-            c(R.id, {
+            c(L.id, {
               flexConfig: {
-                ...R.props.flexConfig || {
+                ...L.props.flexConfig || {
                   wrap: "wrap",
                   justify: "flex-start",
                   align: "center",
                   gap: "12px"
                 },
-                direction: G ? "column" : "row"
+                direction: z ? "column" : "row"
               }
             });
           }
         },
         {
-          label: K ? "🔄 Đổi sang bố cục Flexbox" : "🔄 Đổi sang bố cục Grid (Lưới)",
-          icon: ls,
+          label: Y ? "🔄 Đổi sang bố cục Flexbox" : "🔄 Đổi sang bố cục Grid (Lưới)",
+          icon: ds,
           onClick: () => {
-            K ? c(R.id, {
+            Y ? c(L.id, {
               layoutMode: "flex",
               flexConfig: {
                 direction: "row",
@@ -10743,7 +11064,7 @@ const Tn = ({
                 align: "center",
                 gap: "12px"
               }
-            }) : c(R.id, {
+            }) : c(L.id, {
               layoutMode: "grid",
               gridConfig: { columns: 2, gap: "16px" }
             });
@@ -10751,19 +11072,19 @@ const Tn = ({
         },
         {
           label: "🗑️ Xóa khối này",
-          icon: ot,
+          icon: bt,
           danger: !0,
-          onClick: () => d(R.id)
+          onClick: () => d(L.id)
         }
       ];
     }
-    const Q = I.direction === "row";
+    const se = T.direction === "row";
     return [
       {
-        label: Q ? "📦 Thêm Khoảng Trắng (Tự chia đôi song song)" : "📦 Thêm Khoảng Trắng (Bố cục Flexbox)",
-        icon: Et,
+        label: se ? "📦 Thêm Khoảng Trắng (Tự chia đôi song song)" : "📦 Thêm Khoảng Trắng (Bố cục Flexbox)",
+        icon: Xt,
         onClick: () => {
-          const K = y(
+          const Y = y(
             "Container",
             {
               layoutMode: "flex",
@@ -10776,8 +11097,8 @@ const Tn = ({
               }
             },
             {
-              flex: Q ? "1" : void 0,
-              width: Q ? void 0 : "100%",
+              flex: se ? "1" : void 0,
+              width: se ? void 0 : "100%",
               minHeight: "130px",
               backgroundColor: "#1e293b",
               padding: "16px",
@@ -10785,14 +11106,14 @@ const Tn = ({
               border: "1px dashed #475569"
             }
           );
-          l(K, null);
+          l(Y, null);
         }
       },
       {
         label: "📐 Thêm Khoảng Trắng (Bố cục Grid 2 Cột)",
-        icon: ls,
+        icon: ds,
         onClick: () => {
-          const K = y(
+          const Y = y(
             "Container",
             {
               layoutMode: "grid",
@@ -10802,8 +11123,8 @@ const Tn = ({
               }
             },
             {
-              flex: Q ? "1" : void 0,
-              width: Q ? void 0 : "100%",
+              flex: se ? "1" : void 0,
+              width: se ? void 0 : "100%",
               minHeight: "140px",
               backgroundColor: "#1e293b",
               padding: "16px",
@@ -10811,7 +11132,7 @@ const Tn = ({
               border: "1px dashed #475569"
             }
           );
-          l(K, null);
+          l(Y, null);
         }
       },
       {
@@ -10822,54 +11143,54 @@ const Tn = ({
       },
       {
         label: "🔘 Thêm Nút bấm (Button)",
-        icon: Hs,
+        icon: Cs,
         onClick: () => l(y("Button"), null)
       },
       {
         label: "📝 Thêm Hộp nhập liệu (TextBox)",
-        icon: as,
+        icon: ns,
         onClick: () => l(y("TextBox"), null)
       },
       {
         label: "🏷️ Thêm Nhãn chữ (Label)",
-        icon: is,
+        icon: Qt,
         onClick: () => l(y("Label"), null)
       },
       {
         label: "📊 Thêm Bảng dữ liệu (Table)",
-        icon: bt,
+        icon: Nt,
         onClick: () => l(y("Table"), null)
       }
     ];
-  }, w = (g == null ? void 0 : g.components.filter((S) => !S.parentId)) || [];
+  }, C = (g == null ? void 0 : g.components.filter((S) => !S.parentId)) || [];
   return /* @__PURE__ */ e.jsxs(
     "div",
     {
-      ref: f,
-      onContextMenu: L,
-      className: `flex-1 overflow-y-auto bg-slate-950 p-6 flex flex-col relative mr-2.5 transition-colors ${x && t ? "ring-2 ring-blue-500/50 bg-blue-950/10" : ""}`,
+      ref: x,
+      onContextMenu: P,
+      className: `flex-1 overflow-y-auto bg-slate-950 p-6 flex flex-col relative mr-2.5 transition-colors ${h && t ? "ring-2 ring-blue-500/50 bg-blue-950/10" : ""}`,
       children: [
         /* @__PURE__ */ e.jsxs("div", { className: "max-w w-full mx-auto flex-1 flex flex-col space-y-4", children: [
           /* @__PURE__ */ e.jsx("div", { className: "flex items-center justify-between pb-3 border-b border-slate-800/80", children: /* @__PURE__ */ e.jsxs("div", { children: [
             /* @__PURE__ */ e.jsxs("h1", { className: "text-lg font-bold text-slate-100 flex items-center gap-2.5", children: [
               /* @__PURE__ */ e.jsx("span", { children: (g == null ? void 0 : g.name) || "Màn hình" }),
               v ? /* @__PURE__ */ e.jsxs("span", { className: "px-2.5 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-800 text-emerald-400 text-xs font-mono flex items-center gap-1.5 shadow-sm", children: [
-                /* @__PURE__ */ e.jsx(hn, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(jn, { className: "w-3.5 h-3.5" }),
                 /* @__PURE__ */ e.jsx("span", { children: g == null ? void 0 : g.scriptFile })
               ] }) : /* @__PURE__ */ e.jsxs("span", { className: "px-2.5 py-0.5 rounded-lg bg-amber-950/80 border border-amber-800 text-amber-400 text-xs font-medium flex items-center gap-1.5 shadow-sm", children: [
-                /* @__PURE__ */ e.jsx(Cs, { className: "w-3 h-3" }),
+                /* @__PURE__ */ e.jsx(Ts, { className: "w-3 h-3" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Chưa gắn file BL" })
               ] })
             ] }),
             /* @__PURE__ */ e.jsx("p", { className: "text-xs text-slate-400 mt-0.5", children: v ? (g == null ? void 0 : g.description) || "Nhấn chuột phải vào màn hình hoặc khoảng trắng để thêm thành phần mới." : "Màn hình này đang bị khóa: Cần thiết lập file nghiệp vụ (TypeScript) để kích hoạt thiết kế." })
           ] }) }),
-          v ? w.length === 0 ? /* @__PURE__ */ e.jsxs(
+          v ? C.length === 0 ? /* @__PURE__ */ e.jsxs(
             "div",
             {
-              onContextMenu: L,
-              className: `flex-1 min-h-[400px] border-2 border-dashed rounded-2xl flex flex-col items-center justify-center p-12 text-center transition-all cursor-context-menu ${x ? "border-blue-500 bg-blue-950/20 shadow-xl shadow-blue-500/10" : "border-slate-800 hover:border-blue-500/50 bg-slate-900/30"}`,
+              onContextMenu: P,
+              className: `flex-1 min-h-[400px] border-2 border-dashed rounded-2xl flex flex-col items-center justify-center p-12 text-center transition-all cursor-context-menu ${h ? "border-blue-500 bg-blue-950/20 shadow-xl shadow-blue-500/10" : "border-slate-800 hover:border-blue-500/50 bg-slate-900/30"}`,
               children: [
-                /* @__PURE__ */ e.jsx("div", { className: "w-14 h-14 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-4 shadow-inner", children: /* @__PURE__ */ e.jsx(Et, { className: "w-7 h-7" }) }),
+                /* @__PURE__ */ e.jsx("div", { className: "w-14 h-14 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-4 shadow-inner", children: /* @__PURE__ */ e.jsx(Xt, { className: "w-7 h-7" }) }),
                 /* @__PURE__ */ e.jsx("h3", { className: "text-base font-bold text-slate-200 mb-1", children: "Màn hình đang trống (Blank Canvas)" }),
                 /* @__PURE__ */ e.jsxs("p", { className: "text-xs text-slate-400 max-w-md mb-5 leading-relaxed", children: [
                   "Bạn có thể ",
@@ -10906,7 +11227,7 @@ const Tn = ({
                     },
                     className: "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20 transition-all cursor-pointer",
                     children: [
-                      /* @__PURE__ */ e.jsx(Yn, { className: "w-4 h-4" }),
+                      /* @__PURE__ */ e.jsx(sr, { className: "w-4 h-4" }),
                       /* @__PURE__ */ e.jsx("span", { children: "Tạo 2 Khoảng Trắng Nằm Song Song (50 - 50)" })
                     ]
                   }
@@ -10918,80 +11239,80 @@ const Tn = ({
             {
               style: {
                 display: "flex",
-                flexDirection: I.direction || "column",
-                gap: I.gap || "16px",
-                flexWrap: I.wrap || "wrap",
+                flexDirection: T.direction || "column",
+                gap: T.gap || "16px",
+                flexWrap: T.wrap || "wrap",
                 width: "100%"
               },
               className: "flex-1",
-              children: qr(w).map((S, R) => {
+              children: ra(C).map((S, L) => {
                 if (S.type === "tab_stack")
                   return /* @__PURE__ */ e.jsx(
-                    zr,
+                    na,
                     {
                       parentId: null,
                       order: S.order,
                       tabNodes: S.nodes,
                       isEditing: t,
-                      onContextMenu: k,
-                      renderChild: (O, V) => t ? /* @__PURE__ */ e.jsx(
-                        Tn,
+                      onContextMenu: R,
+                      renderChild: (V, U) => t ? /* @__PURE__ */ e.jsx(
+                        $n,
                         {
-                          node: O,
+                          node: V,
                           isEditing: t,
-                          onContextMenu: k,
-                          parentLayout: V && "mode" in V ? V : void 0,
-                          parentFlexConfig: V && !("mode" in V) ? V : void 0,
+                          onContextMenu: R,
+                          parentLayout: U && "mode" in U ? U : void 0,
+                          parentFlexConfig: U && !("mode" in U) ? U : void 0,
                           activeId: r,
                           overId: s
                         },
-                        O.id
+                        V.id
                       ) : /* @__PURE__ */ e.jsx(
-                        Ts,
+                        Fs,
                         {
-                          node: O,
+                          node: V,
                           isEditing: !1,
-                          onContextMenu: k,
-                          parentLayout: V && "mode" in V ? V : void 0,
-                          parentFlexConfig: V && !("mode" in V) ? V : void 0
+                          onContextMenu: R,
+                          parentLayout: U && "mode" in U ? U : void 0,
+                          parentFlexConfig: U && !("mode" in U) ? U : void 0
                         },
-                        O.id
+                        V.id
                       )
                     },
-                    `root_tab_stack_${S.order}_${R}`
+                    `root_tab_stack_${S.order}_${L}`
                   );
-                const $ = S.node, Q = {
+                const $ = S.node, se = {
                   mode: "flex",
-                  direction: I.direction || "column",
-                  wrap: I.wrap || "wrap",
-                  gap: I.gap,
+                  direction: T.direction || "column",
+                  wrap: T.wrap || "wrap",
+                  gap: T.gap,
                   columnsPerRow: "auto"
                 };
                 return t ? /* @__PURE__ */ e.jsx(
-                  Tn,
+                  $n,
                   {
                     node: $,
                     isEditing: t,
-                    onContextMenu: k,
-                    parentLayout: Q,
+                    onContextMenu: R,
+                    parentLayout: se,
                     activeId: r,
                     overId: s
                   },
                   $.id
                 ) : /* @__PURE__ */ e.jsx(
-                  Ts,
+                  Fs,
                   {
                     node: $,
                     isEditing: !1,
-                    onContextMenu: k,
-                    parentLayout: Q
+                    onContextMenu: R,
+                    parentLayout: se
                   },
                   $.id
                 );
               })
             }
           ) : /* @__PURE__ */ e.jsxs("div", { className: "flex-1 min-h-[450px] border-2 border-dashed border-amber-800/60 bg-amber-950/10 rounded-2xl flex flex-col items-center justify-center p-8 text-center", children: [
-            /* @__PURE__ */ e.jsx("div", { className: "w-16 h-16 rounded-2xl bg-amber-600/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4 shadow-lg shadow-amber-900/20", children: /* @__PURE__ */ e.jsx(Cs, { className: "w-8 h-8" }) }),
+            /* @__PURE__ */ e.jsx("div", { className: "w-16 h-16 rounded-2xl bg-amber-600/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4 shadow-lg shadow-amber-900/20", children: /* @__PURE__ */ e.jsx(Ts, { className: "w-8 h-8" }) }),
             /* @__PURE__ */ e.jsx("h3", { className: "text-lg font-bold text-slate-100 mb-1.5 flex items-center gap-2", children: /* @__PURE__ */ e.jsx("span", { children: "Chưa Xác Định File Nghiệp Vụ (BL File)" }) }),
             /* @__PURE__ */ e.jsxs("p", { className: "text-xs text-slate-400 max-w-lg mb-6 leading-relaxed", children: [
               "Mỗi màn hình trong hệ thống cần liên kết với một file mã nguồn TypeScript (",
@@ -11003,9 +11324,9 @@ const Tn = ({
               {
                 onSubmit: (S) => {
                   S.preventDefault();
-                  const R = N.trim();
-                  if (!R) return;
-                  const $ = R.endsWith(".bl.ts") ? R : R.endsWith(".ts") ? R.replace(/\.ts$/, ".bl.ts") : `${R}.bl.ts`;
+                  const L = w.trim();
+                  if (!L) return;
+                  const $ = L.endsWith(".bl.ts") ? L : L.endsWith(".ts") ? L.replace(/\.ts$/, ".bl.ts") : `${L}.bl.ts`;
                   p(n, $), u("");
                 },
                 className: "w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-2xl space-y-3.5 text-left",
@@ -11016,14 +11337,14 @@ const Tn = ({
                       /* @__PURE__ */ e.jsx("span", { className: "text-[11px] text-amber-400 font-mono", children: ".bl.ts" })
                     ] }),
                     /* @__PURE__ */ e.jsxs("div", { className: "relative", children: [
-                      /* @__PURE__ */ e.jsx(hn, { className: "w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" }),
+                      /* @__PURE__ */ e.jsx(jn, { className: "w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" }),
                       /* @__PURE__ */ e.jsx(
                         "input",
                         {
                           type: "text",
                           autoFocus: !0,
                           placeholder: "Ví dụ: customerManagement.bl.ts, orderReport.bl.ts...",
-                          value: N,
+                          value: w,
                           onChange: (S) => u(S.target.value),
                           className: "w-full pl-9 pr-3 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-slate-100 placeholder-slate-500 font-mono focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                         }
@@ -11031,7 +11352,7 @@ const Tn = ({
                     ] })
                   ] }),
                   g && /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1.5 text-[11px] text-slate-400", children: [
-                    /* @__PURE__ */ e.jsx(Tr, { className: "w-3.5 h-3.5 text-cyan-400 shrink-0" }),
+                    /* @__PURE__ */ e.jsx(On, { className: "w-3.5 h-3.5 text-cyan-400 shrink-0" }),
                     /* @__PURE__ */ e.jsx("span", { children: "Gợi ý nhanh:" }),
                     /* @__PURE__ */ e.jsxs(
                       "button",
@@ -11053,10 +11374,10 @@ const Tn = ({
                     "button",
                     {
                       type: "submit",
-                      disabled: !N.trim(),
+                      disabled: !w.trim(),
                       className: "w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2",
                       children: [
-                        /* @__PURE__ */ e.jsx(vn, { className: "w-4 h-4" }),
+                        /* @__PURE__ */ e.jsx(qs, { className: "w-4 h-4" }),
                         /* @__PURE__ */ e.jsx("span", { children: "Xác Nhận & Mở Thiết Kế Giao Diện" })
                       ]
                     }
@@ -11066,26 +11387,26 @@ const Tn = ({
             )
           ] })
         ] }),
-        C && /* @__PURE__ */ e.jsx(
-          Jr,
+        k && /* @__PURE__ */ e.jsx(
+          la,
           {
-            x: C.x,
-            y: C.y,
+            x: k.x,
+            y: k.y,
             items: F(),
-            onClose: () => h(null)
+            onClose: () => m(null)
           }
         )
       ]
     }
   );
 };
-function Vl(t) {
+function fo(t) {
   return t.replace(/-([a-z])/g, (r, s) => s.toUpperCase());
 }
-function Wl(t) {
+function go(t) {
   return t.replace(/([A-Z])/g, "-$1").toLowerCase();
 }
-function Kl(t) {
+function vo(t) {
   const r = {};
   if (!t || typeof t != "string") return r;
   const a = t.replace(/\/\*[\s\S]*?\*\//g, "").split(";");
@@ -11096,13 +11417,13 @@ function Kl(t) {
     if (l === -1) continue;
     const i = o.slice(0, l).trim(), d = o.slice(l + 1).trim();
     if (i && d) {
-      let c = Vl(i);
+      let c = fo(i);
       c === "justify" && (c = "justifyContent"), c === "align" && (c = "alignItems"), r[c] = d;
     }
   }
   return r;
 }
-function Gl(t) {
+function yo(t) {
   const r = /* @__PURE__ */ new Set([
     "customCss",
     "display",
@@ -11116,179 +11437,179 @@ function Gl(t) {
   for (const [a, n] of Object.entries(t)) {
     if (n == null || n === "" || r.has(a))
       continue;
-    const o = Wl(a);
+    const o = go(a);
     s.push(`${o}: ${n};`);
   }
   return s.join(`
 `);
 }
-const Ul = ({
+const oa = ({
   isOpen: t,
   node: r,
   onClose: s,
   onSave: a
 }) => {
-  const [n, o] = A("info"), [l, i] = A([]), [d, c] = A([]), [p, g] = A(""), [I, f] = A("General"), [x, N] = A(""), [u, v] = A("Dropdown"), [C, h] = A(""), [y, L] = A(""), [k, F] = A(""), [w, S] = A(1), [R, $] = A(4), [Q, O] = A(""), [V, P] = A(""), [K, G] = A(""), [b, se] = A(""), [de, me] = A(""), [Ce, he] = A(""), [we, Oe] = A(""), [U, oe] = A(""), [Y, z] = A(""), [xe, ve] = A(""), [T, B] = A(""), [ee, je] = A(""), [te, Se] = A(""), [ce, Ne] = A(""), [le, ue] = A(""), [Pe, ye] = A(""), [pe, W] = A(""), [ae, it] = A(""), [gt, rt] = A(""), [xt, q] = A(""), [ge, Ee] = A(""), [ke, Me] = A(""), [Te, Ye] = A(""), [Ie, ht] = A(""), [dt, Nt] = A(""), [vt, Ot] = A("id"), [zt, _t] = A(""), [wt, Ht] = A(""), [_e, qt] = A(""), [Yt, Vt] = A(""), [It, Jt] = A(""), [Xt, Wt] = A(""), [Kt, D] = A(""), [J, ne] = A(""), [be, $e] = A(""), [Ae, Fe] = A(""), [De, Xe] = A(!1), [Ke, Ue] = A(!0), [tt, mt] = A(!1), [ut, Qe] = A(!1), [Ft, Qt] = A(!1), [Zt, Fs] = A(!1), [Rs, $s] = A(!1), [Ls, es] = A(!1), [Js, Xs] = A(!1), [Qs, Zs] = A(!1), [en, tn] = A(!1), [sn, Es] = A(!1), [ds, us] = A(!1), [ps, xs] = A(!1), [hs, m] = A(!1), [M, E] = A(!1), [H, _] = A(!0), [X, re] = A(!0), [Re, We] = A(!1), [qe, pt] = A(!1), [yt, Ct] = A(!1), [Ps, As] = A(!1), [Pn, An] = A(!1), [Bn, Mn] = A(!1), [On, _n] = A(!1), [Hn, Vn] = A(!1), [ts, Wn] = A(""), [nn, Kn] = A(""), [Gn, Un] = A(""), [ss, Bs] = A(""), [to, ea] = A("");
-  if (Be(() => {
-    Ln().then((j) => i(j));
-  }, []), Be(() => {
+  const [n, o] = D("info"), [l, i] = D([]), [d, c] = D([]), [p, g] = D(""), [T, x] = D("General"), [h, w] = D(""), [u, v] = D("Dropdown"), [k, m] = D(""), [y, P] = D(""), [R, F] = D(""), [C, S] = D(1), [L, $] = D(4), [se, V] = D(""), [U, E] = D(""), [Y, z] = D(""), [b, ae] = D(""), [O, _] = D(""), [me, ce] = D(""), [ye, ue] = D(""), [M, Q] = D(""), [W, q] = D(""), [ie, Ne] = D(""), [j, A] = D(""), [ne, Ce] = D(""), [le, Fe] = D(""), [fe, Ie] = D(""), [pe, ge] = D(""), [Me, De] = D(""), [we, X] = D(""), [xe, ot] = D(""), [ft, nt] = D(""), [pt, ee] = D(""), [Se, Ee] = D(""), [Re, _e] = D(""), [Le, qe] = D(""), [$e, rt] = D(""), [ut, Ct] = D(""), [gt, xt] = D("id"), [Wt, Dt] = D(""), [vt, kt] = D(""), [Ge, Kt] = D(""), [Ut, Ft] = D(""), [Rt, Lt] = D(""), [At, Mt] = D(""), [Bt, I] = D(""), [te, de] = D(""), [ve, G] = D(""), [je, ke] = D(""), [oe, Ve] = D(!1), [We, Pe] = D(!0), [Xe, at] = D(!1), [it, Ze] = D(!1), [St, Ot] = D(!1), [zt, Es] = D(!1), [As, Ms] = D(!1), [Bs, as] = D(!1), [rn, an] = D(!1), [ln, on] = D(!1), [cn, dn] = D(!1), [un, Os] = D(!1), [ps, hs] = D(!1), [ms, bs] = D(!1), [fs, f] = D(!1), [H, B] = D(!1), [J, K] = D(!0), [re, he] = D(!0), [Be, Ue] = D(!1), [Je, jt] = D(!1), [$t, _t] = D(!1), [_s, Hs] = D(!1), [Gn, Vn] = D(!1), [Wn, Kn] = D(!1), [Un, zn] = D(!1), [qn, Yn] = D(!1), [ls, Jn] = D(""), [xn, Xn] = D(""), [Qn, Zn] = D(""), [os, Gs] = D(""), [Io, ia] = D("");
+  if (He(() => {
+    nn().then((N) => i(N));
+  }, []), He(() => {
     if (r && t) {
-      const j = r.props || {}, ie = r.dataBinding || {};
-      g(String(j.id ?? r.id)), f(j.group !== void 0 ? String(j.group) : "General");
-      const Le = j.reference !== void 0 ? String(j.reference) : ie.entityName !== void 0 ? String(ie.entityName) : j.refName !== void 0 ? String(j.refName) : "";
-      N(Le), v(r.type || "Dropdown"), h(String(j.parentId ?? "")), L(
-        j.refName !== void 0 ? String(j.refName) : ie.refName !== void 0 ? String(ie.refName) : Le
+      const N = r.props || {}, be = r.dataBinding || {};
+      g(String(N.id ?? r.id)), x(N.group !== void 0 ? String(N.group) : "General");
+      const Oe = N.reference !== void 0 ? String(N.reference) : be.entityName !== void 0 ? String(be.entityName) : N.refName !== void 0 ? String(N.refName) : "";
+      w(Oe), v(r.type || "Dropdown"), m(String(N.parentId ?? "")), P(
+        N.refName !== void 0 ? String(N.refName) : be.refName !== void 0 ? String(be.refName) : Oe
       ), F(
-        ie.fieldName !== void 0 ? String(ie.fieldName) : j.fieldName !== void 0 ? String(j.fieldName) : j.name !== void 0 ? String(j.name) : r.id
-      ), S(Number(r.order ?? j.order ?? 1)), $(Number(j.colSpan ?? j.column ?? 4)), O(j.label !== void 0 ? String(j.label) : ""), P(
-        j.events !== void 0 ? typeof j.events == "string" ? j.events : JSON.stringify(j.events) : ""
-      ), G(j.style !== void 0 ? String(j.style) : ""), se(j.childStyle !== void 0 ? String(j.childStyle) : ""), me(j.validation !== void 0 ? String(j.validation) : ""), he(
-        j.selectField !== void 0 ? String(j.selectField) : ie.selectField !== void 0 ? String(ie.selectField) : ""
-      ), Oe(j.plainText !== void 0 ? String(j.plainText) : ""), oe(
-        j.cssClass !== void 0 ? String(j.cssClass) : j.className !== void 0 ? String(j.className) : ""
-      ), z(j.sqlSelect !== void 0 ? String(j.sqlSelect) : ""), ve(String(j.offset ?? "")), B(j.groupFormat !== void 0 ? String(j.groupFormat) : ""), je(j.formatSummary !== void 0 ? String(j.formatSummary) : ""), Se(j.orderBySummary !== void 0 ? String(j.orderBySummary) : ""), Ne(j.groupEvent !== void 0 ? String(j.groupEvent) : ""), ue(j.icon !== void 0 ? String(j.icon) : ""), ye(j.system !== void 0 ? String(j.system) : ""), W(j.refClass !== void 0 ? String(j.refClass) : ""), it(j.hotKey !== void 0 ? String(j.hotKey) : ""), rt(j.dateTimeField !== void 0 ? String(j.dateTimeField) : ""), q(String(j.addStart ?? "")), Ee(String(j.addEnd ?? "")), Me(String(j.bodyRowHeight ?? "")), Ye(
-        j.sqlWhere !== void 0 ? String(j.sqlWhere) : ie.sqlWhere !== void 0 ? String(ie.sqlWhere) : ""
-      ), ht(String(j.footerHeight ?? "")), Nt(j.joinTable !== void 0 ? String(j.joinTable) : ""), Ot(
-        j.idField !== void 0 ? String(j.idField) : ie.idField !== void 0 ? String(ie.idField) : "id"
-      ), _t(String(j.headerHeight ?? "")), Ht(
-        j.populateField !== void 0 ? String(j.populateField) : ie.populateField !== void 0 ? String(ie.populateField) : ""
-      ), qt(String(j.precision ?? "")), Vt(j.groupBy !== void 0 ? String(j.groupBy) : ""), Jt(j.disabledExp !== void 0 ? String(j.disabledExp) : ""), Wt(j.showExp !== void 0 ? String(j.showExp) : ""), D(String(j.row ?? "")), ne(j.template !== void 0 ? String(j.template) : ""), $e(j.templateLocked !== void 0 ? String(j.templateLocked) : ""), Fe(String(j.default ?? j.defaultValue ?? "")), Xe(!!j.realtime), Ue(j.showLabel !== !1 && j.label !== !1), mt(!!j.hidden), Qe(!!j.filterLocal), Qt(!!j.sqlSearch), Fs(!!j.cache), $s(!!j.moveTab), es(!!j.focus), Xs(!!j.focusSearch), Zs(!!j.noLoad), tn(!!j.collapsible), Es(!!j.showHotKey), us(!!j.history), xs(!!j.top), m(!!j.hideAnd), E(!!j.disabled), _(j.visibility !== !1), re(j.active !== !1), We(!!j.upperCase), pt(!!(j.virtualScroll || j.virtual)), Ct(!!j.isPrivate), As(!!j.renderIndex), An(!!(j.canAdd || j.add)), Mn(!!(j.canSearch || j.search)), _n(!!(j.isSummary || j.summary)), Vn(!!j.showDateTimeField);
-      const He = j.dataSource !== void 0 ? j.dataSource : j.dataSourceFilter !== void 0 ? j.dataSourceFilter : ie.dataSource !== void 0 ? ie.dataSource : "";
-      Wn(String(He ?? ""));
-      const sa = j.formatEntity !== void 0 ? j.formatEntity : ie.formatEntity !== void 0 ? ie.formatEntity : "";
-      Kn(String(sa ?? "")), Un(j.migration !== void 0 ? String(j.migration) : "");
-      const na = j.formatData !== void 0 ? j.formatData : ie.formatData !== void 0 ? ie.formatData : "";
-      Bs(String(na ?? ""));
-      const ra = j.query !== void 0 ? j.query : ie.query !== void 0 ? ie.query : "";
-      ea(String(ra ?? "")), c(
-        j.dropdownColumns || ie.dropdownColumns || []
+        be.fieldName !== void 0 ? String(be.fieldName) : N.fieldName !== void 0 ? String(N.fieldName) : N.name !== void 0 ? String(N.name) : r.id
+      ), S(Number(r.order ?? N.order ?? 1)), $(Number(N.colSpan ?? N.column ?? 4)), V(N.label !== void 0 ? String(N.label) : ""), E(
+        N.events !== void 0 ? typeof N.events == "string" ? N.events : JSON.stringify(N.events) : ""
+      ), z(N.style !== void 0 ? String(N.style) : ""), ae(N.childStyle !== void 0 ? String(N.childStyle) : ""), _(N.validation !== void 0 ? String(N.validation) : ""), ce(
+        N.selectField !== void 0 ? String(N.selectField) : be.selectField !== void 0 ? String(be.selectField) : ""
+      ), ue(N.plainText !== void 0 ? String(N.plainText) : ""), Q(
+        N.cssClass !== void 0 ? String(N.cssClass) : N.className !== void 0 ? String(N.className) : ""
+      ), q(N.sqlSelect !== void 0 ? String(N.sqlSelect) : ""), Ne(String(N.offset ?? "")), A(N.groupFormat !== void 0 ? String(N.groupFormat) : ""), Ce(N.formatSummary !== void 0 ? String(N.formatSummary) : ""), Fe(N.orderBySummary !== void 0 ? String(N.orderBySummary) : ""), Ie(N.groupEvent !== void 0 ? String(N.groupEvent) : ""), ge(N.icon !== void 0 ? String(N.icon) : ""), De(N.system !== void 0 ? String(N.system) : ""), X(N.refClass !== void 0 ? String(N.refClass) : ""), ot(N.hotKey !== void 0 ? String(N.hotKey) : ""), nt(N.dateTimeField !== void 0 ? String(N.dateTimeField) : ""), ee(String(N.addStart ?? "")), Ee(String(N.addEnd ?? "")), _e(String(N.bodyRowHeight ?? "")), qe(
+        N.sqlWhere !== void 0 ? String(N.sqlWhere) : be.sqlWhere !== void 0 ? String(be.sqlWhere) : ""
+      ), rt(String(N.footerHeight ?? "")), Ct(N.joinTable !== void 0 ? String(N.joinTable) : ""), xt(
+        N.idField !== void 0 ? String(N.idField) : be.idField !== void 0 ? String(be.idField) : "id"
+      ), Dt(String(N.headerHeight ?? "")), kt(
+        N.populateField !== void 0 ? String(N.populateField) : be.populateField !== void 0 ? String(be.populateField) : ""
+      ), Kt(String(N.precision ?? "")), Ft(N.groupBy !== void 0 ? String(N.groupBy) : ""), Lt(N.disabledExp !== void 0 ? String(N.disabledExp) : ""), Mt(N.showExp !== void 0 ? String(N.showExp) : ""), I(String(N.row ?? "")), de(N.template !== void 0 ? String(N.template) : ""), G(N.templateLocked !== void 0 ? String(N.templateLocked) : ""), ke(String(N.default ?? N.defaultValue ?? "")), Ve(!!N.realtime), Pe(N.showLabel !== !1 && N.label !== !1), at(!!N.hidden), Ze(!!N.filterLocal), Ot(!!N.sqlSearch), Es(!!N.cache), Ms(!!N.moveTab), as(!!N.focus), an(!!N.focusSearch), on(!!N.noLoad), dn(!!N.collapsible), Os(!!N.showHotKey), hs(!!N.history), bs(!!N.top), f(!!N.hideAnd), B(!!N.disabled), K(N.visibility !== !1), he(N.active !== !1), Ue(!!N.upperCase), jt(!!(N.virtualScroll || N.virtual)), _t(!!N.isPrivate), Hs(!!N.renderIndex), Vn(!!(N.canAdd || N.add)), Kn(!!(N.canSearch || N.search)), zn(!!(N.isSummary || N.summary)), Yn(!!N.showDateTimeField);
+      const Ke = N.dataSource !== void 0 ? N.dataSource : N.dataSourceFilter !== void 0 ? N.dataSourceFilter : be.dataSource !== void 0 ? be.dataSource : "";
+      Jn(String(Ke ?? ""));
+      const da = N.formatEntity !== void 0 ? N.formatEntity : be.formatEntity !== void 0 ? be.formatEntity : "";
+      Xn(String(da ?? "")), Zn(N.migration !== void 0 ? String(N.migration) : "");
+      const ua = N.formatData !== void 0 ? N.formatData : be.formatData !== void 0 ? be.formatData : "";
+      Gs(String(ua ?? ""));
+      const xa = N.query !== void 0 ? N.query : be.query !== void 0 ? be.query : "";
+      ia(String(xa ?? "")), c(
+        N.dropdownColumns || be.dropdownColumns || []
       );
     }
   }, [r, t]), !t || !r) return null;
-  const ta = () => {
-    let j = V;
+  const ca = () => {
+    let N = U;
     try {
-      V.trim().startsWith("{") && (j = JSON.parse(V));
+      U.trim().startsWith("{") && (N = JSON.parse(U));
     } catch {
-      j = V;
+      N = U;
     }
-    const ie = {
+    const be = {
       ...r.props,
       id: p,
-      group: I,
-      reference: x,
+      group: T,
+      reference: h,
       componentType: u,
-      parentId: C,
+      parentId: k,
       refName: y,
-      fieldName: k,
-      order: Number(w) || 1,
-      colSpan: Number(R) || 4,
-      column: Number(R) || 4,
-      label: Q,
-      events: j,
-      style: K,
+      fieldName: R,
+      order: Number(C) || 1,
+      colSpan: Number(L) || 4,
+      column: Number(L) || 4,
+      label: se,
+      events: N,
+      style: Y,
       childStyle: b,
-      validation: de,
-      selectField: Ce,
-      plainText: we,
-      cssClass: U,
-      sqlSelect: Y,
-      offset: xe,
-      groupFormat: T,
-      formatSummary: ee,
-      orderBySummary: te,
-      groupEvent: ce,
-      icon: le,
-      system: Pe,
-      refClass: pe,
-      hotKey: ae,
-      dateTimeField: gt,
-      addStart: xt,
-      addEnd: ge,
-      bodyRowHeight: ke,
-      sqlWhere: Te,
-      footerHeight: Ie,
-      joinTable: dt,
-      idField: vt,
-      headerHeight: zt,
-      populateField: wt,
-      precision: _e ? Number(_e) : void 0,
-      groupBy: Yt,
-      disabledExp: It,
-      showExp: Xt,
-      row: Kt,
-      template: J,
-      templateLocked: be,
-      default: Ae,
+      validation: O,
+      selectField: me,
+      plainText: ye,
+      cssClass: M,
+      sqlSelect: W,
+      offset: ie,
+      groupFormat: j,
+      formatSummary: ne,
+      orderBySummary: le,
+      groupEvent: fe,
+      icon: pe,
+      system: Me,
+      refClass: we,
+      hotKey: xe,
+      dateTimeField: ft,
+      addStart: pt,
+      addEnd: Se,
+      bodyRowHeight: Re,
+      sqlWhere: Le,
+      footerHeight: $e,
+      joinTable: ut,
+      idField: gt,
+      headerHeight: Wt,
+      populateField: vt,
+      precision: Ge ? Number(Ge) : void 0,
+      groupBy: Ut,
+      disabledExp: Rt,
+      showExp: At,
+      row: Bt,
+      template: te,
+      templateLocked: ve,
+      default: je,
       // Display flags
-      realtime: De,
-      showLabel: Ke,
-      hidden: tt,
-      filterLocal: ut,
-      sqlSearch: Ft,
-      cache: Zt,
-      moveTab: Rs,
-      focus: Ls,
-      focusSearch: Js,
-      noLoad: Qs,
-      collapsible: en,
-      showHotKey: sn,
-      history: ds,
-      top: ps,
-      hideAnd: hs,
-      disabled: M,
-      visibility: H,
-      active: X,
-      upperCase: Re,
-      virtual: qe,
-      isPrivate: yt,
-      renderIndex: Ps,
-      add: Pn,
-      search: Bn,
-      summary: On,
-      showDateTimeField: Hn,
+      realtime: oe,
+      showLabel: We,
+      hidden: Xe,
+      filterLocal: it,
+      sqlSearch: St,
+      cache: zt,
+      moveTab: As,
+      focus: Bs,
+      focusSearch: rn,
+      noLoad: ln,
+      collapsible: cn,
+      showHotKey: un,
+      history: ps,
+      top: ms,
+      hideAnd: fs,
+      disabled: H,
+      visibility: J,
+      active: re,
+      upperCase: Be,
+      virtual: Je,
+      isPrivate: $t,
+      renderIndex: _s,
+      add: Gn,
+      search: Wn,
+      summary: Un,
+      showDateTimeField: qn,
       // Code blocks
-      dataSource: ts,
-      dataSourceFilter: ts,
-      formatEntity: nn,
-      migration: Gn,
-      formatData: ss,
-      query: ts,
+      dataSource: ls,
+      dataSourceFilter: ls,
+      formatEntity: xn,
+      migration: Qn,
+      formatData: os,
+      query: ls,
       dropdownColumns: d
-    }, Le = {
+    }, Oe = {
       ...r.dataBinding || {},
-      entityName: x || y || "",
-      refName: y || x || "",
-      fieldName: k || r.id,
-      query: ts,
-      dataSource: ts,
-      sqlWhere: Te,
-      selectField: Ce,
-      populateField: wt,
-      idField: vt,
-      formatData: ss,
-      formatEntity: nn,
+      entityName: h || y || "",
+      refName: y || h || "",
+      fieldName: R || r.id,
+      query: ls,
+      dataSource: ls,
+      sqlWhere: Le,
+      selectField: me,
+      populateField: vt,
+      idField: gt,
+      formatData: os,
+      formatEntity: xn,
       dropdownColumns: d,
       twoWay: !0
     };
-    a(r.id, ie, Le), s();
-  }, zn = Ws(l), ns = Ks(zn, x || y), ms = ns ? ns.fields : [], Ms = ["Select", "Dropdown", "Autocomplete", "SearchEntry"].includes(u), Ge = (j, ie, Le) => /* @__PURE__ */ e.jsxs("label", { className: "flex items-center justify-between py-1 px-1.5 hover:bg-slate-800/60 rounded cursor-pointer select-none transition-colors", children: [
-    /* @__PURE__ */ e.jsx("span", { className: `text-[11px] ${ie ? "text-slate-200 font-medium" : "text-slate-400"}`, children: j }),
+    a(r.id, be, Oe), s();
+  }, er = Js(l), is = Xs(er, h || y), gs = is ? is.fields : [], Vs = ["Select", "Dropdown", "Autocomplete", "SearchEntry"].includes(u), ze = (N, be, Oe) => /* @__PURE__ */ e.jsxs("label", { className: "flex items-center justify-between py-1 px-1.5 hover:bg-slate-800/60 rounded cursor-pointer select-none transition-colors", children: [
+    /* @__PURE__ */ e.jsx("span", { className: `text-[11px] ${be ? "text-slate-200 font-medium" : "text-slate-400"}`, children: N }),
     /* @__PURE__ */ e.jsx(
       "input",
       {
         type: "checkbox",
-        checked: ie,
-        onChange: (He) => Le(He.target.checked),
+        checked: be,
+        onChange: (Ke) => Oe(Ke.target.checked),
         className: "w-3.5 h-3.5 rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer accent-emerald-500"
       }
     )
   ] });
-  return Tt(
+  return It(
     /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-[999999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-150", children: /* @__PURE__ */ e.jsxs("div", { className: "w-full max-w-7xl rounded-lg border border-teal-600/40 bg-[#0d1525] shadow-2xl overflow-hidden flex flex-col text-slate-200 my-auto max-h-[96vh] relative", children: [
       /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between px-5 py-2.5 bg-[#09101d] border-b border-teal-600/30", children: [
         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ e.jsx(Gt, { className: "w-4 h-4 text-teal-400" }),
+          /* @__PURE__ */ e.jsx(lt, { className: "w-4 h-4 text-teal-400" }),
           /* @__PURE__ */ e.jsx("span", { className: "font-bold text-sm tracking-wide text-white", children: "Component properties" }),
           /* @__PURE__ */ e.jsxs("span", { className: "text-[11px] px-2 py-0.5 rounded bg-teal-950/80 text-teal-300 border border-teal-800/60 font-mono", children: [
             "#",
@@ -11300,10 +11621,26 @@ const Ul = ({
             "button",
             {
               type: "button",
-              onClick: ta,
+              onClick: () => {
+                const N = Z.getState(), be = (r == null ? void 0 : r.pageId) || N.activeFeatureId;
+                typeof N.openFeatureProperties == "function" && N.openFeatureProperties(be);
+              },
+              className: "flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border border-teal-700/60 bg-teal-950/60 hover:bg-teal-900 text-teal-300 transition-all cursor-pointer",
+              title: "Mở cấu hình Feature của màn hình này",
+              children: [
+                /* @__PURE__ */ e.jsx(lt, { className: "w-3.5 h-3.5 text-teal-400" }),
+                /* @__PURE__ */ e.jsx("span", { children: "Feature Properties ↗" })
+              ]
+            }
+          ),
+          /* @__PURE__ */ e.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: ca,
               className: "flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-900/40 transition-all cursor-pointer",
               children: [
-                /* @__PURE__ */ e.jsx(At, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Lưu" })
               ]
             }
@@ -11315,7 +11652,7 @@ const Ul = ({
               onClick: () => o("permissions"),
               className: "flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 transition-all cursor-pointer",
               children: [
-                /* @__PURE__ */ e.jsx(mn, { className: "w-3.5 h-3.5 text-teal-400" }),
+                /* @__PURE__ */ e.jsx(Nn, { className: "w-3.5 h-3.5 text-teal-400" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Phân quyền" })
               ]
             }
@@ -11327,7 +11664,7 @@ const Ul = ({
               onClick: s,
               className: "flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 transition-all cursor-pointer",
               children: [
-                /* @__PURE__ */ e.jsx(ct, { className: "w-3.5 h-3.5 text-rose-400" }),
+                /* @__PURE__ */ e.jsx(dt, { className: "w-3.5 h-3.5 text-rose-400" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Đóng" })
               ]
             }
@@ -11344,14 +11681,14 @@ const Ul = ({
             children: "THÔNG TIN CHUNG"
           }
         ),
-        Ms && /* @__PURE__ */ e.jsxs(
+        Vs && /* @__PURE__ */ e.jsxs(
           "button",
           {
             type: "button",
             onClick: () => o("dropdownColumns"),
             className: `py-2 border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${n === "dropdownColumns" ? "border-emerald-400 text-emerald-300" : "border-transparent text-slate-400 hover:text-slate-200"}`,
             children: [
-              /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5 text-emerald-400" }),
+              /* @__PURE__ */ e.jsx(Nt, { className: "w-3.5 h-3.5 text-emerald-400" }),
               /* @__PURE__ */ e.jsx("span", { children: "CỘT DROPDOWN" }),
               d.length > 0 && /* @__PURE__ */ e.jsx("span", { className: "px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono", children: d.length })
             ]
@@ -11400,8 +11737,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: I,
-                      onChange: (j) => f(j.target.value),
+                      value: T,
+                      onChange: (N) => x(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11411,20 +11748,20 @@ const Ul = ({
                   /* @__PURE__ */ e.jsxs(
                     "select",
                     {
-                      value: ns ? ns.name : "",
-                      onChange: (j) => {
-                        const ie = j.target.value;
-                        N(ie), L(ie);
+                      value: is ? is.name : "",
+                      onChange: (N) => {
+                        const be = N.target.value;
+                        w(be), P(be);
                       },
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none cursor-pointer",
                       children: [
                         /* @__PURE__ */ e.jsx("option", { value: "", children: "-- Chọn Thực Thể Danh Mục --" }),
-                        zn.map((j) => /* @__PURE__ */ e.jsxs("option", { value: j.name, children: [
-                          j.displayName,
+                        er.map((N) => /* @__PURE__ */ e.jsxs("option", { value: N.name, children: [
+                          N.displayName,
                           " (",
-                          j.name,
+                          N.name,
                           ")"
-                        ] }, j.name))
+                        ] }, N.name))
                       ]
                     }
                   )
@@ -11435,7 +11772,7 @@ const Ul = ({
                     "select",
                     {
                       value: u,
-                      onChange: (j) => v(j.target.value),
+                      onChange: (N) => v(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none cursor-pointer",
                       children: [
                         /* @__PURE__ */ e.jsx("option", { value: "Dropdown", children: "Dropdown" }),
@@ -11460,8 +11797,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: C,
-                      onChange: (j) => h(j.target.value),
+                      value: k,
+                      onChange: (N) => m(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11474,8 +11811,8 @@ const Ul = ({
                       type: "text",
                       value: y,
                       placeholder: "VD: Vendor, Terminal, Customer...",
-                      onChange: (j) => {
-                        L(j.target.value), N(j.target.value);
+                      onChange: (N) => {
+                        P(N.target.value), w(N.target.value);
                       },
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-cyan-300 font-mono text-xs focus:border-teal-500 focus:outline-none"
                     }
@@ -11487,8 +11824,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: k,
-                      onChange: (j) => F(j.target.value),
+                      value: R,
+                      onChange: (N) => F(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 font-mono focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11499,8 +11836,8 @@ const Ul = ({
                     "input",
                     {
                       type: "number",
-                      value: w,
-                      onChange: (j) => S(j.target.value),
+                      value: C,
+                      onChange: (N) => S(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11511,8 +11848,8 @@ const Ul = ({
                     "input",
                     {
                       type: "number",
-                      value: R,
-                      onChange: (j) => $(j.target.value),
+                      value: L,
+                      onChange: (N) => $(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11523,8 +11860,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: Q,
-                      onChange: (j) => O(j.target.value),
+                      value: se,
+                      onChange: (N) => V(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11545,8 +11882,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: K,
-                      onChange: (j) => G(j.target.value),
+                      value: Y,
+                      onChange: (N) => z(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11558,7 +11895,7 @@ const Ul = ({
                     {
                       type: "text",
                       value: b,
-                      onChange: (j) => se(j.target.value),
+                      onChange: (N) => ae(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11569,8 +11906,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: de,
-                      onChange: (j) => me(j.target.value),
+                      value: O,
+                      onChange: (N) => _(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11581,8 +11918,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: Ce,
-                      onChange: (j) => he(j.target.value),
+                      value: me,
+                      onChange: (N) => ce(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11593,8 +11930,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: we,
-                      onChange: (j) => Oe(j.target.value),
+                      value: ye,
+                      onChange: (N) => ue(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11605,8 +11942,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: U,
-                      onChange: (j) => oe(j.target.value),
+                      value: M,
+                      onChange: (N) => Q(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11617,8 +11954,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: Y,
-                      onChange: (j) => z(j.target.value),
+                      value: W,
+                      onChange: (N) => q(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11629,8 +11966,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: xe,
-                      onChange: (j) => ve(j.target.value),
+                      value: ie,
+                      onChange: (N) => Ne(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11641,8 +11978,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: T,
-                      onChange: (j) => B(j.target.value),
+                      value: j,
+                      onChange: (N) => A(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11653,8 +11990,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: ee,
-                      onChange: (j) => je(j.target.value),
+                      value: ne,
+                      onChange: (N) => Ce(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11665,8 +12002,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: te,
-                      onChange: (j) => Se(j.target.value),
+                      value: le,
+                      onChange: (N) => Fe(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11677,8 +12014,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: ce,
-                      onChange: (j) => Ne(j.target.value),
+                      value: fe,
+                      onChange: (N) => Ie(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11689,8 +12026,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: le,
-                      onChange: (j) => ue(j.target.value),
+                      value: pe,
+                      onChange: (N) => ge(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11701,8 +12038,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: Pe,
-                      onChange: (j) => ye(j.target.value),
+                      value: Me,
+                      onChange: (N) => De(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11713,8 +12050,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: pe,
-                      onChange: (j) => W(j.target.value),
+                      value: we,
+                      onChange: (N) => X(N.target.value),
                       placeholder: "TMS.UI.Business.Catalogue.TerminalEditor...",
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-cyan-300 font-mono text-[11px] focus:border-teal-500 focus:outline-none"
                     }
@@ -11726,8 +12063,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: ae,
-                      onChange: (j) => it(j.target.value),
+                      value: xe,
+                      onChange: (N) => ot(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11738,8 +12075,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: gt,
-                      onChange: (j) => rt(j.target.value),
+                      value: ft,
+                      onChange: (N) => nt(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11750,8 +12087,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: xt,
-                      onChange: (j) => q(j.target.value),
+                      value: pt,
+                      onChange: (N) => ee(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11762,8 +12099,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: ge,
-                      onChange: (j) => Ee(j.target.value),
+                      value: Se,
+                      onChange: (N) => Ee(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11774,8 +12111,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: ke,
-                      onChange: (j) => Me(j.target.value),
+                      value: Re,
+                      onChange: (N) => _e(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11786,8 +12123,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: Te,
-                      onChange: (j) => Ye(j.target.value),
+                      value: Le,
+                      onChange: (N) => qe(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11798,8 +12135,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: Ie,
-                      onChange: (j) => ht(j.target.value),
+                      value: $e,
+                      onChange: (N) => rt(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11810,8 +12147,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: dt,
-                      onChange: (j) => Nt(j.target.value),
+                      value: ut,
+                      onChange: (N) => Ct(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11822,8 +12159,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: vt,
-                      onChange: (j) => Ot(j.target.value),
+                      value: gt,
+                      onChange: (N) => xt(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11834,8 +12171,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: zt,
-                      onChange: (j) => _t(j.target.value),
+                      value: Wt,
+                      onChange: (N) => Dt(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11846,8 +12183,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: wt,
-                      onChange: (j) => Ht(j.target.value),
+                      value: vt,
+                      onChange: (N) => kt(N.target.value),
                       placeholder: "Transaction.Vendor = Terminal.VendorId...",
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-emerald-300 font-mono text-[11px] focus:border-teal-500 focus:outline-none"
                     }
@@ -11859,8 +12196,8 @@ const Ul = ({
                     "input",
                     {
                       type: "number",
-                      value: _e,
-                      onChange: (j) => qt(j.target.value),
+                      value: Ge,
+                      onChange: (N) => Kt(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11871,8 +12208,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: Yt,
-                      onChange: (j) => Vt(j.target.value),
+                      value: Ut,
+                      onChange: (N) => Ft(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11883,8 +12220,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: It,
-                      onChange: (j) => Jt(j.target.value),
+                      value: Rt,
+                      onChange: (N) => Lt(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11895,8 +12232,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: Xt,
-                      onChange: (j) => Wt(j.target.value),
+                      value: At,
+                      onChange: (N) => Mt(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11907,8 +12244,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: Kt,
-                      onChange: (j) => D(j.target.value),
+                      value: Bt,
+                      onChange: (N) => I(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11919,8 +12256,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: J,
-                      onChange: (j) => ne(j.target.value),
+                      value: te,
+                      onChange: (N) => de(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11928,14 +12265,14 @@ const Ul = ({
                 /* @__PURE__ */ e.jsxs("div", { children: [
                   /* @__PURE__ */ e.jsxs("label", { className: "text-slate-400 block mb-0.5 text-[11px] flex items-center justify-between", children: [
                     /* @__PURE__ */ e.jsx("span", { children: "Template" }),
-                    /* @__PURE__ */ e.jsx(Cs, { className: "w-3 h-3 text-amber-400" })
+                    /* @__PURE__ */ e.jsx(Ts, { className: "w-3 h-3 text-amber-400" })
                   ] }),
                   /* @__PURE__ */ e.jsx(
                     "input",
                     {
                       type: "text",
-                      value: be,
-                      onChange: (j) => $e(j.target.value),
+                      value: ve,
+                      onChange: (N) => G(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11946,8 +12283,8 @@ const Ul = ({
                     "input",
                     {
                       type: "text",
-                      value: Ae,
-                      onChange: (j) => Fe(j.target.value),
+                      value: je,
+                      onChange: (N) => ke(N.target.value),
                       className: "w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:border-teal-500 focus:outline-none"
                     }
                   )
@@ -11958,34 +12295,34 @@ const Ul = ({
               /* @__PURE__ */ e.jsx("div", { className: "text-[11px] font-bold text-teal-400 border-b border-slate-800 pb-1 tracking-wider uppercase", children: "DISPLAY" }),
               /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-2 gap-x-2 text-xs", children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "space-y-0.5", children: [
-                  Ge("Realtime", De, Xe),
-                  Ge("Label", Ke, Ue),
-                  Ge("Hidden", tt, mt),
-                  Ge("FilterLocal", ut, Qe),
-                  Ge("SqlSearch", Ft, Qt),
-                  Ge("Cache", Zt, Fs),
-                  Ge("Move Tab", Rs, $s),
-                  Ge("Focus", Ls, es),
-                  Ge("FocusSearch", Js, Xs),
-                  Ge("No Load", Qs, Zs),
-                  Ge("Collapsible", en, tn),
-                  Ge("HotKey", sn, Es),
-                  Ge("History", ds, us)
+                  ze("Realtime", oe, Ve),
+                  ze("Label", We, Pe),
+                  ze("Hidden", Xe, at),
+                  ze("FilterLocal", it, Ze),
+                  ze("SqlSearch", St, Ot),
+                  ze("Cache", zt, Es),
+                  ze("Move Tab", As, Ms),
+                  ze("Focus", Bs, as),
+                  ze("FocusSearch", rn, an),
+                  ze("No Load", ln, on),
+                  ze("Collapsible", cn, dn),
+                  ze("HotKey", un, Os),
+                  ze("History", ps, hs)
                 ] }),
                 /* @__PURE__ */ e.jsxs("div", { className: "space-y-0.5", children: [
-                  Ge("Top", ps, xs),
-                  Ge("HideAnd", hs, m),
-                  Ge("Disabled", M, E),
-                  Ge("Visibility", H, _),
-                  Ge("Active", X, re),
-                  Ge("Upper Case", Re, We),
-                  Ge("Virtual", qe, pt),
-                  Ge("Private", yt, Ct),
-                  Ge("Render Index", Ps, As),
-                  Ge("Add", Pn, An),
-                  Ge("Search", Bn, Mn),
-                  Ge("Sumary", On, _n),
-                  Ge("DateTime Field", Hn, Vn)
+                  ze("Top", ms, bs),
+                  ze("HideAnd", fs, f),
+                  ze("Disabled", H, B),
+                  ze("Visibility", J, K),
+                  ze("Active", re, he),
+                  ze("Upper Case", Be, Ue),
+                  ze("Virtual", Je, jt),
+                  ze("Private", $t, _t),
+                  ze("Render Index", _s, Hs),
+                  ze("Add", Gn, Vn),
+                  ze("Search", Wn, Kn),
+                  ze("Sumary", Un, zn),
+                  ze("DateTime Field", qn, Yn)
                 ] })
               ] })
             ] })
@@ -12003,9 +12340,9 @@ const Ul = ({
                     "textarea",
                     {
                       rows: 2,
-                      value: ts,
+                      value: ls,
                       placeholder: "VD: active = true hoặc ?$filter=Active eq true",
-                      onChange: (j) => Wn(j.target.value),
+                      onChange: (N) => Jn(N.target.value),
                       className: "w-full py-1 px-2.5 bg-transparent text-rose-300 placeholder-slate-600 focus:outline-none resize-y"
                     }
                   )
@@ -12022,16 +12359,16 @@ const Ul = ({
                     "textarea",
                     {
                       rows: 2,
-                      value: nn,
+                      value: xn,
                       placeholder: "VD: (x, y) => { return x.PortCode ? (x.PortCode + ' - ' + x.Name) : x.Name; }",
-                      onChange: (j) => Kn(j.target.value),
+                      onChange: (N) => Xn(N.target.value),
                       className: "w-full py-1 px-2.5 bg-transparent text-cyan-300 placeholder-slate-600 focus:outline-none resize-y"
                     }
                   )
                 ] })
               ] })
             ] }),
-            /* @__PURE__ */ e.jsxs("div", { className: `grid grid-cols-1 ${Ms ? "" : "md:grid-cols-2"} gap-3`, children: [
+            /* @__PURE__ */ e.jsxs("div", { className: `grid grid-cols-1 ${Vs ? "" : "md:grid-cols-2"} gap-3`, children: [
               /* @__PURE__ */ e.jsxs("div", { className: "bg-[#070d18] border border-slate-800 rounded p-2.5", children: [
                 /* @__PURE__ */ e.jsx("div", { className: "text-[11px] font-bold text-teal-400 mb-1 tracking-wider uppercase", children: "MIGRATION" }),
                 /* @__PURE__ */ e.jsxs("div", { className: "flex bg-[#030712] border border-slate-900 rounded font-mono text-[11px]", children: [
@@ -12040,15 +12377,15 @@ const Ul = ({
                     "textarea",
                     {
                       rows: 2,
-                      value: Gn,
-                      onChange: (j) => Un(j.target.value),
+                      value: Qn,
+                      onChange: (N) => Zn(N.target.value),
                       placeholder: "Migration scripts...",
                       className: "w-full py-1 px-2.5 bg-transparent text-slate-300 placeholder-slate-600 focus:outline-none resize-y"
                     }
                   )
                 ] })
               ] }),
-              !Ms && /* @__PURE__ */ e.jsxs("div", { className: "bg-[#070d18] border border-slate-800 rounded p-2.5", children: [
+              !Vs && /* @__PURE__ */ e.jsxs("div", { className: "bg-[#070d18] border border-slate-800 rounded p-2.5", children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "text-[11px] font-bold text-teal-400 mb-1 tracking-wider uppercase flex items-center justify-between", children: [
                   /* @__PURE__ */ e.jsx("span", { children: "FORMATDATA" }),
                   /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [
@@ -12062,8 +12399,8 @@ const Ul = ({
                     "textarea",
                     {
                       rows: 2,
-                      value: ss,
-                      onChange: (j) => Bs(j.target.value),
+                      value: os,
+                      onChange: (N) => Gs(N.target.value),
                       placeholder: "{ShortName}",
                       className: "w-full py-1 px-2.5 bg-transparent text-amber-300 placeholder-slate-600 focus:outline-none resize-y"
                     }
@@ -12073,11 +12410,11 @@ const Ul = ({
             ] })
           ] })
         ] }),
-        n === "dropdownColumns" && Ms && /* @__PURE__ */ e.jsx("div", { className: "space-y-4", children: /* @__PURE__ */ e.jsxs("div", { className: "p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-lg space-y-3", children: [
+        n === "dropdownColumns" && Vs && /* @__PURE__ */ e.jsx("div", { className: "space-y-4", children: /* @__PURE__ */ e.jsxs("div", { className: "p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-lg space-y-3", children: [
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
             /* @__PURE__ */ e.jsxs("div", { children: [
               /* @__PURE__ */ e.jsxs("h4", { className: "text-xs font-bold text-emerald-300 flex items-center gap-1.5", children: [
-                /* @__PURE__ */ e.jsx(bt, { className: "w-4 h-4 text-emerald-400" }),
+                /* @__PURE__ */ e.jsx(Nt, { className: "w-4 h-4 text-emerald-400" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Cấu Hình Cột Hiển Thị Bảng Chọn Dropdown (Multi-Column Select)" })
               ] }),
               /* @__PURE__ */ e.jsxs("p", { className: "text-[11px] text-slate-400 mt-0.5", children: [
@@ -12092,12 +12429,12 @@ const Ul = ({
                 {
                   type: "button",
                   onClick: () => {
-                    var j, ie;
+                    var N, be;
                     c([
                       ...d,
                       {
-                        key: ((j = ms[d.length]) == null ? void 0 : j.name) || `col${d.length + 1}`,
-                        title: ((ie = ms[d.length]) == null ? void 0 : ie.displayName) || `Cột ${d.length + 1}`,
+                        key: ((N = gs[d.length]) == null ? void 0 : N.name) || `col${d.length + 1}`,
+                        title: ((be = gs[d.length]) == null ? void 0 : be.displayName) || `Cột ${d.length + 1}`,
                         width: "50%",
                         align: "left"
                       }
@@ -12105,33 +12442,33 @@ const Ul = ({
                   },
                   className: "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold flex items-center gap-1.5 cursor-pointer",
                   children: [
-                    /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }),
+                    /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }),
                     /* @__PURE__ */ e.jsx("span", { children: "Thêm Cột" })
                   ]
                 }
               ),
-              ns && ms.length > 0 && /* @__PURE__ */ e.jsxs(
+              is && gs.length > 0 && /* @__PURE__ */ e.jsxs(
                 "button",
                 {
                   type: "button",
                   onClick: () => {
-                    const j = ["code", "fullname", "name", "address", "taxcode", "phone", "shortname"];
-                    let ie = ms.filter((Le) => j.includes(Le.name.toLowerCase()));
-                    ie.length === 0 ? ie = ms.slice(0, 3) : ie = ie.slice(0, 4), c(
-                      ie.map((Le) => ({
-                        key: Le.name,
-                        title: Le.displayName || Le.name,
-                        width: `${Math.floor(100 / ie.length)}%`,
+                    const N = ["code", "fullname", "name", "address", "taxcode", "phone", "shortname"];
+                    let be = gs.filter((Oe) => N.includes(Oe.name.toLowerCase()));
+                    be.length === 0 ? be = gs.slice(0, 3) : be = be.slice(0, 4), c(
+                      be.map((Oe) => ({
+                        key: Oe.name,
+                        title: Oe.displayName || Oe.name,
+                        width: `${Math.floor(100 / be.length)}%`,
                         align: "left"
                       }))
                     );
                   },
                   className: "px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded text-xs font-semibold flex items-center gap-1 cursor-pointer",
                   children: [
-                    /* @__PURE__ */ e.jsx(ft, { className: "w-3.5 h-3.5 text-cyan-400" }),
+                    /* @__PURE__ */ e.jsx(Tt, { className: "w-3.5 h-3.5 text-cyan-400" }),
                     /* @__PURE__ */ e.jsxs("span", { children: [
                       "Tự động nạp từ ",
-                      ns.name
+                      is.name
                     ] })
                   ]
                 }
@@ -12144,32 +12481,32 @@ const Ul = ({
             " hoặc ",
             /* @__PURE__ */ e.jsx("strong", { children: '"Tự động nạp"' }),
             " để bắt đầu."
-          ] }) : /* @__PURE__ */ e.jsx("div", { className: "space-y-2", children: d.map((j, ie) => /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-12 gap-2 items-center p-2 bg-[#070d18] border border-slate-800 rounded", children: [
+          ] }) : /* @__PURE__ */ e.jsx("div", { className: "space-y-2", children: d.map((N, be) => /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-12 gap-2 items-center p-2 bg-[#070d18] border border-slate-800 rounded", children: [
             /* @__PURE__ */ e.jsxs("div", { className: "col-span-1 flex items-center justify-center gap-0.5", children: [
               /* @__PURE__ */ e.jsx(
                 "button",
                 {
                   type: "button",
-                  disabled: ie === 0,
+                  disabled: be === 0,
                   onClick: () => {
-                    const Le = [...d], He = Le[ie];
-                    Le[ie] = Le[ie - 1], Le[ie - 1] = He, c(Le);
+                    const Oe = [...d], Ke = Oe[be];
+                    Oe[be] = Oe[be - 1], Oe[be - 1] = Ke, c(Oe);
                   },
                   className: "p-0.5 text-slate-400 hover:text-white disabled:opacity-20",
-                  children: /* @__PURE__ */ e.jsx(ws, { className: "w-3.5 h-3.5" })
+                  children: /* @__PURE__ */ e.jsx(Ss, { className: "w-3.5 h-3.5" })
                 }
               ),
               /* @__PURE__ */ e.jsx(
                 "button",
                 {
                   type: "button",
-                  disabled: ie === d.length - 1,
+                  disabled: be === d.length - 1,
                   onClick: () => {
-                    const Le = [...d], He = Le[ie];
-                    Le[ie] = Le[ie + 1], Le[ie + 1] = He, c(Le);
+                    const Oe = [...d], Ke = Oe[be];
+                    Oe[be] = Oe[be + 1], Oe[be + 1] = Ke, c(Oe);
                   },
                   className: "p-0.5 text-slate-400 hover:text-white disabled:opacity-20",
-                  children: /* @__PURE__ */ e.jsx(St, { className: "w-3.5 h-3.5" })
+                  children: /* @__PURE__ */ e.jsx(wt, { className: "w-3.5 h-3.5" })
                 }
               )
             ] }),
@@ -12177,11 +12514,11 @@ const Ul = ({
               "input",
               {
                 type: "text",
-                value: j.key,
+                value: N.key,
                 placeholder: "Key (vd: FullName)",
-                onChange: (Le) => {
-                  const He = [...d];
-                  He[ie] = { ...He[ie], key: Le.target.value }, c(He);
+                onChange: (Oe) => {
+                  const Ke = [...d];
+                  Ke[be] = { ...Ke[be], key: Oe.target.value }, c(Ke);
                 },
                 className: "w-full px-2 py-1 bg-[#030712] border border-slate-700 rounded text-xs font-mono text-cyan-300"
               }
@@ -12190,11 +12527,11 @@ const Ul = ({
               "input",
               {
                 type: "text",
-                value: j.title,
+                value: N.title,
                 placeholder: "Tiêu đề cột",
-                onChange: (Le) => {
-                  const He = [...d];
-                  He[ie] = { ...He[ie], title: Le.target.value }, c(He);
+                onChange: (Oe) => {
+                  const Ke = [...d];
+                  Ke[be] = { ...Ke[be], title: Oe.target.value }, c(Ke);
                 },
                 className: "w-full px-2 py-1 bg-[#030712] border border-slate-700 rounded text-xs text-slate-100"
               }
@@ -12203,11 +12540,11 @@ const Ul = ({
               "input",
               {
                 type: "text",
-                value: j.width || "50%",
+                value: N.width || "50%",
                 placeholder: "Width",
-                onChange: (Le) => {
-                  const He = [...d];
-                  He[ie] = { ...He[ie], width: Le.target.value }, c(He);
+                onChange: (Oe) => {
+                  const Ke = [...d];
+                  Ke[be] = { ...Ke[be], width: Oe.target.value }, c(Ke);
                 },
                 className: "w-full px-2 py-1 bg-[#030712] border border-slate-700 rounded text-xs font-mono text-slate-200"
               }
@@ -12215,10 +12552,10 @@ const Ul = ({
             /* @__PURE__ */ e.jsx("div", { className: "col-span-1", children: /* @__PURE__ */ e.jsxs(
               "select",
               {
-                value: j.align || "left",
-                onChange: (Le) => {
-                  const He = [...d];
-                  He[ie] = { ...He[ie], align: Le.target.value }, c(He);
+                value: N.align || "left",
+                onChange: (Oe) => {
+                  const Ke = [...d];
+                  Ke[be] = { ...Ke[be], align: Oe.target.value }, c(Ke);
                 },
                 className: "w-full px-1 py-1 bg-[#030712] border border-slate-700 rounded text-[11px] text-slate-200",
                 children: [
@@ -12232,12 +12569,12 @@ const Ul = ({
               "button",
               {
                 type: "button",
-                onClick: () => c(d.filter((Le, He) => He !== ie)),
+                onClick: () => c(d.filter((Oe, Ke) => Ke !== be)),
                 className: "p-1 text-slate-400 hover:text-red-400",
-                children: /* @__PURE__ */ e.jsx(ot, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5" })
               }
             ) })
-          ] }, ie)) }),
+          ] }, be)) }),
           /* @__PURE__ */ e.jsxs("div", { className: "bg-[#070d18] border border-slate-800 rounded p-3 space-y-2", children: [
             /* @__PURE__ */ e.jsxs("div", { className: "text-[11px] font-bold text-teal-400 tracking-wider uppercase flex items-center justify-between", children: [
               /* @__PURE__ */ e.jsx("span", { children: "FORMATDATA (Định dạng hiển thị sau khi chọn)" }),
@@ -12250,33 +12587,33 @@ const Ul = ({
               "input",
               {
                 type: "text",
-                value: ss,
-                onChange: (j) => Bs(j.target.value),
+                value: os,
+                onChange: (N) => Gs(N.target.value),
                 placeholder: "VD: {Vendor.FullName} - {Vendor.Address}",
                 className: "w-full px-3 py-1.5 bg-[#030712] border border-slate-700 rounded text-xs font-mono text-amber-300 placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
               }
             ),
-            d.length > 0 && /* @__PURE__ */ e.jsx("div", { className: "flex flex-wrap gap-1 pt-1", children: d.map((j, ie) => {
-              const Le = x || y, He = Le ? `{${Le}.${j.key}}` : `{${j.key}}`;
+            d.length > 0 && /* @__PURE__ */ e.jsx("div", { className: "flex flex-wrap gap-1 pt-1", children: d.map((N, be) => {
+              const Oe = h || y, Ke = Oe ? `{${Oe}.${N.key}}` : `{${N.key}}`;
               return /* @__PURE__ */ e.jsxs(
                 "button",
                 {
                   type: "button",
-                  onClick: () => Bs(ss ? `${ss} - ${He}` : He),
+                  onClick: () => Gs(os ? `${os} - ${Ke}` : Ke),
                   className: "px-2 py-0.5 bg-slate-800 hover:bg-emerald-900/40 text-emerald-300 border border-slate-700 rounded text-[10px] font-mono cursor-pointer",
                   children: [
                     "+ ",
-                    He
+                    Ke
                   ]
                 },
-                ie
+                be
               );
             }) })
           ] })
         ] }) }),
         n === "permissions" && /* @__PURE__ */ e.jsx("div", { className: "space-y-4", children: /* @__PURE__ */ e.jsxs("div", { className: "bg-[#0a1220]/60 p-4 rounded-lg border border-slate-800 space-y-3", children: [
           /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-teal-400 uppercase tracking-wider flex items-center gap-2", children: [
-            /* @__PURE__ */ e.jsx(mn, { className: "w-4 h-4 text-teal-400" }),
+            /* @__PURE__ */ e.jsx(Nn, { className: "w-4 h-4 text-teal-400" }),
             /* @__PURE__ */ e.jsx("span", { children: "Ma Trận Phân Quyền Theo Vai Trò (Roles & RBAC)" })
           ] }),
           /* @__PURE__ */ e.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ e.jsxs("table", { className: "w-full text-xs text-left text-slate-300 border border-slate-800", children: [
@@ -12288,8 +12625,8 @@ const Ul = ({
               /* @__PURE__ */ e.jsx("th", { className: "py-2 px-3 border border-slate-800 text-center", children: "Khóa (Disable)" })
             ] }) }),
             /* @__PURE__ */ e.jsx("tbody", { children: ["Admin (Quản trị)", "Operator (Nhân viên)", "Accountant (Kế toán)", "Customer (Khách hàng)"].map(
-              (j, ie) => /* @__PURE__ */ e.jsxs("tr", { className: "border-b border-slate-800 hover:bg-slate-800/40", children: [
-                /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 font-medium text-slate-200 border-r border-slate-800", children: j }),
+              (N, be) => /* @__PURE__ */ e.jsxs("tr", { className: "border-b border-slate-800 hover:bg-slate-800/40", children: [
+                /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 font-medium text-slate-200 border-r border-slate-800", children: N }),
                 /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 text-center border-r border-slate-800", children: /* @__PURE__ */ e.jsx(
                   "input",
                   {
@@ -12302,7 +12639,7 @@ const Ul = ({
                   "input",
                   {
                     type: "checkbox",
-                    defaultChecked: ie <= 1,
+                    defaultChecked: be <= 1,
                     className: "w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
                   }
                 ) }),
@@ -12318,17 +12655,17 @@ const Ul = ({
                   "input",
                   {
                     type: "checkbox",
-                    defaultChecked: ie > 1,
+                    defaultChecked: be > 1,
                     className: "w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
                   }
                 ) })
-              ] }, j)
+              ] }, N)
             ) })
           ] }) })
         ] }) }),
         n === "report" && /* @__PURE__ */ e.jsx("div", { className: "space-y-4", children: /* @__PURE__ */ e.jsxs("div", { className: "bg-[#0a1220]/60 p-4 rounded-lg border border-slate-800 space-y-3", children: [
           /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-teal-400 uppercase tracking-wider flex items-center gap-2", children: [
-            /* @__PURE__ */ e.jsx(is, { className: "w-4 h-4 text-teal-400" }),
+            /* @__PURE__ */ e.jsx(Qt, { className: "w-4 h-4 text-teal-400" }),
             /* @__PURE__ */ e.jsx("span", { children: "Tham Số In Ấn & Xuất Báo Cáo (Excel / PDF Template)" })
           ] }),
           /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4 text-xs", children: [
@@ -12360,7 +12697,7 @@ const Ul = ({
     ] }) }),
     document.body
   );
-}, nt = ({
+}, ct = ({
   value: t,
   onChange: r,
   debounceMs: s = 120,
@@ -12368,31 +12705,31 @@ const Ul = ({
   onKeyDown: n,
   ...o
 }) => {
-  const [l, i] = A(
+  const [l, i] = D(
     t != null ? String(t) : ""
-  ), d = Je(r);
+  ), d = tt(r);
   d.current = r;
-  const c = Je(null);
-  Be(() => {
+  const c = tt(null);
+  He(() => {
     i(t != null ? String(t) : "");
   }, [t]);
-  const p = (x) => {
+  const p = (h) => {
     c.current && (clearTimeout(c.current), c.current = null);
-    const N = t != null ? String(t) : "";
-    x !== N && d.current(x);
+    const w = t != null ? String(t) : "";
+    h !== w && d.current(h);
   };
-  Be(() => () => {
+  He(() => () => {
     c.current && clearTimeout(c.current);
   }, []);
-  const g = (x) => {
-    const N = x.target.value;
-    i(N), c.current && clearTimeout(c.current), c.current = setTimeout(() => {
-      p(N);
+  const g = (h) => {
+    const w = h.target.value;
+    i(w), c.current && clearTimeout(c.current), c.current = setTimeout(() => {
+      p(w);
     }, s);
-  }, I = (x) => {
-    p(x.target.value), a && a(x);
-  }, f = (x) => {
-    x.key === "Enter" && p(x.target.value), n && n(x);
+  }, T = (h) => {
+    p(h.target.value), a && a(h);
+  }, x = (h) => {
+    h.key === "Enter" && p(h.target.value), n && n(h);
   };
   return /* @__PURE__ */ e.jsx(
     "input",
@@ -12400,11 +12737,11 @@ const Ul = ({
       ...o,
       value: l,
       onChange: g,
-      onBlur: I,
-      onKeyDown: f
+      onBlur: T,
+      onKeyDown: x
     }
   );
-}, zl = ({
+}, jo = ({
   value: t,
   onChange: r,
   debounceMs: s = 120,
@@ -12412,29 +12749,29 @@ const Ul = ({
   onKeyDown: n,
   ...o
 }) => {
-  const [l, i] = A(
+  const [l, i] = D(
     t != null ? String(t) : ""
-  ), d = Je(r);
+  ), d = tt(r);
   d.current = r;
-  const c = Je(null);
-  Be(() => {
+  const c = tt(null);
+  He(() => {
     i(t != null ? String(t) : "");
   }, [t]);
-  const p = (f) => {
+  const p = (x) => {
     c.current && (clearTimeout(c.current), c.current = null);
-    const x = t != null ? String(t) : "";
-    f !== x && d.current(f);
+    const h = t != null ? String(t) : "";
+    x !== h && d.current(x);
   };
-  Be(() => () => {
+  He(() => () => {
     c.current && clearTimeout(c.current);
   }, []);
-  const g = (f) => {
-    const x = f.target.value;
-    i(x), c.current && clearTimeout(c.current), c.current = setTimeout(() => {
-      p(x);
+  const g = (x) => {
+    const h = x.target.value;
+    i(h), c.current && clearTimeout(c.current), c.current = setTimeout(() => {
+      p(h);
     }, s);
-  }, I = (f) => {
-    p(f.target.value), a && a(f);
+  }, T = (x) => {
+    p(x.target.value), a && a(x);
   };
   return /* @__PURE__ */ e.jsx(
     "textarea",
@@ -12442,59 +12779,89 @@ const Ul = ({
       ...o,
       value: l,
       onChange: g,
-      onBlur: I,
+      onBlur: T,
       onKeyDown: n
     }
   );
-}, ql = ({ width: t }) => {
-  var z, xe, ve;
-  const [r, s] = A("layout"), [a, n] = A(null), [o, l] = A(!1), [i, d] = A(!1), [c, p] = A([]);
-  Be(() => {
-    Ln().then((T) => {
-      T && T.length > 0 && p(T);
+}, No = ({ width: t }) => {
+  var q, ie, Ne;
+  const [r, s] = D("layout"), [a, n] = D(null), [o, l] = D(!1), [i, d] = D(!1), [c, p] = D([]);
+  He(() => {
+    nn().then((j) => {
+      j && j.length > 0 && p(j);
     });
   }, []);
-  const [g, I] = A(null), [f, x] = A(null), N = Z((T) => T.activeFeatureId), u = Z((T) => T.features.find((B) => B.id === T.activeFeatureId)), v = Z((T) => T.selection), C = Z((T) => T.selectComponent), h = Z((T) => T.addComponent), y = Z((T) => T.updateComponentProps), L = Z((T) => T.updateComponentStyle), k = Z((T) => T.updateComponentEvents), F = Z((T) => T.updateComponentDataBinding), w = Z((T) => T.updateComponentValidation), S = Z((T) => T.updateComponentPermissions), R = Z((T) => T.updateComponentOrder), $ = Z((T) => T.removeComponent);
-  Z((T) => T.distributeSiblingWidths);
-  const Q = Z((T) => T.updateFeatureScriptFile), [O, V] = A(""), [P, K] = A(0), G = (T, B) => {
-    if (!B) return null;
-    for (const ee of T) {
-      if (ee.id === B) return ee;
-      if (ee.children) {
-        const je = G(ee.children, B);
-        if (je) return je;
+  const [g, T] = D(null), [x, h] = D(null), w = Z((j) => j.activeFeatureId), u = Z((j) => j.features.find((A) => A.id === j.activeFeatureId)), v = Z((j) => j.selection), k = Z((j) => j.selectComponent), m = Z((j) => j.addComponent), y = Z((j) => j.updateComponentProps), P = Z((j) => j.updateComponentStyle), R = Z((j) => j.updateComponentEvents), F = Z((j) => j.updateComponentDataBinding), C = Z((j) => j.updateComponentValidation), S = Z((j) => j.updateComponentPermissions), L = Z((j) => j.updateComponentOrder), $ = Z((j) => j.removeComponent);
+  Z((j) => j.distributeSiblingWidths);
+  const se = Z((j) => j.updateFeatureScriptFile), [V, U] = D(""), [E, Y] = D(0), z = (j, A) => {
+    if (!A) return null;
+    for (const ne of j) {
+      if (ne.id === A) return ne;
+      if (ne.children) {
+        const Ce = z(ne.children, A);
+        if (Ce) return Ce;
       }
     }
     return null;
-  }, b = Ve(
-    () => v.componentId && u ? G(u.components, v.componentId) : null,
+  }, b = Ae(
+    () => v.componentId && u ? z(u.components, v.componentId) : null,
     [v.componentId, u]
-  ), se = Ve(
-    () => b != null && b.parentId && u ? G(u.components, b.parentId) : null,
+  ), ae = Ae(
+    () => b != null && b.parentId && u ? z(u.components, b.parentId) : null,
     [b == null ? void 0 : b.parentId, u]
-  ), de = Ve(
+  ), O = Ae(
     () => {
-      var T, B;
-      return se && ((T = se.props) != null && T.isTab || (B = se.props) != null && B.tab || se.type === "Tabs") ? se : null;
+      var j, A;
+      return ae && ((j = ae.props) != null && j.isTab || (A = ae.props) != null && A.tab || ae.type === "Tabs") ? ae : null;
     },
-    [se]
+    [ae]
   );
   if (!b) {
-    const T = u ? u.components.filter((B) => !B.parentId) : [];
+    const j = u ? u.components.filter((A) => !A.parentId) : [];
     return /* @__PURE__ */ e.jsxs(
       "aside",
       {
         style: { width: t ? `${t}px` : "380px" },
         className: "shrink-0 bg-slate-900 border-l border-slate-800 flex flex-col h-full z-10 transition-all select-none overflow-hidden",
         children: [
-          /* @__PURE__ */ e.jsx("div", { className: "p-3.5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-900/90 backdrop-blur", children: /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2 min-w-0", children: [
-            /* @__PURE__ */ e.jsx("span", { className: "p-1.5 bg-blue-600/20 text-blue-400 rounded-lg text-xs font-bold uppercase", children: "Feature" }),
-            /* @__PURE__ */ e.jsxs("div", { className: "min-w-0", children: [
-              /* @__PURE__ */ e.jsx("h2", { className: "text-xs font-bold text-slate-200 truncate", children: (u == null ? void 0 : u.name) || "Trang" }),
-              /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-cyan-400 font-mono", children: u == null ? void 0 : u.route })
-            ] })
-          ] }) }),
+          /* @__PURE__ */ e.jsxs("div", { className: "p-3.5 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-900/90 backdrop-blur", children: [
+            /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2 min-w-0", children: [
+              /* @__PURE__ */ e.jsx("span", { className: "p-1.5 bg-blue-600/20 text-blue-400 rounded-lg text-xs font-bold uppercase", children: "Feature" }),
+              /* @__PURE__ */ e.jsxs("div", { className: "min-w-0", children: [
+                /* @__PURE__ */ e.jsx("h2", { className: "text-xs font-bold text-slate-200 truncate", children: (u == null ? void 0 : u.name) || "Trang" }),
+                /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-cyan-400 font-mono", children: u == null ? void 0 : u.route })
+              ] })
+            ] }),
+            u && /* @__PURE__ */ e.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => {
+                  const A = Z.getState();
+                  typeof A.openFeatureProperties == "function" && A.openFeatureProperties(u.id);
+                },
+                className: "p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-teal-300 border border-slate-700/60 bg-slate-800/50 transition-colors cursor-pointer",
+                title: "Mở Thuộc tính Feature (Feature Properties Modal)",
+                children: /* @__PURE__ */ e.jsx(lt, { className: "w-3.5 h-3.5 text-teal-400" })
+              }
+            )
+          ] }),
           /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-y-auto p-4 space-y-4 text-xs", children: u && /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
+            /* @__PURE__ */ e.jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: () => {
+                  const A = Z.getState();
+                  typeof A.openFeatureProperties == "function" && A.openFeatureProperties(u.id);
+                },
+                className: "w-full py-2.5 px-3 bg-gradient-to-r from-teal-600/30 to-blue-600/30 hover:from-teal-600/50 hover:to-blue-600/50 border border-teal-500/50 rounded-xl text-teal-200 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-teal-950/40 cursor-pointer transition-all group",
+                children: [
+                  /* @__PURE__ */ e.jsx(lt, { className: "w-4 h-4 text-teal-400 group-hover:rotate-45 transition-transform" }),
+                  /* @__PURE__ */ e.jsx("span", { children: "🔧 Mở Thuộc Tính Feature (Feature Properties)" })
+                ]
+              }
+            ),
             /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2.5", children: [
               /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                 /* @__PURE__ */ e.jsx("span", { className: "text-[10px] font-bold text-slate-400 uppercase tracking-wider", children: "Đường dẫn (Route)" }),
@@ -12503,12 +12870,12 @@ const Ul = ({
               /* @__PURE__ */ e.jsxs("div", { children: [
                 /* @__PURE__ */ e.jsx("span", { className: "text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1", children: "File Nghiệp Vụ (.bl.ts)" }),
                 /* @__PURE__ */ e.jsx(
-                  nt,
+                  ct,
                   {
                     type: "text",
                     value: u.scriptFile || "",
                     placeholder: "feature.bl.ts...",
-                    onChange: (B) => Q(u.id, B),
+                    onChange: (A) => se(u.id, A),
                     className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-emerald-400 font-mono text-xs focus:outline-none focus:border-emerald-500"
                   }
                 )
@@ -12518,10 +12885,10 @@ const Ul = ({
               /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between pb-1.5 border-b border-slate-800", children: [
                 /* @__PURE__ */ e.jsxs("div", { children: [
                   /* @__PURE__ */ e.jsxs("label", { className: "text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5", children: [
-                    /* @__PURE__ */ e.jsx(Pt, { className: "w-3.5 h-3.5 text-amber-400" }),
+                    /* @__PURE__ */ e.jsx(yt, { className: "w-3.5 h-3.5 text-amber-400" }),
                     /* @__PURE__ */ e.jsxs("span", { children: [
                       "Phần Tử Trang (",
-                      T.length,
+                      j.length,
                       ")"
                     ] })
                   ] }),
@@ -12532,14 +12899,14 @@ const Ul = ({
                   {
                     type: "button",
                     onClick: () => {
-                      const B = `box_${Date.now().toString(36)}`;
-                      h(
+                      const A = `box_${Date.now().toString(36)}`;
+                      m(
                         {
-                          id: B,
+                          id: A,
                           type: "Container",
                           parentId: null,
                           pageId: u.id,
-                          order: T.length + 1,
+                          order: j.length + 1,
                           props: {
                             layoutMode: "flex",
                             flexConfig: { direction: "column", gap: "12px", wrap: "wrap" }
@@ -12553,35 +12920,35 @@ const Ul = ({
                     },
                     className: "px-2 py-1 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors",
                     children: [
-                      /* @__PURE__ */ e.jsx(et, { className: "w-3 h-3" }),
+                      /* @__PURE__ */ e.jsx(Qe, { className: "w-3 h-3" }),
                       /* @__PURE__ */ e.jsx("span", { children: "+ Container" })
                     ]
                   }
                 )
               ] }),
-              T.length === 0 ? /* @__PURE__ */ e.jsx("div", { className: "p-6 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-950/40", children: 'Trang chưa có phần tử nào. Chuột phải vào màn hình hoặc bấm "+ Container" để thêm mới.' }) : /* @__PURE__ */ e.jsx("div", { className: "space-y-2", children: [...T].sort((B, ee) => (B.order ?? 1) - (ee.order ?? 1)).map((B, ee) => {
-                var te, Se;
-                const je = !!((te = B.props) != null && te.tab || (Se = B.props) != null && Se.isTab || B.type === "Tabs");
+              j.length === 0 ? /* @__PURE__ */ e.jsx("div", { className: "p-6 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-950/40", children: 'Trang chưa có phần tử nào. Chuột phải vào màn hình hoặc bấm "+ Container" để thêm mới.' }) : /* @__PURE__ */ e.jsx("div", { className: "space-y-2", children: [...j].sort((A, ne) => (A.order ?? 1) - (ne.order ?? 1)).map((A, ne) => {
+                var le, Fe;
+                const Ce = !!((le = A.props) != null && le.tab || (Fe = A.props) != null && Fe.isTab || A.type === "Tabs");
                 return /* @__PURE__ */ e.jsxs(
                   "div",
                   {
-                    onClick: () => C(B.id),
+                    onClick: () => k(A.id),
                     className: "p-2.5 rounded-xl border bg-slate-950/80 border-slate-800 hover:border-blue-500/60 flex items-center justify-between gap-2 cursor-pointer transition-all hover:bg-slate-900/60",
                     children: [
                       /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2 min-w-0", children: [
                         /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800 shrink-0", children: [
                           "#",
-                          ee + 1
+                          ne + 1
                         ] }),
                         /* @__PURE__ */ e.jsxs("div", { className: "min-w-0", children: [
                           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1.5 flex-wrap", children: [
-                            /* @__PURE__ */ e.jsx("span", { className: "text-xs font-bold text-slate-200 truncate max-w-[130px]", children: B.props.label || B.props.title || B.type }),
-                            /* @__PURE__ */ e.jsx("span", { className: "text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400 uppercase font-mono", children: B.type }),
-                            je && /* @__PURE__ */ e.jsx("span", { className: "text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-bold uppercase", children: "TAB" })
+                            /* @__PURE__ */ e.jsx("span", { className: "text-xs font-bold text-slate-200 truncate max-w-[130px]", children: A.props.label || A.props.title || A.type }),
+                            /* @__PURE__ */ e.jsx("span", { className: "text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400 uppercase font-mono", children: A.type }),
+                            Ce && /* @__PURE__ */ e.jsx("span", { className: "text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-bold uppercase", children: "TAB" })
                           ] }),
                           /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [
                             "#",
-                            B.id
+                            A.id
                           ] })
                         ] })
                       ] }),
@@ -12592,11 +12959,11 @@ const Ul = ({
                             "input",
                             {
                               type: "number",
-                              value: Number(B.order ?? B.props.order ?? ee + 1),
-                              onClick: (ce) => ce.stopPropagation(),
-                              onChange: (ce) => {
-                                const Ne = Number(ce.target.value);
-                                R(B.id, Ne);
+                              value: Number(A.order ?? A.props.order ?? ne + 1),
+                              onClick: (fe) => fe.stopPropagation(),
+                              onChange: (fe) => {
+                                const Ie = Number(fe.target.value);
+                                L(A.id, Ie);
                               },
                               className: "w-14 px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-amber-400 font-mono text-xs text-center focus:outline-none focus:border-amber-500 font-bold"
                             }
@@ -12606,18 +12973,18 @@ const Ul = ({
                           "button",
                           {
                             type: "button",
-                            onClick: (ce) => {
-                              ce.stopPropagation(), $(B.id);
+                            onClick: (fe) => {
+                              fe.stopPropagation(), $(A.id);
                             },
                             className: "p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors cursor-pointer",
                             title: "Xóa phần tử này",
-                            children: /* @__PURE__ */ e.jsx(ot, { className: "w-3.5 h-3.5" })
+                            children: /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5" })
                           }
                         )
                       ] })
                     ]
                   },
-                  B.id
+                  A.id
                 );
               }) })
             ] })
@@ -12626,14 +12993,14 @@ const Ul = ({
       }
     );
   }
-  const me = b.type === "Container" || b.type === "Section" || b.type === "Tabs", Ce = b.type === "Select" || b.type === "Dropdown" || b.type === "Autocomplete" || b.type === "SearchEntry", he = b.props.dropdownColumns || ((z = b.dataBinding) == null ? void 0 : z.dropdownColumns) || [], we = !me && (r === "layout" || r === "children") ? "props" : !Ce && r === "columns" ? "data" : r, Oe = b.props.layoutMode || "flex", U = b.props.flexConfig || {
+  const _ = b.type === "Container" || b.type === "Section" || b.type === "Tabs", me = b.type === "Select" || b.type === "Dropdown" || b.type === "Autocomplete" || b.type === "SearchEntry", ce = b.props.dropdownColumns || ((q = b.dataBinding) == null ? void 0 : q.dropdownColumns) || [], ye = !_ && (r === "layout" || r === "children") ? "props" : !me && r === "columns" ? "data" : r, ue = b.props.layoutMode || "flex", M = b.props.flexConfig || {
     direction: "row",
     wrap: "wrap",
     justify: "flex-start",
     align: "center",
     gap: "12px",
     columnsPerRow: "auto"
-  }, oe = b.props.gridConfig || { columns: 2, gap: "16px" }, Y = b.children || [];
+  }, Q = b.props.gridConfig || { columns: 2, gap: "16px" }, W = b.children || [];
   return /* @__PURE__ */ e.jsxs(
     "aside",
     {
@@ -12659,7 +13026,7 @@ const Ul = ({
                 onClick: () => d(!0),
                 className: "p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors cursor-pointer",
                 title: "Mở Component properties modal (Chuẩn C# Core)",
-                children: /* @__PURE__ */ e.jsx(Gt, { className: "w-4 h-4 text-emerald-400" })
+                children: /* @__PURE__ */ e.jsx(lt, { className: "w-4 h-4 text-emerald-400" })
               }
             ),
             /* @__PURE__ */ e.jsx(
@@ -12669,33 +13036,33 @@ const Ul = ({
                 onClick: () => $(b.id),
                 className: "p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer",
                 title: "Xóa component này",
-                children: /* @__PURE__ */ e.jsx(ot, { className: "w-4 h-4" })
+                children: /* @__PURE__ */ e.jsx(bt, { className: "w-4 h-4" })
               }
             )
           ] })
         ] }),
         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center border-b border-slate-800 bg-slate-950/60 overflow-x-auto text-xs shrink-0 no-scrollbar", children: [
-          me && /* @__PURE__ */ e.jsxs(
+          _ && /* @__PURE__ */ e.jsxs(
             "button",
             {
               onClick: () => s("layout"),
-              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${we === "layout" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
+              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${ye === "layout" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
               children: [
-                /* @__PURE__ */ e.jsx(ls, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(ds, { className: "w-3.5 h-3.5" }),
                 "Bố cục"
               ]
             }
           ),
-          me && /* @__PURE__ */ e.jsxs(
+          _ && /* @__PURE__ */ e.jsxs(
             "button",
             {
               onClick: () => s("children"),
-              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${we === "children" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
+              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${ye === "children" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
               children: [
-                /* @__PURE__ */ e.jsx(Pt, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(yt, { className: "w-3.5 h-3.5" }),
                 /* @__PURE__ */ e.jsxs("span", { children: [
                   "Phần tử (",
-                  Y.length,
+                  W.length,
                   ")"
                 ] })
               ]
@@ -12705,9 +13072,9 @@ const Ul = ({
             "button",
             {
               onClick: () => s("props"),
-              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${we === "props" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
+              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${ye === "props" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
               children: [
-                /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(lt, { className: "w-3.5 h-3.5" }),
                 "Props"
               ]
             }
@@ -12716,9 +13083,9 @@ const Ul = ({
             "button",
             {
               onClick: () => s("styles"),
-              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${we === "styles" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
+              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${ye === "styles" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
               children: [
-                /* @__PURE__ */ e.jsx(ya, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(Ta, { className: "w-3.5 h-3.5" }),
                 "CSS"
               ]
             }
@@ -12727,9 +13094,9 @@ const Ul = ({
             "button",
             {
               onClick: () => s("events"),
-              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${we === "events" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
+              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${ye === "events" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
               children: [
-                /* @__PURE__ */ e.jsx(ft, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(Tt, { className: "w-3.5 h-3.5" }),
                 "Events"
               ]
             }
@@ -12738,26 +13105,26 @@ const Ul = ({
             "button",
             {
               onClick: () => s("data"),
-              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${we === "data" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
+              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${ye === "data" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
               title: "Liên kết dữ liệu thực thể (Data Binding) - Tương đương DataSource trong Core cũ",
               children: [
-                /* @__PURE__ */ e.jsx(gn, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(kn, { className: "w-3.5 h-3.5" }),
                 "Data"
               ]
             }
           ),
-          Ce && /* @__PURE__ */ e.jsxs(
+          me && /* @__PURE__ */ e.jsxs(
             "button",
             {
               type: "button",
               onClick: () => s("columns"),
-              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${we === "columns" ? "border-emerald-500 text-emerald-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
+              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${ye === "columns" ? "border-emerald-500 text-emerald-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
               title: "Cấu hình danh sách cột hiển thị trong Dropdown (Multi-Column Select)",
               children: [
-                /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5 text-emerald-400" }),
+                /* @__PURE__ */ e.jsx(Nt, { className: "w-3.5 h-3.5 text-emerald-400" }),
                 /* @__PURE__ */ e.jsxs("span", { children: [
                   "Cột Dropdown (",
-                  he.length,
+                  ce.length,
                   ")"
                 ] })
               ]
@@ -12767,10 +13134,10 @@ const Ul = ({
             "button",
             {
               onClick: () => s("validation"),
-              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${we === "validation" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
+              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${ye === "validation" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
               title: "Quy tắc kiểm tra hợp lệ dữ liệu (Validation Rules)",
               children: [
-                /* @__PURE__ */ e.jsx(Jn, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(nr, { className: "w-3.5 h-3.5" }),
                 "Validation"
               ]
             }
@@ -12779,17 +13146,17 @@ const Ul = ({
             "button",
             {
               onClick: () => s("permissions"),
-              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${we === "permissions" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
+              className: `px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${ye === "permissions" ? "border-blue-500 text-blue-400 bg-slate-800/40 font-bold" : "border-transparent text-slate-400 hover:text-slate-200"}`,
               title: "Phân quyền hiển thị và thao tác theo vai trò (SecurityBL.cs & PolicyEditorBL.cs)",
               children: [
-                /* @__PURE__ */ e.jsx(Cs, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(Ts, { className: "w-3.5 h-3.5" }),
                 "Quyền hạn"
               ]
             }
           )
         ] }),
         /* @__PURE__ */ e.jsxs("div", { className: "flex-1 overflow-y-auto p-4 space-y-4 text-xs", children: [
-          me && we === "layout" && /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
+          _ && ye === "layout" && /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
             /* @__PURE__ */ e.jsxs("div", { children: [
               /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2", children: "Kiểu Bố Cục (Layout Mode)" }),
               /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
@@ -12798,9 +13165,9 @@ const Ul = ({
                   {
                     type: "button",
                     onClick: () => y(b.id, { layoutMode: "flex" }),
-                    className: `p-2.5 rounded-lg border text-left flex items-center gap-2 cursor-pointer transition-all ${Oe === "flex" ? "bg-blue-600/20 border-blue-500 text-blue-300 font-semibold shadow-sm" : "bg-slate-800/60 border-slate-700 text-slate-400 hover:bg-slate-800"}`,
+                    className: `p-2.5 rounded-lg border text-left flex items-center gap-2 cursor-pointer transition-all ${ue === "flex" ? "bg-blue-600/20 border-blue-500 text-blue-300 font-semibold shadow-sm" : "bg-slate-800/60 border-slate-700 text-slate-400 hover:bg-slate-800"}`,
                     children: [
-                      /* @__PURE__ */ e.jsx(Et, { className: "w-4 h-4 text-blue-400" }),
+                      /* @__PURE__ */ e.jsx(Xt, { className: "w-4 h-4 text-blue-400" }),
                       /* @__PURE__ */ e.jsxs("div", { children: [
                         /* @__PURE__ */ e.jsx("div", { className: "text-xs", children: "Flexbox" }),
                         /* @__PURE__ */ e.jsx("div", { className: "text-[9px] text-slate-500", children: "Canh hàng/cột linh hoạt" })
@@ -12813,9 +13180,9 @@ const Ul = ({
                   {
                     type: "button",
                     onClick: () => y(b.id, { layoutMode: "grid" }),
-                    className: `p-2.5 rounded-lg border text-left flex items-center gap-2 cursor-pointer transition-all ${Oe === "grid" ? "bg-blue-600/20 border-blue-500 text-blue-300 font-semibold shadow-sm" : "bg-slate-800/60 border-slate-700 text-slate-400 hover:bg-slate-800"}`,
+                    className: `p-2.5 rounded-lg border text-left flex items-center gap-2 cursor-pointer transition-all ${ue === "grid" ? "bg-blue-600/20 border-blue-500 text-blue-300 font-semibold shadow-sm" : "bg-slate-800/60 border-slate-700 text-slate-400 hover:bg-slate-800"}`,
                     children: [
-                      /* @__PURE__ */ e.jsx(ls, { className: "w-4 h-4 text-emerald-400" }),
+                      /* @__PURE__ */ e.jsx(ds, { className: "w-4 h-4 text-emerald-400" }),
                       /* @__PURE__ */ e.jsxs("div", { children: [
                         /* @__PURE__ */ e.jsx("div", { className: "text-xs", children: "CSS Grid" }),
                         /* @__PURE__ */ e.jsx("div", { className: "text-[9px] text-slate-500", children: "Chia cột đều nhau" })
@@ -12824,16 +13191,16 @@ const Ul = ({
                   }
                 )
               ] }),
-              Oe === "flex" && /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3 mt-3", children: [
+              ue === "flex" && /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3 mt-3", children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
                   /* @__PURE__ */ e.jsxs("div", { children: [
                     /* @__PURE__ */ e.jsx("label", { className: "text-[10px] font-semibold text-slate-400 uppercase block mb-1", children: "Hướng Bố Cục" }),
                     /* @__PURE__ */ e.jsxs(
                       "select",
                       {
-                        value: U.direction || "row",
-                        onChange: (T) => y(b.id, {
-                          flexConfig: { ...U, direction: T.target.value }
+                        value: M.direction || "row",
+                        onChange: (j) => y(b.id, {
+                          flexConfig: { ...M, direction: j.target.value }
                         }),
                         className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500",
                         children: [
@@ -12852,12 +13219,12 @@ const Ul = ({
                           type: "number",
                           min: "1",
                           max: "48",
-                          value: typeof U.columnsPerRow == "number" ? U.columnsPerRow : oe.columns || 12,
-                          onChange: (T) => {
-                            const B = Math.max(1, Number(T.target.value) || 12);
+                          value: typeof M.columnsPerRow == "number" ? M.columnsPerRow : Q.columns || 12,
+                          onChange: (j) => {
+                            const A = Math.max(1, Number(j.target.value) || 12);
                             y(b.id, {
-                              flexConfig: { ...U, columnsPerRow: B },
-                              gridConfig: { ...oe, columns: B }
+                              flexConfig: { ...M, columnsPerRow: A },
+                              gridConfig: { ...Q, columns: A }
                             });
                           },
                           className: "w-14 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-cyan-400 font-mono text-xs text-center font-bold",
@@ -12867,18 +13234,18 @@ const Ul = ({
                       /* @__PURE__ */ e.jsxs(
                         "select",
                         {
-                          value: String(U.columnsPerRow || "12"),
-                          onChange: (T) => {
-                            const B = T.target.value === "auto" ? "auto" : Number(T.target.value);
+                          value: String(M.columnsPerRow || "12"),
+                          onChange: (j) => {
+                            const A = j.target.value === "auto" ? "auto" : Number(j.target.value);
                             y(b.id, {
                               flexConfig: {
-                                ...U,
-                                columnsPerRow: B,
-                                wrap: B !== "auto" ? "wrap" : U.wrap
+                                ...M,
+                                columnsPerRow: A,
+                                wrap: A !== "auto" ? "wrap" : M.wrap
                               },
                               gridConfig: {
-                                ...oe,
-                                columns: B === "auto" ? 12 : B
+                                ...Q,
+                                columns: A === "auto" ? 12 : A
                               }
                             });
                           },
@@ -12904,9 +13271,9 @@ const Ul = ({
                     /* @__PURE__ */ e.jsxs(
                       "select",
                       {
-                        value: U.justify || "flex-start",
-                        onChange: (T) => y(b.id, {
-                          flexConfig: { ...U, justify: T.target.value }
+                        value: M.justify || "flex-start",
+                        onChange: (j) => y(b.id, {
+                          flexConfig: { ...M, justify: j.target.value }
                         }),
                         className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500 font-medium",
                         children: [
@@ -12924,9 +13291,9 @@ const Ul = ({
                     /* @__PURE__ */ e.jsxs(
                       "select",
                       {
-                        value: U.align || "center",
-                        onChange: (T) => y(b.id, {
-                          flexConfig: { ...U, align: T.target.value }
+                        value: M.align || "center",
+                        onChange: (j) => y(b.id, {
+                          flexConfig: { ...M, align: j.target.value }
                         }),
                         className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500 font-medium",
                         children: [
@@ -12945,9 +13312,9 @@ const Ul = ({
                     /* @__PURE__ */ e.jsxs(
                       "select",
                       {
-                        value: U.gap || "12px",
-                        onChange: (T) => y(b.id, {
-                          flexConfig: { ...U, gap: T.target.value }
+                        value: M.gap || "12px",
+                        onChange: (j) => y(b.id, {
+                          flexConfig: { ...M, gap: j.target.value }
                         }),
                         className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500",
                         children: [
@@ -12965,9 +13332,9 @@ const Ul = ({
                     /* @__PURE__ */ e.jsxs(
                       "select",
                       {
-                        value: U.wrap || "wrap",
-                        onChange: (T) => y(b.id, {
-                          flexConfig: { ...U, wrap: T.target.value }
+                        value: M.wrap || "wrap",
+                        onChange: (j) => y(b.id, {
+                          flexConfig: { ...M, wrap: j.target.value }
                         }),
                         className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500",
                         children: [
@@ -12979,7 +13346,7 @@ const Ul = ({
                   ] })
                 ] })
               ] }),
-              Oe === "grid" && /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3 mt-3", children: [
+              ue === "grid" && /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-3 mt-3", children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
                   /* @__PURE__ */ e.jsxs("div", { children: [
                     /* @__PURE__ */ e.jsx("label", { className: "text-[10px] font-semibold text-slate-400 uppercase block mb-1", children: "Tổng Số Cột Lưới" }),
@@ -12990,12 +13357,12 @@ const Ul = ({
                           type: "number",
                           min: "1",
                           max: "48",
-                          value: oe.columns || 12,
-                          onChange: (T) => {
-                            const B = Math.max(1, Number(T.target.value) || 12);
+                          value: Q.columns || 12,
+                          onChange: (j) => {
+                            const A = Math.max(1, Number(j.target.value) || 12);
                             y(b.id, {
-                              gridConfig: { ...oe, columns: B },
-                              flexConfig: { ...U, columnsPerRow: B }
+                              gridConfig: { ...Q, columns: A },
+                              flexConfig: { ...M, columnsPerRow: A }
                             });
                           },
                           className: "w-14 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-mono text-xs text-center font-bold",
@@ -13005,12 +13372,12 @@ const Ul = ({
                       /* @__PURE__ */ e.jsxs(
                         "select",
                         {
-                          value: String(oe.columns || 12),
-                          onChange: (T) => {
-                            const B = Number(T.target.value);
+                          value: String(Q.columns || 12),
+                          onChange: (j) => {
+                            const A = Number(j.target.value);
                             y(b.id, {
-                              gridConfig: { ...oe, columns: B },
-                              flexConfig: { ...U, columnsPerRow: B }
+                              gridConfig: { ...Q, columns: A },
+                              flexConfig: { ...M, columnsPerRow: A }
                             });
                           },
                           className: "flex-1 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-mono text-xs focus:outline-none focus:border-emerald-500 font-bold",
@@ -13032,10 +13399,10 @@ const Ul = ({
                     /* @__PURE__ */ e.jsxs(
                       "select",
                       {
-                        value: U.gap || oe.gap || "12px",
-                        onChange: (T) => y(b.id, {
-                          flexConfig: { ...U, gap: T.target.value },
-                          gridConfig: { ...oe, gap: T.target.value }
+                        value: M.gap || Q.gap || "12px",
+                        onChange: (j) => y(b.id, {
+                          flexConfig: { ...M, gap: j.target.value },
+                          gridConfig: { ...Q, gap: j.target.value }
                         }),
                         className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-emerald-500",
                         children: [
@@ -13055,9 +13422,9 @@ const Ul = ({
                     /* @__PURE__ */ e.jsxs(
                       "select",
                       {
-                        value: U.justify || "flex-start",
-                        onChange: (T) => y(b.id, {
-                          flexConfig: { ...U, justify: T.target.value }
+                        value: M.justify || "flex-start",
+                        onChange: (j) => y(b.id, {
+                          flexConfig: { ...M, justify: j.target.value }
                         }),
                         className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-emerald-500 font-medium",
                         children: [
@@ -13074,9 +13441,9 @@ const Ul = ({
                     /* @__PURE__ */ e.jsxs(
                       "select",
                       {
-                        value: U.align || "center",
-                        onChange: (T) => y(b.id, {
-                          flexConfig: { ...U, align: T.target.value }
+                        value: M.align || "center",
+                        onChange: (j) => y(b.id, {
+                          flexConfig: { ...M, align: j.target.value }
                         }),
                         className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-emerald-500 font-medium",
                         children: [
@@ -13102,16 +13469,16 @@ const Ul = ({
                   {
                     type: "checkbox",
                     checked: !!(b.props.isTab || b.props.tab || b.type === "Tabs"),
-                    onChange: (T) => {
-                      var je;
-                      const B = T.target.checked, ee = b.props.tabs || [
+                    onChange: (j) => {
+                      var Ce;
+                      const A = j.target.checked, ne = b.props.tabs || [
                         { id: "main", label: "MAIN INFORMATION" }
                       ];
                       y(b.id, {
-                        isTab: B,
-                        tab: B,
-                        tabs: B ? ee : b.props.tabs,
-                        activeTabId: B ? b.props.activeTabId || ((je = ee[0]) == null ? void 0 : je.id) : void 0
+                        isTab: A,
+                        tab: A,
+                        tabs: A ? ne : b.props.tabs,
+                        activeTabId: A ? b.props.activeTabId || ((Ce = ne[0]) == null ? void 0 : Ce.id) : void 0
                       });
                     },
                     className: "w-4 h-4 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
@@ -13122,12 +13489,12 @@ const Ul = ({
                 /* @__PURE__ */ e.jsxs("div", { children: [
                   /* @__PURE__ */ e.jsx("label", { className: "text-[10px] font-semibold text-slate-400 uppercase block mb-1", children: "Tên Nhãn Tab (Hiển Thị Trên Thanh Tab)" }),
                   /* @__PURE__ */ e.jsx(
-                    nt,
+                    ct,
                     {
                       type: "text",
                       value: b.props.label || "",
                       placeholder: "e.g. MAIN INFORMATION, MASTER COST...",
-                      onChange: (T) => y(b.id, { label: T }),
+                      onChange: (j) => y(b.id, { label: j }),
                       className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-bold text-xs focus:outline-none focus:border-emerald-500"
                     }
                   )
@@ -13140,9 +13507,9 @@ const Ul = ({
                       {
                         type: "number",
                         value: Number(b.order ?? b.props.order ?? 1),
-                        onChange: (T) => {
-                          const B = Number(T.target.value);
-                          R(b.id, B);
+                        onChange: (j) => {
+                          const A = Number(j.target.value);
+                          L(b.id, A);
                         },
                         className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-amber-400 font-mono text-xs focus:outline-none focus:border-amber-500 font-bold"
                       }
@@ -13157,8 +13524,8 @@ const Ul = ({
                         type: "text",
                         value: b.props.badge !== void 0 ? String(b.props.badge) : "",
                         placeholder: "e.g. 2, NEW...",
-                        onChange: (T) => y(b.id, {
-                          badge: T.target.value || void 0
+                        onChange: (j) => y(b.id, {
+                          badge: j.target.value || void 0
                         }),
                         className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-emerald-500"
                       }
@@ -13169,38 +13536,38 @@ const Ul = ({
               ] })
             ] })
           ] }),
-          me && we === "children" && /* @__PURE__ */ e.jsxs("div", { className: "space-y-3", children: [
+          _ && ye === "children" && /* @__PURE__ */ e.jsxs("div", { className: "space-y-3", children: [
             /* @__PURE__ */ e.jsx("div", { className: "flex items-center justify-between pb-2 border-b border-slate-800", children: /* @__PURE__ */ e.jsxs("div", { children: [
               /* @__PURE__ */ e.jsxs("label", { className: "text-[11px] font-bold text-slate-300 uppercase tracking-wider block", children: [
                 "Danh Sách Phần Tử Con (",
-                Y.length,
+                W.length,
                 ")"
               ] }),
               /* @__PURE__ */ e.jsx("p", { className: "text-[10px] text-slate-500", children: "Sắp xếp ưu tiên theo trường Thứ tự (Order) từ nhỏ đến lớn" })
             ] }) }),
-            Y.length === 0 ? /* @__PURE__ */ e.jsx("div", { className: "p-6 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-950/40", children: "Chưa có phần tử con nào bên trong Container này. Chuột phải vào màn hình hoặc kéo thả để thêm mới." }) : /* @__PURE__ */ e.jsx("div", { className: "space-y-2", children: [...Y].sort((T, B) => (T.order ?? 1) - (B.order ?? 1)).map((T, B) => {
-              var te, Se;
-              const ee = v.componentId === T.id, je = !!((te = T.props) != null && te.tab || (Se = T.props) != null && Se.isTab || T.type === "Tabs");
+            W.length === 0 ? /* @__PURE__ */ e.jsx("div", { className: "p-6 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-950/40", children: "Chưa có phần tử con nào bên trong Container này. Chuột phải vào màn hình hoặc kéo thả để thêm mới." }) : /* @__PURE__ */ e.jsx("div", { className: "space-y-2", children: [...W].sort((j, A) => (j.order ?? 1) - (A.order ?? 1)).map((j, A) => {
+              var le, Fe;
+              const ne = v.componentId === j.id, Ce = !!((le = j.props) != null && le.tab || (Fe = j.props) != null && Fe.isTab || j.type === "Tabs");
               return /* @__PURE__ */ e.jsxs(
                 "div",
                 {
-                  onClick: () => C(T.id),
-                  className: `p-2.5 rounded-xl border flex items-center justify-between gap-2 cursor-pointer transition-all ${ee ? "bg-blue-600/20 border-blue-500 shadow-sm" : "bg-slate-950/80 border-slate-800 hover:border-slate-700"}`,
+                  onClick: () => k(j.id),
+                  className: `p-2.5 rounded-xl border flex items-center justify-between gap-2 cursor-pointer transition-all ${ne ? "bg-blue-600/20 border-blue-500 shadow-sm" : "bg-slate-950/80 border-slate-800 hover:border-slate-700"}`,
                   children: [
                     /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2 min-w-0", children: [
                       /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800 shrink-0", children: [
                         "#",
-                        B + 1
+                        A + 1
                       ] }),
                       /* @__PURE__ */ e.jsxs("div", { className: "min-w-0", children: [
                         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1.5 flex-wrap", children: [
-                          /* @__PURE__ */ e.jsx("span", { className: "text-xs font-bold text-slate-200 truncate max-w-[140px]", children: T.props.label || T.props.title || T.type }),
-                          /* @__PURE__ */ e.jsx("span", { className: "text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400 uppercase font-mono", children: T.type }),
-                          je && /* @__PURE__ */ e.jsx("span", { className: "text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-bold uppercase", children: "TAB" })
+                          /* @__PURE__ */ e.jsx("span", { className: "text-xs font-bold text-slate-200 truncate max-w-[140px]", children: j.props.label || j.props.title || j.type }),
+                          /* @__PURE__ */ e.jsx("span", { className: "text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400 uppercase font-mono", children: j.type }),
+                          Ce && /* @__PURE__ */ e.jsx("span", { className: "text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-bold uppercase", children: "TAB" })
                         ] }),
                         /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [
                           "#",
-                          T.id
+                          j.id
                         ] })
                       ] })
                     ] }),
@@ -13211,11 +13578,11 @@ const Ul = ({
                           "input",
                           {
                             type: "number",
-                            value: T.order ?? B + 1,
-                            onClick: (ce) => ce.stopPropagation(),
-                            onChange: (ce) => {
-                              const Ne = Number(ce.target.value);
-                              R(T.id, Ne);
+                            value: j.order ?? A + 1,
+                            onClick: (fe) => fe.stopPropagation(),
+                            onChange: (fe) => {
+                              const Ie = Number(fe.target.value);
+                              L(j.id, Ie);
                             },
                             className: "w-14 px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-amber-400 font-mono text-xs text-center focus:outline-none focus:border-amber-500 font-bold"
                           }
@@ -13225,22 +13592,22 @@ const Ul = ({
                         "button",
                         {
                           type: "button",
-                          onClick: (ce) => {
-                            ce.stopPropagation(), $(T.id);
+                          onClick: (fe) => {
+                            fe.stopPropagation(), $(j.id);
                           },
                           className: "p-1 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors cursor-pointer",
                           title: "Xóa phần tử này",
-                          children: /* @__PURE__ */ e.jsx(ot, { className: "w-3.5 h-3.5" })
+                          children: /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5" })
                         }
                       )
                     ] })
                   ]
                 },
-                T.id
+                j.id
               );
             }) })
           ] }),
-          we === "props" && /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
+          ye === "props" && /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
             /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-slate-950/60 border border-slate-800 rounded-xl space-y-3", children: [
               /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-amber-400 uppercase tracking-wider block", children: "Thứ Tự & Bố Cục (Order & Sắp Xếp)" }),
               /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
@@ -13251,9 +13618,9 @@ const Ul = ({
                     {
                       type: "number",
                       value: Number(b.order ?? b.props.order ?? 1),
-                      onChange: (T) => {
-                        const B = Number(T.target.value);
-                        R(b.id, B);
+                      onChange: (j) => {
+                        const A = Number(j.target.value);
+                        L(b.id, A);
                       },
                       className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-amber-400 font-mono text-xs focus:outline-none focus:border-amber-500 font-bold"
                     }
@@ -13270,9 +13637,9 @@ const Ul = ({
                         min: "1",
                         max: "48",
                         value: Number(b.props.colSpan || 4),
-                        onChange: (T) => {
-                          const B = Math.max(1, Number(T.target.value) || 1);
-                          y(b.id, { colSpan: B });
+                        onChange: (j) => {
+                          const A = Math.max(1, Number(j.target.value) || 1);
+                          y(b.id, { colSpan: A });
                         },
                         className: "w-14 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-blue-400 font-mono text-xs text-center font-bold",
                         title: "Nhập số cột tùy ý (Ví dụ: 4 cho 1/3 dòng, 8 cho 2/3 dòng)"
@@ -13282,7 +13649,7 @@ const Ul = ({
                       "select",
                       {
                         value: b.props.colSpan || 4,
-                        onChange: (T) => y(b.id, { colSpan: Number(T.target.value) }),
+                        onChange: (j) => y(b.id, { colSpan: Number(j.target.value) }),
                         className: "flex-1 px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs focus:outline-none focus:border-blue-500",
                         children: [
                           /* @__PURE__ */ e.jsx("option", { value: 1, children: "1 Cột (8.3%)" }),
@@ -13307,7 +13674,7 @@ const Ul = ({
                 ] })
               ] })
             ] }),
-            me && /* @__PURE__ */ e.jsx("div", { className: "p-3 bg-emerald-950/20 border border-emerald-800/40 rounded-xl space-y-2", children: /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
+            _ && /* @__PURE__ */ e.jsx("div", { className: "p-3 bg-emerald-950/20 border border-emerald-800/40 rounded-xl space-y-2", children: /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
               /* @__PURE__ */ e.jsxs("div", { children: [
                 /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-emerald-400 uppercase tracking-wider block", children: "Thuộc Tính Tab (tab = true)" }),
                 /* @__PURE__ */ e.jsx("p", { className: "text-[10px] text-slate-500", children: "Cùng Order với Container khác sẽ tự động Stack thành thanh Tab" })
@@ -13317,31 +13684,31 @@ const Ul = ({
                 {
                   type: "checkbox",
                   checked: !!(b.props.tab || b.props.isTab || b.type === "Tabs"),
-                  onChange: (T) => {
-                    const B = T.target.checked;
+                  onChange: (j) => {
+                    const A = j.target.checked;
                     y(b.id, {
-                      tab: B,
-                      isTab: B
+                      tab: A,
+                      isTab: A
                     });
                   },
                   className: "w-4 h-4 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
                 }
               )
             ] }) }),
-            de && /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-emerald-950/30 border border-emerald-800/40 rounded-xl space-y-1.5", children: [
+            O && /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-emerald-950/30 border border-emerald-800/40 rounded-xl space-y-1.5", children: [
               /* @__PURE__ */ e.jsx("label", { className: "text-[10px] font-bold text-emerald-400 uppercase tracking-wider block", children: "Thuộc Tab Phân Hệ (Container Cha)" }),
               /* @__PURE__ */ e.jsx(
                 "select",
                 {
-                  value: b.props.tabId || ((ve = (xe = de.props.tabs) == null ? void 0 : xe[0]) == null ? void 0 : ve.id) || "main",
-                  onChange: (T) => y(b.id, { tabId: T.target.value }),
+                  value: b.props.tabId || ((Ne = (ie = O.props.tabs) == null ? void 0 : ie[0]) == null ? void 0 : Ne.id) || "main",
+                  onChange: (j) => y(b.id, { tabId: j.target.value }),
                   className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs focus:outline-none focus:border-emerald-500 font-medium",
-                  children: (de.props.tabs || []).map((T) => /* @__PURE__ */ e.jsxs("option", { value: T.id, children: [
-                    T.label,
+                  children: (O.props.tabs || []).map((j) => /* @__PURE__ */ e.jsxs("option", { value: j.id, children: [
+                    j.label,
                     " (",
-                    T.id,
+                    j.id,
                     ")"
-                  ] }, T.id))
+                  ] }, j.id))
                 }
               ),
               /* @__PURE__ */ e.jsx("p", { className: "text-[10px] text-slate-400 mt-1", children: "Component này chỉ hiển thị khi người dùng chọn tab này trên Canvas." })
@@ -13356,19 +13723,19 @@ const Ul = ({
                     {
                       type: "checkbox",
                       checked: b.props.showLabel ?? !0,
-                      onChange: (T) => y(b.id, { showLabel: T.target.checked }),
+                      onChange: (j) => y(b.id, { showLabel: j.target.checked }),
                       className: "rounded bg-slate-800 border-slate-700 text-blue-600"
                     }
                   )
                 ] })
               ] }),
               /* @__PURE__ */ e.jsx(
-                nt,
+                ct,
                 {
                   type: "text",
                   value: b.props.label || "",
                   placeholder: "Nhập tên nhãn (ví dụ: Job No., S. Lines...)",
-                  onChange: (T) => y(b.id, { label: T }),
+                  onChange: (j) => y(b.id, { label: j }),
                   className: "w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 text-xs focus:outline-none focus:border-blue-500"
                 }
               ),
@@ -13379,7 +13746,7 @@ const Ul = ({
                     "select",
                     {
                       value: b.props.labelPosition || "left",
-                      onChange: (T) => y(b.id, { labelPosition: T.target.value }),
+                      onChange: (j) => y(b.id, { labelPosition: j.target.value }),
                       className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs",
                       children: [
                         /* @__PURE__ */ e.jsx("option", { value: "left", children: "Bên Trái (Chuẩn ERP)" }),
@@ -13398,9 +13765,9 @@ const Ul = ({
                         min: "1",
                         max: "48",
                         value: Number(b.props.colSpan || 4),
-                        onChange: (T) => {
-                          const B = Math.max(1, Number(T.target.value) || 1);
-                          y(b.id, { colSpan: B });
+                        onChange: (j) => {
+                          const A = Math.max(1, Number(j.target.value) || 1);
+                          y(b.id, { colSpan: A });
                         },
                         className: "w-14 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded text-blue-400 font-mono text-xs text-center font-bold"
                       }
@@ -13409,14 +13776,14 @@ const Ul = ({
                       "select",
                       {
                         value: b.props.colSpan || 4,
-                        onChange: (T) => y(b.id, { colSpan: Number(T.target.value) }),
+                        onChange: (j) => y(b.id, { colSpan: Number(j.target.value) }),
                         className: "flex-1 px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs",
-                        children: [1, 2, 3, 4, 6, 8, 9, 12].map((T) => /* @__PURE__ */ e.jsxs("option", { value: T, children: [
-                          T,
+                        children: [1, 2, 3, 4, 6, 8, 9, 12].map((j) => /* @__PURE__ */ e.jsxs("option", { value: j, children: [
+                          j,
                           " Cột (",
-                          Math.round(T / 12 * 100),
+                          Math.round(j / 12 * 100),
                           "%)"
-                        ] }, T))
+                        ] }, j))
                       }
                     )
                   ] }),
@@ -13433,11 +13800,11 @@ const Ul = ({
             b.type === "TextBox" && /* @__PURE__ */ e.jsxs("div", { children: [
               /* @__PURE__ */ e.jsx("label", { className: "text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1", children: "Placeholder Gợi Ý" }),
               /* @__PURE__ */ e.jsx(
-                nt,
+                ct,
                 {
                   type: "text",
                   value: b.props.placeholder || "",
-                  onChange: (T) => y(b.id, { placeholder: T }),
+                  onChange: (j) => y(b.id, { placeholder: j }),
                   className: "w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded text-slate-100"
                 }
               )
@@ -13447,12 +13814,12 @@ const Ul = ({
               /* @__PURE__ */ e.jsxs("div", { children: [
                 /* @__PURE__ */ e.jsx("label", { className: "text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1", children: "Bảng danh mục tra cứu (Reference Dataset)" }),
                 /* @__PURE__ */ e.jsx(
-                  nt,
+                  ct,
                   {
                     type: "text",
                     value: b.props.reference || "",
                     placeholder: "VD: MasterData, Customers, Products...",
-                    onChange: (T) => y(b.id, { reference: T }),
+                    onChange: (j) => y(b.id, { reference: j }),
                     className: "w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-cyan-300 font-mono text-xs"
                   }
                 )
@@ -13461,12 +13828,12 @@ const Ul = ({
                 /* @__PURE__ */ e.jsxs("div", { children: [
                   /* @__PURE__ */ e.jsx("label", { className: "text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1", children: "Cột hiển thị (Display)" }),
                   /* @__PURE__ */ e.jsx(
-                    nt,
+                    ct,
                     {
                       type: "text",
                       value: b.props.displayField || "",
                       placeholder: "VD: name",
-                      onChange: (T) => y(b.id, { displayField: T }),
+                      onChange: (j) => y(b.id, { displayField: j }),
                       className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 font-mono text-xs"
                     }
                   )
@@ -13474,12 +13841,12 @@ const Ul = ({
                 /* @__PURE__ */ e.jsxs("div", { children: [
                   /* @__PURE__ */ e.jsx("label", { className: "text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1", children: "Cột giá trị (Value)" }),
                   /* @__PURE__ */ e.jsx(
-                    nt,
+                    ct,
                     {
                       type: "text",
                       value: b.props.valueField || "",
                       placeholder: "VD: code / id",
-                      onChange: (T) => y(b.id, { valueField: T }),
+                      onChange: (j) => y(b.id, { valueField: j }),
                       className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 font-mono text-xs"
                     }
                   )
@@ -13488,12 +13855,12 @@ const Ul = ({
               /* @__PURE__ */ e.jsxs("div", { children: [
                 /* @__PURE__ */ e.jsx("label", { className: "text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1", children: "Placeholder" }),
                 /* @__PURE__ */ e.jsx(
-                  nt,
+                  ct,
                   {
                     type: "text",
                     value: b.props.placeholder || "",
                     placeholder: "Tra cứu danh mục (F1)...",
-                    onChange: (T) => y(b.id, { placeholder: T }),
+                    onChange: (j) => y(b.id, { placeholder: j }),
                     className: "w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-200 text-xs"
                   }
                 )
@@ -13508,7 +13875,7 @@ const Ul = ({
                   min: 2,
                   max: 20,
                   value: b.props.rows || 3,
-                  onChange: (T) => y(b.id, { rows: Number(T.target.value) }),
+                  onChange: (j) => y(b.id, { rows: Number(j.target.value) }),
                   className: "w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded text-slate-100"
                 }
               )
@@ -13523,7 +13890,7 @@ const Ul = ({
                     min: 0,
                     max: 6,
                     value: b.props.precision !== void 0 ? b.props.precision : 2,
-                    onChange: (T) => y(b.id, { precision: Number(T.target.value) }),
+                    onChange: (j) => y(b.id, { precision: Number(j.target.value) }),
                     className: "w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded text-slate-100"
                   }
                 )
@@ -13534,7 +13901,7 @@ const Ul = ({
                   {
                     type: "checkbox",
                     checked: b.props.thousandsSeparator ?? !0,
-                    onChange: (T) => y(b.id, { thousandsSeparator: T.target.checked }),
+                    onChange: (j) => y(b.id, { thousandsSeparator: j.target.checked }),
                     className: "rounded bg-slate-800 border-slate-700 text-blue-600"
                   }
                 ),
@@ -13542,26 +13909,26 @@ const Ul = ({
               ] })
             ] }),
             b.type === "Table" && (() => {
-              const T = b.props.columns || [], B = a !== null ? T[a] : null, ee = (le, ue) => {
-                const Pe = T.map((ye, pe) => pe === le ? { ...ye, ...ue } : ye);
-                y(b.id, { columns: Pe });
-              }, je = (le, ue) => {
-                if (ue < 0 || ue >= T.length) return;
-                const Pe = Cn(T, le, ue);
-                y(b.id, { columns: Pe }), n(ue);
-              }, te = (le) => {
-                const ue = Kr(T, le);
-                y(b.id, { columns: ue });
-                const Pe = ue.findIndex((ye) => ye.key === le);
-                Pe !== -1 && n(Pe);
-              }, Se = (le, ue) => {
-                const Pe = Math.max(0, Math.min(T.length - 1, ue - 1));
-                if (Pe !== le) {
-                  const ye = Cn(T, le, Pe);
-                  y(b.id, { columns: ye }), n(Pe);
+              const j = b.props.columns || [], A = a !== null ? j[a] : null, ne = (pe, ge) => {
+                const Me = j.map((De, we) => we === pe ? { ...De, ...ge } : De);
+                y(b.id, { columns: Me });
+              }, Ce = (pe, ge) => {
+                if (ge < 0 || ge >= j.length) return;
+                const Me = Fn(j, pe, ge);
+                y(b.id, { columns: Me }), n(ge);
+              }, le = (pe) => {
+                const ge = ea(j, pe);
+                y(b.id, { columns: ge });
+                const Me = ge.findIndex((De) => De.key === pe);
+                Me !== -1 && n(Me);
+              }, Fe = (pe, ge) => {
+                const Me = Math.max(0, Math.min(j.length - 1, ge - 1));
+                if (Me !== pe) {
+                  const De = Fn(j, pe, Me);
+                  y(b.id, { columns: De }), n(Me);
                 }
-              }, ce = () => {
-                const le = {
+              }, fe = () => {
+                const pe = {
                   key: `col_${Date.now().toString().slice(-4)}`,
                   title: "Cột Mới",
                   width: "120px",
@@ -13569,118 +13936,118 @@ const Ul = ({
                   componentType: "TextBox",
                   editable: !0,
                   sortable: !0,
-                  order: T.length + 1
-                }, ue = Ns([...T, le]);
-                y(b.id, { columns: ue }), n(ue.length - 1);
-              }, Ne = (le) => {
-                const ue = T.filter((ye, pe) => pe !== le), Pe = Ns(ue);
-                y(b.id, { columns: Pe }), a === le ? n(null) : a !== null && a > le && n(a - 1);
+                  order: j.length + 1
+                }, ge = ks([...j, pe]);
+                y(b.id, { columns: ge }), n(ge.length - 1);
+              }, Ie = (pe) => {
+                const ge = j.filter((De, we) => we !== pe), Me = ks(ge);
+                y(b.id, { columns: Me }), a === pe ? n(null) : a !== null && a > pe && n(a - 1);
               };
               return /* @__PURE__ */ e.jsxs("div", { className: "space-y-3 pt-2 border-t border-slate-800", children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                   /* @__PURE__ */ e.jsxs("label", { className: "text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5", children: [
-                    /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5 text-cyan-400" }),
+                    /* @__PURE__ */ e.jsx(Nt, { className: "w-3.5 h-3.5 text-cyan-400" }),
                     /* @__PURE__ */ e.jsx("span", { children: "Quản Lý Cột (GridPolicy Model)" })
                   ] }),
                   /* @__PURE__ */ e.jsxs(
                     "button",
                     {
                       type: "button",
-                      onClick: ce,
+                      onClick: fe,
                       className: "px-2 py-1 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 rounded text-[10px] font-bold flex items-center gap-1 transition-colors",
                       children: [
-                        /* @__PURE__ */ e.jsx(et, { className: "w-3 h-3" }),
+                        /* @__PURE__ */ e.jsx(Qe, { className: "w-3 h-3" }),
                         /* @__PURE__ */ e.jsx("span", { children: "Thêm Cột" })
                       ]
                     }
                   )
                 ] }),
-                /* @__PURE__ */ e.jsx("div", { className: "max-h-48 overflow-y-auto border border-slate-800 rounded-lg divide-y divide-slate-800 bg-slate-950", children: T.map((le, ue) => {
-                  const Pe = a === ue, ye = !!(le.frozen || le.sticky === "left"), pe = g === ue, W = f === ue;
+                /* @__PURE__ */ e.jsx("div", { className: "max-h-48 overflow-y-auto border border-slate-800 rounded-lg divide-y divide-slate-800 bg-slate-950", children: j.map((pe, ge) => {
+                  const Me = a === ge, De = !!(pe.frozen || pe.sticky === "left"), we = g === ge, X = x === ge;
                   return /* @__PURE__ */ e.jsxs(
                     "div",
                     {
                       draggable: !0,
-                      onDragStart: () => I(ue),
-                      onDragOver: (ae) => {
-                        ae.preventDefault(), !(g === null || g === ue) && x(ue);
+                      onDragStart: () => T(ge),
+                      onDragOver: (xe) => {
+                        xe.preventDefault(), !(g === null || g === ge) && h(ge);
                       },
-                      onDragLeave: () => x(null),
+                      onDragLeave: () => h(null),
                       onDrop: () => {
-                        g !== null && g !== ue && je(g, ue), I(null), x(null);
+                        g !== null && g !== ge && Ce(g, ge), T(null), h(null);
                       },
                       onDragEnd: () => {
-                        I(null), x(null);
+                        T(null), h(null);
                       },
-                      onClick: () => n(ue),
-                      className: `p-2 flex items-center justify-between cursor-pointer transition-all ${pe ? "opacity-30 bg-slate-800" : ""} ${W ? "border-t-2 border-t-emerald-400 bg-emerald-500/10" : ""} ${Pe ? "bg-blue-600/20 text-blue-200" : "hover:bg-slate-900 text-slate-300"}`,
+                      onClick: () => n(ge),
+                      className: `p-2 flex items-center justify-between cursor-pointer transition-all ${we ? "opacity-30 bg-slate-800" : ""} ${X ? "border-t-2 border-t-emerald-400 bg-emerald-500/10" : ""} ${Me ? "bg-blue-600/20 text-blue-200" : "hover:bg-slate-900 text-slate-300"}`,
                       children: [
                         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1.5 min-w-0", children: [
-                          /* @__PURE__ */ e.jsx(Rn, { className: "w-3.5 h-3.5 text-slate-500 hover:text-emerald-400 cursor-grab active:cursor-grabbing flex-shrink-0" }),
+                          /* @__PURE__ */ e.jsx($s, { className: "w-3.5 h-3.5 text-slate-500 hover:text-emerald-400 cursor-grab active:cursor-grabbing flex-shrink-0" }),
                           /* @__PURE__ */ e.jsxs("div", { className: "flex flex-col gap-0.5 -ml-0.5 mr-0.5", children: [
                             /* @__PURE__ */ e.jsx(
                               "button",
                               {
                                 type: "button",
-                                disabled: ue === 0,
-                                onClick: (ae) => {
-                                  ae.stopPropagation(), je(ue, ue - 1);
+                                disabled: ge === 0,
+                                onClick: (xe) => {
+                                  xe.stopPropagation(), Ce(ge, ge - 1);
                                 },
                                 title: "Đẩy cột lên trước (Order giảm dần)",
                                 className: "p-0.5 rounded text-slate-500 hover:text-cyan-400 hover:bg-slate-800 disabled:opacity-20 disabled:hover:text-slate-500",
-                                children: /* @__PURE__ */ e.jsx(ws, { className: "w-3 h-3" })
+                                children: /* @__PURE__ */ e.jsx(Ss, { className: "w-3 h-3" })
                               }
                             ),
                             /* @__PURE__ */ e.jsx(
                               "button",
                               {
                                 type: "button",
-                                disabled: ue === T.length - 1,
-                                onClick: (ae) => {
-                                  ae.stopPropagation(), je(ue, ue + 1);
+                                disabled: ge === j.length - 1,
+                                onClick: (xe) => {
+                                  xe.stopPropagation(), Ce(ge, ge + 1);
                                 },
                                 title: "Hạ cột xuống sau (Order tăng dần)",
                                 className: "p-0.5 rounded text-slate-500 hover:text-cyan-400 hover:bg-slate-800 disabled:opacity-20 disabled:hover:text-slate-500",
-                                children: /* @__PURE__ */ e.jsx(St, { className: "w-3 h-3" })
+                                children: /* @__PURE__ */ e.jsx(wt, { className: "w-3 h-3" })
                               }
                             )
                           ] }),
                           /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] font-mono text-slate-500 font-bold min-w-[22px]", children: [
                             "#",
-                            le.order ?? ue + 1
+                            pe.order ?? ge + 1
                           ] }),
-                          /* @__PURE__ */ e.jsx("span", { className: "font-bold truncate text-xs", children: le.title }),
+                          /* @__PURE__ */ e.jsx("span", { className: "font-bold truncate text-xs", children: pe.title }),
                           /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] text-cyan-400 font-mono", children: [
                             "[",
-                            le.key,
+                            pe.key,
                             "]"
                           ] }),
-                          ye && /* @__PURE__ */ e.jsx("span", { className: "px-1 py-0.2 bg-amber-500/20 text-amber-300 rounded text-[9px] font-semibold border border-amber-500/30", children: "📌 Ghim" })
+                          De && /* @__PURE__ */ e.jsx("span", { className: "px-1 py-0.2 bg-amber-500/20 text-amber-300 rounded text-[9px] font-semibold border border-amber-500/30", children: "📌 Ghim" })
                         ] }),
                         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
-                          /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-500 font-mono", children: le.width || "auto" }),
+                          /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-500 font-mono", children: pe.width || "auto" }),
                           /* @__PURE__ */ e.jsx(
                             "button",
                             {
                               type: "button",
-                              onClick: (ae) => {
-                                ae.stopPropagation(), Ne(ue);
+                              onClick: (xe) => {
+                                xe.stopPropagation(), Ie(ge);
                               },
                               className: "text-slate-500 hover:text-red-400 p-0.5",
-                              children: /* @__PURE__ */ e.jsx(ot, { className: "w-3 h-3" })
+                              children: /* @__PURE__ */ e.jsx(bt, { className: "w-3 h-3" })
                             }
                           )
                         ] })
                       ]
                     },
-                    le.key || ue
+                    pe.key || ge
                   );
                 }) }),
-                B && a !== null && /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-slate-950 border border-cyan-800/40 rounded-xl space-y-3", children: [
+                A && a !== null && /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-slate-950 border border-cyan-800/40 rounded-xl space-y-3", children: [
                   /* @__PURE__ */ e.jsxs("div", { className: "text-[11px] font-bold text-cyan-300 flex items-center justify-between", children: [
                     /* @__PURE__ */ e.jsxs("span", { children: [
                       "Chi Tiết Thuộc Tính Cột: ",
-                      B.title
+                      A.title
                     ] }),
                     /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] font-mono text-slate-500", children: [
                       "Index: ",
@@ -13694,7 +14061,7 @@ const Ul = ({
                       onClick: () => l(!0),
                       className: "w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-xs font-semibold transition-colors",
                       children: [
-                        /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
+                        /* @__PURE__ */ e.jsx(lt, { className: "w-3.5 h-3.5" }),
                         /* @__PURE__ */ e.jsx("span", { children: "Mở Modal Cấu Hình Đầy Đủ (Chuẩn Ảnh 6)" })
                       ]
                     }
@@ -13707,11 +14074,11 @@ const Ul = ({
                         {
                           type: "number",
                           min: 1,
-                          max: T.length,
-                          value: B.order ?? a + 1,
-                          onChange: (le) => {
-                            const ue = parseInt(le.target.value, 10);
-                            isNaN(ue) || Se(a, ue);
+                          max: j.length,
+                          value: A.order ?? a + 1,
+                          onChange: (pe) => {
+                            const ge = parseInt(pe.target.value, 10);
+                            isNaN(ge) || Fe(a, ge);
                           },
                           className: "w-full px-2.5 py-1.5 bg-slate-900 border border-amber-600/40 rounded text-amber-400 font-mono text-xs font-bold focus:border-amber-400 focus:outline-none"
                         }
@@ -13723,8 +14090,8 @@ const Ul = ({
                         "input",
                         {
                           type: "text",
-                          value: B.key,
-                          onChange: (le) => ee(a, { key: le.target.value }),
+                          value: A.key,
+                          onChange: (pe) => ne(a, { key: pe.target.value }),
                           className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-cyan-400 font-mono text-xs"
                         }
                       )
@@ -13735,8 +14102,8 @@ const Ul = ({
                         "input",
                         {
                           type: "text",
-                          value: B.title,
-                          onChange: (le) => ee(a, { title: le.target.value }),
+                          value: A.title,
+                          onChange: (pe) => ne(a, { title: pe.target.value }),
                           className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs"
                         }
                       )
@@ -13748,8 +14115,8 @@ const Ul = ({
                       /* @__PURE__ */ e.jsxs(
                         "select",
                         {
-                          value: B.componentType || "TextBox",
-                          onChange: (le) => ee(a, { componentType: le.target.value }),
+                          value: A.componentType || "TextBox",
+                          onChange: (pe) => ne(a, { componentType: pe.target.value }),
                           className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs",
                           children: [
                             /* @__PURE__ */ e.jsx("option", { value: "TextBox", children: "Input (Văn bản)" }),
@@ -13769,9 +14136,9 @@ const Ul = ({
                         "input",
                         {
                           type: "text",
-                          value: B.width || "",
+                          value: A.width || "",
                           placeholder: "144px, 120px...",
-                          onChange: (le) => ee(a, { width: le.target.value }),
+                          onChange: (pe) => ne(a, { width: pe.target.value }),
                           className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 font-mono text-xs"
                         }
                       )
@@ -13783,8 +14150,8 @@ const Ul = ({
                       /* @__PURE__ */ e.jsxs(
                         "select",
                         {
-                          value: B.align || "left",
-                          onChange: (le) => ee(a, { align: le.target.value }),
+                          value: A.align || "left",
+                          onChange: (pe) => ne(a, { align: pe.target.value }),
                           className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs",
                           children: [
                             /* @__PURE__ */ e.jsx("option", { value: "left", children: "Căn Trái" }),
@@ -13799,8 +14166,8 @@ const Ul = ({
                       /* @__PURE__ */ e.jsxs(
                         "select",
                         {
-                          value: B.aggregate || "none",
-                          onChange: (le) => ee(a, { aggregate: le.target.value }),
+                          value: A.aggregate || "none",
+                          onChange: (pe) => ne(a, { aggregate: pe.target.value }),
                           className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded text-slate-100 text-xs",
                           children: [
                             /* @__PURE__ */ e.jsx("option", { value: "none", children: "Không tính tổng" }),
@@ -13818,8 +14185,8 @@ const Ul = ({
                         "input",
                         {
                           type: "checkbox",
-                          checked: !!(B.frozen || B.sticky === "left"),
-                          onChange: () => te(B.key),
+                          checked: !!(A.frozen || A.sticky === "left"),
+                          onChange: () => le(A.key),
                           className: "rounded bg-slate-800 border-slate-700 text-amber-500"
                         }
                       ),
@@ -13830,8 +14197,8 @@ const Ul = ({
                         "input",
                         {
                           type: "checkbox",
-                          checked: B.editable ?? !0,
-                          onChange: (le) => ee(a, { editable: le.target.checked }),
+                          checked: A.editable ?? !0,
+                          onChange: (pe) => ne(a, { editable: pe.target.checked }),
                           className: "rounded bg-slate-800 border-slate-700 text-blue-500"
                         }
                       ),
@@ -13842,8 +14209,8 @@ const Ul = ({
                         "input",
                         {
                           type: "checkbox",
-                          checked: B.sortable ?? !0,
-                          onChange: (le) => ee(a, { sortable: le.target.checked }),
+                          checked: A.sortable ?? !0,
+                          onChange: (pe) => ne(a, { sortable: pe.target.checked }),
                           className: "rounded bg-slate-800 border-slate-700 text-emerald-500"
                         }
                       ),
@@ -13853,10 +14220,10 @@ const Ul = ({
                   /* @__PURE__ */ e.jsxs("div", { className: "p-2.5 bg-slate-900/90 border border-slate-800 rounded-lg space-y-1", children: [
                     /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                       /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1", children: [
-                        /* @__PURE__ */ e.jsx(ft, { className: "w-3 h-3 text-amber-400" }),
+                        /* @__PURE__ */ e.jsx(Tt, { className: "w-3 h-3 text-amber-400" }),
                         /* @__PURE__ */ e.jsxs("span", { children: [
                           "Sự Kiện Cột (",
-                          Array.isArray(B.events) ? B.events.length : B.action ? 1 : 0,
+                          Array.isArray(A.events) ? A.events.length : A.action ? 1 : 0,
                           ")"
                         ] })
                       ] }),
@@ -13873,24 +14240,24 @@ const Ul = ({
                         }
                       )
                     ] }),
-                    /* @__PURE__ */ e.jsx("div", { className: "text-[11px] text-slate-300 font-mono", children: Array.isArray(B.events) && B.events.length > 0 ? /* @__PURE__ */ e.jsx("span", { className: "text-emerald-300", children: B.events.map((le) => `${le.trigger} ➔ ${le.handlerName || le.action}()`).join(", ") }) : B.action ? /* @__PURE__ */ e.jsxs("span", { className: "text-emerald-300", children: [
+                    /* @__PURE__ */ e.jsx("div", { className: "text-[11px] text-slate-300 font-mono", children: Array.isArray(A.events) && A.events.length > 0 ? /* @__PURE__ */ e.jsx("span", { className: "text-emerald-300", children: A.events.map((pe) => `${pe.trigger} ➔ ${pe.handlerName || pe.action}()`).join(", ") }) : A.action ? /* @__PURE__ */ e.jsxs("span", { className: "text-emerald-300", children: [
                       "click ➔ ",
-                      B.action,
+                      A.action,
                       "()"
                     ] }) : /* @__PURE__ */ e.jsx("span", { className: "text-slate-500 italic", children: "Chưa gắn sự kiện" }) })
                   ] })
                 ] }),
-                o && B && a !== null && /* @__PURE__ */ e.jsx(
-                  Hr,
+                o && A && a !== null && /* @__PURE__ */ e.jsx(
+                  Xr,
                   {
                     isOpen: o,
-                    column: B,
+                    column: A,
                     onClose: () => l(!1),
-                    onSave: (le) => {
-                      const ue = T.map((pe, W) => W === a ? le : pe), Pe = Ns(ue);
-                      y(b.id, { columns: Pe });
-                      const ye = Pe.findIndex((pe) => pe.key === le.key);
-                      ye !== -1 && n(ye);
+                    onSave: (pe) => {
+                      const ge = j.map((we, X) => X === a ? pe : we), Me = ks(ge);
+                      y(b.id, { columns: Me });
+                      const De = Me.findIndex((we) => we.key === pe.key);
+                      De !== -1 && n(De);
                     }
                   }
                 )
@@ -13904,7 +14271,7 @@ const Ul = ({
                   {
                     type: "checkbox",
                     checked: !!b.props.required,
-                    onChange: (T) => y(b.id, { required: T.target.checked }),
+                    onChange: (j) => y(b.id, { required: j.target.checked }),
                     className: "rounded bg-slate-800 border-slate-700 text-red-500 cursor-pointer"
                   }
                 )
@@ -13916,14 +14283,14 @@ const Ul = ({
                   {
                     type: "checkbox",
                     checked: !!b.props.disabled,
-                    onChange: (T) => y(b.id, { disabled: T.target.checked }),
+                    onChange: (j) => y(b.id, { disabled: j.target.checked }),
                     className: "rounded bg-slate-800 border-slate-700 text-blue-600 cursor-pointer"
                   }
                 )
               ] })
             ] })
           ] }),
-          we === "styles" && /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
+          ye === "styles" && /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
             /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
               /* @__PURE__ */ e.jsxs("div", { children: [
                 /* @__PURE__ */ e.jsx("label", { className: "text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1", children: "Độ rộng (Width)" }),
@@ -13933,7 +14300,7 @@ const Ul = ({
                     type: "text",
                     value: b.style.width || "",
                     placeholder: "100%, 250px...",
-                    onChange: (T) => L(b.id, { width: T.target.value }),
+                    onChange: (j) => P(b.id, { width: j.target.value }),
                     className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-xs"
                   }
                 )
@@ -13946,9 +14313,9 @@ const Ul = ({
                     type: "text",
                     value: b.style.height || b.style.minHeight || "",
                     placeholder: "auto, 120px...",
-                    onChange: (T) => L(b.id, {
-                      height: T.target.value,
-                      minHeight: T.target.value
+                    onChange: (j) => P(b.id, {
+                      height: j.target.value,
+                      minHeight: j.target.value
                     }),
                     className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-xs"
                   }
@@ -13958,7 +14325,7 @@ const Ul = ({
             /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-slate-950/70 rounded-xl border border-slate-800 space-y-2", children: [
               /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                 /* @__PURE__ */ e.jsxs("label", { className: "text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5", children: [
-                  /* @__PURE__ */ e.jsx(ln, { className: "w-3.5 h-3.5 text-cyan-400" }),
+                  /* @__PURE__ */ e.jsx(Us, { className: "w-3.5 h-3.5 text-cyan-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "CSS Tùy Chỉnh (Custom CSS)" })
                 ] }),
                 /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-cyan-400 font-mono", children: "Trực tiếp" })
@@ -13967,21 +14334,21 @@ const Ul = ({
                 "textarea",
                 {
                   rows: 5,
-                  value: b.style.customCss || Gl(b.style),
+                  value: b.style.customCss || yo(b.style),
                   placeholder: `border-radius: 8px;
 box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
-                  onChange: (T) => {
-                    const B = T.target.value, ee = Kl(B);
-                    if (L(b.id, {
-                      ...ee,
-                      customCss: B
-                    }), ee.justifyContent || ee.alignItems) {
-                      const je = b.props.flexConfig || {};
+                  onChange: (j) => {
+                    const A = j.target.value, ne = vo(A);
+                    if (P(b.id, {
+                      ...ne,
+                      customCss: A
+                    }), ne.justifyContent || ne.alignItems) {
+                      const Ce = b.props.flexConfig || {};
                       y(b.id, {
                         flexConfig: {
-                          ...je,
-                          ...ee.justifyContent ? { justify: ee.justifyContent } : {},
-                          ...ee.alignItems ? { align: ee.alignItems } : {}
+                          ...Ce,
+                          ...ne.justifyContent ? { justify: ne.justifyContent } : {},
+                          ...ne.alignItems ? { align: ne.alignItems } : {}
                         }
                       });
                     }
@@ -13991,50 +14358,50 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
               )
             ] })
           ] }),
-          we === "events" && /* @__PURE__ */ e.jsx(
-            _r,
+          ye === "events" && /* @__PURE__ */ e.jsx(
+            Jr,
             {
               events: b.events || [],
-              onChange: (T) => k(b.id, T),
+              onChange: (j) => R(b.id, j),
               scriptFile: (u == null ? void 0 : u.scriptFile) || "transactionList.bl.ts",
               componentName: b.props.label || b.type,
               componentId: b.id,
               contextExtra: {
-                pageId: N,
+                pageId: w,
                 nodeId: b.id,
                 type: b.type
               }
             }
           ),
-          we === "data" && (() => {
-            const T = b.dataBinding || {}, B = b.props || {}, ee = b.type, je = ee === "Table" || ee === "GridView" || ee === "AdvancedGrid", te = ee === "Select" || ee === "Dropdown" || ee === "Autocomplete" || ee === "SearchEntry", Se = ee === "TextBox" || ee === "Number" || ee === "DatePicker" || ee === "Checkbox" || ee === "Textarea", ce = !je && !te && !Se, Ne = Ws(c), le = T.entityName || B.reference || B.refName || "", ue = Ks(Ne, le), Pe = ue ? ue.fields : [], ye = T.dataSource || B.dataSource || B.dataSourceFilter || T.query || B.query || "", pe = (W) => {
+          ye === "data" && (() => {
+            const j = b.dataBinding || {}, A = b.props || {}, ne = b.type, Ce = ne === "Table" || ne === "GridView" || ne === "AdvancedGrid", le = ne === "Select" || ne === "Dropdown" || ne === "Autocomplete" || ne === "SearchEntry", Fe = ne === "TextBox" || ne === "Number" || ne === "DatePicker" || ne === "Checkbox" || ne === "Textarea", fe = !Ce && !le && !Fe, Ie = Js(c), pe = j.entityName || A.reference || A.refName || "", ge = Xs(Ie, pe), Me = ge ? ge.fields : [], De = j.dataSource || A.dataSource || A.dataSourceFilter || j.query || A.query || "", we = (X) => {
               F(b.id, {
-                dataSource: W,
-                query: W
+                dataSource: X,
+                query: X
               }), y(b.id, {
-                dataSource: W,
-                dataSourceFilter: W,
-                query: W
+                dataSource: X,
+                dataSourceFilter: X,
+                query: X
               });
             };
             return /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
               /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-blue-950/20 border border-blue-800/40 rounded-xl space-y-2.5", children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                   /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-blue-300 flex items-center gap-1.5", children: [
-                    /* @__PURE__ */ e.jsx(gn, { className: "w-4 h-4 text-blue-400" }),
+                    /* @__PURE__ */ e.jsx(kn, { className: "w-4 h-4 text-blue-400" }),
                     /* @__PURE__ */ e.jsxs("span", { children: [
                       "Liên Kết Dữ Liệu (",
-                      ee,
+                      ne,
                       ")"
                     ] })
                   ] }),
                   /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-cyan-400 font-mono font-semibold", children: "Core C# Engine" })
                 ] }),
                 /* @__PURE__ */ e.jsxs("p", { className: "text-[11px] text-slate-400 leading-relaxed", children: [
-                  je && "Cấu hình đối tượng thực thể truy vấn và bộ lọc DATASOURCE cho toàn bộ bảng.",
-                  te && "Cấu hình trường dữ liệu lưu trữ, danh mục tra cứu tham chiếu và quy tắc tự động điền (Populate).",
-                  Se && "Cấu hình trường ánh xạ dữ liệu (Field Name) và đồng bộ 2 chiều với mô hình form.",
-                  ce && "Thành phần giao diện/bố cục. Nhấn nút bên dưới để xem toàn bộ thông số chi tiết."
+                  Ce && "Cấu hình đối tượng thực thể truy vấn và bộ lọc DATASOURCE cho toàn bộ bảng.",
+                  le && "Cấu hình trường dữ liệu lưu trữ, danh mục tra cứu tham chiếu và quy tắc tự động điền (Populate).",
+                  Fe && "Cấu hình trường ánh xạ dữ liệu (Field Name) và đồng bộ 2 chiều với mô hình form.",
+                  fe && "Thành phần giao diện/bố cục. Nhấn nút bên dưới để xem toàn bộ thông số chi tiết."
                 ] }),
                 /* @__PURE__ */ e.jsxs(
                   "button",
@@ -14043,13 +14410,13 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     onClick: () => d(!0),
                     className: "w-full py-2 px-3 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95",
                     children: [
-                      /* @__PURE__ */ e.jsx(Gt, { className: "w-4 h-4 text-emerald-400" }),
+                      /* @__PURE__ */ e.jsx(lt, { className: "w-4 h-4 text-emerald-400" }),
                       /* @__PURE__ */ e.jsx("span", { children: "🔍 Mở Toàn Bộ Thông Số Core (Component Properties)" })
                     ]
                   }
                 )
               ] }),
-              je && /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
+              Ce && /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "space-y-1.5", children: [
                   /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                     /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider block", children: "Đối Tượng Tham Chiếu (Reference / RefName)" }),
@@ -14058,26 +14425,26 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                   /* @__PURE__ */ e.jsxs(
                     "select",
                     {
-                      value: ue ? ue.name : "",
-                      onChange: (W) => {
-                        const ae = W.target.value;
+                      value: ge ? ge.name : "",
+                      onChange: (X) => {
+                        const xe = X.target.value;
                         F(b.id, {
-                          entityName: ae,
-                          refName: ae
+                          entityName: xe,
+                          refName: xe
                         }), y(b.id, {
-                          reference: ae,
-                          refName: ae
+                          reference: xe,
+                          refName: xe
                         });
                       },
                       className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer",
                       children: [
                         /* @__PURE__ */ e.jsx("option", { value: "", children: "-- Chọn Thực Thể Trong Database --" }),
-                        Ne.map((W) => /* @__PURE__ */ e.jsxs("option", { value: W.name, children: [
-                          W.displayName,
+                        Ie.map((X) => /* @__PURE__ */ e.jsxs("option", { value: X.name, children: [
+                          X.displayName,
                           " (",
-                          W.name,
+                          X.name,
                           ")"
-                        ] }, W.name))
+                        ] }, X.name))
                       ]
                     }
                   ),
@@ -14085,16 +14452,16 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     "input",
                     {
                       type: "text",
-                      value: T.entityName || B.reference || B.refName || "",
+                      value: j.entityName || A.reference || A.refName || "",
                       placeholder: "Hoặc gõ tên Entity tùy ý (VD: Transaction, Shipment, Terminal)...",
-                      onChange: (W) => {
-                        const ae = W.target.value;
+                      onChange: (X) => {
+                        const xe = X.target.value;
                         F(b.id, {
-                          entityName: ae,
-                          refName: ae
+                          entityName: xe,
+                          refName: xe
                         }), y(b.id, {
-                          reference: ae,
-                          refName: ae
+                          reference: xe,
+                          refName: xe
                         });
                       },
                       className: "w-full px-3 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"
@@ -14104,7 +14471,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                 /* @__PURE__ */ e.jsxs("div", { className: "space-y-1.5 p-3 bg-amber-950/20 border border-amber-500/30 rounded-xl", children: [
                   /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                     /* @__PURE__ */ e.jsxs("label", { className: "text-[11px] font-bold text-amber-400 uppercase tracking-wider block flex items-center gap-1.5", children: [
-                      /* @__PURE__ */ e.jsx(ln, { className: "w-3.5 h-3.5 text-amber-400" }),
+                      /* @__PURE__ */ e.jsx(Us, { className: "w-3.5 h-3.5 text-amber-400" }),
                       /* @__PURE__ */ e.jsx("span", { children: "Nguồn Dữ Liệu (DATASOURCE)" })
                     ] }),
                     /* @__PURE__ */ e.jsx("span", { className: "text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono", children: "OData Query" })
@@ -14114,9 +14481,9 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     "textarea",
                     {
                       rows: 4,
-                      value: ye,
+                      value: De,
                       placeholder: "VD: ?$filter=Active eq true&$orderby=Id desc",
-                      onChange: (W) => pe(W.target.value),
+                      onChange: (X) => we(X.target.value),
                       className: "w-full px-3 py-2 bg-slate-950 border border-amber-500/40 focus:border-amber-400 rounded-lg text-xs font-mono text-amber-200 focus:outline-none placeholder-slate-600 resize-y"
                     }
                   ),
@@ -14125,7 +14492,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                       "button",
                       {
                         type: "button",
-                        onClick: () => pe("?$filter=Active eq true&$orderby=Id desc"),
+                        onClick: () => we("?$filter=Active eq true&$orderby=Id desc"),
                         className: "px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] text-amber-300 hover:text-amber-200 rounded font-mono border border-slate-700 transition-colors cursor-pointer",
                         children: "+ Lọc Active & Sort"
                       }
@@ -14134,7 +14501,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                       "button",
                       {
                         type: "button",
-                        onClick: () => pe("?$top=50&$orderby=Id desc"),
+                        onClick: () => we("?$top=50&$orderby=Id desc"),
                         className: "px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] text-cyan-300 hover:text-cyan-200 rounded font-mono border border-slate-700 transition-colors cursor-pointer",
                         children: "+ Top 50 Mới Nhất"
                       }
@@ -14143,7 +14510,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                       "button",
                       {
                         type: "button",
-                        onClick: () => pe(""),
+                        onClick: () => we(""),
                         className: "px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-400 hover:text-slate-200 rounded font-mono border border-slate-700 transition-colors cursor-pointer",
                         children: "Xóa"
                       }
@@ -14156,44 +14523,44 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-500 font-mono", children: "SqlWhere" })
                   ] }),
                   /* @__PURE__ */ e.jsx(
-                    nt,
+                    ct,
                     {
                       type: "text",
-                      value: T.sqlWhere || B.sqlWhere || "",
+                      value: j.sqlWhere || A.sqlWhere || "",
                       placeholder: "VD: Active = 1 AND Status = 'OPEN'",
-                      onChange: (W) => {
-                        F(b.id, { sqlWhere: W }), y(b.id, { sqlWhere: W });
+                      onChange: (X) => {
+                        F(b.id, { sqlWhere: X }), y(b.id, { sqlWhere: X });
                       },
                       className: "w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500"
                     }
                   )
                 ] })
               ] }),
-              te && /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
+              le && /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "space-y-1.5", children: [
                   /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                     /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider block", children: "Trường Dữ Liệu Lưu Trữ (Field Name)" }),
                     /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-emerald-400 font-mono", children: "Nhập tay" })
                   ] }),
                   /* @__PURE__ */ e.jsx(
-                    nt,
+                    ct,
                     {
                       type: "text",
-                      value: T.fieldName || B.fieldName || "",
+                      value: j.fieldName || A.fieldName || "",
                       placeholder: "Nhập tên trường trên model (VD: PolId, VendorId, CustomerId)...",
                       list: "lookup-fields-list",
-                      onChange: (W) => {
-                        F(b.id, { fieldName: W }), y(b.id, { fieldName: W });
+                      onChange: (X) => {
+                        F(b.id, { fieldName: X }), y(b.id, { fieldName: X });
                       },
                       className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500"
                     }
                   ),
-                  /* @__PURE__ */ e.jsx("datalist", { id: "lookup-fields-list", children: Pe.map((W) => /* @__PURE__ */ e.jsxs("option", { value: W.name, children: [
-                    W.displayName,
+                  /* @__PURE__ */ e.jsx("datalist", { id: "lookup-fields-list", children: Me.map((X) => /* @__PURE__ */ e.jsxs("option", { value: X.name, children: [
+                    X.displayName,
                     " (",
-                    W.name,
+                    X.name,
                     ")"
-                  ] }, W.name)) })
+                  ] }, X.name)) })
                 ] }),
                 /* @__PURE__ */ e.jsxs("div", { className: "space-y-1.5", children: [
                   /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
@@ -14203,42 +14570,42 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                   /* @__PURE__ */ e.jsxs(
                     "select",
                     {
-                      value: ue ? ue.name : "",
-                      onChange: (W) => {
-                        const ae = W.target.value;
+                      value: ge ? ge.name : "",
+                      onChange: (X) => {
+                        const xe = X.target.value;
                         F(b.id, {
-                          entityName: ae,
-                          refName: ae
+                          entityName: xe,
+                          refName: xe
                         }), y(b.id, {
-                          reference: ae,
-                          refName: ae
+                          reference: xe,
+                          refName: xe
                         });
                       },
                       className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer",
                       children: [
                         /* @__PURE__ */ e.jsx("option", { value: "", children: "-- Chọn Thực Thể Danh Mục --" }),
-                        Ne.map((W) => /* @__PURE__ */ e.jsxs("option", { value: W.name, children: [
-                          W.displayName,
+                        Ie.map((X) => /* @__PURE__ */ e.jsxs("option", { value: X.name, children: [
+                          X.displayName,
                           " (",
-                          W.name,
+                          X.name,
                           ")"
-                        ] }, W.name))
+                        ] }, X.name))
                       ]
                     }
                   ),
                   /* @__PURE__ */ e.jsx(
-                    nt,
+                    ct,
                     {
                       type: "text",
-                      value: T.entityName || B.reference || B.refName || "",
+                      value: j.entityName || A.reference || A.refName || "",
                       placeholder: "Hoặc gõ tên Entity danh mục (VD: Terminal, Partner, Customer)...",
-                      onChange: (W) => {
+                      onChange: (X) => {
                         F(b.id, {
-                          entityName: W,
-                          refName: W
+                          entityName: X,
+                          refName: X
                         }), y(b.id, {
-                          reference: W,
-                          refName: W
+                          reference: X,
+                          refName: X
                         });
                       },
                       className: "w-full px-3 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"
@@ -14248,18 +14615,18 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                 /* @__PURE__ */ e.jsxs("div", { className: "space-y-1.5 p-3 bg-amber-950/20 border border-amber-500/30 rounded-xl", children: [
                   /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                     /* @__PURE__ */ e.jsxs("label", { className: "text-[11px] font-bold text-amber-400 uppercase tracking-wider block flex items-center gap-1.5", children: [
-                      /* @__PURE__ */ e.jsx(ln, { className: "w-3.5 h-3.5 text-amber-400" }),
+                      /* @__PURE__ */ e.jsx(Us, { className: "w-3.5 h-3.5 text-amber-400" }),
                       /* @__PURE__ */ e.jsx("span", { children: "Lọc Danh Mục (DATASOURCE)" })
                     ] }),
                     /* @__PURE__ */ e.jsx("span", { className: "text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono", children: "OData Query" })
                   ] }),
                   /* @__PURE__ */ e.jsx(
-                    zl,
+                    jo,
                     {
                       rows: 3,
-                      value: ye,
+                      value: De,
                       placeholder: "VD: ?$filter=Active eq true",
-                      onChange: (W) => pe(W),
+                      onChange: (X) => we(X),
                       className: "w-full px-3 py-2 bg-slate-950 border border-amber-500/40 focus:border-amber-400 rounded-lg text-xs font-mono text-amber-200 focus:outline-none placeholder-slate-600 resize-y"
                     }
                   )
@@ -14270,13 +14637,13 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-purple-400 font-mono", children: "Populate" })
                   ] }),
                   /* @__PURE__ */ e.jsx(
-                    nt,
+                    ct,
                     {
                       type: "text",
-                      value: T.populateField || B.populateRule || B.populateField || "",
+                      value: j.populateField || A.populateRule || A.populateField || "",
                       placeholder: "VD: VendorName = Name, TaxCode = TaxId, Agent = AgentName",
-                      onChange: (W) => {
-                        F(b.id, { populateField: W }), y(b.id, { populateRule: W, populateField: W });
+                      onChange: (X) => {
+                        F(b.id, { populateField: X }), y(b.id, { populateRule: X, populateField: X });
                       },
                       className: "w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-purple-300 focus:outline-none focus:border-purple-500"
                     }
@@ -14286,13 +14653,13 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                   /* @__PURE__ */ e.jsxs("div", { children: [
                     /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1", children: "Khóa Chính (IdField)" }),
                     /* @__PURE__ */ e.jsx(
-                      nt,
+                      ct,
                       {
                         type: "text",
-                        value: T.idField || B.idField || "Id",
+                        value: j.idField || A.idField || "Id",
                         placeholder: "Id",
-                        onChange: (W) => {
-                          F(b.id, { idField: W }), y(b.id, { idField: W });
+                        onChange: (X) => {
+                          F(b.id, { idField: X }), y(b.id, { idField: X });
                         },
                         className: "w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-200"
                       }
@@ -14301,13 +14668,13 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                   /* @__PURE__ */ e.jsxs("div", { children: [
                     /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1", children: "Cột Chọn (SelectField)" }),
                     /* @__PURE__ */ e.jsx(
-                      nt,
+                      ct,
                       {
                         type: "text",
-                        value: T.selectField || B.selectField || "",
+                        value: j.selectField || A.selectField || "",
                         placeholder: "Name, Code",
-                        onChange: (W) => {
-                          F(b.id, { selectField: W }), y(b.id, { selectField: W });
+                        onChange: (X) => {
+                          F(b.id, { selectField: X }), y(b.id, { selectField: X });
                         },
                         className: "w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-200"
                       }
@@ -14317,9 +14684,9 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                 /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-emerald-950/20 border border-emerald-500/30 rounded-xl space-y-2", children: [
                   /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                     /* @__PURE__ */ e.jsxs("span", { className: "text-[11px] font-bold text-emerald-300 flex items-center gap-1.5", children: [
-                      /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5 text-emerald-400" }),
+                      /* @__PURE__ */ e.jsx(Nt, { className: "w-3.5 h-3.5 text-emerald-400" }),
                       "Cột Hiển Thị & Định Dạng (",
-                      he.length,
+                      ce.length,
                       " cột)"
                     ] }),
                     /* @__PURE__ */ e.jsx(
@@ -14332,58 +14699,58 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                       }
                     )
                   ] }),
-                  he.length > 0 ? /* @__PURE__ */ e.jsx("div", { className: "flex flex-wrap gap-1", children: he.map((W, ae) => /* @__PURE__ */ e.jsxs(
+                  ce.length > 0 ? /* @__PURE__ */ e.jsx("div", { className: "flex flex-wrap gap-1", children: ce.map((X, xe) => /* @__PURE__ */ e.jsxs(
                     "span",
                     {
                       className: "text-[10px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300 font-mono",
                       children: [
-                        W.title,
+                        X.title,
                         " (",
-                        W.key,
+                        X.key,
                         ")"
                       ]
                     },
-                    ae
+                    xe
                   )) }) : /* @__PURE__ */ e.jsx("p", { className: "text-[10px] text-slate-400 italic", children: "Chưa cấu hình cột riêng (sẽ tự động lấy các cột mặc định của thực thể)." }),
                   /* @__PURE__ */ e.jsxs("div", { className: "text-[10px] text-slate-400 pt-1 border-t border-emerald-500/20 flex items-center justify-between", children: [
                     /* @__PURE__ */ e.jsx("span", { children: "FormatData:" }),
-                    /* @__PURE__ */ e.jsx("span", { className: "font-mono text-emerald-300 truncate max-w-[180px]", children: (T.formatData ?? B.formatData ?? "") || "(Mặc định theo cột tên)" })
+                    /* @__PURE__ */ e.jsx("span", { className: "font-mono text-emerald-300 truncate max-w-[180px]", children: (j.formatData ?? A.formatData ?? "") || "(Mặc định theo cột tên)" })
                   ] })
                 ] })
               ] }),
-              Se && /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
+              Fe && /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "space-y-1.5", children: [
                   /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                     /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider block", children: "Trường Dữ Liệu (Field Name)" }),
                     /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-emerald-400 font-mono", children: "Nhập tay" })
                   ] }),
                   /* @__PURE__ */ e.jsx(
-                    nt,
+                    ct,
                     {
                       type: "text",
-                      value: T.fieldName || B.fieldName || "",
+                      value: j.fieldName || A.fieldName || "",
                       placeholder: "Nhập tên trường trên model (VD: JobNo, GrossWeight, IssueDate)...",
                       list: "input-fields-list",
-                      onChange: (W) => {
-                        F(b.id, { fieldName: W }), y(b.id, { fieldName: W });
+                      onChange: (X) => {
+                        F(b.id, { fieldName: X }), y(b.id, { fieldName: X });
                       },
                       className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-cyan-300 focus:outline-none focus:border-blue-500"
                     }
                   ),
-                  /* @__PURE__ */ e.jsx("datalist", { id: "input-fields-list", children: Pe.map((W) => /* @__PURE__ */ e.jsxs("option", { value: W.name, children: [
-                    W.displayName,
+                  /* @__PURE__ */ e.jsx("datalist", { id: "input-fields-list", children: Me.map((X) => /* @__PURE__ */ e.jsxs("option", { value: X.name, children: [
+                    X.displayName,
                     " (",
-                    W.name,
+                    X.name,
                     ")"
-                  ] }, W.name)) })
+                  ] }, X.name)) })
                 ] }),
                 /* @__PURE__ */ e.jsxs("div", { className: "space-y-1.5", children: [
                   /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider block", children: "Định Dạng Hiển Thị (Formatter)" }),
                   /* @__PURE__ */ e.jsxs(
                     "select",
                     {
-                      value: T.formatter || "",
-                      onChange: (W) => F(b.id, { formatter: W.target.value }),
+                      value: j.formatter || "",
+                      onChange: (X) => F(b.id, { formatter: X.target.value }),
                       className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer",
                       children: [
                         /* @__PURE__ */ e.jsx("option", { value: "", children: "Mặc định (Không định dạng)" }),
@@ -14399,13 +14766,13 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                 /* @__PURE__ */ e.jsxs("div", { className: "space-y-1.5", children: [
                   /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider block", children: "Chuỗi Định Dạng Mẫu (FormatData)" }),
                   /* @__PURE__ */ e.jsx(
-                    nt,
+                    ct,
                     {
                       type: "text",
-                      value: T.formatData || B.formatData || "",
+                      value: j.formatData || A.formatData || "",
                       placeholder: "VD: {0} KGS hoặc {0} USD",
-                      onChange: (W) => {
-                        F(b.id, { formatData: W }), y(b.id, { formatData: W });
+                      onChange: (X) => {
+                        F(b.id, { formatData: X }), y(b.id, { formatData: X });
                       },
                       className: "w-full px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500"
                     }
@@ -14420,15 +14787,15 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     "input",
                     {
                       type: "checkbox",
-                      checked: T.twoWay ?? !0,
-                      onChange: (W) => F(b.id, { twoWay: W.target.checked }),
+                      checked: j.twoWay ?? !0,
+                      onChange: (X) => F(b.id, { twoWay: X.target.checked }),
                       className: "rounded bg-slate-800 border-slate-700 text-blue-600 cursor-pointer"
                     }
                   )
                 ] })
               ] }),
-              ce && /* @__PURE__ */ e.jsxs("div", { className: "p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-2 text-center", children: [
-                /* @__PURE__ */ e.jsx(Et, { className: "w-8 h-8 text-slate-600 mx-auto" }),
+              fe && /* @__PURE__ */ e.jsxs("div", { className: "p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-2 text-center", children: [
+                /* @__PURE__ */ e.jsx(Xt, { className: "w-8 h-8 text-slate-600 mx-auto" }),
                 /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-semibold text-slate-300", children: [
                   "Thành phần ",
                   b.type
@@ -14437,49 +14804,49 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
               ] })
             ] });
           })(),
-          we === "columns" && Ce && (() => {
-            const T = b.dataBinding || {}, B = b.props || {}, ee = Ws(c), je = T.entityName || B.reference || B.refName || "", te = Ks(ee, je), Se = te ? te.fields : [], ce = T.formatData ?? B.formatData ?? "", Ne = (ye) => {
-              y(b.id, { dropdownColumns: ye }), F(b.id, { dropdownColumns: ye });
-            }, le = () => {
-              var pe, W;
-              const ye = [
-                ...he,
+          ye === "columns" && me && (() => {
+            const j = b.dataBinding || {}, A = b.props || {}, ne = Js(c), Ce = j.entityName || A.reference || A.refName || "", le = Xs(ne, Ce), Fe = le ? le.fields : [], fe = j.formatData ?? A.formatData ?? "", Ie = (De) => {
+              y(b.id, { dropdownColumns: De }), F(b.id, { dropdownColumns: De });
+            }, pe = () => {
+              var we, X;
+              const De = [
+                ...ce,
                 {
-                  key: ((pe = Se[he.length]) == null ? void 0 : pe.name) || `col${he.length + 1}`,
-                  title: ((W = Se[he.length]) == null ? void 0 : W.displayName) || `Cột ${he.length + 1}`,
+                  key: ((we = Fe[ce.length]) == null ? void 0 : we.name) || `col${ce.length + 1}`,
+                  title: ((X = Fe[ce.length]) == null ? void 0 : X.displayName) || `Cột ${ce.length + 1}`,
                   width: "50%",
                   align: "left"
                 }
               ];
-              Ne(ye);
-            }, ue = () => {
-              if (!te || te.fields.length === 0) return;
-              const ye = ["code", "fullname", "name", "address", "taxcode", "phone", "shortName", "portcode", "portname"];
-              let pe = te.fields.filter(
-                (ae) => ye.includes(ae.name.toLowerCase())
+              Ie(De);
+            }, ge = () => {
+              if (!le || le.fields.length === 0) return;
+              const De = ["code", "fullname", "name", "address", "taxcode", "phone", "shortName", "portcode", "portname"];
+              let we = le.fields.filter(
+                (xe) => De.includes(xe.name.toLowerCase())
               );
-              pe.length === 0 ? pe = te.fields.slice(0, 3) : pe = pe.slice(0, 4);
-              const W = pe.map((ae) => ({
-                key: ae.name,
-                title: ae.displayName || ae.name,
-                width: `${Math.floor(100 / pe.length)}%`,
+              we.length === 0 ? we = le.fields.slice(0, 3) : we = we.slice(0, 4);
+              const X = we.map((xe) => ({
+                key: xe.name,
+                title: xe.displayName || xe.name,
+                width: `${Math.floor(100 / we.length)}%`,
                 align: "left"
               }));
-              Ne(W);
-            }, Pe = (ye, pe) => {
-              const W = ye + pe;
-              if (W < 0 || W >= he.length) return;
-              const ae = [...he], it = ae[ye];
-              ae[ye] = ae[W], ae[W] = it, Ne(ae);
+              Ie(X);
+            }, Me = (De, we) => {
+              const X = De + we;
+              if (X < 0 || X >= ce.length) return;
+              const xe = [...ce], ot = xe[De];
+              xe[De] = xe[X], xe[X] = ot, Ie(xe);
             };
             return /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
               /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-emerald-950/20 border border-emerald-500/30 rounded-xl space-y-2", children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between", children: [
                   /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-emerald-300 flex items-center gap-1.5", children: [
-                    /* @__PURE__ */ e.jsx(bt, { className: "w-4 h-4 text-emerald-400" }),
+                    /* @__PURE__ */ e.jsx(Nt, { className: "w-4 h-4 text-emerald-400" }),
                     /* @__PURE__ */ e.jsx("span", { children: "Cột Hiển Thị Bảng Chọn Dropdown" })
                   ] }),
-                  /* @__PURE__ */ e.jsx("span", { className: "text-[10px] font-mono text-emerald-400", children: je ? `Ref: ${je}` : "Chưa chọn Ref" })
+                  /* @__PURE__ */ e.jsx("span", { className: "text-[10px] font-mono text-emerald-400", children: Ce ? `Ref: ${Ce}` : "Chưa chọn Ref" })
                 ] }),
                 /* @__PURE__ */ e.jsxs("p", { className: "text-[11px] text-slate-400 leading-relaxed", children: [
                   "Thiết lập các cột xuất hiện khi bấm mở ô Select (vd: Cột Họ Tên và Cột Địa Chỉ). Dữ liệu được truy vấn từ bảng tham chiếu theo bộ lọc ",
@@ -14491,23 +14858,23 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     "button",
                     {
                       type: "button",
-                      onClick: le,
+                      onClick: pe,
                       className: "flex-1 py-1.5 px-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-sm",
                       children: [
-                        /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }),
+                        /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }),
                         /* @__PURE__ */ e.jsx("span", { children: "Thêm Cột Mới" })
                       ]
                     }
                   ),
-                  te && /* @__PURE__ */ e.jsxs(
+                  le && /* @__PURE__ */ e.jsxs(
                     "button",
                     {
                       type: "button",
-                      onClick: ue,
+                      onClick: ge,
                       className: "py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer",
-                      title: `Tự động lấy cột gợi ý từ thực thể ${te.name}`,
+                      title: `Tự động lấy cột gợi ý từ thực thể ${le.name}`,
                       children: [
-                        /* @__PURE__ */ e.jsx(ft, { className: "w-3.5 h-3.5 text-cyan-400" }),
+                        /* @__PURE__ */ e.jsx(Tt, { className: "w-3.5 h-3.5 text-cyan-400" }),
                         /* @__PURE__ */ e.jsx("span", { children: "Tự động nạp" })
                       ]
                     }
@@ -14517,10 +14884,10 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
               /* @__PURE__ */ e.jsxs("div", { className: "space-y-2.5", children: [
                 /* @__PURE__ */ e.jsx("div", { className: "flex items-center justify-between", children: /* @__PURE__ */ e.jsxs("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider", children: [
                   "Danh Sách Cột (",
-                  he.length,
+                  ce.length,
                   ")"
                 ] }) }),
-                he.length === 0 ? /* @__PURE__ */ e.jsxs("div", { className: "p-4 border border-dashed border-slate-700 rounded-xl text-center space-y-1.5 bg-slate-950/40", children: [
+                ce.length === 0 ? /* @__PURE__ */ e.jsxs("div", { className: "p-4 border border-dashed border-slate-700 rounded-xl text-center space-y-1.5 bg-slate-950/40", children: [
                   /* @__PURE__ */ e.jsx("p", { className: "text-xs text-slate-400", children: "Chưa có cột nào được thiết lập." }),
                   /* @__PURE__ */ e.jsxs("p", { className: "text-[10px] text-slate-500", children: [
                     "Bấm ",
@@ -14531,7 +14898,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     /* @__PURE__ */ e.jsx("span", { className: "font-mono text-cyan-300", children: "Address" }),
                     ")."
                   ] })
-                ] }) : /* @__PURE__ */ e.jsx("div", { className: "space-y-2.5", children: he.map((ye, pe) => /* @__PURE__ */ e.jsxs(
+                ] }) : /* @__PURE__ */ e.jsx("div", { className: "space-y-2.5", children: ce.map((De, we) => /* @__PURE__ */ e.jsxs(
                   "div",
                   {
                     className: "p-2.5 bg-slate-950/90 border border-slate-800 hover:border-slate-700 rounded-xl space-y-2",
@@ -14539,29 +14906,29 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                       /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between border-b border-slate-800/80 pb-1.5", children: [
                         /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] font-bold text-emerald-400 font-mono", children: [
                           "CỘT #",
-                          pe + 1
+                          we + 1
                         ] }),
                         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1", children: [
                           /* @__PURE__ */ e.jsx(
                             "button",
                             {
                               type: "button",
-                              onClick: () => Pe(pe, -1),
-                              disabled: pe === 0,
+                              onClick: () => Me(we, -1),
+                              disabled: we === 0,
                               className: "p-1 text-slate-400 hover:text-slate-200 disabled:opacity-30 cursor-pointer",
                               title: "Di chuyển lên",
-                              children: /* @__PURE__ */ e.jsx(ws, { className: "w-3.5 h-3.5" })
+                              children: /* @__PURE__ */ e.jsx(Ss, { className: "w-3.5 h-3.5" })
                             }
                           ),
                           /* @__PURE__ */ e.jsx(
                             "button",
                             {
                               type: "button",
-                              onClick: () => Pe(pe, 1),
-                              disabled: pe === he.length - 1,
+                              onClick: () => Me(we, 1),
+                              disabled: we === ce.length - 1,
                               className: "p-1 text-slate-400 hover:text-slate-200 disabled:opacity-30 cursor-pointer",
                               title: "Di chuyển xuống",
-                              children: /* @__PURE__ */ e.jsx(St, { className: "w-3.5 h-3.5" })
+                              children: /* @__PURE__ */ e.jsx(wt, { className: "w-3.5 h-3.5" })
                             }
                           ),
                           /* @__PURE__ */ e.jsx(
@@ -14569,12 +14936,12 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                             {
                               type: "button",
                               onClick: () => {
-                                const W = he.filter((ae, it) => it !== pe);
-                                Ne(W);
+                                const X = ce.filter((xe, ot) => ot !== we);
+                                Ie(X);
                               },
                               className: "p-1 text-slate-500 hover:text-red-400 cursor-pointer",
                               title: "Xóa cột",
-                              children: /* @__PURE__ */ e.jsx(ot, { className: "w-3.5 h-3.5" })
+                              children: /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5" })
                             }
                           )
                         ] })
@@ -14586,22 +14953,22 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                             "input",
                             {
                               type: "text",
-                              value: ye.key,
-                              list: `dropdown-col-fields-${pe}`,
+                              value: De.key,
+                              list: `dropdown-col-fields-${we}`,
                               placeholder: "vd: FullName",
-                              onChange: (W) => {
-                                const ae = [...he];
-                                ae[pe] = { ...ae[pe], key: W.target.value }, Ne(ae);
+                              onChange: (X) => {
+                                const xe = [...ce];
+                                xe[we] = { ...xe[we], key: X.target.value }, Ie(xe);
                               },
                               className: "w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs font-mono text-cyan-300 focus:outline-none focus:border-emerald-500"
                             }
                           ),
-                          /* @__PURE__ */ e.jsx("datalist", { id: `dropdown-col-fields-${pe}`, children: Se.map((W) => /* @__PURE__ */ e.jsxs("option", { value: W.name, children: [
-                            W.displayName,
+                          /* @__PURE__ */ e.jsx("datalist", { id: `dropdown-col-fields-${we}`, children: Fe.map((X) => /* @__PURE__ */ e.jsxs("option", { value: X.name, children: [
+                            X.displayName,
                             " (",
-                            W.name,
+                            X.name,
                             ")"
-                          ] }, W.name)) })
+                          ] }, X.name)) })
                         ] }),
                         /* @__PURE__ */ e.jsxs("div", { children: [
                           /* @__PURE__ */ e.jsx("label", { className: "text-[10px] text-slate-400 block mb-0.5", children: "Tiêu Đề Cột (Title)" }),
@@ -14609,11 +14976,11 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                             "input",
                             {
                               type: "text",
-                              value: ye.title,
+                              value: De.title,
                               placeholder: "vd: Tên nhà cung cấp",
-                              onChange: (W) => {
-                                const ae = [...he];
-                                ae[pe] = { ...ae[pe], title: W.target.value }, Ne(ae);
+                              onChange: (X) => {
+                                const xe = [...ce];
+                                xe[we] = { ...xe[we], title: X.target.value }, Ie(xe);
                               },
                               className: "w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
                             }
@@ -14627,11 +14994,11 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                             "input",
                             {
                               type: "text",
-                              value: ye.width || "50%",
+                              value: De.width || "50%",
                               placeholder: "vd: 50% hoặc 180px",
-                              onChange: (W) => {
-                                const ae = [...he];
-                                ae[pe] = { ...ae[pe], width: W.target.value }, Ne(ae);
+                              onChange: (X) => {
+                                const xe = [...ce];
+                                xe[we] = { ...xe[we], width: X.target.value }, Ie(xe);
                               },
                               className: "w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
                             }
@@ -14642,10 +15009,10 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                           /* @__PURE__ */ e.jsxs(
                             "select",
                             {
-                              value: ye.align || "left",
-                              onChange: (W) => {
-                                const ae = [...he];
-                                ae[pe] = { ...ae[pe], align: W.target.value }, Ne(ae);
+                              value: De.align || "left",
+                              onChange: (X) => {
+                                const xe = [...ce];
+                                xe[we] = { ...xe[we], align: X.target.value }, Ie(xe);
                               },
                               className: "w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer",
                               children: [
@@ -14659,7 +15026,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                       ] })
                     ]
                   },
-                  pe
+                  we
                 )) })
               ] }),
               /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-slate-950/90 border border-slate-800 rounded-xl space-y-2", children: [
@@ -14672,46 +15039,46 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                   "input",
                   {
                     type: "text",
-                    value: ce,
+                    value: fe,
                     placeholder: "VD: {Vendor.FullName} - {Vendor.Address}",
-                    onChange: (ye) => {
-                      const pe = ye.target.value;
-                      F(b.id, { formatData: pe }), y(b.id, { formatData: pe });
+                    onChange: (De) => {
+                      const we = De.target.value;
+                      F(b.id, { formatData: we }), y(b.id, { formatData: we });
                     },
                     className: "w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-500"
                   }
                 ),
-                he.length > 0 && /* @__PURE__ */ e.jsxs("div", { className: "space-y-1 pt-1", children: [
+                ce.length > 0 && /* @__PURE__ */ e.jsxs("div", { className: "space-y-1 pt-1", children: [
                   /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-500 block", children: "Chèn nhanh vào FormatData:" }),
-                  /* @__PURE__ */ e.jsx("div", { className: "flex flex-wrap gap-1", children: he.map((ye, pe) => {
-                    const W = je ? `{${je}.${ye.key}}` : `{${ye.key}}`;
+                  /* @__PURE__ */ e.jsx("div", { className: "flex flex-wrap gap-1", children: ce.map((De, we) => {
+                    const X = Ce ? `{${Ce}.${De.key}}` : `{${De.key}}`;
                     return /* @__PURE__ */ e.jsxs(
                       "button",
                       {
                         type: "button",
                         onClick: () => {
-                          const ae = ce ? `${ce} - ${W}` : W;
-                          F(b.id, { formatData: ae }), y(b.id, { formatData: ae });
+                          const xe = fe ? `${fe} - ${X}` : X;
+                          F(b.id, { formatData: xe }), y(b.id, { formatData: xe });
                         },
                         className: "px-1.5 py-0.5 bg-slate-800 hover:bg-emerald-900/40 text-emerald-300 border border-slate-700 hover:border-emerald-500/40 rounded text-[10px] font-mono cursor-pointer transition-colors",
                         children: [
                           "+ ",
-                          W
+                          X
                         ]
                       },
-                      pe
+                      we
                     );
                   }) })
                 ] })
               ] })
             ] });
           })(),
-          we === "validation" && (() => {
-            const T = b.validation || {};
+          ye === "validation" && (() => {
+            const j = b.validation || {};
             return /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
               /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-emerald-950/20 border border-emerald-800/40 rounded-xl space-y-1", children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-emerald-300 flex items-center gap-1.5", children: [
-                  /* @__PURE__ */ e.jsx(Jn, { className: "w-4 h-4 text-emerald-400" }),
+                  /* @__PURE__ */ e.jsx(nr, { className: "w-4 h-4 text-emerald-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Quy Tắc Xác Thực Dữ Liệu (Validation Rules)" })
                 ] }),
                 /* @__PURE__ */ e.jsx("p", { className: "text-[11px] text-slate-400 leading-relaxed", children: "Thiết lập các điều kiện kiểm tra hợp lệ cho ô nhập liệu. Hệ thống sẽ tự động hiển thị thông báo lỗi khi không thỏa mãn." })
@@ -14723,19 +15090,19 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     "input",
                     {
                       type: "checkbox",
-                      checked: !!T.required,
-                      onChange: (B) => w(b.id, { required: B.target.checked }),
+                      checked: !!j.required,
+                      onChange: (A) => C(b.id, { required: A.target.checked }),
                       className: "rounded bg-slate-800 border-slate-700 text-red-500 cursor-pointer"
                     }
                   )
                 ] }),
-                T.required && /* @__PURE__ */ e.jsx(
+                j.required && /* @__PURE__ */ e.jsx(
                   "input",
                   {
                     type: "text",
                     placeholder: "Thông báo lỗi khi để trống (ví dụ: Trường này là bắt buộc)...",
-                    value: T.requiredMessage || "",
-                    onChange: (B) => w(b.id, { requiredMessage: B.target.value }),
+                    value: j.requiredMessage || "",
+                    onChange: (A) => C(b.id, { requiredMessage: A.target.value }),
                     className: "w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500"
                   }
                 )
@@ -14749,9 +15116,9 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                       type: "number",
                       min: 0,
                       placeholder: "0",
-                      value: T.minLength !== void 0 ? T.minLength : "",
-                      onChange: (B) => w(b.id, {
-                        minLength: B.target.value === "" ? void 0 : Number(B.target.value)
+                      value: j.minLength !== void 0 ? j.minLength : "",
+                      onChange: (A) => C(b.id, {
+                        minLength: A.target.value === "" ? void 0 : Number(A.target.value)
                       }),
                       className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500"
                     }
@@ -14765,9 +15132,9 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                       type: "number",
                       min: 0,
                       placeholder: "255",
-                      value: T.maxLength !== void 0 ? T.maxLength : "",
-                      onChange: (B) => w(b.id, {
-                        maxLength: B.target.value === "" ? void 0 : Number(B.target.value)
+                      value: j.maxLength !== void 0 ? j.maxLength : "",
+                      onChange: (A) => C(b.id, {
+                        maxLength: A.target.value === "" ? void 0 : Number(A.target.value)
                       }),
                       className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500"
                     }
@@ -14781,8 +15148,8 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                   {
                     type: "text",
                     placeholder: "Ví dụ: ^[A-Z0-9]{8,18}$ (Mã Bill MBL)",
-                    value: T.pattern || "",
-                    onChange: (B) => w(b.id, { pattern: B.target.value }),
+                    value: j.pattern || "",
+                    onChange: (A) => C(b.id, { pattern: A.target.value }),
                     className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   }
                 ),
@@ -14791,8 +15158,8 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                   {
                     type: "text",
                     placeholder: "Thông báo lỗi khi không khớp mẫu Regex...",
-                    value: T.patternMessage || "",
-                    onChange: (B) => w(b.id, { patternMessage: B.target.value }),
+                    value: j.patternMessage || "",
+                    onChange: (A) => C(b.id, { patternMessage: A.target.value }),
                     className: "w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
                   }
                 )
@@ -14804,8 +15171,8 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                   {
                     type: "text",
                     placeholder: "Ví dụ: CheckMBL, validateTaxCode...",
-                    value: T.customValidator || "",
-                    onChange: (B) => w(b.id, { customValidator: B.target.value }),
+                    value: j.customValidator || "",
+                    onChange: (A) => C(b.id, { customValidator: A.target.value }),
                     className: "w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-cyan-300 placeholder-slate-500 focus:outline-none focus:border-blue-500"
                   }
                 ),
@@ -14813,18 +15180,18 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
               ] })
             ] });
           })(),
-          we === "permissions" && (() => {
-            const T = b.permissions || {}, B = ["Admin", "Dev", "User", "Manager", "Staff", "Customer"], ee = T.allowedRoles || [], je = T.readOnlyRoles || [], te = (ce) => {
-              const Ne = ee.includes(ce) ? ee.filter((le) => le !== ce) : [...ee, ce];
-              S(b.id, { allowedRoles: Ne });
-            }, Se = (ce) => {
-              const Ne = je.includes(ce) ? je.filter((le) => le !== ce) : [...je, ce];
-              S(b.id, { readOnlyRoles: Ne });
+          ye === "permissions" && (() => {
+            const j = b.permissions || {}, A = ["Admin", "Dev", "User", "Manager", "Staff", "Customer"], ne = j.allowedRoles || [], Ce = j.readOnlyRoles || [], le = (fe) => {
+              const Ie = ne.includes(fe) ? ne.filter((pe) => pe !== fe) : [...ne, fe];
+              S(b.id, { allowedRoles: Ie });
+            }, Fe = (fe) => {
+              const Ie = Ce.includes(fe) ? Ce.filter((pe) => pe !== fe) : [...Ce, fe];
+              S(b.id, { readOnlyRoles: Ie });
             };
             return /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
               /* @__PURE__ */ e.jsxs("div", { className: "p-3 bg-amber-950/20 border border-amber-800/40 rounded-xl space-y-1", children: [
                 /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-amber-300 flex items-center gap-1.5", children: [
-                  /* @__PURE__ */ e.jsx(Cs, { className: "w-4 h-4 text-amber-400" }),
+                  /* @__PURE__ */ e.jsx(Ts, { className: "w-4 h-4 text-amber-400" }),
                   /* @__PURE__ */ e.jsx("span", { children: "Phân Quyền Trường Dữ Liệu (Field-Level RBAC)" })
                 ] }),
                 /* @__PURE__ */ e.jsxs("p", { className: "text-[11px] text-amber-200/80 leading-relaxed", children: [
@@ -14838,40 +15205,40 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
               /* @__PURE__ */ e.jsxs("div", { className: "space-y-2", children: [
                 /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider block", children: "Vai Trò Được Phép Truy Cập (Allowed Roles)" }),
                 /* @__PURE__ */ e.jsx("p", { className: "text-[10px] text-slate-500", children: "Để trống = Tất cả mọi vai trò đều được truy cập." }),
-                /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-2 gap-1.5", children: B.map((ce) => {
-                  const Ne = ee.includes(ce);
+                /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-2 gap-1.5", children: A.map((fe) => {
+                  const Ie = ne.includes(fe);
                   return /* @__PURE__ */ e.jsxs(
                     "button",
                     {
                       type: "button",
-                      onClick: () => te(ce),
-                      className: `px-2.5 py-1.5 rounded-lg border text-left text-xs font-medium flex items-center justify-between transition-colors ${Ne ? "bg-blue-600/20 border-blue-500 text-blue-300" : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600"}`,
+                      onClick: () => le(fe),
+                      className: `px-2.5 py-1.5 rounded-lg border text-left text-xs font-medium flex items-center justify-between transition-colors ${Ie ? "bg-blue-600/20 border-blue-500 text-blue-300" : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600"}`,
                       children: [
-                        /* @__PURE__ */ e.jsx("span", { children: ce }),
-                        Ne && /* @__PURE__ */ e.jsx(vn, { className: "w-3.5 h-3.5 text-blue-400 shrink-0" })
+                        /* @__PURE__ */ e.jsx("span", { children: fe }),
+                        Ie && /* @__PURE__ */ e.jsx(qs, { className: "w-3.5 h-3.5 text-blue-400 shrink-0" })
                       ]
                     },
-                    ce
+                    fe
                   );
                 }) })
               ] }),
               /* @__PURE__ */ e.jsxs("div", { className: "space-y-2", children: [
                 /* @__PURE__ */ e.jsx("label", { className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider block", children: "Vai Trò Chỉ Đọc (Read-Only Roles)" }),
                 /* @__PURE__ */ e.jsx("p", { className: "text-[10px] text-slate-500", children: "Những vai trò này vẫn nhìn thấy component nhưng không thể sửa đổi hoặc click." }),
-                /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-2 gap-1.5", children: B.map((ce) => {
-                  const Ne = je.includes(ce);
+                /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-2 gap-1.5", children: A.map((fe) => {
+                  const Ie = Ce.includes(fe);
                   return /* @__PURE__ */ e.jsxs(
                     "button",
                     {
                       type: "button",
-                      onClick: () => Se(ce),
-                      className: `px-2.5 py-1.5 rounded-lg border text-left text-xs font-medium flex items-center justify-between transition-colors ${Ne ? "bg-amber-600/20 border-amber-500 text-amber-300" : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600"}`,
+                      onClick: () => Fe(fe),
+                      className: `px-2.5 py-1.5 rounded-lg border text-left text-xs font-medium flex items-center justify-between transition-colors ${Ie ? "bg-amber-600/20 border-amber-500 text-amber-300" : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600"}`,
                       children: [
-                        /* @__PURE__ */ e.jsx("span", { children: ce }),
-                        Ne && /* @__PURE__ */ e.jsx(vn, { className: "w-3.5 h-3.5 text-amber-400 shrink-0" })
+                        /* @__PURE__ */ e.jsx("span", { children: fe }),
+                        Ie && /* @__PURE__ */ e.jsx(qs, { className: "w-3.5 h-3.5 text-amber-400 shrink-0" })
                       ]
                     },
-                    ce
+                    fe
                   );
                 }) })
               ] }),
@@ -14883,7 +15250,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     {
                       type: "button",
                       onClick: () => S(b.id, { deniedBehavior: "hide" }),
-                      className: `p-2.5 rounded-lg border text-left text-xs transition-colors ${(T.deniedBehavior || "hide") === "hide" ? "bg-blue-600/20 border-blue-500 text-blue-200" : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600"}`,
+                      className: `p-2.5 rounded-lg border text-left text-xs transition-colors ${(j.deniedBehavior || "hide") === "hide" ? "bg-blue-600/20 border-blue-500 text-blue-200" : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600"}`,
                       children: [
                         /* @__PURE__ */ e.jsx("div", { className: "font-bold mb-0.5", children: "Ẩn Hoàn Toàn" }),
                         /* @__PURE__ */ e.jsx("div", { className: "text-[10px] text-slate-400", children: "Không hiển thị trên màn hình" })
@@ -14895,7 +15262,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                     {
                       type: "button",
                       onClick: () => S(b.id, { deniedBehavior: "disable" }),
-                      className: `p-2.5 rounded-lg border text-left text-xs transition-colors ${T.deniedBehavior === "disable" ? "bg-blue-600/20 border-blue-500 text-blue-200" : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600"}`,
+                      className: `p-2.5 rounded-lg border text-left text-xs transition-colors ${j.deniedBehavior === "disable" ? "bg-blue-600/20 border-blue-500 text-blue-200" : "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600"}`,
                       children: [
                         /* @__PURE__ */ e.jsx("div", { className: "font-bold mb-0.5", children: "Khóa Mờ (Disable)" }),
                         /* @__PURE__ */ e.jsx("div", { className: "text-[10px] text-slate-400", children: "Hiển thị xám chỉ đọc" })
@@ -14908,25 +15275,25 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
           })()
         ] }),
         i && b && /* @__PURE__ */ e.jsx(
-          Ul,
+          oa,
           {
             isOpen: i,
             node: b,
             onClose: () => d(!1),
-            onSave: (T, B, ee) => {
-              y(T, B), ee && F(T, ee);
+            onSave: (j, A, ne) => {
+              y(j, A), ne && F(j, ne);
             }
           }
         )
       ]
     }
   );
-}, Co = Mt.memo(ql), cr = [
+}, Xo = Zt.memo(No), gr = [
   {
     type: "Section",
     name: "Khối Bố Cục (Section Card)",
     description: "Thẻ chứa viền đổ bóng với lưới 12-cột chuẩn Core",
-    icon: Pt,
+    icon: yt,
     defaultProps: {
       title: "THÔNG TIN CHUNG (GENERAL)",
       collapsible: !0,
@@ -14938,7 +15305,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "RecordSelector",
     name: "Bộ Chọn Bản Ghi (Record Selector)",
     description: "Thanh chọn danh sách bản ghi con dạng Tag Badges ([ REC-001 ] ... [+ Tạo mới])",
-    icon: wr,
+    icon: Tr,
     defaultProps: {
       label: "Bản ghi:",
       reference: "Records",
@@ -14958,7 +15325,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Container",
     name: "Khoảng Trắng (Container)",
     description: "Bố cục tự do Flexbox hoặc Grid",
-    icon: Et,
+    icon: Xt,
     defaultProps: {
       layoutMode: "flex",
       flexConfig: { direction: "row", wrap: "wrap", gap: "16px", justify: "flex-start", align: "stretch" }
@@ -14969,7 +15336,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "TextBox",
     name: "Ô Nhập Chữ (TextBox)",
     description: "Nhập text kèm nhãn bên trái hoặc trên",
-    icon: as,
+    icon: ns,
     defaultProps: {
       label: "Mã số (Code)",
       showLabel: !0,
@@ -14983,7 +15350,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "SearchEntry",
     name: "Ô Tra Cứu Đa Cột (SearchEntry)",
     description: "Ô tìm kiếm mở Modal tra cứu đa cột và tự động điền (Populate)",
-    icon: Bt,
+    icon: Et,
     defaultProps: {
       label: "Đối tác / Danh mục",
       showLabel: !0,
@@ -15000,7 +15367,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Autocomplete",
     name: "Gợi Ý Tự Động (Autocomplete)",
     description: "Ô nhập liệu thông minh với danh sách gợi ý và tự động điền",
-    icon: Tr,
+    icon: On,
     defaultProps: {
       label: "Tìm kiếm gợi ý",
       showLabel: !0,
@@ -15014,7 +15381,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Number",
     name: "Ô Nhập Số (Number)",
     description: "Nhập số tiền tệ, số lượng hoặc định lượng",
-    icon: ja,
+    icon: Rr,
     defaultProps: {
       label: "Số lượng",
       showLabel: !0,
@@ -15029,7 +15396,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "DatePicker",
     name: "Lịch Ngày (DatePicker)",
     description: "Chọn ngày tháng chuẩn DD/MM/YYYY",
-    icon: yr,
+    icon: Mn,
     defaultProps: {
       label: "Ngày lập",
       showLabel: !0,
@@ -15042,7 +15409,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Select",
     name: "Dropdown Lựa Chọn (Select2)",
     description: "Menu thả xuống chọn tùy chọn từ danh sách",
-    icon: Na,
+    icon: Ia,
     defaultProps: {
       label: "Phân loại",
       showLabel: !0,
@@ -15060,7 +15427,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Checkbox",
     name: "Hộp Kiểm (Checkbox)",
     description: "Lựa chọn kích hoạt đúng/sai (Boolean)",
-    icon: wa,
+    icon: Da,
     defaultProps: {
       label: "Kích hoạt",
       showLabel: !0,
@@ -15073,7 +15440,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Table",
     name: "Bảng Dữ Liệu Nâng Cao (Grid)",
     description: "Bảng doanh nghiệp có Cột Cố Định và Dòng Tính Tổng",
-    icon: bt,
+    icon: Nt,
     defaultProps: {
       label: "BẢNG DỮ LIỆU",
       columns: [
@@ -15090,7 +15457,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "FileUploadGrid",
     name: "Bảng Đính Kèm Tệp (FileUploadGrid)",
     description: "Lưới quản lý tệp đính kèm, kéo thả upload và xem trước (Preview)",
-    icon: Cr,
+    icon: Ir,
     defaultProps: {
       label: "Tài liệu & Chứng từ đính kèm",
       colSpan: 12,
@@ -15102,7 +15469,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Button",
     name: "Nút Bấm (Button)",
     description: "Kích hoạt hành động (Lưu, In chứng từ, Duyệt)",
-    icon: Hs,
+    icon: Cs,
     defaultProps: { label: "Lưu Dữ Liệu", variant: "primary", size: "md" },
     defaultStyle: {}
   },
@@ -15110,7 +15477,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Label",
     name: "Nhãn Tiêu Đề (Label)",
     description: "Tiêu đề và nội dung tĩnh phân đoạn",
-    icon: is,
+    icon: Qt,
     defaultProps: { label: "Tiêu đề khối thông tin" },
     defaultStyle: { fontSize: "14px", fontWeight: "bold" }
   },
@@ -15118,7 +15485,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Divider",
     name: "Đường Phân Cách (Divider)",
     description: "Đường kẻ ngang ngăn chia các khu vực",
-    icon: kr,
+    icon: Dr,
     defaultProps: { label: "Thông tin mở rộng" },
     defaultStyle: {}
   },
@@ -15126,7 +15493,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Modal",
     name: "Hộp Thoại (Modal Dialog)",
     description: "Cửa sổ popup nhập liệu hoặc xác nhận thao tác",
-    icon: Ca,
+    icon: Fa,
     defaultProps: { title: "Cửa Sổ Nhập Liệu Chi Tiết" },
     defaultStyle: { width: "100%" }
   },
@@ -15134,7 +15501,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Textarea",
     name: "Văn Bản Dài (Textarea)",
     description: "Ô nhập văn bản nhiều dòng (Notes, Description, Remarks)",
-    icon: ka,
+    icon: Ra,
     defaultProps: {
       label: "Ghi chú",
       showLabel: !0,
@@ -15149,7 +15516,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Tabs",
     name: "Phân Hệ Tabs (Tabs Container)",
     description: "Thanh điều hướng chuyển đổi giữa các phân hệ nghiệp vụ",
-    icon: Sa,
+    icon: La,
     defaultProps: {
       tabs: [
         { id: "main", label: "TAB 1" }
@@ -15161,7 +15528,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "TreeView",
     name: "Cây Danh Mục (TreeView)",
     description: "Cây phân cấp danh mục đa tầng (kế thừa MasterData C# Core)",
-    icon: bn,
+    icon: wn,
     defaultProps: {
       title: "DANH MỤC CÂY PHÂN CẤP",
       reference: "MasterData",
@@ -15176,7 +15543,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     type: "Chart",
     name: "Biểu Đồ Trực Quan (Chart)",
     description: "Biểu đồ trực quan hóa dữ liệu (Cột, Đường, Tròn) 100% SVG",
-    icon: Sr,
+    icon: Fr,
     defaultProps: {
       title: "THỐNG KÊ SẢN LƯỢNG",
       chartType: "bar",
@@ -15185,8 +15552,8 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     },
     defaultStyle: { width: "100%", minHeight: "320px" }
   }
-], Yl = ({ item: t, onClick: r, isEditing: s }) => {
-  const a = t.icon, { attributes: n, listeners: o, setNodeRef: l, isDragging: i } = Fr({
+], wo = ({ item: t, onClick: r, isEditing: s }) => {
+  const a = t.icon, { attributes: n, listeners: o, setNodeRef: l, isDragging: i } = Er({
     id: `palette-${t.type}`,
     disabled: !s,
     data: {
@@ -15211,23 +15578,23 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
           /* @__PURE__ */ e.jsx("div", { className: "text-xs font-semibold text-slate-200 group-hover:text-white truncate", children: t.name }),
           /* @__PURE__ */ e.jsx("div", { className: "text-[10px] text-slate-400 truncate mt-0.5", children: t.description })
         ] }),
-        /* @__PURE__ */ e.jsx("div", { className: "text-slate-500 group-hover:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity", children: /* @__PURE__ */ e.jsx(et, { className: "w-3.5 h-3.5" }) })
+        /* @__PURE__ */ e.jsx("div", { className: "text-slate-500 group-hover:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity", children: /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5" }) })
       ]
     }
   );
-}, ko = ({ isEditing: t = !0, onAddComponent: r }) => {
+}, Qo = ({ isEditing: t = !0, onAddComponent: r }) => {
   const s = Z((c) => c.addComponent), a = Z((c) => c.activeFeatureId), n = Z((c) => c.features), o = Z((c) => c.selection), l = n.find((c) => c.id === a), i = (c, p) => {
     if (!p) return null;
     for (const g of c) {
       if (g.id === p) return g;
       if (g.children) {
-        const I = i(g.children, p);
-        if (I) return I;
+        const T = i(g.children, p);
+        if (T) return T;
       }
     }
     return null;
   }, d = (c) => {
-    var f;
+    var x;
     if (!t) return;
     if (r) {
       r(c.type);
@@ -15236,7 +15603,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     const p = i((l == null ? void 0 : l.components) || [], o.componentId);
     let g = null;
     p && (p.type === "Container" ? g = p.id : g = p.parentId || null);
-    const I = {
+    const T = {
       id: `${c.type.toLowerCase()}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
       type: c.type,
       parentId: g,
@@ -15244,22 +15611,22 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
       props: { ...c.defaultProps },
       style: { ...c.defaultStyle },
       events: [],
-      order: (((f = l == null ? void 0 : l.components) == null ? void 0 : f.length) || 0) + 1,
+      order: (((x = l == null ? void 0 : l.components) == null ? void 0 : x.length) || 0) + 1,
       children: c.type === "Container" || c.type === "Section" ? [] : void 0
     };
-    s(I, g);
+    s(T, g);
   };
   return /* @__PURE__ */ e.jsxs("div", { className: "flex flex-col h-full bg-slate-900 border-r border-slate-800 select-none", children: [
     /* @__PURE__ */ e.jsxs("div", { className: "p-3 border-b border-slate-800 flex items-center justify-between", children: [
       /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ e.jsx(Rn, { className: "w-4 h-4 text-slate-400" }),
+        /* @__PURE__ */ e.jsx($s, { className: "w-4 h-4 text-slate-400" }),
         /* @__PURE__ */ e.jsx("h2", { className: "text-xs font-bold text-slate-200 uppercase tracking-wider", children: "Thư Viện Phần Tử (Palette)" })
       ] }),
-      /* @__PURE__ */ e.jsx("span", { className: "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-mono", children: cr.length })
+      /* @__PURE__ */ e.jsx("span", { className: "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-mono", children: gr.length })
     ] }),
     /* @__PURE__ */ e.jsx("div", { className: "p-3 text-[11px] text-slate-400 bg-slate-950/40 border-b border-slate-800/80", children: "Kéo thả phần tử vào Canvas hoặc bấm để thêm nhanh vào cuối trang." }),
-    /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-y-auto p-3 space-y-2", children: cr.map((c) => /* @__PURE__ */ e.jsx(
-      Yl,
+    /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-y-auto p-3 space-y-2", children: gr.map((c) => /* @__PURE__ */ e.jsx(
+      wo,
       {
         item: c,
         onClick: d,
@@ -15268,7 +15635,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
       c.type
     )) })
   ] });
-}, So = () => {
+}, Zo = () => {
   const t = Z((i) => i.features), r = Z((i) => i.activeFeatureId), s = Z((i) => i.selection), a = Z((i) => i.selectComponent), n = Z((i) => i.removeComponent), o = t.find((i) => i.id === r);
   if (!o || o.components.length === 0)
     return /* @__PURE__ */ e.jsx("div", { className: "p-4 text-center text-xs text-slate-500 italic", children: "Chưa có component nào được thêm vào feature này." });
@@ -15283,7 +15650,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
           className: `flex items-center justify-between pr-2.5 py-1.5 rounded-md text-xs cursor-pointer transition-colors ${p ? "bg-blue-600/30 text-blue-300 font-semibold border border-blue-500/40" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"}`,
           children: [
             /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2 truncate", children: [
-              /* @__PURE__ */ e.jsx(Et, { className: "w-3.5 h-3.5 text-slate-500 shrink-0" }),
+              /* @__PURE__ */ e.jsx(Xt, { className: "w-3.5 h-3.5 text-slate-500 shrink-0" }),
               /* @__PURE__ */ e.jsx("span", { className: "truncate", children: c.props.label ? String(c.props.label) : c.type }),
               /* @__PURE__ */ e.jsxs("span", { className: "text-[10px] text-slate-500 uppercase tracking-wider shrink-0", children: [
                 "(",
@@ -15300,7 +15667,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
                 },
                 className: "text-slate-500 hover:text-red-400 p-1 transition-colors cursor-pointer",
                 title: "Xóa component",
-                children: /* @__PURE__ */ e.jsx(ot, { className: "w-3.5 h-3.5" })
+                children: /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5" })
               }
             )
           ]
@@ -15310,44 +15677,44 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
     ] }, c.id);
   });
   return /* @__PURE__ */ e.jsx("div", { className: "p-2 space-y-1 overflow-y-auto max-h-60 select-none", children: l(o.components) });
-}, To = () => {
-  const t = Ze((f) => f.openTabs), r = Ze((f) => f.activeTabId), s = Ze((f) => f.setActiveTab), a = Ze((f) => f.closeTab), n = Z((f) => f.setActiveFeature), o = fe((f) => f.isFormDirty), l = fe((f) => f.markFormClean), [i, d] = A(null);
+}, ei = () => {
+  const t = st((x) => x.openTabs), r = st((x) => x.activeTabId), s = st((x) => x.setActiveTab), a = st((x) => x.closeTab), n = Z((x) => x.setActiveFeature), o = Te((x) => x.isFormDirty), l = Te((x) => x.markFormClean), [i, d] = D(null);
   if (t.length === 0) return null;
-  const c = (f, x) => {
+  const c = (x, h) => {
     var u;
-    s(f);
-    const N = t.find((v) => v.id === f);
-    n(x, ((u = N == null ? void 0 : N.params) == null ? void 0 : u.id) ?? null);
-  }, p = (f) => {
-    a(f), setTimeout(() => {
-      var N;
-      const x = Ze.getState().openTabs.find(
-        (u) => u.id === Ze.getState().activeTabId
+    s(x);
+    const w = t.find((v) => v.id === x);
+    n(h, ((u = w == null ? void 0 : w.params) == null ? void 0 : u.id) ?? null);
+  }, p = (x) => {
+    a(x), setTimeout(() => {
+      var w;
+      const h = st.getState().openTabs.find(
+        (u) => u.id === st.getState().activeTabId
       );
-      x && n(x.featureId, ((N = x.params) == null ? void 0 : N.id) ?? null);
+      h && n(h.featureId, ((w = h.params) == null ? void 0 : w.id) ?? null);
     }, 50);
-  }, g = (f, x) => {
-    if (f.stopPropagation(), x.isDirty || (x.featureId ? o(x.featureId) : !1)) {
-      d(x);
+  }, g = (x, h) => {
+    if (x.stopPropagation(), h.isDirty || (h.featureId ? o(h.featureId) : !1)) {
+      d(h);
       return;
     }
-    p(x.id);
-  }, I = () => {
+    p(h.id);
+  }, T = () => {
     i && (i.featureId && l(i.featureId), p(i.id), d(null));
   };
   return /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
-    /* @__PURE__ */ e.jsx("div", { className: "h-9 bg-[#0b1120] border-b border-slate-800/80 px-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0 select-none z-20", children: t.map((f) => {
-      const x = f.id === r, N = f.isDirty || (f.featureId ? o(f.featureId) : !1);
+    /* @__PURE__ */ e.jsx("div", { className: "h-9 bg-[#0b1120] border-b border-slate-800/80 px-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0 select-none z-20", children: t.map((x) => {
+      const h = x.id === r, w = x.isDirty || (x.featureId ? o(x.featureId) : !1);
       return /* @__PURE__ */ e.jsxs(
         "div",
         {
-          onClick: () => c(f.id, f.featureId),
-          className: `group h-7 px-3 rounded-t-md text-xs font-medium flex items-center gap-2 cursor-pointer transition-all border-t border-x ${x ? "bg-slate-900 border-slate-700 text-blue-400 font-semibold shadow-sm shadow-blue-500/10" : "bg-transparent border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40"}`,
-          title: N ? `${f.title} (Có dữ liệu chưa lưu)` : f.title,
+          onClick: () => c(x.id, x.featureId),
+          className: `group h-7 px-3 rounded-t-md text-xs font-medium flex items-center gap-2 cursor-pointer transition-all border-t border-x ${h ? "bg-slate-900 border-slate-700 text-blue-400 font-semibold shadow-sm shadow-blue-500/10" : "bg-transparent border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40"}`,
+          title: w ? `${x.title} (Có dữ liệu chưa lưu)` : x.title,
           children: [
-            /* @__PURE__ */ e.jsx(Pt, { className: `w-3.5 h-3.5 ${x ? "text-blue-400" : "text-slate-500 group-hover:text-slate-400"}` }),
-            /* @__PURE__ */ e.jsx("span", { className: "truncate max-w-[180px]", children: f.title }),
-            N && /* @__PURE__ */ e.jsx(
+            /* @__PURE__ */ e.jsx(yt, { className: `w-3.5 h-3.5 ${h ? "text-blue-400" : "text-slate-500 group-hover:text-slate-400"}` }),
+            /* @__PURE__ */ e.jsx("span", { className: "truncate max-w-[180px]", children: x.title }),
+            w && /* @__PURE__ */ e.jsx(
               "span",
               {
                 className: "w-2 h-2 rounded-full bg-amber-400 shadow-sm shadow-amber-400/80 animate-pulse ml-0.5 shrink-0",
@@ -15358,20 +15725,20 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
               "button",
               {
                 type: "button",
-                onClick: (u) => g(u, f),
+                onClick: (u) => g(u, x),
                 className: "w-4 h-4 rounded-full flex items-center justify-center text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors ml-1 cursor-pointer",
                 title: "Đóng tab này",
-                children: /* @__PURE__ */ e.jsx(ct, { className: "w-3 h-3" })
+                children: /* @__PURE__ */ e.jsx(dt, { className: "w-3 h-3" })
               }
             )
           ]
         },
-        f.id
+        x.id
       );
     }) }),
     i && /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-150 p-4", children: /* @__PURE__ */ e.jsxs("div", { className: "w-full max-w-md bg-slate-900 border border-amber-500/60 rounded-2xl shadow-2xl overflow-hidden p-6 space-y-4", children: [
       /* @__PURE__ */ e.jsxs("div", { className: "flex items-start gap-3.5", children: [
-        /* @__PURE__ */ e.jsx("div", { className: "w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30", children: /* @__PURE__ */ e.jsx(Ta, { className: "w-5 h-5" }) }),
+        /* @__PURE__ */ e.jsx("div", { className: "w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30", children: /* @__PURE__ */ e.jsx($a, { className: "w-5 h-5" }) }),
         /* @__PURE__ */ e.jsxs("div", { className: "space-y-1", children: [
           /* @__PURE__ */ e.jsx("h3", { className: "text-sm font-bold text-slate-100", children: "Dữ liệu chưa được lưu!" }),
           /* @__PURE__ */ e.jsxs("p", { className: "text-xs text-slate-300 leading-relaxed", children: [
@@ -15399,7 +15766,7 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
           "button",
           {
             type: "button",
-            onClick: I,
+            onClick: T,
             className: "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white transition-all cursor-pointer shadow-md shadow-rose-900/40 border border-rose-400",
             children: "Đóng không lưu"
           }
@@ -15407,293 +15774,1574 @@ box-shadow: 0 4px 6px rgba(0,0,0,0.1);`,
       ] })
     ] }) })
   ] });
-}, Xr = "uiforge_resilience_queue_v1";
-let Vs = !1, dr = !1;
-function Gs() {
-  if (typeof window > "u") return [];
-  try {
-    const t = localStorage.getItem(Xr);
-    return t ? JSON.parse(t) : [];
-  } catch {
-    return [];
-  }
-}
-function Qr(t) {
-  if (!(typeof window > "u"))
-    try {
-      localStorage.setItem(Xr, JSON.stringify(t)), console.log(`[ResilienceQueue] Hiện có ${t.length} tác vụ đang chờ đồng bộ an toàn`);
-    } catch {
+}, Co = ({
+  isOpen: t,
+  onClose: r
+}) => {
+  const s = Z((O) => O.isFeatureManagerOpen), a = Z((O) => O.closeFeatureManager), n = Z((O) => O.features), o = Z((O) => O.addFeature), l = Z((O) => O.deleteFeature), i = Z((O) => O.cloneFeature), d = Z((O) => O.toggleFeatureActive), c = Z((O) => O.openFeatureProperties), p = Z((O) => O.updateFeatureProperties), g = t !== void 0 ? t : s, T = () => {
+    r && r(), a();
+  }, [x, h] = D(""), [w, u] = D("all"), [v, k] = D({}), [m, y] = D(!1), [P, R] = D(""), [F, C] = D(""), [S, L] = D(""), [$, se] = D(!1), [V, U] = D("Layers"), E = (O) => {
+    k((_) => ({ ..._, [O]: !_[O] }));
+  }, Y = Ae(() => {
+    const O = [], _ = /* @__PURE__ */ new Map();
+    for (const ue of n) {
+      const M = ue.parentId || null;
+      _.has(M) || _.set(M, []), _.get(M).push(ue);
     }
-}
-function Jl(t, r) {
-  var n;
-  const s = Gs(), a = {
-    id: `req_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-    url: t.url || "",
-    method: (t.method || "POST").toUpperCase(),
-    data: t.data,
-    headers: {
-      "Content-Type": "application/json"
-    },
-    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-    retryCount: 0,
-    description: r || `Thao tác ${(n = t.method) == null ? void 0 : n.toUpperCase()} trên ${t.url}`
+    for (const ue of _.values())
+      ue.sort((M, Q) => (M.order ?? 0) - (Q.order ?? 0));
+    const me = (ue, M = 0) => {
+      const Q = _.get(ue) || [];
+      for (const W of Q) {
+        const ie = (_.get(W.id) || []).length > 0, Ne = !!v[W.id], j = !x.trim() || W.name.toLowerCase().includes(x.toLowerCase()) || W.title && W.title.toLowerCase().includes(x.toLowerCase()) || W.code && W.code.toLowerCase().includes(x.toLowerCase()) || W.route.toLowerCase().includes(x.toLowerCase()) || W.entityName && W.entityName.toLowerCase().includes(x.toLowerCase());
+        let A = !0;
+        w === "active" ? A = W.active !== !1 : w === "inactive" ? A = W.active === !1 : w === "group" && (A = !!W.isGroup), j && A && O.push({
+          feature: W,
+          depth: M,
+          hasChildren: ie,
+          isCollapsed: Ne
+        }), ie && !Ne && me(W.id, M + 1);
+      }
+    }, ce = new Set(n.map((ue) => ue.id)), ye = n.filter((ue) => !ue.parentId || !ce.has(ue.parentId));
+    ye.sort((ue, M) => (ue.order ?? 0) - (M.order ?? 0));
+    for (const ue of ye) {
+      const Q = (_.get(ue.id) || []).length > 0, W = !!v[ue.id], q = !x.trim() || ue.name.toLowerCase().includes(x.toLowerCase()) || ue.title && ue.title.toLowerCase().includes(x.toLowerCase()) || ue.code && ue.code.toLowerCase().includes(x.toLowerCase()) || ue.route.toLowerCase().includes(x.toLowerCase());
+      let ie = !0;
+      w === "active" ? ie = ue.active !== !1 : w === "inactive" ? ie = ue.active === !1 : w === "group" && (ie = !!ue.isGroup), q && ie && O.push({
+        feature: ue,
+        depth: 0,
+        hasChildren: Q,
+        isCollapsed: W
+      }), Q && !W && me(ue.id, 1);
+    }
+    return O;
+  }, [n, v, x, w]), z = (O) => {
+    if (O.preventDefault(), !P.trim()) return;
+    const _ = o(P.trim(), V, S || null, $);
+    F.trim() && p(_, { title: F.trim() }), y(!1), R(""), C(""), L(""), se(!1);
+  }, b = (O, _) => {
+    const me = O.order ?? 0, ce = Math.max(0, me + _);
+    p(O.id, { order: ce });
+  }, ae = async (O) => {
+    if (confirm(`Bạn có chắc chắn muốn xóa Feature "${O.title || O.name}"?`)) {
+      try {
+        await gl(O.id);
+      } catch {
+      }
+      l(O.id);
+    }
   };
-  return s.push(a), Qr(s), Zr(
-    "🛡️ Đã lưu vào Hàng Đợi Bền Bỉ (Resilience Queue)",
-    `Mạng gián đoạn hoặc máy chủ phản hồi 502/503. Thao tác "${a.description}" được bảo toàn an toàn và sẽ tự động đồng bộ khi kết nối phục hồi.`,
-    "warning"
-  ), a;
-}
-function Zr(t, r, s = "info") {
-  if (typeof document > "u") return;
-  const a = document.createElement("div");
-  a.className = `fixed top-6 right-6 z-[9999] max-w-md px-4 py-3 rounded-xl shadow-2xl border backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-300 ${s === "warning" ? "bg-amber-950/90 border-amber-600/50 text-amber-100 shadow-amber-900/30" : s === "success" ? "bg-emerald-950/90 border-emerald-600/50 text-emerald-100 shadow-emerald-900/30" : "bg-blue-950/90 border-blue-600/50 text-blue-100 shadow-blue-900/30"}`, a.innerHTML = `
-    <div class="flex items-start gap-3">
-      <div class="mt-0.5 text-lg">
-        ${s === "warning" ? "⚠️" : s === "success" ? "✅" : "ℹ️"}
-      </div>
-      <div class="flex-1 text-xs">
-        <div class="font-bold text-sm mb-1">${t}</div>
-        <div class="opacity-90 leading-relaxed">${r}</div>
-      </div>
-    </div>
-  `, document.body.appendChild(a), setTimeout(() => {
-    a.classList.add("opacity-0", "transition-opacity", "duration-300"), setTimeout(() => a.remove(), 300);
-  }, 4500);
-}
-async function xn(t) {
-  var n, o;
-  if (Vs) return;
-  const r = Gs();
-  if (r.length === 0) return;
-  Vs = !0, console.log(`[ResilienceQueue] Bắt đầu tự động đồng bộ ${r.length} tác vụ đang chờ...`);
-  let s = 0;
-  const a = [];
-  for (const l of r)
-    try {
-      await t.request({
-        url: l.url,
-        method: l.method,
-        data: l.data
-      }), s++, console.log(`[ResilienceQueue] Đồng bộ thành công: ${l.description}`);
-    } catch (i) {
-      l.retryCount = (l.retryCount || 0) + 1, console.warn(`[ResilienceQueue] Lỗi khi đồng bộ lại ${l.description} (lần thử ${l.retryCount}):`, i == null ? void 0 : i.message), ((n = i == null ? void 0 : i.response) == null ? void 0 : n.status) >= 400 && ((o = i == null ? void 0 : i.response) == null ? void 0 : o.status) < 500 || a.push(l);
-    }
-  Qr(a), Vs = !1, s > 0 && Zr(
-    "✨ Đồng Bộ Tự Động Hoàn Tất",
-    `Đã phát lại và ghi nhận thành công ${s} thao tác vào cơ sở dữ liệu sau khi kết nối phục hồi!`,
-    "success"
-  );
-}
-function Xl(t) {
-  var s, a;
-  if (!t) return !1;
-  if (typeof navigator < "u" && !navigator.onLine || !t.response && (t.code === "ERR_NETWORK" || (s = t.message) != null && s.includes("Network Error"))) return !0;
-  const r = (a = t.response) == null ? void 0 : a.status;
-  return r === 502 || r === 503 || r === 504;
-}
-function Ql(t) {
-  dr || typeof window > "u" || (dr = !0, window.addEventListener("online", () => {
-    console.log("[ResilienceQueue] Kết nối Internet đã được phục hồi. Kích hoạt replay..."), xn(t);
-  }), setInterval(() => {
-    typeof navigator < "u" && navigator.onLine && Gs().length > 0 && !Vs && xn(t);
-  }, 2e4), setTimeout(() => {
-    const r = Gs();
-    r.length > 0 && (console.log(`[ResilienceQueue] Phát hiện ${r.length} tác vụ chưa hoàn tất từ phiên trước.`), xn(t));
-  }, 3e3));
-}
-const Zl = "http://localhost:5048/api", Ys = Ma.create({
-  baseURL: Zl,
-  timeout: 15e3
-});
-Ys.interceptors.request.use((t) => {
-  const r = En.getState().token;
-  return r && (t.headers.Authorization = `Bearer ${r}`), t;
-});
-Ys.interceptors.response.use(
-  (t) => t,
-  async (t) => {
-    var a, n, o, l, i;
-    if (((a = t == null ? void 0 : t.response) == null ? void 0 : a.status) === 401)
-      return En.getState().logout(), Promise.reject(t);
-    const r = (((n = t == null ? void 0 : t.config) == null ? void 0 : n.method) || "").toUpperCase();
-    if (["POST", "PUT", "DELETE", "PATCH"].includes(r) && Xl(t)) {
-      const d = (l = (o = t == null ? void 0 : t.config) == null ? void 0 : o.url) != null && l.includes("/pages/save") ? "Lưu cấu hình trang (UI Forge Page)" : `Thao tác ${r} [${(i = t == null ? void 0 : t.config) == null ? void 0 : i.url}]`;
-      return Jl(t.config, d), Promise.resolve({
-        data: {
-          success: !0,
-          isQueued: !0,
-          message: "Dữ liệu đã được lưu an toàn trong Hàng Đợi Bền Bỉ (Resilience Queue)."
-        },
-        status: 202,
-        statusText: "Accepted into Resilience Queue",
-        headers: {},
-        config: t.config
-      });
-    }
-    return Promise.reject(t);
-  }
-);
-Ql(Ys);
-async function eo(t) {
-  await Ys.delete(`/pages/${t}`);
-}
-const Do = ({ width: t }) => {
-  const r = Z((k) => k.features), s = Z((k) => k.activeFeatureId), a = Z((k) => k.setActiveFeature), n = Z((k) => k.addFeature), o = Z((k) => k.renameFeature), l = Z((k) => k.deleteFeature), i = r.filter((k) => !k.hidden && !k.isDetail), [d, c] = A(null), [p, g] = A(!1), [I, f] = A(""), [x, N] = A(null), u = (k) => {
-    k.preventDefault(), c({
-      x: k.clientX,
-      y: k.clientY
-    });
-  }, v = (k, F) => {
-    k.preventDefault(), k.stopPropagation(), c({
-      x: k.clientX,
-      y: k.clientY,
-      featureId: F
-    });
-  }, C = () => {
-    f(""), g(!0);
-  }, h = (k) => {
-    k.preventDefault(), I.trim() && (n(I.trim()), g(!1), f(""));
-  }, y = (k) => {
-    k.preventDefault(), !(!x || !x.name.trim()) && (o(x.id, x.name.trim()), N(null));
-  }, L = d != null && d.featureId ? [
-    {
-      label: "➕ Thêm Feature mới",
-      icon: on,
-      onClick: C
-    },
-    {
-      divider: !0,
-      label: "",
-      onClick: () => {
-      }
-    },
-    {
-      label: "✏️ Đổi tên Feature này",
-      icon: Da,
-      onClick: () => {
-        const k = r.find((F) => F.id === d.featureId);
-        k && N({ id: k.id, name: k.name });
-      }
-    },
-    {
-      label: "🗑️ Xóa Feature này",
-      icon: ot,
-      danger: !0,
-      onClick: async () => {
-        if (confirm("Bạn có chắc chắn muốn xóa Feature này?")) {
-          try {
-            await eo(d.featureId);
-          } catch {
-          }
-          l(d.featureId);
-        }
-      }
-    }
-  ] : [
-    {
-      label: "➕ Thêm Feature mới (Màn hình mới)",
-      icon: on,
-      onClick: C
-    }
-  ];
-  return /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
-    /* @__PURE__ */ e.jsxs(
-      "aside",
-      {
-        onContextMenu: u,
-        style: { width: t ? `${t}px` : void 0 },
-        className: "w-64 border-r border-slate-800 bg-slate-900/90 flex flex-col shrink-0 select-none relative",
-        children: [
-          /* @__PURE__ */ e.jsx("nav", { className: "p-3 space-y-1.5 overflow-y-auto flex-1", children: i.map((k, F) => {
-            const w = k.id === s;
-            return /* @__PURE__ */ e.jsxs(
-              "div",
-              {
-                onClick: () => {
-                  a(k.id, null), Ze.getState().openFeature(k.id, {}, "Tab", k.name);
-                },
-                onContextMenu: (S) => v(S, k.id),
-                className: `group flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all ${w ? "bg-blue-600 text-white shadow-md shadow-blue-600/25 border border-blue-500" : "text-slate-300 hover:bg-slate-800 hover:text-white border border-transparent"}`,
-                children: [
-                  /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2.5 truncate", children: [
+  return g ? It(
+    /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-150 select-none", children: /* @__PURE__ */ e.jsxs("div", { className: "w-full max-w-7xl rounded-xl border border-blue-600/40 bg-[#0b1322] shadow-2xl flex flex-col text-slate-200 my-auto max-h-[96vh] overflow-hidden relative", children: [
+      /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between px-6 py-4 bg-[#080e1a] border-b border-blue-600/30", children: [
+        /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-3", children: [
+          /* @__PURE__ */ e.jsx("div", { className: "p-2 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30", children: /* @__PURE__ */ e.jsx(yt, { className: "w-5 h-5" }) }),
+          /* @__PURE__ */ e.jsxs("div", { children: [
+            /* @__PURE__ */ e.jsxs("h2", { className: "font-bold text-base text-white tracking-wide flex items-center gap-2", children: [
+              "Quản lý Tính năng & Menu (Feature Manager)",
+              /* @__PURE__ */ e.jsxs("span", { className: "text-xs px-2 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-800/60 font-mono", children: [
+                n.length,
+                " features"
+              ] })
+            ] }),
+            /* @__PURE__ */ e.jsx("p", { className: "text-xs text-slate-400", children: "Quản lý phân tầng cây Menu, trạng thái hiển thị và thông tin cấu hình toàn hệ thống" })
+          ] })
+        ] }),
+        /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ e.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => y(!0),
+              className: "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all cursor-pointer",
+              children: [
+                /* @__PURE__ */ e.jsx(Qe, { className: "w-4 h-4" }),
+                /* @__PURE__ */ e.jsx("span", { children: "+ Thêm Feature mới" })
+              ]
+            }
+          ),
+          /* @__PURE__ */ e.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: T,
+              className: "p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 transition-all cursor-pointer",
+              children: /* @__PURE__ */ e.jsx(dt, { className: "w-4 h-4" })
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ e.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-3 px-6 py-3 border-b border-slate-800 bg-[#090f1e]", children: [
+        /* @__PURE__ */ e.jsxs("div", { className: "relative flex-1 min-w-[280px] max-w-md", children: [
+          /* @__PURE__ */ e.jsx(Et, { className: "w-4 h-4 absolute left-3 top-2.5 text-slate-500" }),
+          /* @__PURE__ */ e.jsx(
+            "input",
+            {
+              type: "text",
+              value: x,
+              onChange: (O) => h(O.target.value),
+              placeholder: "Tìm theo Tên, Tiêu đề, Mã, Route, Entity...",
+              className: "w-full pl-9 pr-3 py-1.5 bg-slate-800/90 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ e.jsx("span", { className: "text-xs text-slate-400", children: "Lọc:" }),
+          ["all", "active", "inactive", "group"].map((O) => /* @__PURE__ */ e.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => u(O),
+              className: `px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${w === O ? "bg-blue-600 text-white shadow-sm" : "bg-slate-800/70 text-slate-400 hover:text-slate-200"}`,
+              children: [
+                O === "all" && "Tất cả",
+                O === "active" && "Đang hoạt động",
+                O === "inactive" && "Ngưng hoạt động",
+                O === "group" && "Nhóm cha"
+              ]
+            },
+            O
+          ))
+        ] })
+      ] }),
+      /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-y-auto p-6", children: /* @__PURE__ */ e.jsx("div", { className: "border border-slate-800 rounded-xl overflow-hidden bg-slate-900/60 shadow-inner", children: /* @__PURE__ */ e.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ e.jsxs("table", { className: "w-full text-left text-xs", children: [
+        /* @__PURE__ */ e.jsx("thead", { className: "bg-[#080e1b] border-b border-slate-800 text-slate-400 font-semibold uppercase text-[11px]", children: /* @__PURE__ */ e.jsxs("tr", { children: [
+          /* @__PURE__ */ e.jsx("th", { className: "py-3 px-4", children: "Cấu trúc Menu / Tên Feature" }),
+          /* @__PURE__ */ e.jsx("th", { className: "py-3 px-3", children: "Mã (Code)" }),
+          /* @__PURE__ */ e.jsx("th", { className: "py-3 px-3", children: "Đường dẫn (Route)" }),
+          /* @__PURE__ */ e.jsx("th", { className: "py-3 px-3", children: "Cấp cha" }),
+          /* @__PURE__ */ e.jsx("th", { className: "py-3 px-3 text-center", children: "Thứ tự" }),
+          /* @__PURE__ */ e.jsx("th", { className: "py-3 px-3 text-center", children: "Loại" }),
+          /* @__PURE__ */ e.jsx("th", { className: "py-3 px-3 text-center", children: "Hiển thị Leftbar" }),
+          /* @__PURE__ */ e.jsx("th", { className: "py-3 px-3 text-center", children: "Trạng thái" }),
+          /* @__PURE__ */ e.jsx("th", { className: "py-3 px-4 text-right", children: "Thao tác" })
+        ] }) }),
+        /* @__PURE__ */ e.jsx("tbody", { className: "divide-y divide-slate-800/50", children: Y.length === 0 ? /* @__PURE__ */ e.jsx("tr", { children: /* @__PURE__ */ e.jsx("td", { colSpan: 9, className: "py-10 text-center text-slate-500", children: "Không tìm thấy Feature nào phù hợp" }) }) : Y.map(({ feature: O, depth: _, hasChildren: me, isCollapsed: ce }) => {
+          const ye = O.active !== !1, ue = !!O.isGroup;
+          return /* @__PURE__ */ e.jsxs(
+            "tr",
+            {
+              onDoubleClick: () => c(O.id),
+              className: "hover:bg-blue-600/10 cursor-pointer transition-colors group",
+              title: "Nhấp đúp chuột để mở thuộc tính Feature",
+              children: [
+                /* @__PURE__ */ e.jsx("td", { className: "py-2.5 px-4", children: /* @__PURE__ */ e.jsxs(
+                  "div",
+                  {
+                    className: "flex items-center gap-2",
+                    style: { paddingLeft: `${_ * 24}px` },
+                    children: [
+                      me ? /* @__PURE__ */ e.jsx(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: (M) => {
+                            M.stopPropagation(), E(O.id);
+                          },
+                          className: "p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white cursor-pointer",
+                          children: ce ? /* @__PURE__ */ e.jsx(es, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ e.jsx(wt, { className: "w-3.5 h-3.5" })
+                        }
+                      ) : /* @__PURE__ */ e.jsx("span", { className: "w-5" }),
+                      /* @__PURE__ */ e.jsx(
+                        "div",
+                        {
+                          className: `p-1.5 rounded-lg shrink-0 ${ue ? "bg-amber-500/20 text-amber-400" : "bg-slate-800 text-slate-400 group-hover:text-blue-400"}`,
+                          children: ue ? /* @__PURE__ */ e.jsx(Zs, { className: "w-4 h-4" }) : /* @__PURE__ */ e.jsx(yt, { className: "w-4 h-4" })
+                        }
+                      ),
+                      /* @__PURE__ */ e.jsxs("div", { className: "truncate", children: [
+                        /* @__PURE__ */ e.jsx("span", { className: "font-bold text-slate-200 group-hover:text-white text-xs block", children: O.title || O.name }),
+                        O.title && O.title !== O.name && /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-500 block truncate", children: O.name })
+                      ] })
+                    ]
+                  }
+                ) }),
+                /* @__PURE__ */ e.jsx("td", { className: "py-2.5 px-3 font-mono text-[11px] text-amber-300", children: O.code ? `#${O.code}` : "-" }),
+                /* @__PURE__ */ e.jsx("td", { className: "py-2.5 px-3 font-mono text-[11px] text-slate-400", children: O.route }),
+                /* @__PURE__ */ e.jsx("td", { className: "py-2.5 px-3", children: /* @__PURE__ */ e.jsxs(
+                  "select",
+                  {
+                    value: O.parentId || "",
+                    onClick: (M) => M.stopPropagation(),
+                    onChange: (M) => {
+                      M.stopPropagation();
+                      const Q = M.target.value.trim() ? M.target.value.trim() : null;
+                      p(O.id, { parentId: Q });
+                    },
+                    className: "px-2 py-1 bg-slate-800/90 border border-slate-700/80 rounded text-[11px] text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer max-w-[130px] truncate",
+                    title: "Thay đổi Cấp cha (Chọn 'Gốc' để xóa cấp cha)",
+                    children: [
+                      /* @__PURE__ */ e.jsx("option", { value: "", children: "-- Gốc (Không cha) --" }),
+                      n.filter((M) => M.id !== O.id && M.isGroup).map((M) => /* @__PURE__ */ e.jsxs("option", { value: M.id, children: [
+                        "📁 ",
+                        M.title || M.name
+                      ] }, M.id)),
+                      n.filter((M) => M.id !== O.id && !M.isGroup).map((M) => /* @__PURE__ */ e.jsxs("option", { value: M.id, children: [
+                        "📄 ",
+                        M.title || M.name
+                      ] }, M.id))
+                    ]
+                  }
+                ) }),
+                /* @__PURE__ */ e.jsx("td", { className: "py-2.5 px-3 text-center", children: /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-center gap-1", children: [
+                  /* @__PURE__ */ e.jsx("span", { className: "font-mono text-xs w-6", children: O.order ?? 0 }),
+                  /* @__PURE__ */ e.jsxs("div", { className: "flex flex-col opacity-60 group-hover:opacity-100", children: [
                     /* @__PURE__ */ e.jsx(
-                      "div",
+                      "button",
                       {
-                        className: `p-1.5 rounded-lg shrink-0 ${w ? "bg-white/20 text-white" : "bg-slate-800 text-slate-400 group-hover:text-blue-400"}`,
-                        children: F === 0 ? /* @__PURE__ */ e.jsx(Ia, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ e.jsx(Pt, { className: "w-3.5 h-3.5" })
+                        type: "button",
+                        onClick: (M) => {
+                          M.stopPropagation(), b(O, -1);
+                        },
+                        className: "p-0.5 hover:bg-slate-800 rounded text-slate-400 hover:text-white",
+                        title: "Giảm thứ tự (Lên trên)",
+                        children: /* @__PURE__ */ e.jsx(En, { className: "w-3 h-3" })
                       }
                     ),
-                    /* @__PURE__ */ e.jsx("span", { className: "truncate", children: k.name })
-                  ] }),
+                    /* @__PURE__ */ e.jsx(
+                      "button",
+                      {
+                        type: "button",
+                        onClick: (M) => {
+                          M.stopPropagation(), b(O, 1);
+                        },
+                        className: "p-0.5 hover:bg-slate-800 rounded text-slate-400 hover:text-white",
+                        title: "Tăng thứ tự (Xuống dưới)",
+                        children: /* @__PURE__ */ e.jsx(An, { className: "w-3 h-3" })
+                      }
+                    )
+                  ] })
+                ] }) }),
+                /* @__PURE__ */ e.jsx("td", { className: "py-2.5 px-3 text-center", children: ue ? /* @__PURE__ */ e.jsx("span", { className: "px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-950/80 text-amber-300 border border-amber-800/60", children: "Nhóm Menu" }) : /* @__PURE__ */ e.jsx("span", { className: "px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-950/80 text-blue-300 border border-blue-800/60", children: "Màn hình" }) }),
+                /* @__PURE__ */ e.jsx("td", { className: "py-2.5 px-3 text-center", children: /* @__PURE__ */ e.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: (M) => {
+                      M.stopPropagation();
+                      const Q = O.isMenu !== void 0 ? !O.isMenu : !1;
+                      p(O.id, { isMenu: Q });
+                    },
+                    className: `px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center justify-center gap-1 mx-auto transition-all cursor-pointer ${O.isMenu !== !1 ? "bg-blue-950/80 text-blue-300 border border-blue-800/60 hover:bg-blue-900/60" : "bg-amber-950/80 text-amber-300 border border-amber-800/60 hover:bg-amber-900/60"}`,
+                    title: O.isMenu !== !1 ? "Bấm để ẩn khỏi Leftbar (dành cho màn hình mở có điều kiện)" : "Bấm để hiển thị lên Leftbar",
+                    children: O.isMenu !== !1 ? /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
+                      /* @__PURE__ */ e.jsx(Rs, { className: "w-3 h-3 text-blue-400" }),
+                      /* @__PURE__ */ e.jsx("span", { children: "Menu Leftbar" })
+                    ] }) : /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
+                      /* @__PURE__ */ e.jsx(Pn, { className: "w-3 h-3 text-amber-400" }),
+                      /* @__PURE__ */ e.jsx("span", { children: "Ẩn / Mở ĐK" })
+                    ] })
+                  }
+                ) }),
+                /* @__PURE__ */ e.jsx("td", { className: "py-2.5 px-3 text-center", children: /* @__PURE__ */ e.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: (M) => {
+                      M.stopPropagation(), d(O.id);
+                    },
+                    className: `px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center justify-center gap-1 mx-auto transition-all cursor-pointer ${ye ? "bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 hover:bg-emerald-900" : "bg-red-950/80 text-red-400 border border-red-800/60 hover:bg-red-900"}`,
+                    title: ye ? "Bấm để ngưng kích hoạt" : "Bấm để kích hoạt lại",
+                    children: ye ? /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
+                      /* @__PURE__ */ e.jsx(qs, { className: "w-3 h-3" }),
+                      /* @__PURE__ */ e.jsx("span", { children: "Hoạt động" })
+                    ] }) : /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
+                      /* @__PURE__ */ e.jsx(Lr, { className: "w-3 h-3" }),
+                      /* @__PURE__ */ e.jsx("span", { children: "Đã tắt" })
+                    ] })
+                  }
+                ) }),
+                /* @__PURE__ */ e.jsx("td", { className: "py-2.5 px-4 text-right", children: /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-end gap-1.5", children: [
                   /* @__PURE__ */ e.jsx(
                     "button",
                     {
                       type: "button",
-                      onClick: (S) => v(S, k.id),
-                      className: `opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-black/20 transition-opacity ${w ? "text-white" : "text-slate-400 hover:text-white"}`,
-                      title: "Tùy chọn Feature",
-                      children: /* @__PURE__ */ e.jsx(Fa, { className: "w-3.5 h-3.5" })
+                      onClick: (M) => {
+                        M.stopPropagation(), c(O.id);
+                      },
+                      className: "p-1.5 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white border border-blue-500/30 transition-all cursor-pointer",
+                      title: "Thuộc tính Feature (Feature Properties Modal)",
+                      children: /* @__PURE__ */ e.jsx(lt, { className: "w-3.5 h-3.5" })
+                    }
+                  ),
+                  /* @__PURE__ */ e.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: (M) => {
+                        M.stopPropagation(), i(O.id);
+                      },
+                      className: "p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700 transition-all cursor-pointer",
+                      title: "Nhân bản Feature này",
+                      children: /* @__PURE__ */ e.jsx(Ls, { className: "w-3.5 h-3.5" })
+                    }
+                  ),
+                  /* @__PURE__ */ e.jsx(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: (M) => {
+                        M.stopPropagation(), ae(O);
+                      },
+                      className: "p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:bg-red-500/20 hover:text-red-300 border border-slate-700 transition-all cursor-pointer",
+                      title: "Xóa Feature này",
+                      children: /* @__PURE__ */ e.jsx(bt, { className: "w-3.5 h-3.5" })
                     }
                   )
-                ]
-              },
-              k.id
-            );
-          }) }),
-          /* @__PURE__ */ e.jsxs("div", { className: "p-3 border-t border-slate-800 bg-slate-950/40 text-[11px] text-slate-400 flex items-center justify-between", children: [
-            /* @__PURE__ */ e.jsxs("span", { children: [
-              r.length,
-              " màn hình"
+                ] }) })
+              ]
+            },
+            O.id
+          );
+        }) })
+      ] }) }) }) }),
+      m && /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-[120] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4", children: /* @__PURE__ */ e.jsxs(
+        "form",
+        {
+          onSubmit: z,
+          className: "w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl space-y-4",
+          children: [
+            /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between border-b border-slate-800 pb-3", children: [
+              /* @__PURE__ */ e.jsxs("h3", { className: "text-sm font-bold text-white flex items-center gap-2", children: [
+                /* @__PURE__ */ e.jsx(Qe, { className: "w-4 h-4 text-blue-400" }),
+                " Thêm Feature Mới"
+              ] }),
+              /* @__PURE__ */ e.jsx(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => y(!1),
+                  className: "text-slate-400 hover:text-white",
+                  children: /* @__PURE__ */ e.jsx(dt, { className: "w-4 h-4" })
+                }
+              )
             ] }),
-            /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-500 font-mono", children: "v1.2" })
+            /* @__PURE__ */ e.jsxs("div", { className: "space-y-3 text-xs", children: [
+              /* @__PURE__ */ e.jsxs("div", { children: [
+                /* @__PURE__ */ e.jsx("label", { className: "block text-slate-300 font-semibold mb-1", children: "Tên Feature:" }),
+                /* @__PURE__ */ e.jsx(
+                  "input",
+                  {
+                    type: "text",
+                    required: !0,
+                    autoFocus: !0,
+                    placeholder: "Ví dụ: SHIPMENTS, FCL Import...",
+                    value: P,
+                    onChange: (O) => R(O.target.value),
+                    className: "w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-blue-500"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ e.jsxs("div", { children: [
+                /* @__PURE__ */ e.jsx("label", { className: "block text-slate-300 font-semibold mb-1", children: "Tiêu đề (Menu Label):" }),
+                /* @__PURE__ */ e.jsx(
+                  "input",
+                  {
+                    type: "text",
+                    placeholder: "Để trống sẽ lấy theo Tên Feature",
+                    value: F,
+                    onChange: (O) => C(O.target.value),
+                    className: "w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-blue-500"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ e.jsxs("div", { children: [
+                /* @__PURE__ */ e.jsx("label", { className: "block text-slate-300 font-semibold mb-1", children: "Cấp cha (Thư mục nhóm):" }),
+                /* @__PURE__ */ e.jsxs(
+                  "select",
+                  {
+                    value: S,
+                    onChange: (O) => L(O.target.value),
+                    className: "w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:border-blue-500",
+                    children: [
+                      /* @__PURE__ */ e.jsx("option", { value: "", children: "-- Cấp gốc (Không có cha) --" }),
+                      n.filter((O) => O.isGroup).map((O) => /* @__PURE__ */ e.jsxs("option", { value: O.id, children: [
+                        "📁 ",
+                        O.title || O.name
+                      ] }, O.id)),
+                      n.filter((O) => !O.isGroup).map((O) => /* @__PURE__ */ e.jsxs("option", { value: O.id, children: [
+                        "📄 ",
+                        O.title || O.name
+                      ] }, O.id))
+                    ]
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between pt-1", children: [
+                /* @__PURE__ */ e.jsx("label", { className: "text-slate-300 font-semibold", children: "Tạo dạng Thư mục Nhóm cha:" }),
+                /* @__PURE__ */ e.jsx(
+                  "input",
+                  {
+                    type: "checkbox",
+                    checked: $,
+                    onChange: (O) => se(O.target.checked),
+                    className: "w-4 h-4 rounded bg-slate-900 border-slate-700 text-blue-600 focus:ring-0 accent-blue-600 cursor-pointer"
+                  }
+                )
+              ] })
+            ] }),
+            /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-end gap-2 pt-3 border-t border-slate-800", children: [
+              /* @__PURE__ */ e.jsx(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => y(!1),
+                  className: "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer",
+                  children: "Hủy"
+                }
+              ),
+              /* @__PURE__ */ e.jsx(
+                "button",
+                {
+                  type: "submit",
+                  className: "px-4 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md cursor-pointer",
+                  children: "Tạo Mới"
+                }
+              )
+            ] })
+          ]
+        }
+      ) })
+    ] }) }),
+    document.body
+  ) : null;
+}, ko = ({
+  isOpen: t,
+  featureId: r,
+  onClose: s
+}) => {
+  const a = Z((G) => G.featurePropertiesTargetId), n = Z((G) => G.closeFeatureProperties), o = Z((G) => G.features), l = Z((G) => G.updateFeatureProperties), i = Z((G) => G.cloneFeature), d = Z((G) => G.openComponentModal), c = Z((G) => G.updateComponentProps), p = Z((G) => G.updateComponentDataBinding), g = t !== void 0 ? t : !!a, T = r !== void 0 ? r : a, x = Ae(
+    () => o.find((G) => G.id === T) || null,
+    [o, T]
+  ), h = () => {
+    s && s(), n();
+  }, [w, u] = D("settings"), [v, k] = D([]);
+  He(() => {
+    nn().then((G) => k(G)).catch(() => {
+    });
+  }, []);
+  const [m, y] = D(""), [P, R] = D(""), [F, C] = D(""), [S, L] = D(0), [$, se] = D("Layers"), [V, U] = D("/"), [E, Y] = D(!1), [z, b] = D(!0), [ae, O] = D(!1), [_, me] = D(!1), [ce, ye] = D(!1), [ue, M] = D(!1), [Q, W] = D(!1), [q, ie] = D(!1), [Ne, j] = D(!0), [A, ne] = D(!0), [Ce, le] = D(!0), [Fe, fe] = D(!1), [Ie, pe] = D(!1), [ge, Me] = D(""), [De, we] = D(""), [X, xe] = D(""), [ot, ft] = D(""), [nt, pt] = D(""), [ee, Se] = D(""), [Ee, Re] = D(""), [_e, Le] = D(""), [qe, $e] = D(""), [rt, ut] = D(""), [Ct, gt] = D(!1), [xt, Wt] = D(""), [Dt, vt] = D({}), [kt, Ge] = D(null);
+  He(() => {
+    var G, je, ke;
+    if (x && g) {
+      y(x.name || ""), R(x.title || x.name || ""), C(x.parentId || ""), L(x.order ?? 0), se(x.icon || (x.isGroup ? "Folder" : "Layers")), U(x.route || "/");
+      const oe = x.displayFlags || ((G = x.featureProps) == null ? void 0 : G.displayFlags) || {};
+      Y(!!oe.isDivider), b(x.isMenu !== void 0 ? x.isMenu : oe.isMenu !== void 0 ? oe.isMenu : !0), O(!!oe.isStartup), me(!!oe.isPublic), ye(!!oe.is403), M(!!oe.deleteTemp), W(!!oe.lockUpdate), ie(x.isGroup !== void 0 ? x.isGroup : !!oe.isGroup), j(x.active !== void 0 ? x.active : oe.active !== void 0 ? oe.active : !0), ne(oe.noEncode !== void 0 ? oe.noEncode : !0), le(oe.isPermissionInherited !== void 0 ? oe.isPermissionInherited : !0), fe(!!oe.isSystem), pe(!!oe.customNextCell), Me(x.code || ""), we(x.scriptFile || ""), xe(x.description || ""), ft(x.entityName || "");
+      const Ve = x.customStyles || ((je = x.featureProps) == null ? void 0 : je.customStyles) || {};
+      pt(Ve.event || ""), Se(Ve.className || ""), Re(Ve.style || ""), Le(Ve.script || ""), $e(Ve.stylesheet || ""), ut(
+        x.scriptContent || ((ke = x.featureProps) == null ? void 0 : ke.scriptContent) || `// Logic JavaScript xử lý nghiệp vụ cho Feature: ${x.name}
+let methods = {
+  SaveAs: function (gridView, form) {
+    // Code xử lý...
+  }
+};`
+      );
+    }
+  }, [x == null ? void 0 : x.id, g]);
+  const Kt = () => {
+    if (!x) return;
+    const G = F && F.trim() !== "" ? F.trim() : null, je = {
+      name: m.trim(),
+      title: P.trim(),
+      parentId: G,
+      order: Number(S) || 0,
+      icon: $.trim(),
+      route: V.trim(),
+      isGroup: q,
+      isMenu: z,
+      active: Ne,
+      code: ge.trim(),
+      scriptFile: De.trim(),
+      description: X.trim(),
+      entityName: ot.trim(),
+      scriptContent: rt,
+      displayFlags: {
+        isDivider: E,
+        isMenu: z,
+        isStartup: ae,
+        isPublic: _,
+        is403: ce,
+        deleteTemp: ue,
+        lockUpdate: Q,
+        isGroup: q,
+        active: Ne,
+        noEncode: A,
+        isPermissionInherited: Ce,
+        isSystem: Fe,
+        customNextCell: Ie
+      },
+      customStyles: {
+        event: nt,
+        className: ee,
+        style: Ee,
+        script: _e,
+        stylesheet: qe
+      },
+      featureProps: {
+        ...x.featureProps || {},
+        displayFlags: {
+          isDivider: E,
+          isMenu: z,
+          isStartup: ae,
+          isPublic: _,
+          is403: ce,
+          deleteTemp: ue,
+          lockUpdate: Q,
+          isGroup: q,
+          active: Ne,
+          noEncode: A,
+          isPermissionInherited: Ce,
+          isSystem: Fe,
+          customNextCell: Ie
+        },
+        customStyles: {
+          event: nt,
+          className: ee,
+          style: Ee,
+          script: _e,
+          stylesheet: qe
+        },
+        scriptContent: rt
+      }
+    };
+    l(x.id, je), gt(!0), setTimeout(() => gt(!1), 2e3);
+  }, Ut = async () => {
+    x && (await i(x.id), h());
+  }, Ft = Ae(() => {
+    if (!x || !F) return "Gốc (Root)";
+    const G = [];
+    let je = F;
+    const ke = /* @__PURE__ */ new Set();
+    for (; je && !ke.has(je); ) {
+      ke.add(je);
+      const oe = o.find((Ve) => Ve.id === je);
+      if (oe)
+        G.unshift(oe.title || oe.name), je = oe.parentId || null;
+      else
+        break;
+    }
+    return G.join(" > ");
+  }, [x, F, o]), Rt = Ae(() => o.filter((G) => G.id !== (x == null ? void 0 : x.id)), [o, x]), Lt = Ae(() => {
+    if (!x) return [];
+    const G = [], je = (ke, oe = 0) => {
+      var Ve, We;
+      for (const Pe of ke) {
+        const Xe = !!(Pe.children && Pe.children.length > 0), at = !!Dt[Pe.id];
+        (!xt.trim() || ((Ve = Pe.props) == null ? void 0 : Ve.label) && String(Pe.props.label).toLowerCase().includes(xt.toLowerCase()) || Pe.id && Pe.id.toLowerCase().includes(xt.toLowerCase()) || Pe.type && Pe.type.toLowerCase().includes(xt.toLowerCase()) || ((We = Pe.dataBinding) == null ? void 0 : We.fieldName) && String(Pe.dataBinding.fieldName).toLowerCase().includes(xt.toLowerCase())) && G.push({
+          node: Pe,
+          depth: oe,
+          hasChildren: Xe,
+          isCollapsed: at
+        }), Xe && !at && je(Pe.children, oe + 1);
+      }
+    };
+    return je(x.components || [], 0), G;
+  }, [x, Dt, xt]), At = Ae(() => {
+    if (!x) return 0;
+    let G = 0;
+    const je = (ke) => {
+      G += ke.length;
+      for (const oe of ke)
+        oe.children && oe.children.length > 0 && je(oe.children);
+    };
+    return je(x.components || []), G;
+  }, [x]), Mt = (G) => {
+    vt((je) => ({ ...je, [G]: !je[G] }));
+  }, Bt = () => vt({}), I = () => {
+    if (!x) return;
+    const G = {}, je = (ke) => {
+      for (const oe of ke)
+        oe.children && oe.children.length > 0 && (G[oe.id] = !0, je(oe.children));
+    };
+    je(x.components || []), vt(G);
+  }, te = (G) => {
+    Ge(G), d(G.id);
+  }, de = (G) => {
+    switch (G) {
+      case "Table":
+        return /* @__PURE__ */ e.jsx(Nt, { className: "w-3.5 h-3.5 text-blue-400" });
+      case "DatePicker":
+        return /* @__PURE__ */ e.jsx(Mn, { className: "w-3.5 h-3.5 text-emerald-400" });
+      case "TextBox":
+      case "Textarea":
+        return /* @__PURE__ */ e.jsx(ns, { className: "w-3.5 h-3.5 text-amber-400" });
+      case "Number":
+        return /* @__PURE__ */ e.jsx(Rr, { className: "w-3.5 h-3.5 text-cyan-400" });
+      case "Container":
+      case "Section":
+        return /* @__PURE__ */ e.jsx(Cs, { className: "w-3.5 h-3.5 text-indigo-400" });
+      case "Tabs":
+        return /* @__PURE__ */ e.jsx(yt, { className: "w-3.5 h-3.5 text-purple-400" });
+      default:
+        return /* @__PURE__ */ e.jsx(On, { className: "w-3.5 h-3.5 text-slate-400" });
+    }
+  }, ve = (G, je, ke) => /* @__PURE__ */ e.jsxs("label", { className: "flex items-center justify-between py-1 px-2 hover:bg-slate-800/60 rounded cursor-pointer select-none transition-colors", children: [
+    /* @__PURE__ */ e.jsx("span", { className: `text-xs ${je ? "text-slate-100 font-semibold" : "text-slate-400"}`, children: G }),
+    /* @__PURE__ */ e.jsx(
+      "input",
+      {
+        type: "checkbox",
+        checked: je,
+        onChange: (oe) => ke(oe.target.checked),
+        className: "w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0 cursor-pointer accent-emerald-500"
+      }
+    )
+  ] });
+  return !g || !x ? null : It(
+    /* @__PURE__ */ e.jsxs("div", { className: "fixed inset-0 z-[120] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-150 select-none", children: [
+      /* @__PURE__ */ e.jsxs("div", { className: "w-full max-w-7xl rounded-xl border border-blue-600/40 bg-[#0b1322] shadow-2xl flex flex-col text-slate-200 my-auto max-h-[96vh] overflow-hidden relative", children: [
+        /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between px-5 py-3 bg-[#080e1a] border-b border-blue-600/30", children: [
+          /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ e.jsx("div", { className: "p-1.5 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30", children: /* @__PURE__ */ e.jsx(lt, { className: "w-4 h-4" }) }),
+            /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ e.jsxs("span", { className: "font-bold text-base text-white tracking-wide", children: [
+                "Feature - ",
+                x.title || x.name
+              ] }),
+              ge && /* @__PURE__ */ e.jsxs("span", { className: "text-xs px-2 py-0.5 rounded bg-blue-950/80 text-blue-300 border border-blue-800/60 font-mono font-semibold", children: [
+                "#",
+                ge
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
+            Ct && /* @__PURE__ */ e.jsxs("span", { className: "text-xs text-emerald-400 flex items-center gap-1 font-semibold animate-in fade-in duration-200", children: [
+              /* @__PURE__ */ e.jsx(Qs, { className: "w-4 h-4" }),
+              " Đã lưu thành công!"
+            ] }),
+            /* @__PURE__ */ e.jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: Kt,
+                className: "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer",
+                children: [
+                  /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ e.jsx("span", { children: "Lưu" })
+                ]
+              }
+            ),
+            /* @__PURE__ */ e.jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: Ut,
+                className: "flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all cursor-pointer",
+                title: "Nhân bản Feature này kèm toàn bộ linh kiện",
+                children: [
+                  /* @__PURE__ */ e.jsx(Ls, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ e.jsx("span", { children: "Copy" })
+                ]
+              }
+            ),
+            /* @__PURE__ */ e.jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: h,
+                className: "flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 hover:text-red-300 text-slate-300 text-xs font-semibold border border-slate-700 transition-all cursor-pointer",
+                children: [
+                  /* @__PURE__ */ e.jsx(dt, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ e.jsx("span", { children: "Đóng" })
+                ]
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2 px-5 pt-3 border-b border-slate-800 bg-[#090f1d]", children: [
+          /* @__PURE__ */ e.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => u("settings"),
+              className: `flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all cursor-pointer ${w === "settings" ? "border-blue-500 text-blue-400 bg-blue-500/10 rounded-t-lg" : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 rounded-t-lg"}`,
+              children: [
+                /* @__PURE__ */ e.jsx(lt, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx("span", { children: "TÙY CHỈNH / THÔNG TIN CHUNG" })
+              ]
+            }
+          ),
+          /* @__PURE__ */ e.jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: () => u("components"),
+              className: `flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all cursor-pointer ${w === "components" ? "border-blue-500 text-blue-400 bg-blue-500/10 rounded-t-lg" : "border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 rounded-t-lg"}`,
+              children: [
+                /* @__PURE__ */ e.jsx(yt, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx("span", { children: "PHẦN TỬ (CÂY COMPONENT)" }),
+                /* @__PURE__ */ e.jsx("span", { className: "px-1.5 py-0.5 rounded-full text-[10px] bg-blue-900/60 text-blue-300 font-mono", children: At })
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ e.jsx("div", { className: "flex-1 overflow-y-auto p-5 space-y-5 bg-[#0b1322]", children: w === "settings" ? (
+          /* ══════════════════════════════════════════════════════════════
+             TAB 1: TÙY CHỈNH / THÔNG TIN FEATURE (Khớp 100% Hình 3)
+             ══════════════════════════════════════════════════════════════ */
+          /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
+            /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-4", children: [
+              /* @__PURE__ */ e.jsxs("div", { className: "bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3", children: [
+                /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-blue-400 tracking-wider uppercase border-b border-slate-800 pb-1.5 flex items-center gap-1.5", children: [
+                  /* @__PURE__ */ e.jsx(rr, { className: "w-3.5 h-3.5" }),
+                  " COMMON"
+                ] }),
+                /* @__PURE__ */ e.jsxs("div", { className: "space-y-2 text-xs", children: [
+                  /* @__PURE__ */ e.jsxs("div", { children: [
+                    /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Tên:" }),
+                    /* @__PURE__ */ e.jsx(
+                      "input",
+                      {
+                        type: "text",
+                        value: m,
+                        onChange: (G) => y(G.target.value),
+                        className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 focus:outline-none focus:border-blue-500"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ e.jsxs("div", { children: [
+                    /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Tiêu đề:" }),
+                    /* @__PURE__ */ e.jsx(
+                      "input",
+                      {
+                        type: "text",
+                        value: P,
+                        onChange: (G) => R(G.target.value),
+                        className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 focus:outline-none focus:border-blue-500"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ e.jsxs("div", { children: [
+                    /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Cấp cha:" }),
+                    /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1.5", children: [
+                      /* @__PURE__ */ e.jsxs(
+                        "select",
+                        {
+                          value: F,
+                          onChange: (G) => C(G.target.value),
+                          className: "flex-1 px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer",
+                          children: [
+                            /* @__PURE__ */ e.jsx("option", { value: "", children: "-- Cấp gốc (Không có cha) --" }),
+                            Rt.map((G) => /* @__PURE__ */ e.jsxs("option", { value: G.id, children: [
+                              G.isGroup ? "📁 " : "📄 ",
+                              G.title || G.name,
+                              " (",
+                              G.route,
+                              ")"
+                            ] }, G.id))
+                          ]
+                        }
+                      ),
+                      /* @__PURE__ */ e.jsx(
+                        "span",
+                        {
+                          className: "p-1.5 bg-slate-800 border border-slate-700 rounded text-slate-400 hover:text-blue-400 cursor-help",
+                          title: `Đường dẫn phân tầng: ${Ft}`,
+                          children: /* @__PURE__ */ e.jsx(rr, { className: "w-3.5 h-3.5" })
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ e.jsxs("div", { className: "mt-1 flex items-center justify-between text-[11px] px-2 py-1 rounded bg-slate-950/70 border border-slate-800", children: [
+                      /* @__PURE__ */ e.jsx("span", { className: "text-slate-400 text-[10px]", children: z ? "📌 Hiển thị trên Leftbar" : "🔍 Màn hình mở theo điều kiện (Ẩn Leftbar)" }),
+                      /* @__PURE__ */ e.jsx(
+                        "button",
+                        {
+                          type: "button",
+                          onClick: () => b(!z),
+                          className: `px-1.5 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors ${z ? "bg-blue-600/30 text-blue-300 hover:bg-blue-600/50" : "bg-amber-600/30 text-amber-300 hover:bg-amber-600/50"}`,
+                          children: z ? "Chuyển sang Ẩn" : "Hiện lên Menu"
+                        }
+                      )
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
+                    /* @__PURE__ */ e.jsxs("div", { children: [
+                      /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Thứ tự:" }),
+                      /* @__PURE__ */ e.jsx(
+                        "input",
+                        {
+                          type: "number",
+                          value: S,
+                          onChange: (G) => L(Number(G.target.value)),
+                          className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 focus:outline-none focus:border-blue-500 font-mono"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ e.jsxs("div", { children: [
+                      /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Icon:" }),
+                      /* @__PURE__ */ e.jsx(
+                        "input",
+                        {
+                          type: "text",
+                          value: $,
+                          onChange: (G) => se(G.target.value),
+                          placeholder: "Layers, Folder, Ship...",
+                          className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 focus:outline-none focus:border-blue-500"
+                        }
+                      )
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ e.jsxs("div", { children: [
+                    /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Nhóm chức năng / Route:" }),
+                    /* @__PURE__ */ e.jsx(
+                      "input",
+                      {
+                        type: "text",
+                        value: V,
+                        onChange: (G) => U(G.target.value),
+                        className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 focus:outline-none focus:border-blue-500 font-mono text-[11px]"
+                      }
+                    )
+                  ] })
+                ] })
+              ] }),
+              /* @__PURE__ */ e.jsxs("div", { className: "bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3", children: [
+                /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-emerald-400 tracking-wider uppercase border-b border-slate-800 pb-1.5 flex items-center justify-between", children: [
+                  /* @__PURE__ */ e.jsx("span", { children: "DISPLAY" }),
+                  /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-500 font-normal", children: "Cờ hiển thị hệ thống" })
+                ] }),
+                /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-2 gap-x-2 gap-y-0.5 text-xs", children: [
+                  /* @__PURE__ */ e.jsxs("div", { className: "space-y-0.5", children: [
+                    ve("Thanh chia", E, Y),
+                    ve("Hiển thị menu", z, b),
+                    ve("Khởi động", ae, O),
+                    ve("Public", _, me),
+                    ve("403", ce, ye),
+                    ve("Delete Temp", ue, M),
+                    ve("LockUpdate", Q, W)
+                  ] }),
+                  /* @__PURE__ */ e.jsxs("div", { className: "space-y-0.5", children: [
+                    ve("Nhóm menu", q, ie),
+                    ve("Hoạt động", Ne, j),
+                    ve("No-Encode", A, ne),
+                    ve("Thừa kế quyền", Ce, le),
+                    ve("System", Fe, fe),
+                    ve("CustomNextCell", Ie, pe)
+                  ] })
+                ] })
+              ] }),
+              /* @__PURE__ */ e.jsxs("div", { className: "bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3", children: [
+                /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-amber-400 tracking-wider uppercase border-b border-slate-800 pb-1.5 flex items-center gap-1.5", children: [
+                  /* @__PURE__ */ e.jsx(Zs, { className: "w-3.5 h-3.5" }),
+                  " OTHER"
+                ] }),
+                /* @__PURE__ */ e.jsxs("div", { className: "space-y-2 text-xs", children: [
+                  /* @__PURE__ */ e.jsxs("div", { children: [
+                    /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Mã (Code):" }),
+                    /* @__PURE__ */ e.jsx(
+                      "input",
+                      {
+                        type: "text",
+                        value: ge,
+                        onChange: (G) => Me(G.target.value),
+                        placeholder: "Ví dụ: F0013226",
+                        className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-amber-300 font-mono font-semibold focus:outline-none focus:border-amber-500"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ e.jsxs("div", { children: [
+                    /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Class (File BL):" }),
+                    /* @__PURE__ */ e.jsx(
+                      "input",
+                      {
+                        type: "text",
+                        value: De,
+                        onChange: (G) => we(G.target.value),
+                        placeholder: "Ví dụ: TMS.BusinessLogic.TransactionBL",
+                        className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-[11px] focus:outline-none focus:border-blue-500"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ e.jsxs("div", { children: [
+                    /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Đối tượng (Entity):" }),
+                    /* @__PURE__ */ e.jsx(
+                      "input",
+                      {
+                        type: "text",
+                        list: "entities-list",
+                        value: ot,
+                        onChange: (G) => ft(G.target.value),
+                        placeholder: "Ví dụ: Transaction",
+                        className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 focus:outline-none focus:border-blue-500"
+                      }
+                    ),
+                    /* @__PURE__ */ e.jsx("datalist", { id: "entities-list", children: v.map((G) => /* @__PURE__ */ e.jsx("option", { value: G.name, children: G.displayName || G.name }, G.name)) })
+                  ] }),
+                  /* @__PURE__ */ e.jsxs("div", { children: [
+                    /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Parents:" }),
+                    /* @__PURE__ */ e.jsx("div", { className: "px-2.5 py-1.5 bg-slate-950 border border-slate-800 rounded text-slate-400 text-[11px] font-mono truncate", children: Ft })
+                  ] }),
+                  /* @__PURE__ */ e.jsxs("div", { children: [
+                    /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Mô tả:" }),
+                    /* @__PURE__ */ e.jsx(
+                      "textarea",
+                      {
+                        rows: 2,
+                        value: X,
+                        onChange: (G) => xe(G.target.value),
+                        className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 focus:outline-none focus:border-blue-500 text-xs resize-none"
+                      }
+                    )
+                  ] })
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ e.jsxs("div", { className: "bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3", children: [
+              /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-purple-400 tracking-wider uppercase border-b border-slate-800 pb-1.5 flex items-center gap-1.5", children: [
+                /* @__PURE__ */ e.jsx(lt, { className: "w-3.5 h-3.5" }),
+                " TÙY CHỈNH & STYLE"
+              ] }),
+              /* @__PURE__ */ e.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs", children: [
+                /* @__PURE__ */ e.jsxs("div", { children: [
+                  /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Event:" }),
+                  /* @__PURE__ */ e.jsx(
+                    "input",
+                    {
+                      type: "text",
+                      value: nt,
+                      onChange: (G) => pt(G.target.value),
+                      className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-[11px] focus:outline-none focus:border-purple-500"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ e.jsxs("div", { children: [
+                  /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Css class:" }),
+                  /* @__PURE__ */ e.jsx(
+                    "input",
+                    {
+                      type: "text",
+                      value: ee,
+                      onChange: (G) => Se(G.target.value),
+                      className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-[11px] focus:outline-none focus:border-purple-500"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ e.jsxs("div", { children: [
+                  /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Css style:" }),
+                  /* @__PURE__ */ e.jsx(
+                    "input",
+                    {
+                      type: "text",
+                      value: Ee,
+                      onChange: (G) => Re(G.target.value),
+                      className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-[11px] focus:outline-none focus:border-purple-500"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ e.jsxs("div", { children: [
+                  /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1", children: "Script:" }),
+                  /* @__PURE__ */ e.jsx(
+                    "input",
+                    {
+                      type: "text",
+                      value: _e,
+                      onChange: (G) => Le(G.target.value),
+                      className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-[11px] focus:outline-none focus:border-purple-500"
+                    }
+                  )
+                ] })
+              ] }),
+              /* @__PURE__ */ e.jsxs("div", { children: [
+                /* @__PURE__ */ e.jsx("label", { className: "block text-slate-400 mb-1 text-xs", children: "Stylesheet:" }),
+                /* @__PURE__ */ e.jsx(
+                  "textarea",
+                  {
+                    rows: 2,
+                    value: qe,
+                    onChange: (G) => $e(G.target.value),
+                    placeholder: "/* Custom CSS stylesheet rules */",
+                    className: "w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-slate-100 font-mono text-[11px] focus:outline-none focus:border-purple-500 resize-none"
+                  }
+                )
+              ] })
+            ] }),
+            /* @__PURE__ */ e.jsxs("div", { className: "bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-2", children: [
+              /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between border-b border-slate-800 pb-2", children: [
+                /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-cyan-400 tracking-wider uppercase flex items-center gap-2", children: [
+                  /* @__PURE__ */ e.jsx(Us, { className: "w-4 h-4" }),
+                  " SCRIPT (Trình soạn thảo mã nghiệp vụ Feature)"
+                ] }),
+                /* @__PURE__ */ e.jsxs("span", { className: "text-[11px] text-slate-400 font-mono", children: [
+                  rt.split(`
+`).length,
+                  " dòng"
+                ] })
+              ] }),
+              /* @__PURE__ */ e.jsxs("div", { className: "relative flex rounded-lg border border-slate-800 bg-[#070b14] overflow-hidden min-h-[220px]", children: [
+                /* @__PURE__ */ e.jsx("div", { className: "py-2.5 px-3 bg-[#05080f] border-r border-slate-800/80 text-right font-mono text-xs text-slate-600 select-none leading-5 min-w-[40px]", children: rt.split(`
+`).map((G, je) => /* @__PURE__ */ e.jsx("div", { children: je + 1 }, je)) }),
+                /* @__PURE__ */ e.jsx(
+                  "textarea",
+                  {
+                    value: rt,
+                    onChange: (G) => ut(G.target.value),
+                    spellCheck: !1,
+                    className: "flex-1 p-2.5 bg-transparent font-mono text-xs text-emerald-300 leading-5 focus:outline-none resize-y min-h-[200px]"
+                  }
+                )
+              ] })
+            ] })
+          ] })
+        ) : (
+          /* ══════════════════════════════════════════════════════════════
+             TAB 2: PHẦN TỬ / CÂY COMPONENT CHA - CON (Yêu cầu đặc biệt của Master)
+             ══════════════════════════════════════════════════════════════ */
+          /* @__PURE__ */ e.jsxs("div", { className: "space-y-4", children: [
+            /* @__PURE__ */ e.jsxs("div", { className: "flex flex-wrap items-center justify-between gap-3 bg-slate-900/90 border border-slate-800 p-3 rounded-xl", children: [
+              /* @__PURE__ */ e.jsxs("div", { className: "relative flex-1 min-w-[260px] max-w-md", children: [
+                /* @__PURE__ */ e.jsx(Et, { className: "w-4 h-4 absolute left-3 top-2.5 text-slate-500" }),
+                /* @__PURE__ */ e.jsx(
+                  "input",
+                  {
+                    type: "text",
+                    value: xt,
+                    onChange: (G) => Wt(G.target.value),
+                    placeholder: "Tìm kiếm component theo Tên, ID, FieldName, Type...",
+                    className: "w-full pl-9 pr-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ e.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: Bt,
+                    className: "px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium cursor-pointer",
+                    children: "Mở rộng tất cả"
+                  }
+                ),
+                /* @__PURE__ */ e.jsx(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: I,
+                    className: "px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium cursor-pointer",
+                    children: "Thu gọn tất cả"
+                  }
+                )
+              ] })
+            ] }),
+            /* @__PURE__ */ e.jsxs("div", { className: "px-4 py-2 bg-blue-950/40 border border-blue-800/40 rounded-xl text-xs text-blue-300 flex items-center justify-between", children: [
+              /* @__PURE__ */ e.jsxs("span", { children: [
+                "💡 ",
+                /* @__PURE__ */ e.jsx("strong", { children: "Hướng dẫn" }),
+                ": Nhấp đúp chuột (",
+                /* @__PURE__ */ e.jsx("strong", { children: "Double-Click" }),
+                ") vào bất kỳ dòng phần tử nào trong bảng để mở ngay modal thuộc tính của phần tử đó!"
+              ] }),
+              /* @__PURE__ */ e.jsxs("span", { className: "font-mono text-[11px] text-blue-400", children: [
+                Lt.length,
+                " / ",
+                At,
+                " phần tử"
+              ] })
+            ] }),
+            /* @__PURE__ */ e.jsx("div", { className: "border border-slate-800 rounded-xl overflow-hidden bg-slate-900/60 shadow-inner", children: /* @__PURE__ */ e.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ e.jsxs("table", { className: "w-full text-left text-xs", children: [
+              /* @__PURE__ */ e.jsx("thead", { className: "bg-[#080f1e] border-b border-slate-800 text-slate-400 font-semibold uppercase text-[11px]", children: /* @__PURE__ */ e.jsxs("tr", { children: [
+                /* @__PURE__ */ e.jsx("th", { className: "py-2.5 px-3", children: "Phần tử / Cấu trúc" }),
+                /* @__PURE__ */ e.jsx("th", { className: "py-2.5 px-3", children: "Mã #ID" }),
+                /* @__PURE__ */ e.jsx("th", { className: "py-2.5 px-3", children: "Loại (Type)" }),
+                /* @__PURE__ */ e.jsx("th", { className: "py-2.5 px-3", children: "Trường (FieldName)" }),
+                /* @__PURE__ */ e.jsx("th", { className: "py-2.5 px-3 text-center", children: "Thứ tự" }),
+                /* @__PURE__ */ e.jsx("th", { className: "py-2.5 px-3 text-center", children: "Cột" }),
+                /* @__PURE__ */ e.jsx("th", { className: "py-2.5 px-3 text-center", children: "Hiển thị" })
+              ] }) }),
+              /* @__PURE__ */ e.jsx("tbody", { className: "divide-y divide-slate-800/50", children: Lt.length === 0 ? /* @__PURE__ */ e.jsx("tr", { children: /* @__PURE__ */ e.jsx("td", { colSpan: 7, className: "py-8 text-center text-slate-500", children: "Không tìm thấy phần tử nào trong Feature này" }) }) : Lt.map(({ node: G, depth: je, hasChildren: ke, isCollapsed: oe }) => {
+                var Xe, at, it, Ze, St, Ot;
+                const Ve = ((Xe = G.props) == null ? void 0 : Xe.label) || ((at = G.props) == null ? void 0 : at.title) || ((it = G.dataBinding) == null ? void 0 : it.fieldName) || G.type, We = ((Ze = G.dataBinding) == null ? void 0 : Ze.fieldName) || "-", Pe = (St = G.props) != null && St.colSpan ? `${G.props.colSpan}/12` : "Auto";
+                return /* @__PURE__ */ e.jsxs(
+                  "tr",
+                  {
+                    onDoubleClick: () => te(G),
+                    className: "hover:bg-blue-600/15 cursor-pointer transition-colors group",
+                    title: "Nhấp đúp chuột để cấu hình phần tử này",
+                    children: [
+                      /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3", children: /* @__PURE__ */ e.jsxs(
+                        "div",
+                        {
+                          className: "flex items-center gap-1.5",
+                          style: { paddingLeft: `${je * 20}px` },
+                          children: [
+                            ke ? /* @__PURE__ */ e.jsx(
+                              "button",
+                              {
+                                type: "button",
+                                onClick: (zt) => {
+                                  zt.stopPropagation(), Mt(G.id);
+                                },
+                                className: "p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white cursor-pointer",
+                                children: oe ? /* @__PURE__ */ e.jsx(es, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ e.jsx(wt, { className: "w-3.5 h-3.5" })
+                              }
+                            ) : /* @__PURE__ */ e.jsx("span", { className: "w-5" }),
+                            /* @__PURE__ */ e.jsx("div", { className: "p-1 rounded bg-slate-800/80 group-hover:bg-blue-600/20", children: de(G.type) }),
+                            /* @__PURE__ */ e.jsx("span", { className: "font-semibold text-slate-200 group-hover:text-white truncate", children: Ve })
+                          ]
+                        }
+                      ) }),
+                      /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 font-mono text-[11px] text-slate-400", children: /* @__PURE__ */ e.jsxs("span", { className: "px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800", children: [
+                        "#",
+                        G.id
+                      ] }) }),
+                      /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3", children: /* @__PURE__ */ e.jsx("span", { className: "px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-950/80 text-blue-300 border border-blue-800/50", children: G.type }) }),
+                      /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 font-mono text-[11px] text-emerald-400", children: We }),
+                      /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 text-center font-mono text-slate-400", children: G.order ?? 1 }),
+                      /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 text-center font-mono text-slate-400", children: Pe }),
+                      /* @__PURE__ */ e.jsx("td", { className: "py-2 px-3 text-center", children: (Ot = G.props) != null && Ot.hidden ? /* @__PURE__ */ e.jsx(Pn, { className: "w-4 h-4 text-slate-600 mx-auto" }) : /* @__PURE__ */ e.jsx(Rs, { className: "w-4 h-4 text-emerald-400 mx-auto" }) })
+                    ]
+                  },
+                  G.id
+                );
+              }) })
+            ] }) }) })
+          ] })
+        ) })
+      ] }),
+      kt && /* @__PURE__ */ e.jsx(
+        oa,
+        {
+          isOpen: !!kt,
+          node: kt,
+          onClose: () => Ge(null),
+          onSave: (G, je, ke) => {
+            c(G, je), ke && p(G, ke), Ge(null);
+          }
+        }
+      )
+    ] }),
+    document.body
+  );
+}, So = (t, r, s) => {
+  const a = `w-4 h-4 shrink-0 ${s ? "text-white" : "text-slate-400 group-hover:text-blue-400"}`, n = (t || "").toLowerCase();
+  return r ? n.includes("truck") || n.includes("shipment") ? /* @__PURE__ */ e.jsx(Aa, { className: "w-4 h-4 shrink-0 text-amber-400" }) : n.includes("price") || n.includes("sale") || n.includes("dollar") ? /* @__PURE__ */ e.jsx(Ma, { className: "w-4 h-4 shrink-0 text-emerald-400" }) : n.includes("doc") ? /* @__PURE__ */ e.jsx(Qt, { className: "w-4 h-4 shrink-0 text-blue-400" }) : /* @__PURE__ */ e.jsx(Zs, { className: "w-4 h-4 shrink-0 text-amber-400" }) : n.includes("ship") || n.includes("fcl") || n.includes("lcl") ? /* @__PURE__ */ e.jsx(Ba, { className: a }) : n.includes("plane") || n.includes("air") ? /* @__PURE__ */ e.jsx(Oa, { className: a }) : n.includes("pack") || n.includes("box") ? /* @__PURE__ */ e.jsx(_a, { className: a }) : n.includes("doc") || n.includes("bill") || n.includes("invoice") ? /* @__PURE__ */ e.jsx(Qt, { className: a }) : n.includes("dash") ? /* @__PURE__ */ e.jsx(Ha, { className: a }) : /* @__PURE__ */ e.jsx(yt, { className: a });
+}, To = ({
+  feature: t,
+  depth: r,
+  hasChildren: s,
+  isCollapsed: a,
+  isActive: n,
+  childCount: o = 0,
+  onToggleCollapse: l,
+  onSelect: i,
+  onContextMenu: d
+}) => {
+  const { attributes: c, listeners: p, setNodeRef: g, transform: T, transition: x, isDragging: h } = sl({
+    id: t.id
+  }), w = {
+    transform: Mr.Transform.toString(T),
+    transition: x,
+    opacity: h ? 0.35 : 1,
+    paddingLeft: `${Math.max(8, r * 18 + 8)}px`
+  }, u = !!t.isGroup, v = t.badge ?? (u && o > 0 ? o : null);
+  return /* @__PURE__ */ e.jsxs(
+    "div",
+    {
+      ref: g,
+      style: w,
+      onClick: i,
+      onContextMenu: d,
+      className: `group relative flex items-center justify-between pr-2 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all select-none ${n ? "bg-blue-600 text-white shadow-md shadow-blue-600/30 border border-blue-500" : u ? "bg-slate-800/40 hover:bg-slate-800/80 text-slate-200 border border-slate-700/30" : "text-slate-300 hover:bg-slate-800/70 hover:text-white border border-transparent"}`,
+      children: [
+        /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2 truncate flex-1 min-w-0", children: [
+          /* @__PURE__ */ e.jsx(
+            "button",
+            {
+              type: "button",
+              ...c,
+              ...p,
+              onClick: (k) => k.stopPropagation(),
+              className: "opacity-0 group-hover:opacity-100 p-0.5 -ml-1 text-slate-500 hover:text-slate-300 cursor-grab active:cursor-grabbing transition-opacity shrink-0",
+              title: "Kéo để di chuyển vị trí hoặc kéo vào nhóm cha",
+              children: /* @__PURE__ */ e.jsx($s, { className: "w-3.5 h-3.5" })
+            }
+          ),
+          s ? /* @__PURE__ */ e.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: l,
+              className: "p-0.5 rounded hover:bg-black/20 text-slate-400 hover:text-white transition-colors shrink-0",
+              children: a ? /* @__PURE__ */ e.jsx(es, { className: "w-3.5 h-3.5" }) : /* @__PURE__ */ e.jsx(wt, { className: "w-3.5 h-3.5" })
+            }
+          ) : /* @__PURE__ */ e.jsx("span", { className: "w-4 shrink-0" }),
+          /* @__PURE__ */ e.jsx(
+            "div",
+            {
+              className: `p-1 rounded-lg shrink-0 ${n ? "bg-white/20 text-white" : u ? "bg-amber-500/10" : "bg-slate-800 text-slate-400"}`,
+              children: So(t.icon, u, n)
+            }
+          ),
+          /* @__PURE__ */ e.jsx(
+            "span",
+            {
+              className: `truncate ${u ? "font-bold uppercase tracking-wider text-[11px] text-slate-100" : "font-medium"}`,
+              children: t.title || t.name
+            }
+          )
+        ] }),
+        /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1.5 shrink-0 pl-1", children: [
+          v !== null && /* @__PURE__ */ e.jsx(
+            "span",
+            {
+              className: `px-1.5 py-0.2 rounded-full text-[10px] font-bold ${n ? "bg-white text-blue-700" : "bg-amber-500 text-slate-950 shadow-sm"}`,
+              children: v
+            }
+          ),
+          /* @__PURE__ */ e.jsx(
+            "button",
+            {
+              type: "button",
+              onClick: d,
+              className: `opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-black/20 transition-opacity ${n ? "text-white" : "text-slate-400 hover:text-white"}`,
+              title: "Tùy chọn Feature",
+              children: /* @__PURE__ */ e.jsx(Ea, { className: "w-3.5 h-3.5" })
+            }
+          )
+        ] })
+      ]
+    }
+  );
+}, ti = ({ width: t }) => {
+  const r = Z((_) => _.features), s = Z((_) => _.activeFeatureId), a = Z((_) => _.setActiveFeature), n = Z((_) => _.addFeature), o = Z((_) => _.cloneFeature), l = Z((_) => _.toggleFeatureActive), i = Z((_) => _.openFeatureManager), d = Z((_) => _.openFeatureProperties), c = Z((_) => _.reorderFeatures), p = Ae(() => r.filter((_) => _.active === !1 || _.isMenu === !1 ? !1 : _.hidden || _.isDetail ? _.id === s : !0), [r, s]), [g, T] = D({}), [x, h] = D(null), [w, u] = D(!1), [v, k] = D(""), [m, y] = D(""), [P, R] = D(!1), [F, C] = D(null), S = qa(
+    Ya(Ja, {
+      activationConstraint: {
+        distance: 5
+      }
+    })
+  ), L = (_, me) => {
+    me.stopPropagation(), T((ce) => ({ ...ce, [_]: !ce[_] }));
+  }, { treeNodes: $, visibleNodeIds: se } = Ae(() => {
+    const _ = /* @__PURE__ */ new Map();
+    for (const Q of p) {
+      const W = Q.parentId || null;
+      _.has(W) || _.set(W, []), _.get(W).push(Q);
+    }
+    for (const Q of _.values())
+      Q.sort((W, q) => (W.order ?? 0) - (q.order ?? 0));
+    const me = [], ce = [], ye = (Q, W = 0) => {
+      const q = _.get(Q) || [];
+      for (const ie of q) {
+        const Ne = _.get(ie.id) || [], j = Ne.length > 0, A = !!g[ie.id];
+        me.push({
+          feature: ie,
+          depth: W,
+          hasChildren: j,
+          isCollapsed: A,
+          childCount: Ne.length
+        }), ce.push(ie.id), j && !A && ye(ie.id, W + 1);
+      }
+    }, ue = new Set(p.map((Q) => Q.id)), M = p.filter((Q) => !Q.parentId || !ue.has(Q.parentId));
+    M.sort((Q, W) => (Q.order ?? 0) - (W.order ?? 0));
+    for (const Q of M) {
+      const W = _.get(Q.id) || [], q = W.length > 0, ie = !!g[Q.id];
+      me.push({
+        feature: Q,
+        depth: 0,
+        hasChildren: q,
+        isCollapsed: ie,
+        childCount: W.length
+      }), ce.push(Q.id), q && !ie && ye(Q.id, 1);
+    }
+    return { treeNodes: me, visibleNodeIds: ce };
+  }, [p, g]), V = (_) => {
+    _.preventDefault(), h({
+      x: _.clientX,
+      y: _.clientY
+    });
+  }, U = (_, me) => {
+    _.preventDefault(), _.stopPropagation(), h({
+      x: _.clientX,
+      y: _.clientY,
+      featureId: me
+    });
+  }, E = (_ = "") => {
+    k(""), y(_), R(!1), u(!0);
+  }, Y = (_) => {
+    if (_.preventDefault(), !v.trim()) return;
+    const me = n(
+      v.trim(),
+      P ? "Folder" : "Layers",
+      m || null,
+      P
+    );
+    u(!1), k(""), P || (a(me, null), st.getState().openFeature(me, {}, "Tab", v.trim()));
+  }, z = Ae(() => {
+    const _ = x != null && x.featureId ? r.find((me) => me.id === x.featureId) : null;
+    return _ ? [
+      {
+        label: "➕ New feature",
+        icon: Qe,
+        onClick: () => E(_.isGroup ? _.id : _.parentId || "")
+      },
+      {
+        divider: !0,
+        label: "",
+        onClick: () => {
+        }
+      },
+      {
+        label: "🗙 Deactivate this feature",
+        icon: Lr,
+        danger: !0,
+        onClick: () => {
+          l(_.id);
+        }
+      },
+      {
+        label: "❐ Clone this feature",
+        icon: Ls,
+        onClick: () => {
+          o(_.id);
+        }
+      },
+      {
+        divider: !0,
+        label: "",
+        onClick: () => {
+        }
+      },
+      {
+        label: "☰ Manage features",
+        icon: mn,
+        onClick: () => i()
+      },
+      {
+        label: "🔧 Properties",
+        icon: lt,
+        onClick: () => d(_.id)
+      }
+    ] : [
+      {
+        label: "➕ New feature",
+        icon: Qe,
+        onClick: () => E("")
+      },
+      {
+        divider: !0,
+        label: "",
+        onClick: () => {
+        }
+      },
+      {
+        label: "☰ Manage features",
+        icon: mn,
+        onClick: () => i()
+      },
+      {
+        label: "🔧 Properties",
+        icon: lt,
+        onClick: () => d(s)
+      }
+    ];
+  }, [x, r, s, o, l, i, d]), b = (_) => {
+    C(String(_.active.id));
+  }, ae = (_) => {
+    const { active: me, over: ce } = _;
+    if (C(null), !ce || me.id === ce.id) return;
+    const ye = String(me.id), ue = String(ce.id), M = r.find((j) => j.id === ye), Q = r.find((j) => j.id === ue);
+    if (!M || !Q) return;
+    if (Q.isGroup && M.id !== Q.id) {
+      const j = r.filter((ne) => ne.parentId === Q.id), A = j.length > 0 ? Math.max(...j.map((ne) => ne.order ?? 0)) + 1 : 1;
+      c([
+        { id: M.id, parentId: Q.id, order: A, isGroup: M.isGroup }
+      ]), T((ne) => ({ ...ne, [Q.id]: !1 }));
+      return;
+    }
+    const W = Q.parentId || null, q = r.filter((j) => (j.parentId || null) === W);
+    q.sort((j, A) => (j.order ?? 0) - (A.order ?? 0));
+    const ie = q.findIndex((j) => j.id === ye), Ne = q.findIndex((j) => j.id === ue);
+    if (ie !== -1 && Ne !== -1) {
+      const j = [...q], [A] = j.splice(ie, 1);
+      j.splice(Ne, 0, A);
+      const ne = j.map((Ce, le) => ({
+        id: Ce.id,
+        parentId: W,
+        order: le + 1,
+        isGroup: Ce.isGroup
+      }));
+      c(ne);
+    } else {
+      const j = [...q.filter((Ce) => Ce.id !== ye)], A = j.findIndex((Ce) => Ce.id === ue);
+      A !== -1 ? j.splice(A, 0, { ...M, parentId: W }) : j.push({ ...M, parentId: W });
+      const ne = j.map((Ce, le) => ({
+        id: Ce.id,
+        parentId: W,
+        order: le + 1,
+        isGroup: Ce.id === ye ? M.isGroup : Ce.isGroup
+      }));
+      c(ne);
+    }
+  }, O = F ? r.find((_) => _.id === F) : null;
+  return /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
+    /* @__PURE__ */ e.jsxs(
+      "aside",
+      {
+        onContextMenu: V,
+        style: { width: t ? `${t}px` : void 0 },
+        className: "w-64 border-r border-slate-800 bg-[#090e1a] flex flex-col shrink-0 select-none relative",
+        children: [
+          /* @__PURE__ */ e.jsxs("div", { className: "px-3.5 py-3 border-b border-slate-800 flex items-center justify-between bg-[#080d17]", children: [
+            /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ e.jsx("div", { className: "p-1.5 rounded-lg bg-blue-600/20 text-blue-400", children: /* @__PURE__ */ e.jsx(yt, { className: "w-4 h-4" }) }),
+              /* @__PURE__ */ e.jsx("span", { className: "font-bold text-xs uppercase tracking-wider text-slate-200", children: "TÍNH NĂNG" })
+            ] }),
+            /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1", children: [
+              /* @__PURE__ */ e.jsx(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => d(s),
+                  className: "p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer",
+                  title: "Mở thuộc tính Feature hiện tại (Feature Properties Modal)",
+                  children: /* @__PURE__ */ e.jsx(lt, { className: "w-3.5 h-3.5 text-blue-400" })
+                }
+              ),
+              /* @__PURE__ */ e.jsx(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => i(),
+                  className: "p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer",
+                  title: "Quản lý toàn bộ Features (Feature Manager Modal)",
+                  children: /* @__PURE__ */ e.jsx(mn, { className: "w-3.5 h-3.5 text-slate-300" })
+                }
+              ),
+              /* @__PURE__ */ e.jsx(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => E(""),
+                  className: "p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer",
+                  title: "Thêm Feature mới",
+                  children: /* @__PURE__ */ e.jsx(Qe, { className: "w-3.5 h-3.5 text-emerald-400" })
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ e.jsx("nav", { className: "p-2 space-y-1 overflow-y-auto flex-1", children: /* @__PURE__ */ e.jsxs(
+            Xa,
+            {
+              sensors: S,
+              collisionDetection: Qa,
+              onDragStart: b,
+              onDragEnd: ae,
+              children: [
+                /* @__PURE__ */ e.jsx(el, { items: se, strategy: tl, children: $.map(({ feature: _, depth: me, hasChildren: ce, isCollapsed: ye, childCount: ue }) => {
+                  const M = _.id === s;
+                  return /* @__PURE__ */ e.jsx(
+                    To,
+                    {
+                      feature: _,
+                      depth: me,
+                      hasChildren: ce,
+                      isCollapsed: ye,
+                      isActive: M,
+                      childCount: ue,
+                      onToggleCollapse: (Q) => L(_.id, Q),
+                      onSelect: () => {
+                        _.isGroup ? T((Q) => ({ ...Q, [_.id]: !Q[_.id] })) : (a(_.id, null), st.getState().openFeature(_.id, {}, "Tab", _.title || _.name));
+                      },
+                      onContextMenu: (Q) => U(Q, _.id)
+                    },
+                    _.id
+                  );
+                }) }),
+                /* @__PURE__ */ e.jsx(Za, { children: O ? /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-600 text-white shadow-2xl border border-blue-400 text-xs font-bold opacity-90", children: [
+                  /* @__PURE__ */ e.jsx($s, { className: "w-3.5 h-3.5" }),
+                  /* @__PURE__ */ e.jsx("span", { children: O.title || O.name })
+                ] }) : null })
+              ]
+            }
+          ) }),
+          /* @__PURE__ */ e.jsxs("div", { className: "p-3 border-t border-slate-800 bg-[#080d17] text-[11px] text-slate-400 flex items-center justify-between", children: [
+            /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1.5", children: [
+              /* @__PURE__ */ e.jsx("span", { className: "w-2 h-2 rounded-full bg-emerald-500 animate-pulse" }),
+              /* @__PURE__ */ e.jsxs("span", { children: [
+                p.length,
+                " hiển thị / ",
+                r.length
+              ] })
+            ] }),
+            /* @__PURE__ */ e.jsx("span", { className: "text-[10px] text-slate-500 font-mono", children: "Core C# v2.5" })
           ] })
         ]
       }
     ),
-    d && /* @__PURE__ */ e.jsx(
-      Jr,
+    x && /* @__PURE__ */ e.jsx(
+      la,
       {
-        x: d.x,
-        y: d.y,
-        items: L,
-        onClose: () => c(null)
+        x: x.x,
+        y: x.y,
+        items: z,
+        onClose: () => h(null)
       }
     ),
-    p && /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4", children: /* @__PURE__ */ e.jsxs(
+    w && /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-[130] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4", children: /* @__PURE__ */ e.jsxs(
       "form",
       {
-        onSubmit: h,
+        onSubmit: Y,
         className: "w-full max-w-sm bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl space-y-4",
         children: [
           /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2.5 text-slate-100", children: [
-            /* @__PURE__ */ e.jsx("div", { className: "p-2 rounded-xl bg-blue-600/20 text-blue-400", children: /* @__PURE__ */ e.jsx(on, { className: "w-5 h-5" }) }),
+            /* @__PURE__ */ e.jsx("div", { className: "p-2 rounded-xl bg-blue-600/20 text-blue-400", children: /* @__PURE__ */ e.jsx(Pa, { className: "w-5 h-5" }) }),
             /* @__PURE__ */ e.jsxs("div", { children: [
-              /* @__PURE__ */ e.jsx("h3", { className: "text-sm font-bold", children: "Thêm Feature (Màn hình mới)" }),
-              /* @__PURE__ */ e.jsx("p", { className: "text-xs text-slate-400", children: "Tạo một phân hệ giao diện trong phần mềm" })
+              /* @__PURE__ */ e.jsx("h3", { className: "text-sm font-bold", children: "Thêm Feature mới" }),
+              /* @__PURE__ */ e.jsx("p", { className: "text-xs text-slate-400", children: "Tạo màn hình hoặc nhóm thư mục menu mới" })
             ] })
           ] }),
-          /* @__PURE__ */ e.jsxs("div", { children: [
-            /* @__PURE__ */ e.jsx("label", { className: "block text-xs font-semibold text-slate-300 mb-1.5", children: "Tên Feature / Màn hình:" }),
-            /* @__PURE__ */ e.jsx(
-              "input",
-              {
-                type: "text",
-                autoFocus: !0,
-                placeholder: "Ví dụ: Quản lý Khách Hàng, Báo Cáo Doanh Thu...",
-                value: I,
-                onChange: (k) => f(k.target.value),
-                className: "w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              }
-            )
+          /* @__PURE__ */ e.jsxs("div", { className: "space-y-3", children: [
+            /* @__PURE__ */ e.jsxs("div", { children: [
+              /* @__PURE__ */ e.jsx("label", { className: "block text-xs font-semibold text-slate-300 mb-1", children: "Tên Feature / Màn hình:" }),
+              /* @__PURE__ */ e.jsx(
+                "input",
+                {
+                  type: "text",
+                  autoFocus: !0,
+                  required: !0,
+                  placeholder: "Ví dụ: SHIPMENTS, FCL Import...",
+                  value: v,
+                  onChange: (_) => k(_.target.value),
+                  className: "w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                }
+              )
+            ] }),
+            /* @__PURE__ */ e.jsxs("div", { children: [
+              /* @__PURE__ */ e.jsx("label", { className: "block text-xs font-semibold text-slate-300 mb-1", children: "Cấp cha (Thư mục nhóm):" }),
+              /* @__PURE__ */ e.jsxs(
+                "select",
+                {
+                  value: m,
+                  onChange: (_) => y(_.target.value),
+                  className: "w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500",
+                  children: [
+                    /* @__PURE__ */ e.jsx("option", { value: "", children: "-- Cấp gốc (Không có cha) --" }),
+                    r.filter((_) => _.isGroup).map((_) => /* @__PURE__ */ e.jsxs("option", { value: _.id, children: [
+                      "📁 ",
+                      _.title || _.name
+                    ] }, _.id))
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between pt-1", children: [
+              /* @__PURE__ */ e.jsx("label", { className: "text-xs font-semibold text-slate-300", children: "Tạo dạng Thư mục Nhóm cha:" }),
+              /* @__PURE__ */ e.jsx(
+                "input",
+                {
+                  type: "checkbox",
+                  checked: P,
+                  onChange: (_) => R(_.target.checked),
+                  className: "w-4 h-4 rounded bg-slate-900 border-slate-700 text-blue-600 focus:ring-0 accent-blue-600 cursor-pointer"
+                }
+              )
+            ] })
           ] }),
-          /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-end gap-2 pt-2", children: [
+          /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-end gap-2 pt-2 border-t border-slate-800", children: [
             /* @__PURE__ */ e.jsx(
               "button",
               {
                 type: "button",
-                onClick: () => g(!1),
+                onClick: () => u(!1),
                 className: "px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 cursor-pointer",
                 children: "Hủy bỏ"
               }
@@ -15702,55 +17350,18 @@ const Do = ({ width: t }) => {
               "button",
               {
                 type: "submit",
-                className: "px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/20 cursor-pointer",
-                children: "Tạo Màn Hình"
+                className: "px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-md cursor-pointer",
+                children: "Tạo Feature"
               }
             )
           ] })
         ]
       }
     ) }),
-    x && /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4", children: /* @__PURE__ */ e.jsxs(
-      "form",
-      {
-        onSubmit: y,
-        className: "w-full max-w-sm bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl space-y-4",
-        children: [
-          /* @__PURE__ */ e.jsx("h3", { className: "text-sm font-bold text-slate-100", children: "Đổi tên Feature" }),
-          /* @__PURE__ */ e.jsx(
-            "input",
-            {
-              type: "text",
-              autoFocus: !0,
-              value: x.name,
-              onChange: (k) => N({ ...x, name: k.target.value }),
-              className: "w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-            }
-          ),
-          /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-end gap-2 pt-2", children: [
-            /* @__PURE__ */ e.jsx(
-              "button",
-              {
-                type: "button",
-                onClick: () => N(null),
-                className: "px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800 cursor-pointer",
-                children: "Hủy"
-              }
-            ),
-            /* @__PURE__ */ e.jsx(
-              "button",
-              {
-                type: "submit",
-                className: "px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white cursor-pointer",
-                children: "Cập nhật"
-              }
-            )
-          ] })
-        ]
-      }
-    ) })
+    /* @__PURE__ */ e.jsx(Co, {}),
+    /* @__PURE__ */ e.jsx(ko, {})
   ] });
-}, Io = ({
+}, si = ({
   isPreview: t,
   onTogglePreview: r,
   onSave: s,
@@ -15760,15 +17371,15 @@ const Do = ({ width: t }) => {
   return /* @__PURE__ */ e.jsxs("header", { className: "h-12 border-b border-slate-800 bg-slate-900 px-4 flex items-center justify-between shrink-0 select-none", children: [
     /* @__PURE__ */ e.jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ e.jsx("span", { className: "font-bold text-sm text-white", children: "UIForge" }) }),
     /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-1", children: [
-      /* @__PURE__ */ e.jsx("button", { onClick: n, disabled: !d, className: "p-1.5 text-slate-400 hover:text-white", children: /* @__PURE__ */ e.jsx(Dr, { className: "w-3.5 h-3.5" }) }),
-      /* @__PURE__ */ e.jsx("button", { onClick: o, disabled: !c, className: "p-1.5 text-slate-400 hover:text-white", children: /* @__PURE__ */ e.jsx(Ir, { className: "w-3.5 h-3.5" }) })
+      /* @__PURE__ */ e.jsx("button", { onClick: n, disabled: !d, className: "p-1.5 text-slate-400 hover:text-white", children: /* @__PURE__ */ e.jsx($r, { className: "w-3.5 h-3.5" }) }),
+      /* @__PURE__ */ e.jsx("button", { onClick: o, disabled: !c, className: "p-1.5 text-slate-400 hover:text-white", children: /* @__PURE__ */ e.jsx(Pr, { className: "w-3.5 h-3.5" }) })
     ] }),
     /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ e.jsx("button", { onClick: r, className: "px-3 py-1.5 rounded text-xs bg-slate-800 text-slate-300", children: t ? "Chế độ chỉnh sửa" : "Xem trước" }),
       /* @__PURE__ */ e.jsx("button", { onClick: s, disabled: a, className: "px-3.5 py-1.5 rounded text-xs bg-blue-600 text-white", children: "Lưu" })
     ] })
   ] });
-}, Fo = ({
+}, ni = ({
   isPreview: t,
   onTogglePreview: r,
   onSave: s,
@@ -15781,7 +17392,7 @@ const Do = ({ width: t }) => {
   branch: c,
   onLogout: p
 }) => {
-  const g = Z((y) => y.features), I = Z((y) => y.activeFeatureId), f = Z((y) => y.undo), x = Z((y) => y.redo), N = Z((y) => y.historyIndex), u = Z((y) => y.history), v = g.find((y) => y.id === I), C = N > 0, h = N < u.length - 1;
+  const g = Z((y) => y.features), T = Z((y) => y.activeFeatureId), x = Z((y) => y.undo), h = Z((y) => y.redo), w = Z((y) => y.historyIndex), u = Z((y) => y.history), v = g.find((y) => y.id === T), k = w > 0, m = w < u.length - 1;
   return /* @__PURE__ */ e.jsxs("header", { className: "h-14 border-b border-slate-800 bg-slate-900/95 px-5 flex items-center justify-between shrink-0 select-none shadow-sm backdrop-blur-sm z-30", children: [
     /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-4", children: [
       /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2.5", children: [
@@ -15805,21 +17416,21 @@ const Do = ({ width: t }) => {
         /* @__PURE__ */ e.jsx(
           "button",
           {
-            onClick: f,
-            disabled: !C,
+            onClick: x,
+            disabled: !k,
             className: "p-1.5 rounded text-slate-400 hover:text-slate-100 hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent transition-all cursor-pointer",
             title: "Hoàn tác (Ctrl+Z)",
-            children: /* @__PURE__ */ e.jsx(Dr, { className: "w-3.5 h-3.5" })
+            children: /* @__PURE__ */ e.jsx($r, { className: "w-3.5 h-3.5" })
           }
         ),
         /* @__PURE__ */ e.jsx(
           "button",
           {
-            onClick: x,
-            disabled: !h,
+            onClick: h,
+            disabled: !m,
             className: "p-1.5 rounded text-slate-400 hover:text-slate-100 hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent transition-all cursor-pointer",
             title: "Làm lại (Ctrl+Y)",
-            children: /* @__PURE__ */ e.jsx(Ir, { className: "w-3.5 h-3.5" })
+            children: /* @__PURE__ */ e.jsx(Pr, { className: "w-3.5 h-3.5" })
           }
         )
       ] }),
@@ -15829,10 +17440,10 @@ const Do = ({ width: t }) => {
           onClick: r,
           className: `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${t ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30" : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700"}`,
           children: t ? /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
-            /* @__PURE__ */ e.jsx(Ra, { className: "w-3.5 h-3.5 text-amber-400" }),
+            /* @__PURE__ */ e.jsx(Ga, { className: "w-3.5 h-3.5 text-amber-400" }),
             /* @__PURE__ */ e.jsx("span", { children: "Chế độ Thiết Kế" })
           ] }) : /* @__PURE__ */ e.jsxs(e.Fragment, { children: [
-            /* @__PURE__ */ e.jsx(Dn, { className: "w-3.5 h-3.5 text-slate-400" }),
+            /* @__PURE__ */ e.jsx(Rs, { className: "w-3.5 h-3.5 text-slate-400" }),
             /* @__PURE__ */ e.jsx("span", { children: "Xem Thử Trực Tiếp" })
           ] })
         }
@@ -15844,7 +17455,7 @@ const Do = ({ width: t }) => {
           disabled: a,
           className: "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/25 transition-all cursor-pointer disabled:opacity-50",
           children: [
-            /* @__PURE__ */ e.jsx(At, { className: "w-3.5 h-3.5" }),
+            /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
             /* @__PURE__ */ e.jsx("span", { children: a ? "Đang lưu..." : "Lưu Giao Diện" })
           ]
         }
@@ -15857,7 +17468,7 @@ const Do = ({ width: t }) => {
           onClick: o,
           className: `p-2 rounded-lg border text-xs font-medium transition-all cursor-pointer ${n ? "bg-blue-600/20 text-blue-400 border-blue-500/40 hover:bg-blue-600/30" : "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-750"}`,
           title: n ? "Ẩn bảng quản lý bên phải" : "Mở bảng quản lý bên phải",
-          children: n ? /* @__PURE__ */ e.jsx($a, { className: "w-4 h-4" }) : /* @__PURE__ */ e.jsx(La, { className: "w-4 h-4" })
+          children: n ? /* @__PURE__ */ e.jsx(Va, { className: "w-4 h-4" }) : /* @__PURE__ */ e.jsx(Wa, { className: "w-4 h-4" })
         }
       ),
       /* @__PURE__ */ e.jsxs(
@@ -15866,7 +17477,7 @@ const Do = ({ width: t }) => {
           className: "relative p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer",
           title: "Thông báo hệ thống",
           children: [
-            /* @__PURE__ */ e.jsx(Ea, { className: "w-4 h-4" }),
+            /* @__PURE__ */ e.jsx(Ka, { className: "w-4 h-4" }),
             /* @__PURE__ */ e.jsx("span", { className: "absolute 1 top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-500 ring-2 ring-slate-900" })
           ]
         }
@@ -15890,23 +17501,23 @@ const Do = ({ width: t }) => {
             onClick: p,
             className: "p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-colors cursor-pointer",
             title: "Đăng xuất",
-            children: /* @__PURE__ */ e.jsx(Pa, { className: "w-4 h-4" })
+            children: /* @__PURE__ */ e.jsx(Ua, { className: "w-4 h-4" })
           }
         )
       ] })
     ] })
   ] });
-}, Ro = () => {
-  const t = Ze((i) => i.activePopup), r = Ze((i) => i.closePopup), s = Ze((i) => i.openFeature), a = Z((i) => i.features);
+}, ri = () => {
+  const t = st((i) => i.activePopup), r = st((i) => i.closePopup), s = st((i) => i.openFeature), a = Z((i) => i.features);
   if (!t) return null;
   const n = a.find((i) => String(i.id) === String(t.featureId)), o = t.params || {}, l = () => {
     s(t.featureId, t.params, "Tab", t.title), r();
   };
-  return Tt(
+  return It(
     /* @__PURE__ */ e.jsx("div", { className: "fixed inset-0 z-[999999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-150", children: /* @__PURE__ */ e.jsxs("div", { className: "w-full max-w-5xl rounded-xl border border-blue-500/40 bg-[#0f172a] shadow-2xl overflow-hidden flex flex-col text-slate-200 my-auto max-h-[92vh] relative", children: [
       /* @__PURE__ */ e.jsxs("div", { className: "flex items-center justify-between px-5 py-3 bg-[#0b1329] border-b border-blue-600/30 shrink-0", children: [
         /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2.5", children: [
-          /* @__PURE__ */ e.jsx("div", { className: "w-7 h-7 rounded-lg bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400", children: /* @__PURE__ */ e.jsx(Pt, { className: "w-4 h-4" }) }),
+          /* @__PURE__ */ e.jsx("div", { className: "w-7 h-7 rounded-lg bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400", children: /* @__PURE__ */ e.jsx(yt, { className: "w-4 h-4" }) }),
           /* @__PURE__ */ e.jsxs("div", { children: [
             /* @__PURE__ */ e.jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ e.jsx("span", { className: "text-sm font-bold text-slate-100", children: t.title }),
@@ -15928,7 +17539,7 @@ const Do = ({ width: t }) => {
               className: "flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors cursor-pointer",
               title: "Chuyển sang mở dạng Tab đa nhiệm",
               children: [
-                /* @__PURE__ */ e.jsx(Nr, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(Sr, { className: "w-3.5 h-3.5" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Chuyển thành Tab" })
               ]
             }
@@ -15940,7 +17551,7 @@ const Do = ({ width: t }) => {
               onClick: () => r(),
               className: "p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer",
               title: "Đóng (ESC)",
-              children: /* @__PURE__ */ e.jsx(ct, { className: "w-4 h-4" })
+              children: /* @__PURE__ */ e.jsx(dt, { className: "w-4 h-4" })
             }
           )
         ] })
@@ -15948,7 +17559,7 @@ const Do = ({ width: t }) => {
       /* @__PURE__ */ e.jsxs("div", { className: "p-6 overflow-y-auto flex-1 space-y-4", children: [
         o && Object.keys(o).length > 0 && /* @__PURE__ */ e.jsxs("div", { className: "bg-slate-900/90 border border-slate-800 rounded-xl p-4", children: [
           /* @__PURE__ */ e.jsxs("div", { className: "text-xs font-bold text-slate-300 mb-3 flex items-center gap-1.5", children: [
-            /* @__PURE__ */ e.jsx(Aa, { className: "w-3.5 h-3.5 text-blue-400" }),
+            /* @__PURE__ */ e.jsx(za, { className: "w-3.5 h-3.5 text-blue-400" }),
             /* @__PURE__ */ e.jsx("span", { children: "Tham số dòng (Row Context):" })
           ] }),
           /* @__PURE__ */ e.jsx("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs", children: Object.entries(o).map(([i, d]) => /* @__PURE__ */ e.jsxs("div", { className: "bg-slate-950/60 p-2 rounded-lg border border-slate-800/80", children: [
@@ -15957,7 +17568,7 @@ const Do = ({ width: t }) => {
           ] }, i)) })
         ] }),
         n && n.components.length > 0 ? /* @__PURE__ */ e.jsx("div", { className: "space-y-3", children: n.components.map((i) => /* @__PURE__ */ e.jsx(
-          Ts,
+          Fs,
           {
             node: i,
             isEditing: !1,
@@ -15990,7 +17601,7 @@ const Do = ({ width: t }) => {
               onClick: () => r({ saved: !0 }),
               className: "flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/30 transition-all cursor-pointer",
               children: [
-                /* @__PURE__ */ e.jsx(At, { className: "w-3.5 h-3.5" }),
+                /* @__PURE__ */ e.jsx(Gt, { className: "w-3.5 h-3.5" }),
                 /* @__PURE__ */ e.jsx("span", { children: "Xác nhận & Lưu" })
               ]
             }
@@ -16001,12 +17612,12 @@ const Do = ({ width: t }) => {
     document.body
   );
 };
-class $o {
+class ai {
   get dataEngine() {
-    return fe.getState();
+    return Te.getState();
   }
   get navigationEngine() {
-    return Ze.getState();
+    return st.getState();
   }
   get editorStore() {
     return Z.getState();
@@ -16028,95 +17639,95 @@ class $o {
     this.navigationEngine.openFeature(r, s, "Popup", a);
   }
 }
-function Lo(t) {
+function li(t) {
   return t;
 }
 export {
-  $o as BaseBL,
-  Hr as ColumnPropertiesModal,
-  ko as ComponentPalette,
-  Ul as ComponentPropertiesModal,
-  Ts as ComponentRenderer,
-  So as ComponentTree,
-  Jr as ContextMenu,
-  Vr as EnterpriseDatePicker,
-  Dl as EnterpriseSelect,
-  wo as FeatureCanvas,
-  Ro as FeaturePopupModal,
-  go as ForgeAdvancedGrid,
-  Ol as ForgeAutocomplete,
-  nl as ForgeButton,
-  Hl as ForgeChart,
-  Fl as ForgeCheckbox,
-  nr as ForgeContainer,
-  Rl as ForgeDatePicker,
-  Ll as ForgeDivider,
-  Ml as ForgeFileUploadGrid,
-  xo as ForgeFormContainer,
-  ll as ForgeLabel,
-  $l as ForgeModal,
-  al as ForgeNumber,
-  Pl as ForgeRecordSelector,
-  Bl as ForgeSearchEntry,
-  Al as ForgeSearchModal,
-  ol as ForgeSection,
-  Il as ForgeSelect,
-  zr as ForgeTabStack,
-  Sl as ForgeTable,
-  vo as ForgeTabs,
-  rl as ForgeTextBox,
-  El as ForgeTextarea,
-  _l as ForgeTreeView,
-  Ut as FormFieldWrapper,
-  rr as GridCellComponent,
-  il as HeaderContextMenu,
-  yo as InlineCellEditor,
-  Do as LeftNavbar,
-  _s as PermissionGuard,
-  Co as PropertyPanel,
-  cl as RowContextMenu,
-  ul as SummaryRow,
-  Io as TopBar,
-  Fo as TopNav,
-  _r as UnifiedEventEditor,
-  To as WorkspaceTabBar,
-  tl as addFunctionToBlFile,
-  vl as calculateAutoPopulatedFields,
-  fl as calculateLeftOffsets,
-  Lo as defineBL,
-  fo as downloadBackendDocxReport,
-  bo as downloadBackendPdfReport,
-  Ss as executeSingleEvent,
-  Nl as exportGridToExcel,
-  Or as findFunctionInModule,
-  ho as getCascadedOptions,
-  Yr as getComponentOuterLayoutStyle,
-  el as getFunctionsForBlFile,
-  qr as groupNodesByTabStack,
-  Tl as interpolateFormatData,
-  sr as invokeBLLifecycle,
-  Cn as moveColumn,
-  Us as normalizeBlKey,
-  Ns as normalizeColumnOrders,
-  ar as parseDDMMYYYY,
-  Ur as printGridReport,
-  po as registerBL,
-  sl as registerBlFunctions,
-  uo as removeFunctionFromBlFile,
-  $n as resolveBlModule,
-  Wr as sortColumnsByCorePolicy,
-  Kr as toggleColumnFreeze,
-  ze as triggerComponentEvent,
-  En as useAuthStore,
-  fe as useDataEngine,
+  ai as BaseBL,
+  Xr as ColumnPropertiesModal,
+  Qo as ComponentPalette,
+  oa as ComponentPropertiesModal,
+  Fs as ComponentRenderer,
+  Zo as ComponentTree,
+  la as ContextMenu,
+  Qr as EnterpriseDatePicker,
+  so as EnterpriseSelect,
+  Jo as FeatureCanvas,
+  ri as FeaturePopupModal,
+  Ko as ForgeAdvancedGrid,
+  ho as ForgeAutocomplete,
+  Rl as ForgeButton,
+  bo as ForgeChart,
+  ro as ForgeCheckbox,
+  xr as ForgeContainer,
+  ao as ForgeDatePicker,
+  oo as ForgeDivider,
+  po as ForgeFileUploadGrid,
+  _o as ForgeFormContainer,
+  Pl as ForgeLabel,
+  lo as ForgeModal,
+  $l as ForgeNumber,
+  co as ForgeRecordSelector,
+  xo as ForgeSearchEntry,
+  uo as ForgeSearchModal,
+  El as ForgeSection,
+  no as ForgeSelect,
+  na as ForgeTabStack,
+  eo as ForgeTable,
+  Uo as ForgeTabs,
+  Ll as ForgeTextBox,
+  io as ForgeTextarea,
+  mo as ForgeTreeView,
+  rs as FormFieldWrapper,
+  pr as GridCellComponent,
+  Al as HeaderContextMenu,
+  zo as InlineCellEditor,
+  ti as LeftNavbar,
+  Ks as PermissionGuard,
+  Xo as PropertyPanel,
+  Ml as RowContextMenu,
+  Ol as SummaryRow,
+  si as TopBar,
+  ni as TopNav,
+  Jr as UnifiedEventEditor,
+  ei as WorkspaceTabBar,
+  Dl as addFunctionToBlFile,
+  zl as calculateAutoPopulatedFields,
+  Kl as calculateLeftOffsets,
+  li as defineBL,
+  Wo as downloadBackendDocxReport,
+  Vo as downloadBackendPdfReport,
+  Ds as executeSingleEvent,
+  Jl as exportGridToExcel,
+  Yr as findFunctionInModule,
+  Ho as getCascadedOptions,
+  aa as getComponentOuterLayoutStyle,
+  Il as getFunctionsForBlFile,
+  ra as groupNodesByTabStack,
+  to as interpolateFormatData,
+  ur as invokeBLLifecycle,
+  Fn as moveColumn,
+  en as normalizeBlKey,
+  ks as normalizeColumnOrders,
+  hr as parseDDMMYYYY,
+  sa as printGridReport,
+  Oo as registerBL,
+  Fl as registerBlFunctions,
+  Bo as removeFunctionFromBlFile,
+  Hn as resolveBlModule,
+  Zr as sortColumnsByCorePolicy,
+  ea as toggleColumnFreeze,
+  Ye as triggerComponentEvent,
+  _n as useAuthStore,
+  Te as useDataEngine,
   Z as useEditorStore,
-  No as useGlobalHotkeys,
-  bl as useGridKeyboardNavigation,
-  Rt as useMasterDetailStore,
-  Ze as useNavigationEngine,
-  jo as useRealtimeEngine,
-  Sn as validateDateSequence,
-  yl as validateField,
-  mo as validateForm,
-  kn as validateISO6346ContainerNo
+  Yo as useGlobalHotkeys,
+  Wl as useGridKeyboardNavigation,
+  qt as useMasterDetailStore,
+  st as useNavigationEngine,
+  qo as useRealtimeEngine,
+  Ln as validateDateSequence,
+  ql as validateField,
+  Go as validateForm,
+  Rn as validateISO6346ContainerNo
 };

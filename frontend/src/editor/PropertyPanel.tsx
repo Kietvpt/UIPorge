@@ -293,11 +293,41 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
               <span className="text-[10px] text-cyan-400 font-mono">{activeFeature?.route}</span>
             </div>
           </div>
+          {activeFeature && (
+            <button
+              type="button"
+              onClick={() => {
+                const state = useEditorStore.getState() as any
+                if (typeof state.openFeatureProperties === 'function') {
+                  state.openFeatureProperties(activeFeature.id)
+                }
+              }}
+              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-teal-300 border border-slate-700/60 bg-slate-800/50 transition-colors cursor-pointer"
+              title="Mở Thuộc tính Feature (Feature Properties Modal)"
+            >
+              <Sliders className="w-3.5 h-3.5 text-teal-400" />
+            </button>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
           {activeFeature && (
             <>
+              {/* ── NÚT MỞ NHANH FEATURE PROPERTIES MODAL (CHUẨN MASTER) ── */}
+              <button
+                type="button"
+                onClick={() => {
+                  const state = useEditorStore.getState() as any
+                  if (typeof state.openFeatureProperties === 'function') {
+                    state.openFeatureProperties(activeFeature.id)
+                  }
+                }}
+                className="w-full py-2.5 px-3 bg-gradient-to-r from-teal-600/30 to-blue-600/30 hover:from-teal-600/50 hover:to-blue-600/50 border border-teal-500/50 rounded-xl text-teal-200 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-teal-950/40 cursor-pointer transition-all group"
+              >
+                <Sliders className="w-4 h-4 text-teal-400 group-hover:rotate-45 transition-transform" />
+                <span>🔧 Mở Thuộc Tính Feature (Feature Properties)</span>
+              </button>
+
               {/* ── THÔNG TIN CƠ BẢN TRANG ── */}
               <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2.5">
                 <div className="flex items-center justify-between">
