@@ -24,6 +24,7 @@ import {
 } from './components'
 import { groupNodesByTabStack } from './tabStackUtils'
 import { useEditorStore } from '@/store/editorStore'
+import { usePermissionEngine } from '@/core/engines/permissionEngine'
 import { PermissionGuard } from './PermissionGuard'
 import { getComponentOuterLayoutStyle, type ParentLayoutContext } from './layoutUtils'
 
@@ -44,6 +45,7 @@ interface ComponentRendererProps {
     child: ComponentNode,
     childLayout?: ParentLayoutContext | FlexConfig
   ) => React.ReactNode
+  ancestors?: ComponentNode[]
 }
 
 export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
@@ -54,6 +56,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   parentFlexConfig,
   isWrappedByDrag = false,
   renderChild,
+  ancestors = [],
 }) => {
   const selection = useEditorStore((s) => s.selection)
   const selectComponent = useEditorStore((s) => s.selectComponent)
@@ -137,6 +140,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         }
 
         const child = group.node
+        const nextAncestors = [...ancestors, node]
         if (renderChild) {
           return (
             <React.Fragment key={child.id}>
@@ -152,6 +156,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             onContextMenu={onContextMenu}
             parentLayout={childParentLayout}
             isWrappedByDrag={false}
+            ancestors={nextAncestors}
           />
         )
       })
@@ -159,7 +164,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
     if (node.type === 'Section') {
       return (
-        <PermissionGuard node={node} isEditing={isEditing}>
+        <PermissionGuard node={node} isEditing={isEditing} ancestors={ancestors}>
           <div onClick={handleClick} onContextMenu={handleContextMenu} className="w-full">
             <ForgeSection node={node} isEditing={isEditing}>
               {renderChildren()}
@@ -171,7 +176,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
     if (node.type === 'Tabs') {
       return (
-        <PermissionGuard node={node} isEditing={isEditing}>
+        <PermissionGuard node={node} isEditing={isEditing} ancestors={ancestors}>
           <ForgeContainer
             node={node}
             isEditing={isEditing}
@@ -188,7 +193,7 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     }
 
     return (
-      <PermissionGuard node={node} isEditing={isEditing}>
+      <PermissionGuard node={node} isEditing={isEditing} ancestors={ancestors}>
         <ForgeContainer
           node={node}
           isEditing={isEditing}
@@ -286,13 +291,29 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         boxSizing: 'border-box',
       }
 
+  const evaluateComponentPermission = usePermissionEngine((s) => s.evaluateComponentPermission)
+  const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
+  const perm = !isEditing ? evaluateComponentPermission(activeFeatureId, node, ancestors) : null
+  const isReadOnly = perm ? (!perm.canWrite && !perm.canWriteAll) : false
+  const isLeafInputOrButton = ['TextBox', 'Textarea', 'Number', 'DatePicker', 'Select', 'Checkbox', 'Radio', 'Switch', 'Button'].includes(node.type)
+  const isReadOnlyLeaf = !isEditing && isReadOnly && isLeafInputOrButton
+
+  const hasRulesInEditing = isEditing && Boolean(
+    (node.permissions?.rules && node.permissions.rules.length > 0) ||
+    (node.props as any)?.permissions?.rules?.length ||
+    node.permissions?.allowedRoles?.length ||
+    node.permissions?.readOnlyRoles?.length
+  )
+
   return (
-    <PermissionGuard node={node} isEditing={isEditing}>
+    <PermissionGuard node={node} isEditing={isEditing} ancestors={ancestors}>
       <div
         onClick={handleClick}
         onContextMenu={handleContextMenu}
         style={wrapperStyle}
         className={`relative group transition-all duration-150 box-border ${
+          isReadOnlyLeaf ? 'opacity-80 pointer-events-none select-none' : ''
+        } ${
           isEditing
             ? `cursor-pointer rounded-lg ${
                 isSelected
@@ -306,6 +327,13 @@ export const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           <div className="absolute -top-3 left-2 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow z-20 uppercase tracking-wider flex items-center gap-1">
             <span>{node.type}</span>
             <span className="opacity-75">#{node.id.slice(-4)}</span>
+          </div>
+        )}
+        {hasRulesInEditing && !isSelected && (
+          <div className="absolute top-0 right-1 -translate-y-1/2 opacity-70 group-hover:opacity-100 transition-opacity z-20 pointer-events-none">
+            <span className="bg-amber-600/90 text-white text-[9px] font-mono px-1.5 py-0.5 rounded shadow">
+              🔒 {node.permissions?.rules?.length || (node.props as any)?.permissions?.rules?.length || 'RBAC'}
+            </span>
           </div>
         )}
         {renderLeafContent()}

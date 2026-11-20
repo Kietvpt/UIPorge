@@ -19,7 +19,9 @@ import {
   ChevronDown,
   Zap,
 } from 'lucide-react'
-import type { ComponentNode, DropdownColumnConfig } from '@/types/schema'
+import type { ComponentNode, DropdownColumnConfig, ComponentPolicyRule, ComponentPermissionConfig } from '@/types/schema'
+import { PolicyMatrixGrid } from './PolicyMatrixGrid'
+import { usePermissionEngine } from '@/core/engines/permissionEngine'
 import {
   fetchEntityMetadata,
   EntityMetadata,
@@ -43,6 +45,11 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
   const [activeTab, setActiveTab] = useState<'info' | 'dropdownColumns' | 'permissions' | 'report'>('info')
   const [entities, setEntities] = useState<EntityMetadata[]>([])
   const [dropdownColumns, setDropdownColumns] = useState<DropdownColumnConfig[]>([])
+  const [componentRules, setComponentRules] = useState<ComponentPolicyRule[]>(
+    node?.permissions?.rules || []
+  )
+  const [pendingPolicyRule, setPendingPolicyRule] = useState<ComponentPolicyRule | null>(null)
+  const [saveSuccess, setSaveSuccess] = useState(false)
 
   // ── COMMON FORM STATES (Khớp 100% Ảnh Modal Component properties của Master) ──
   const [componentId, setComponentId] = useState('')
@@ -139,6 +146,25 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
     if (node && isOpen) {
       const p = node.props || {}
       const b = node.dataBinding || {}
+
+      const targetPageId = node.pageId || (useEditorStore.getState().activeFeatureId ?? '')
+      if (targetPageId && node.id) {
+        usePermissionEngine
+          .getState()
+          .fetchComponentPolicies(targetPageId, node.id)
+          .then((dbRules) => {
+            if (dbRules && dbRules.length > 0) {
+              setComponentRules(dbRules)
+            } else {
+              setComponentRules(node.permissions?.rules || [])
+            }
+          })
+          .catch(() => {
+            setComponentRules(node.permissions?.rules || [])
+          })
+      } else {
+        setComponentRules(node.permissions?.rules || [])
+      }
 
       setComponentId(String(p.id ?? node.id))
       setGroup(p.group !== undefined ? String(p.group) : 'General')
@@ -318,7 +344,7 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
 
   if (!isOpen || !node) return null
 
-  const handleSave = () => {
+  const handleSave = async () => {
     let parsedEvents: any = events
     try {
       if (events.trim().startsWith('{')) {
@@ -433,8 +459,34 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
       twoWay: true,
     }
 
+    let finalPermissionRules = [...componentRules]
+    if (pendingPolicyRule) {
+      finalPermissionRules = [...finalPermissionRules, pendingPolicyRule]
+      setComponentRules(finalPermissionRules)
+      setPendingPolicyRule(null)
+    }
+
+    const updatedPermissions: ComponentPermissionConfig = {
+      ...(node.permissions || {}),
+      rules: finalPermissionRules,
+    }
+    useEditorStore.getState().updateComponentPermissions(node.id, updatedPermissions)
+
+    const targetPageId = node.pageId || (useEditorStore.getState().activeFeatureId ?? '')
+    if (targetPageId) {
+      await usePermissionEngine
+        .getState()
+        .saveComponentPolicies(
+          targetPageId,
+          node.id,
+          finalPermissionRules,
+          String(fieldName || refName || node.id)
+        )
+    }
+
     onSave(node.id, updatedProps, updatedBinding)
-    onClose()
+    setSaveSuccess(true)
+    setTimeout(() => setSaveSuccess(false), 2500)
   }
 
   const combinedEntities = buildCombinedEntityCatalog(entities)
@@ -490,6 +542,12 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
               <Sliders className="w-3.5 h-3.5 text-teal-400" />
               <span>Feature Properties ↗</span>
             </button>
+            {saveSuccess && (
+              <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded border border-emerald-500/40 animate-in fade-in">
+                <Check className="w-3.5 h-3.5" />
+                <span>Đã lưu thành công!</span>
+              </span>
+            )}
             <button
               type="button"
               onClick={handleSave}
@@ -1389,64 +1447,14 @@ export const ComponentPropertiesModal: React.FC<ComponentPropertiesModalProps> =
 
           {activeTab === 'permissions' && (
             <div className="space-y-4">
-              <div className="bg-[#0a1220]/60 p-4 rounded-lg border border-slate-800 space-y-3">
-                <div className="text-xs font-bold text-teal-400 uppercase tracking-wider flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-teal-400" />
-                  <span>Ma Trận Phân Quyền Theo Vai Trò (Roles & RBAC)</span>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs text-left text-slate-300 border border-slate-800">
-                    <thead className="bg-[#070d18] text-slate-400 uppercase text-[10px]">
-                      <tr>
-                        <th className="py-2 px-3 border border-slate-800">Vai Trò (Role)</th>
-                        <th className="py-2 px-3 border border-slate-800 text-center">Xem (View)</th>
-                        <th className="py-2 px-3 border border-slate-800 text-center">Sửa (Edit)</th>
-                        <th className="py-2 px-3 border border-slate-800 text-center">Ẩn (Hide)</th>
-                        <th className="py-2 px-3 border border-slate-800 text-center">Khóa (Disable)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {['Admin (Quản trị)', 'Operator (Nhân viên)', 'Accountant (Kế toán)', 'Customer (Khách hàng)'].map(
-                        (role, idx) => (
-                          <tr key={role} className="border-b border-slate-800 hover:bg-slate-800/40">
-                            <td className="py-2 px-3 font-medium text-slate-200 border-r border-slate-800">
-                              {role}
-                            </td>
-                            <td className="py-2 px-3 text-center border-r border-slate-800">
-                              <input
-                                type="checkbox"
-                                defaultChecked
-                                className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
-                              />
-                            </td>
-                            <td className="py-2 px-3 text-center border-r border-slate-800">
-                              <input
-                                type="checkbox"
-                                defaultChecked={idx <= 1}
-                                className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
-                              />
-                            </td>
-                            <td className="py-2 px-3 text-center border-r border-slate-800">
-                              <input
-                                type="checkbox"
-                                defaultChecked={false}
-                                className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
-                              />
-                            </td>
-                            <td className="py-2 px-3 text-center">
-                              <input
-                                type="checkbox"
-                                defaultChecked={idx > 1}
-                                className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
-                              />
-                            </td>
-                          </tr>
-                        )
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <PolicyMatrixGrid
+                rules={componentRules}
+                onChange={setComponentRules}
+                onPendingRuleChange={setPendingPolicyRule}
+                pageId={node.pageId || useEditorStore.getState().activeFeatureId || ''}
+                nodeId={node.id}
+                fieldName={fieldName || node.dataBinding?.fieldName || node.id}
+              />
             </div>
           )}
 

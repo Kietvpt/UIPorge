@@ -2,85 +2,117 @@
  * UIForge PermissionGuard (PermissionGuard.tsx)
  * 
  * Kế thừa SecurityBL.cs & PolicyEditorBL.cs từ C# Core:
- * - Bảo vệ component theo vai trò người dùng (Role-Based Access Control - RBAC).
- * - Ở chế độ thiết kế (isEditing): Luôn hiển thị component kèm huy hiệu phân quyền nhỏ
- *   để nhà phát triển vẫn có thể chỉnh sửa và cấu hình.
+ * - Bảo vệ component đa tầng (Feature, Container, Component, Field).
+ * - Cung cấp PermissionContext (useComponentPermission) cho các component con (FormFieldWrapper, v.v.).
+ * - KHÔNG sinh thêm bất kỳ thẻ wrapper <div> nào làm phá vỡ CSS Grid 12-cột hay Flexbox!
  * - Ở chế độ chạy thực tế (Runtime / Preview):
- *   + Nếu vai trò không nằm trong `allowedRoles`: Ẩn hoàn toàn hoặc Vô hiệu hóa (chuyển sang disabled) tùy cấu hình.
- *   + Nếu vai trò nằm trong `readOnlyRoles`: Chuyển ô nhập liệu hoặc nút bấm sang chỉ đọc (Read-only / Disabled).
+ *   + Nếu không có CanRead: Ẩn hoàn toàn component khỏi DOM (return null).
+ *   + Nếu là nút Xóa và không có CanDelete: Ẩn (return null).
+ *   + Nếu là nút Hủy và không có CanDeactivate: Ẩn (return null).
+ *   + Nếu là Read-only / Highlight Editable: truyền cờ qua PermissionContext cho FormFieldWrapper.
  */
 
-import React from 'react'
+import React, { createContext, useContext } from 'react'
 import type { ComponentNode } from '@/types/schema'
-import { useAuthStore } from '@/store/authStore'
+import { useEditorStore } from '@/store/editorStore'
+import { usePermissionEngine, ComponentPermissionEvaluation } from '@/core/engines/permissionEngine'
+
+export interface ComponentPermissionContextValue extends Partial<ComponentPermissionEvaluation> {
+  isReadOnly?: boolean
+  shouldHighlightEditable?: boolean
+  canRead?: boolean
+  canWrite?: boolean
+  canWriteAll?: boolean
+  canDelete?: boolean
+  canDeactivate?: boolean
+  hasRules?: boolean
+}
+
+export const PermissionContext = createContext<ComponentPermissionContextValue | null>(null)
+
+export const useComponentPermission = () => useContext(PermissionContext)
 
 interface PermissionGuardProps {
   node: ComponentNode
   isEditing?: boolean
+  ancestors?: ComponentNode[]
   children: React.ReactNode
 }
 
-export const PermissionGuard: React.FC<PermissionGuardProps> = ({ node, isEditing, children }) => {
-  const user = useAuthStore((s) => s.user)
-  const userRole = user?.role || 'User'
-  const perms = node.permissions
+export const PermissionGuard: React.FC<PermissionGuardProps> = ({
+  node,
+  isEditing = false,
+  ancestors = [],
+  children,
+}) => {
+  const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
+  const evaluateComponentPermission = usePermissionEngine((s) => s.evaluateComponentPermission)
 
-  // Nếu không cấu hình phân quyền hoặc đang ở chế độ chỉnh sửa (Design Mode)
-  if (!perms || (!perms.allowedRoles?.length && !perms.readOnlyRoles?.length)) {
-    return <>{children}</>
-  }
-
-  // 1. Chế độ thiết kế: Luôn hiển thị, nhưng gắn watermark/badge nếu có hạn chế quyền
+  // 1. Chế độ thiết kế (Design Mode): Luôn hiển thị
   if (isEditing) {
-    const hasRestrictions = Boolean(perms.allowedRoles?.length || perms.readOnlyRoles?.length)
-    if (!hasRestrictions) return <>{children}</>
+    const hasRules = Boolean(
+      (node.permissions?.rules && node.permissions.rules.length > 0) ||
+      (node.props as any)?.permissions?.rules?.length ||
+      node.permissions?.allowedRoles?.length ||
+      node.permissions?.readOnlyRoles?.length
+    )
 
     return (
-      <div className="relative group/perm w-full">
+      <PermissionContext.Provider
+        value={{
+          canRead: true,
+          canWrite: true,
+          canWriteAll: true,
+          canDelete: true,
+          canDeactivate: true,
+          isReadOnly: false,
+          shouldHighlightEditable: false,
+          hasRules,
+        }}
+      >
         {children}
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 opacity-0 group-hover/perm:opacity-100 transition-opacity z-20 pointer-events-none">
-          <span className="bg-amber-600/90 text-white text-[9px] font-mono px-1.5 py-0.5 rounded shadow">
-            🔒 {perms.allowedRoles?.join(',') || 'RBAC'}
-          </span>
-        </div>
-      </div>
+      </PermissionContext.Provider>
     )
   }
 
-  // 2. Chế độ Preview / Runtime: Kiểm tra quyền truy cập theo vai trò
-  const allowed = perms.allowedRoles
-  const readOnly = perms.readOnlyRoles
-  const behavior = perms.deniedBehavior || 'hide'
+  // 2. Chế độ Runtime / Preview: Tính toán quyền thực tế
+  const perm = evaluateComponentPermission(activeFeatureId, node, ancestors)
 
-  // Kiểm tra quyền truy cập (allowedRoles)
-  if (allowed && allowed.length > 0) {
-    const isAllowed = allowed.some((r) => r.toLowerCase() === userRole.toLowerCase())
-    if (!isAllowed) {
-      if (behavior === 'disable') {
-        // Render ở trạng thái vô hiệu hóa
-        return (
-          <div className="opacity-50 pointer-events-none cursor-not-allowed select-none filter grayscale">
-            {children}
-          </div>
-        )
-      }
-      // Mặc định ẩn hoàn toàn component
-      return null
-    }
+  // Quyền Đọc (CanRead) - Ẩn hoàn toàn khỏi DOM nếu không có quyền đọc
+  if (!perm.canRead) {
+    return null
   }
 
-  // Kiểm tra trạng thái chỉ đọc (readOnlyRoles)
-  if (readOnly && readOnly.length > 0) {
-    const isReadOnly = readOnly.some((r) => r.toLowerCase() === userRole.toLowerCase())
-    if (isReadOnly) {
-      return (
-        <div className="opacity-75 pointer-events-none cursor-default">
-          {children}
-        </div>
-      )
-    }
+  // Kiểm tra nút Xóa (CanDelete)
+  const isDeleteButton =
+    node.type === 'Button' &&
+    (/delete|xóa|remove/i.test(String(node.props?.text || '')) ||
+      /trash|delete/i.test(String(node.props?.icon || '')) ||
+      node.props?.variant === 'danger')
+  if (isDeleteButton && !perm.canDelete) {
+    return null
   }
 
-  return <>{children}</>
+  // Kiểm tra nút Hủy (CanDeactivate)
+  const isDeactivateButton =
+    node.type === 'Button' &&
+    (/deactivate|ngưng|hủy bỏ/i.test(String(node.props?.text || '')))
+  if (isDeactivateButton && !perm.canDeactivate) {
+    return null
+  }
+
+  // Quyền Cập nhật (CanWrite / CanWriteAll)
+  const isReadOnly = !perm.canWrite && !perm.canWriteAll
+
+  return (
+    <PermissionContext.Provider
+      value={{
+        ...perm,
+        isReadOnly,
+        shouldHighlightEditable: Boolean(perm.shouldHighlightEditable),
+      }}
+    >
+      {children}
+    </PermissionContext.Provider>
+  )
 }
-

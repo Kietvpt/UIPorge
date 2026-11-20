@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -151,7 +152,9 @@ namespace UIForge.Core.Controllers
             [FromQuery(Name = "$filter")] string? odataFilter = null,
             [FromQuery(Name = "$top")] int? top = null,
             [FromQuery(Name = "$skip")] int? skip = null,
-            [FromQuery(Name = "$orderby")] string? orderBy = null)
+            [FromQuery(Name = "$orderby")] string? orderBy = null,
+            [FromHeader(Name = "X-Feature-Id")] int? featureId = null,
+            [FromHeader(Name = "X-Preview-Role")] string? previewRole = null)
         {
             var entityType = ResolveEntityType(entityName);
             if (entityType == null)
@@ -252,6 +255,23 @@ namespace UIForge.Core.Controllers
                 resultList = resultList.Take(top.Value).ToList();
             }
 
+            // 🛡️ Phân quyền che giấu trường nhạy cảm (Field Masking) nếu CanRead == false trên Component/GridPolicy
+            var maskedFields = await GetMaskedFieldsAsync(entityName, featureId, previewRole);
+            if (maskedFields.Count > 0)
+            {
+                foreach (var item in resultList)
+                {
+                    foreach (var field in maskedFields)
+                    {
+                        var prop = clrType.GetProperty(field, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                        if (prop != null && prop.CanWrite)
+                        {
+                            prop.SetValue(item, null);
+                        }
+                    }
+                }
+            }
+
             return Ok(new
             {
                 value = resultList,
@@ -264,7 +284,11 @@ namespace UIForge.Core.Controllers
         /// Lấy chi tiết một bản ghi theo Id từ SQL Server (Generic)
         /// </summary>
         [HttpGet("data/{entityName}/{id}")]
-        public async Task<IActionResult> GetEntityById(string entityName, int id)
+        public async Task<IActionResult> GetEntityById(
+            string entityName,
+            int id,
+            [FromHeader(Name = "X-Feature-Id")] int? featureId = null,
+            [FromHeader(Name = "X-Preview-Role")] string? previewRole = null)
         {
             var entityType = ResolveEntityType(entityName);
             if (entityType == null)
@@ -281,6 +305,21 @@ namespace UIForge.Core.Controllers
             if (record is BaseEntity b && !b.Active)
             {
                 return NotFound(new { message = $"Bản ghi {entityName} #{id} đã bị xóa hoặc không hoạt động." });
+            }
+
+            // 🛡️ Phân quyền che giấu trường nhạy cảm (Field Masking) nếu CanRead == false trên Component/GridPolicy
+            var maskedFields = await GetMaskedFieldsAsync(entityName, featureId, previewRole);
+            if (maskedFields.Count > 0)
+            {
+                var clrType = entityType.ClrType;
+                foreach (var field in maskedFields)
+                {
+                    var prop = clrType.GetProperty(field, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                    if (prop != null && prop.CanWrite)
+                    {
+                        prop.SetValue(record, null);
+                    }
+                }
             }
 
             return Ok(record);
@@ -344,7 +383,12 @@ namespace UIForge.Core.Controllers
         /// Cập nhật bản ghi trong SQL Server (Generic)
         /// </summary>
         [HttpPut("data/{entityName}/{id}")]
-        public async Task<IActionResult> UpdateEntity(string entityName, int id, [FromBody] JsonElement payload)
+        public async Task<IActionResult> UpdateEntity(
+            string entityName,
+            int id,
+            [FromBody] JsonElement payload,
+            [FromHeader(Name = "X-Feature-Id")] int? featureId = null,
+            [FromHeader(Name = "X-Preview-Role")] string? previewRole = null)
         {
             var entityType = ResolveEntityType(entityName);
             if (entityType == null)
@@ -397,6 +441,13 @@ namespace UIForge.Core.Controllers
                 }
             }
 
+            // 🛡️ Kiểm tra phân quyền cập nhật cấp Feature & Component (Field-Level Security)
+            var (isAllowed, errorMsg, allowedFields) = await EvaluateFieldUpdatePermissionsAsync(entityName, existing, featureId, previewRole);
+            if (!isAllowed)
+            {
+                return StatusCode(403, new { message = errorMsg });
+            }
+
             var incoming = JsonSerializer.Deserialize(payload.GetRawText(), entityType.ClrType, DynamicDeserializeOptions);
 
             if (incoming == null)
@@ -429,8 +480,17 @@ namespace UIForge.Core.Controllers
                 var newVal = prop.GetValue(incoming);
                 var newStr = newVal?.ToString();
 
-                if (!string.Equals(oldVal, newStr, StringComparison.OrdinalIgnoreCase))
+                bool isChanged = !string.Equals(oldVal, newStr, StringComparison.OrdinalIgnoreCase);
+                if (isChanged)
                 {
+                    if (allowedFields != null && !allowedFields.Contains(prop.Name))
+                    {
+                        return StatusCode(403, new
+                        {
+                            message = $"Bạn không có quyền chỉnh sửa trường dữ liệu '{prop.Name}' (bị khóa bởi phân quyền phần tử)."
+                        });
+                    }
+
                     changes.Add(new { field = prop.Name, oldValue = oldVal, newValue = newStr });
                 }
 
@@ -470,7 +530,12 @@ namespace UIForge.Core.Controllers
         /// 2) Dictionary trường trực tiếp: { "fieldName": "newValue", ... }
         /// </summary>
         [HttpPatch("data/{entityName}/{id}")]
-        public async Task<IActionResult> PatchEntity(string entityName, int id, [FromBody] JsonElement payload)
+        public async Task<IActionResult> PatchEntity(
+            string entityName,
+            int id,
+            [FromBody] JsonElement payload,
+            [FromHeader(Name = "X-Feature-Id")] int? featureId = null,
+            [FromHeader(Name = "X-Preview-Role")] string? previewRole = null)
         {
             var entityType = ResolveEntityType(entityName);
             if (entityType == null)
@@ -487,6 +552,13 @@ namespace UIForge.Core.Controllers
             if (existing is BaseEntity bExisting && !bExisting.Active)
             {
                 return NotFound(new { message = $"Bản ghi #{id} đã bị xóa hoặc không hoạt động." });
+            }
+
+            // 🛡️ Kiểm tra phân quyền cập nhật cấp Feature & Component (Field-Level Security)
+            var (isAllowed, errorMsg, allowedFields) = await EvaluateFieldUpdatePermissionsAsync(entityName, existing, featureId, previewRole);
+            if (!isAllowed)
+            {
+                return StatusCode(403, new { message = errorMsg });
             }
 
             var currentUser = User.Identity?.Name ?? "system";
@@ -522,6 +594,15 @@ namespace UIForge.Core.Controllers
                     var prop = props.FirstOrDefault(p => string.Equals(p.Name, field, StringComparison.OrdinalIgnoreCase));
                     if (prop == null || !prop.CanWrite || prop.Name is "Id" or "CreatedDate" or "CreatedBy") continue;
 
+                    // 🛡️ Kiểm tra phân quyền sửa trường dữ liệu
+                    if (allowedFields != null && !allowedFields.Contains(prop.Name))
+                    {
+                        return StatusCode(403, new
+                        {
+                            message = $"Bạn không có quyền chỉnh sửa trường dữ liệu '{prop.Name}' (bị khóa bởi phân quyền phần tử)."
+                        });
+                    }
+
                     var currentPropVal = prop.GetValue(existing)?.ToString();
 
                     // Kiểm tra xung đột oldVal nếu có
@@ -556,6 +637,15 @@ namespace UIForge.Core.Controllers
 
                     var prop = props.FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.OrdinalIgnoreCase));
                     if (prop == null || !prop.CanWrite || prop.Name is "Id" or "CreatedDate" or "CreatedBy") continue;
+
+                    // 🛡️ Kiểm tra phân quyền sửa trường dữ liệu
+                    if (allowedFields != null && !allowedFields.Contains(prop.Name))
+                    {
+                        return StatusCode(403, new
+                        {
+                            message = $"Bạn không có quyền chỉnh sửa trường dữ liệu '{prop.Name}' (bị khóa bởi phân quyền phần tử)."
+                        });
+                    }
 
                     var currentPropVal = prop.GetValue(existing)?.ToString();
                     AssignPropertyValue(existing, prop, propItem.Value, nullabilityCtx);
@@ -937,6 +1027,195 @@ namespace UIForge.Core.Controllers
                 if (value.HasValue) writer.WriteStringValue(value.Value);
                 else writer.WriteNullValue();
             }
+        }
+
+        private async Task<(int? userId, string username, List<string> roleCodes, List<int> roleIds, bool isDev)> ResolveCurrentUserAsync(string? previewRole)
+        {
+            var user = HttpContext.User;
+            var username = user.Identity?.Name ?? "system";
+
+            var subVal = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                         ?? user.FindFirst("sub")?.Value;
+            int.TryParse(subVal, out var userId);
+
+            var roleClaims = user.FindAll(ClaimTypes.Role).Select(c => c.Value)
+                .Concat(user.FindAll("role").Select(c => c.Value))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            bool isOriginalDev = roleClaims.Any(r => string.Equals(r, "Dev", StringComparison.OrdinalIgnoreCase))
+                                 || string.Equals(username, "admin", StringComparison.OrdinalIgnoreCase);
+
+            // Cho phép Dev giả lập xem theo Role (Preview as Role)
+            if (isOriginalDev && !string.IsNullOrWhiteSpace(previewRole) && !string.Equals(previewRole, "Dev", StringComparison.OrdinalIgnoreCase))
+            {
+                var pRole = previewRole.Trim();
+                var pRoleObj = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Code == pRole && r.Active);
+                var pRoleIdList = pRoleObj != null ? new List<int> { pRoleObj.Id } : new List<int>();
+                return (userId > 0 ? userId : 1, username, new List<string> { pRole }, pRoleIdList, false);
+            }
+
+            if (roleClaims.Count == 0 && userId > 0)
+            {
+                var userRoles = await _dbContext.Set<UserRole>()
+                    .Where(ur => ur.UserId == userId && ur.Active)
+                    .Join(_dbContext.Roles.Where(r => r.Active), ur => ur.RoleId, r => r.Id, (ur, r) => new { r.Id, r.Code })
+                    .ToListAsync();
+
+                foreach (var ur in userRoles)
+                {
+                    if (!roleClaims.Contains(ur.Code, StringComparer.OrdinalIgnoreCase))
+                        roleClaims.Add(ur.Code);
+                }
+            }
+
+            if (roleClaims.Count == 0)
+            {
+                roleClaims.Add("Dev");
+            }
+
+            var roleIds = await _dbContext.Roles
+                .Where(r => roleClaims.Contains(r.Code) && r.Active)
+                .Select(r => r.Id)
+                .ToListAsync();
+
+            bool isDev = roleClaims.Any(r => string.Equals(r, "Dev", StringComparison.OrdinalIgnoreCase));
+            return (userId > 0 ? userId : null, username, roleClaims, roleIds, isDev);
+        }
+
+        private async Task<(bool isAllowed, string? errorMessage, HashSet<string>? allowedFields)> EvaluateFieldUpdatePermissionsAsync(
+            string entityName,
+            object existingEntity,
+            int? headerFeatureId,
+            string? previewRole)
+        {
+            var (userId, username, roleCodes, roleIds, isDev) = await ResolveCurrentUserAsync(previewRole);
+            if (isDev)
+            {
+                return (true, null, null); // Dev có toàn quyền bypass
+            }
+
+            int targetPageId = headerFeatureId ?? 0;
+            if (targetPageId <= 0)
+            {
+                var page = await _dbContext.Pages.FirstOrDefaultAsync(p => p.EntityName == entityName || p.Route.Contains(entityName));
+                if (page != null) targetPageId = page.Id;
+            }
+
+            if (targetPageId <= 0)
+            {
+                return (true, null, null);
+            }
+
+            // 1. Kiểm tra quyền cấp Feature
+            var featurePolicies = await _dbContext.FeaturePolicies
+                .Where(fp => fp.FeatureId == targetPageId && fp.Active)
+                .ToListAsync();
+
+            bool hasFeatureWriteAll = false;
+            bool hasFeatureWriteOwn = false;
+
+            var userFp = userId.HasValue ? featurePolicies.FirstOrDefault(fp => fp.UserId == userId.Value) : null;
+            if (userFp != null)
+            {
+                hasFeatureWriteAll = userFp.CanWriteAll;
+                hasFeatureWriteOwn = userFp.CanWrite;
+            }
+            else
+            {
+                var roleFps = featurePolicies.Where(fp => fp.RoleId.HasValue && roleIds.Contains(fp.RoleId.Value)).ToList();
+                if (roleFps.Count > 0)
+                {
+                    hasFeatureWriteAll = roleFps.Any(fp => fp.CanWriteAll);
+                    hasFeatureWriteOwn = roleFps.Any(fp => fp.CanWrite);
+                }
+            }
+
+            bool isOwner = false;
+            if (existingEntity is BaseEntity be)
+            {
+                isOwner = string.Equals(be.CreatedBy, username, StringComparison.OrdinalIgnoreCase);
+            }
+
+            // Nếu user có CanWriteAll ở cấp Feature hoặc là người tạo và có CanWrite -> Cho phép sửa toàn bộ
+            if (hasFeatureWriteAll || (hasFeatureWriteOwn && isOwner))
+            {
+                return (true, null, null);
+            }
+
+            // 2. Nếu không có toàn quyền sửa bản ghi ở cấp Feature (VD: Pricing sửa lô của Shipment) -> Kiểm tra cấp Component & GridPolicy
+            var compPolicies = await _dbContext.ComponentPolicies
+                .Where(cp => cp.PageId == targetPageId && cp.Active && !string.IsNullOrEmpty(cp.FieldName))
+                .ToListAsync();
+
+            var allowedFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var cp in compPolicies)
+            {
+                bool canEdit = false;
+                if (userId.HasValue && cp.UserId == userId.Value)
+                {
+                    canEdit = cp.CanWriteAll || (cp.CanWrite && isOwner);
+                }
+                else if (cp.RoleId.HasValue && roleIds.Contains(cp.RoleId.Value))
+                {
+                    canEdit = cp.CanWriteAll || (cp.CanWrite && isOwner);
+                }
+
+                if (canEdit && !string.IsNullOrWhiteSpace(cp.FieldName))
+                {
+                    allowedFields.Add(cp.FieldName.Trim());
+                }
+            }
+
+            if (allowedFields.Count == 0)
+            {
+                return (false, "Bạn chỉ có quyền xem dữ liệu, không có quyền chỉnh sửa bản ghi này.", null);
+            }
+
+            return (true, null, allowedFields);
+        }
+
+        private async Task<HashSet<string>> GetMaskedFieldsAsync(string entityName, int? headerFeatureId, string? previewRole)
+        {
+            var (userId, username, roleCodes, roleIds, isDev) = await ResolveCurrentUserAsync(previewRole);
+            if (isDev) return new HashSet<string>();
+
+            int targetPageId = headerFeatureId ?? 0;
+            if (targetPageId <= 0)
+            {
+                var page = await _dbContext.Pages.FirstOrDefaultAsync(p => p.EntityName == entityName || p.Route.Contains(entityName));
+                if (page != null) targetPageId = page.Id;
+            }
+            if (targetPageId <= 0) return new HashSet<string>();
+
+            var compPolicies = await _dbContext.ComponentPolicies
+                .Where(cp => cp.PageId == targetPageId && cp.Active && !string.IsNullOrEmpty(cp.FieldName))
+                .ToListAsync();
+
+            var maskedFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var group in compPolicies.GroupBy(cp => cp.FieldName, StringComparer.OrdinalIgnoreCase))
+            {
+                var field = group.Key;
+                if (string.IsNullOrWhiteSpace(field)) continue;
+
+                var userRule = userId.HasValue ? group.FirstOrDefault(cp => cp.UserId == userId.Value) : null;
+                if (userRule != null)
+                {
+                    if (!userRule.CanRead) maskedFields.Add(field);
+                }
+                else
+                {
+                    var roleRules = group.Where(cp => cp.RoleId.HasValue && roleIds.Contains(cp.RoleId.Value)).ToList();
+                    if (roleRules.Count > 0 && roleRules.All(r => !r.CanRead))
+                    {
+                        maskedFields.Add(field);
+                    }
+                }
+            }
+
+            return maskedFields;
         }
     }
 }

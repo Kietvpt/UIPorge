@@ -88,6 +88,50 @@ export function extractFieldValue(
   return fallback
 }
 
+/**
+ * Tự động tạo headers bảo mật đa tầng: JWT Token, X-Preview-Role, X-Feature-Id
+ */
+export function getSecurityHeaders(extraHeaders: Record<string, string> = {}, explicitFeatureId?: string | number): Record<string, string> {
+  const headers: Record<string, string> = { ...extraHeaders }
+
+  try {
+    const rawStorage = typeof window !== 'undefined' ? localStorage.getItem('uiforge-permission-engine') : null
+    if (rawStorage) {
+      const parsed = JSON.parse(rawStorage)
+      const previewRole = parsed?.state?.previewRoleCode
+      if (previewRole) {
+        headers['X-Preview-Role'] = previewRole
+      }
+    }
+  } catch {
+    // Ignore storage parse error
+  }
+
+  try {
+    const targetFeatId = explicitFeatureId || useEditorStore.getState().activeFeatureId
+    if (targetFeatId) {
+      headers['X-Feature-Id'] = String(targetFeatId)
+    }
+  } catch {
+    // Ignore store error
+  }
+
+  try {
+    const rawAuth = typeof window !== 'undefined' ? localStorage.getItem('uiforge_auth_storage') : null
+    if (rawAuth) {
+      const parsedAuth = JSON.parse(rawAuth)
+      const token = parsedAuth?.state?.token
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+    }
+  } catch {
+    // Ignore auth error
+  }
+
+  return headers
+}
+
 interface DataEngineState {
   // Kho lưu trữ dữ liệu các bảng/entity danh mục (datasets['MasterData'], datasets['Document']...)
   datasets: Record<string, any[]>
@@ -401,7 +445,7 @@ export const useDataEngine = create<DataEngineState>()(
               : `?$filter=${encodeURIComponent(normalizedQuery)}`
             : ''
           const url = `http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}${queryString}`
-          const response = await fetch(url)
+          const response = await fetch(url, { headers: getSecurityHeaders() })
           if (response.ok) {
             const data = await response.json()
             const items = Array.isArray(data) ? data : data.value || []
@@ -457,7 +501,7 @@ export const useDataEngine = create<DataEngineState>()(
               : `?$filter=${encodeURIComponent(normalizedQuery)}`
             : ''
           const url = `http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}${queryString}`
-          const response = await fetch(url)
+          const response = await fetch(url, { headers: getSecurityHeaders() })
           if (response.ok) {
             const data = await response.json()
             return Array.isArray(data) ? data : data.value || []
@@ -529,7 +573,7 @@ export const useDataEngine = create<DataEngineState>()(
 
         const res = await fetch(url, {
           method,
-          headers: { 'Content-Type': 'application/json' },
+          headers: getSecurityHeaders({ 'Content-Type': 'application/json' }),
           body: JSON.stringify(payloadForApi),
         })
 
@@ -580,6 +624,7 @@ export const useDataEngine = create<DataEngineState>()(
       try {
         const res = await fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}/${id}`, {
           method: 'DELETE',
+          headers: getSecurityHeaders(),
         })
         if (res.ok) {
           // Xóa khỏi dataset trong RAM nếu có

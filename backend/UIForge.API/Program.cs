@@ -392,9 +392,192 @@ try
                 END
             ');
         END
+
+        -- 🛡️ MIGRATION BẢNG FEATUREPOLICIES (Chuẩn 13 cột khớp 100% Core C#)
+        IF OBJECT_ID('FeaturePolicies', 'U') IS NULL
+        BEGIN
+            CREATE TABLE FeaturePolicies (
+                Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                FeatureId INT NOT NULL,
+                FeatureCode NVARCHAR(50) NULL,
+                EntityName NVARCHAR(100) NULL,
+                RoleId INT NULL,
+                UserId INT NULL,
+                CanRead BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanRead DEFAULT 1,
+                CanWrite BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanWrite DEFAULT 0,
+                CanWriteAll BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanWriteAll DEFAULT 0,
+                CanDelete BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanDelete DEFAULT 0,
+                CanDeleteAll BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanDeleteAll DEFAULT 0,
+                CanDeactivate BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanDeactivate DEFAULT 0,
+                CanShare BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanShare DEFAULT 0,
+                RecordId INT NOT NULL CONSTRAINT DF_FeaturePolicies_RecordId DEFAULT 0,
+                LockUpdateAfterCreated INT NULL,
+                LockDeleteAfterCreated INT NULL,
+                Description NVARCHAR(500) NULL,
+                Active BIT NOT NULL CONSTRAINT DF_FeaturePolicies_Active DEFAULT 1,
+                CreatedDate DATETIME2 NOT NULL CONSTRAINT DF_FeaturePolicies_CreatedDate DEFAULT GETUTCDATE(),
+                CreatedBy NVARCHAR(MAX) NULL,
+                UpdatedDate DATETIME2 NULL,
+                UpdatedBy NVARCHAR(MAX) NULL
+            );
+            CREATE INDEX IX_FeaturePolicies_Feature_Role_User ON FeaturePolicies(FeatureId, RoleId, UserId, Active);
+        END
+        ELSE
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('FeaturePolicies') AND name = 'CanWriteAll')
+                ALTER TABLE FeaturePolicies ADD CanWriteAll BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanWriteAll DEFAULT 0;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('FeaturePolicies') AND name = 'CanDeleteAll')
+                ALTER TABLE FeaturePolicies ADD CanDeleteAll BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanDeleteAll DEFAULT 0;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('FeaturePolicies') AND name = 'CanDeactivate')
+                ALTER TABLE FeaturePolicies ADD CanDeactivate BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanDeactivate DEFAULT 0;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('FeaturePolicies') AND name = 'CanShare')
+                ALTER TABLE FeaturePolicies ADD CanShare BIT NOT NULL CONSTRAINT DF_FeaturePolicies_CanShare DEFAULT 0;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('FeaturePolicies') AND name = 'RecordId')
+                ALTER TABLE FeaturePolicies ADD RecordId INT NOT NULL CONSTRAINT DF_FeaturePolicies_RecordId DEFAULT 0;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('FeaturePolicies') AND name = 'LockUpdateAfterCreated')
+                ALTER TABLE FeaturePolicies ADD LockUpdateAfterCreated INT NULL;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('FeaturePolicies') AND name = 'LockDeleteAfterCreated')
+                ALTER TABLE FeaturePolicies ADD LockDeleteAfterCreated INT NULL;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('FeaturePolicies') AND name = 'Description')
+                ALTER TABLE FeaturePolicies ADD Description NVARCHAR(500) NULL;
+        END
+
+        -- 🧩 MIGRATION BẢNG COMPONENTPOLICIES (Chuẩn 5 quyền: CanRead, CanWrite, CanWriteAll, CanDelete, CanDeactivate)
+        IF OBJECT_ID('ComponentPolicies', 'U') IS NULL
+        BEGIN
+            CREATE TABLE ComponentPolicies (
+                Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                PageId INT NOT NULL,
+                NodeId NVARCHAR(100) NOT NULL,
+                ComponentId INT NULL,
+                RoleId INT NULL,
+                UserId INT NULL,
+                FieldName NVARCHAR(100) NULL,
+                CanRead BIT NOT NULL CONSTRAINT DF_ComponentPolicies_CanRead DEFAULT 1,
+                CanWrite BIT NOT NULL CONSTRAINT DF_ComponentPolicies_CanWrite DEFAULT 0,
+                CanWriteAll BIT NOT NULL CONSTRAINT DF_ComponentPolicies_CanWriteAll DEFAULT 0,
+                CanDelete BIT NOT NULL CONSTRAINT DF_ComponentPolicies_CanDelete DEFAULT 0,
+                CanDeactivate BIT NOT NULL CONSTRAINT DF_ComponentPolicies_CanDeactivate DEFAULT 0,
+                Description NVARCHAR(500) NULL,
+                Active BIT NOT NULL CONSTRAINT DF_ComponentPolicies_Active DEFAULT 1,
+                CreatedDate DATETIME2 NOT NULL CONSTRAINT DF_ComponentPolicies_CreatedDate DEFAULT GETUTCDATE(),
+                CreatedBy NVARCHAR(MAX) NULL,
+                UpdatedDate DATETIME2 NULL,
+                UpdatedBy NVARCHAR(MAX) NULL
+            );
+            CREATE INDEX IX_ComponentPolicies_Page_Node_Role_User ON ComponentPolicies(PageId, NodeId, RoleId, UserId, Active);
+        END
+        ELSE
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ComponentPolicies') AND name = 'CanWriteAll')
+                ALTER TABLE ComponentPolicies ADD CanWriteAll BIT NOT NULL CONSTRAINT DF_ComponentPolicies_CanWriteAll DEFAULT 0;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ComponentPolicies') AND name = 'CanDeactivate')
+                ALTER TABLE ComponentPolicies ADD CanDeactivate BIT NOT NULL CONSTRAINT DF_ComponentPolicies_CanDeactivate DEFAULT 0;
+            IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('ComponentPolicies') AND name = 'Description')
+                ALTER TABLE ComponentPolicies ADD Description NVARCHAR(500) NULL;
+        END
+
+        -- 🛡️ Seed danh mục Roles chuẩn khớp ảnh Core C# và phân công logistics thực tế
+        IF EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Roles')
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'Admin')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('Admin', N'Quản trị hệ thống', N'Quản trị viên toàn hệ thống', 1, GETUTCDATE(), 'system');
+
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'System')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('System', N'Hệ thống tự động', N'Tài khoản tác vụ hệ thống nền', 1, GETUTCDATE(), 'system');
+
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'Shipment')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('Shipment', N'Khai thác / Giao nhận', N'Bộ phận quản lý lô hàng và vận đơn FCL/LCL', 1, GETUTCDATE(), 'system');
+
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'Pricing')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('Pricing', N'Báo giá / Cước phí', N'Bộ phận định giá và quản lý chi phí cước logistics', 1, GETUTCDATE(), 'system');
+
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'SALES')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('SALES', N'Kinh doanh (Sales)', N'Bộ phận tiếp thị và bán cước', 1, GETUTCDATE(), 'system');
+
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'SALESGROUP')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('SALESGROUP', N'Nhóm Kinh doanh', N'Trưởng nhóm và quản lý kinh doanh', 1, GETUTCDATE(), 'system');
+
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'DOCS_CUSTOMS')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('DOCS_CUSTOMS', N'DOCS AND CUSTOMS', N'Bộ phận chứng từ và thủ tục hải quan', 1, GETUTCDATE(), 'system');
+
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'CS')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('CS', N'Chăm sóc khách hàng (CS)', N'Bộ phận dịch vụ khách hàng', 1, GETUTCDATE(), 'system');
+
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'TRUCKING')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('TRUCKING', N'Vận tải nội địa (Trucking)', N'Điều phối xe tải và giao hàng nội địa', 1, GETUTCDATE(), 'system');
+
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'OPS')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('OPS', N'Hiện trường (Operations)', N'Giao nhận tại cảng và kho bãi', 1, GETUTCDATE(), 'system');
+
+            IF NOT EXISTS (SELECT 1 FROM Roles WHERE Code = 'DEPUTY_GEN')
+                INSERT INTO Roles (Code, Name, Description, Active, CreatedDate, CreatedBy)
+                VALUES ('DEPUTY_GEN', N'Deputy General', N'Ban điều hành / Phó Tổng Giám Đốc', 1, GETUTCDATE(), 'system');
+        END
+
+        -- 🚀 SEED DỮ LIỆU MẪU KỊCH BẢN FCL IMPORT (F0013226) CHO DEV, SHIPMENT, PRICING
+        EXEC(N'
+            DECLARE @FclPageId INT;
+            SELECT TOP 1 @FclPageId = Id FROM Pages WHERE Route = ''/fcl-import'' OR Code = ''F0013226'';
+
+            IF @FclPageId IS NOT NULL AND EXISTS (SELECT 1 FROM sys.tables WHERE name = ''FeaturePolicies'')
+            BEGIN
+                -- 1. Seed FeaturePolicies trên FCL Import (nếu chưa có rule cho trang này)
+                IF NOT EXISTS (SELECT 1 FROM FeaturePolicies WHERE FeatureId = @FclPageId)
+                BEGIN
+                    -- Toàn quyền: Dev, Admin, System, Shipment, DOCS_CUSTOMS
+                    INSERT INTO FeaturePolicies (FeatureId, FeatureCode, EntityName, RoleId, CanRead, CanWrite, CanWriteAll, CanDelete, CanDeleteAll, CanDeactivate, CanShare, RecordId, Active, Description, CreatedDate, CreatedBy)
+                    SELECT @FclPageId, ''F0013226'', ''Transaction'', r.Id, 1, 1, 1, 1, 1, 1, 1, 0, 1, N''Toàn quyền vận hành FCL Import'', GETUTCDATE(), ''system''
+                    FROM Roles r
+                    WHERE r.Code IN (''Dev'', ''Admin'', ''System'', ''Shipment'', ''DOCS_CUSTOMS'');
+
+                    -- Giới hạn Feature (Chỉ xem): Pricing, SALES, SALESGROUP
+                    INSERT INTO FeaturePolicies (FeatureId, FeatureCode, EntityName, RoleId, CanRead, CanWrite, CanWriteAll, CanDelete, CanDeleteAll, CanDeactivate, CanShare, RecordId, Active, Description, CreatedDate, CreatedBy)
+                    SELECT @FclPageId, ''F0013226'', ''Transaction'', r.Id, 1, 0, 0, 0, 0, 0, 0, 0, 1, N''Chỉ xem tổng thể, sửa chi tiết theo Component/GridPolicy'', GETUTCDATE(), ''system''
+                    FROM Roles r
+                    WHERE r.Code IN (''Pricing'', ''SALES'', ''SALESGROUP'');
+                END
+
+                -- 2. Seed ComponentPolicies trên FCL Import (cấp quyền CanWriteAll cho Pricing trên các trường giá cước)
+                IF EXISTS (SELECT 1 FROM sys.tables WHERE name = ''ComponentPolicies'')
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM ComponentPolicies WHERE PageId = @FclPageId)
+                    BEGIN
+                        DECLARE @PricingRoleId INT;
+                        SELECT TOP 1 @PricingRoleId = Id FROM Roles WHERE Code = ''Pricing'';
+
+                        IF @PricingRoleId IS NOT NULL
+                        BEGIN
+                            -- Component trên form: Vendor, PTerm, Notes, Commodity
+                            INSERT INTO ComponentPolicies (PageId, NodeId, FieldName, RoleId, CanRead, CanWrite, CanWriteAll, CanDelete, CanDeactivate, Active, Description, CreatedDate, CreatedBy)
+                            VALUES 
+                            (@FclPageId, ''fld_vendor'', ''VendorId'', @PricingRoleId, 1, 1, 1, 0, 0, 1, N''Pricing: Nhập/chọn Nhà cung cấp'', GETUTCDATE(), ''system''),
+                            (@FclPageId, ''fld_pterm'', ''PTerm'', @PricingRoleId, 1, 1, 1, 0, 0, 1, N''Pricing: Sửa Điều khoản thanh toán'', GETUTCDATE(), ''system''),
+                            (@FclPageId, ''fld_notes'', ''Notes'', @PricingRoleId, 1, 1, 1, 0, 0, 1, N''Pricing: Nhập Ghi chú chi phí cước'', GETUTCDATE(), ''system''),
+                            (@FclPageId, ''fld_commodity'', ''Commodity'', @PricingRoleId, 1, 1, 1, 0, 0, 1, N''Pricing: Cập nhật Tên hàng hóa'', GETUTCDATE(), ''system''),
+                            -- Cột trên GridPolicy / ForgeTable: POL, POD, BuyingRate, SellingRate
+                            (@FclPageId, ''col_pol'', ''PolId'', @PricingRoleId, 1, 1, 1, 0, 0, 1, N''Pricing: Chọn Cảng đi'', GETUTCDATE(), ''system''),
+                            (@FclPageId, ''col_pod'', ''PodId'', @PricingRoleId, 1, 1, 1, 0, 0, 1, N''Pricing: Chọn Cảng đến'', GETUTCDATE(), ''system''),
+                            (@FclPageId, ''col_buyingRate'', ''BuyingRate'', @PricingRoleId, 1, 1, 1, 0, 0, 1, N''Pricing: Nhập Giá mua cước (Buy Rate)'', GETUTCDATE(), ''system''),
+                            (@FclPageId, ''col_sellingRate'', ''SellingRate'', @PricingRoleId, 1, 1, 1, 0, 0, 1, N''Pricing: Nhập Giá bán cước (Sell Rate)'', GETUTCDATE(), ''system'');
+                        END
+                    END
+                END
+            END
+        ');
     ";
     await db.Database.ExecuteSqlRawAsync(sqlMigration);
-    Console.WriteLine("[DB] Database schema migrated: Components (JSON), MasterDatas, Roles, UserRoles, RolePermissions, UserSettings, AuditLogs, Pages (Hierarchy & Features).");
+    Console.WriteLine("[DB] Database schema migrated: Components (JSON), MasterDatas, Roles, UserRoles, RolePermissions, UserSettings, AuditLogs, Pages (Hierarchy & Features), FeaturePolicies (13 columns), ComponentPolicies (5 permissions).");
 }
 catch (Exception ex)
 {

@@ -29,6 +29,8 @@ import { UnifiedEventEditor } from './events/UnifiedEventEditor'
 import { parseRawCss, formatStyleToCss } from './cssParser'
 import { ColumnPropertiesModal } from '@/renderer/components/grid/ColumnPropertiesModal'
 import { ComponentPropertiesModal } from './ComponentPropertiesModal'
+import { PolicyMatrixGrid } from './PolicyMatrixGrid'
+import { usePermissionEngine } from '@/core/engines/permissionEngine'
 import {
   moveColumn,
   toggleColumnFreeze,
@@ -2864,23 +2866,7 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
         {/* ── TAB 7: PHÂN QUYỀN MỊN (FIELD-LEVEL RBAC - KẾ THỪA SECURITYBL & POLICYEDITORBL) ── */}
         {effectiveTab === 'permissions' && (() => {
           const perms = selectedNode.permissions || {}
-          const standardRoles = ['Admin', 'Dev', 'User', 'Manager', 'Staff', 'Customer']
-          const allowedList = perms.allowedRoles || []
-          const readOnlyList = perms.readOnlyRoles || []
-
-          const toggleAllowedRole = (role: string) => {
-            const next = allowedList.includes(role)
-              ? allowedList.filter((r) => r !== role)
-              : [...allowedList, role]
-            updateComponentPermissions(selectedNode.id, { allowedRoles: next })
-          }
-
-          const toggleReadOnlyRole = (role: string) => {
-            const next = readOnlyList.includes(role)
-              ? readOnlyList.filter((r) => r !== role)
-              : [...readOnlyList, role]
-            updateComponentPermissions(selectedNode.id, { readOnlyRoles: next })
-          }
+          const currentRules = perms.rules || []
 
           return (
             <div className="space-y-4">
@@ -2894,66 +2880,23 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
                 </p>
               </div>
 
-              {/* Vai trò được phép xem & thao tác (allowedRoles) */}
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                  Vai Trò Được Phép Truy Cập (Allowed Roles)
-                </label>
-                <p className="text-[10px] text-slate-500">
-                  Để trống = Tất cả mọi vai trò đều được truy cập.
-                </p>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {standardRoles.map((role) => {
-                    const isChecked = allowedList.includes(role)
-                    return (
-                      <button
-                        key={role}
-                        type="button"
-                        onClick={() => toggleAllowedRole(role)}
-                        className={`px-2.5 py-1.5 rounded-lg border text-left text-xs font-medium flex items-center justify-between transition-colors ${isChecked
-                          ? 'bg-blue-600/20 border-blue-500 text-blue-300'
-                          : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
-                          }`}
-                      >
-                        <span>{role}</span>
-                        {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* Vai trò chỉ đọc (readOnlyRoles) */}
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                  Vai Trò Chỉ Đọc (Read-Only Roles)
-                </label>
-                <p className="text-[10px] text-slate-500">
-                  Những vai trò này vẫn nhìn thấy component nhưng không thể sửa đổi hoặc click.
-                </p>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {standardRoles.map((role) => {
-                    const isChecked = readOnlyList.includes(role)
-                    return (
-                      <button
-                        key={role}
-                        type="button"
-                        onClick={() => toggleReadOnlyRole(role)}
-                        className={`px-2.5 py-1.5 rounded-lg border text-left text-xs font-medium flex items-center justify-between transition-colors ${isChecked
-                          ? 'bg-amber-600/20 border-amber-500 text-amber-300'
-                          : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
-                          }`}
-                      >
-                        <span>{role}</span>
-                        {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
+              {/* Ma Trận Phân Quyền Grid 9 Cột Chuẩn */}
+              <PolicyMatrixGrid
+                rules={currentRules}
+                onChange={(newRules) => {
+                  updateComponentPermissions(selectedNode.id, { rules: newRules })
+                  const activePageId = useEditorStore.getState().activeFeatureId ?? ''
+                  if (activePageId) {
+                    usePermissionEngine.getState().setComponentPolicies(activePageId, selectedNode.id, newRules)
+                  }
+                }}
+                pageId={selectedNode.pageId || useEditorStore.getState().activeFeatureId || ''}
+                nodeId={selectedNode.id}
+                fieldName={selectedNode.dataBinding?.fieldName}
+              />
 
               {/* Hành vi khi không có quyền (deniedBehavior) */}
-              <div className="space-y-2">
+              <div className="space-y-2 pt-2 border-t border-slate-800">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
                   Hành Vi Khi Không Có Quyền (Denied Behavior)
                 </label>

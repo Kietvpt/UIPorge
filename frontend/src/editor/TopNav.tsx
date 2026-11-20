@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useEditorStore } from '@/store/editorStore'
+import { usePermissionEngine } from '@/core/engines/permissionEngine'
 import {
   Undo2,
   Redo2,
@@ -12,6 +13,7 @@ import {
   LogOut,
   PanelRightOpen,
   PanelRightClose,
+  Shield,
 } from 'lucide-react'
 
 interface TopNavProps {
@@ -50,6 +52,16 @@ export const TopNav: React.FC<TopNavProps> = ({
   const history = useEditorStore((s) => s.history)
 
   const activeFeature = features.find((f) => f.id === activeFeatureId)
+
+  // Permission Engine Preview Role Simulation (0-second role switch)
+  const previewRoleCode = usePermissionEngine((s) => s.previewRoleCode)
+  const setPreviewRole = usePermissionEngine((s) => s.setPreviewRole)
+  const roles = usePermissionEngine((s) => s.roles)
+  const fetchSecurityMetadata = usePermissionEngine((s) => s.fetchSecurityMetadata)
+
+  useEffect(() => {
+    fetchSecurityMetadata()
+  }, [fetchSecurityMetadata])
 
   const canUndo = historyIndex > 0
   const canRedo = historyIndex < history.length - 1
@@ -139,8 +151,38 @@ export const TopNav: React.FC<TopNavProps> = ({
 
       {/* ── 3. Account Information & Global User Actions ── */}
       <div className="flex items-center gap-3">
+        {/* Preview as Role Simulation Tool (Chỉ hiển thị cho tài khoản Dev) */}
+        {canEdit && (
+          <div className="flex items-center gap-1.5 bg-slate-950/90 px-2.5 py-1 rounded-lg border border-slate-800 hover:border-slate-700 transition-colors">
+            <Shield className={`w-3.5 h-3.5 ${previewRoleCode ? 'text-amber-400' : 'text-slate-400'}`} />
+            <span className="text-[11px] text-slate-400 font-medium whitespace-nowrap">Vai trò:</span>
+            <select
+              value={previewRoleCode || ''}
+              onChange={(e) => setPreviewRole(e.target.value || null)}
+              className="bg-transparent text-xs text-slate-200 font-semibold focus:outline-none cursor-pointer border-none py-0.5"
+              title="Chuyển đổi vai trò người dùng để kiểm tra phân quyền tức thì (0 giây)"
+            >
+              <option value="" className="bg-slate-900 text-slate-200">
+                {userRole || 'Dev'}
+              </option>
+              {roles.map((r) => (
+                <option key={r.code} value={r.code} className="bg-slate-900 text-slate-200">
+                  {r.code}
+                </option>
+              ))}
+            </select>
+            {previewRoleCode && (
+              <span
+                className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"
+                title={`Đang giả lập vai trò: ${previewRoleCode}`}
+              />
+            )}
+          </div>
+        )}
+
+        {canEdit && <div className="h-5 w-[1px] bg-slate-800" />}
         {/* Toggle Inspector button */}
-        {!isPreview && (
+        {canEdit && !isPreview && (
           <button
             onClick={onToggleRightPanel}
             className={`p-2 rounded-lg border text-xs font-medium transition-all cursor-pointer ${

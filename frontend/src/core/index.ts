@@ -38,6 +38,13 @@ export type { PrintReportOptions, BackendDocxReportOptions } from './engines/pri
 export { useDataEngine } from './engines/dataEngine'
 export { useNavigationEngine } from './engines/navigationEngine'
 export { useRealtimeEngine } from './engines/realtimeEngine'
+export { usePermissionEngine } from './engines/permissionEngine'
+export type {
+  RoleItem,
+  UserItem,
+  FeaturePermissionEvaluation,
+  ComponentPermissionEvaluation,
+} from './engines/permissionEngine'
 export type { LockedRecordInfo, RealtimeNotification } from './engines/realtimeEngine'
 export { useGlobalHotkeys } from './hooks/useGlobalHotkeys'
 export type { GlobalHotkeysOptions } from './hooks/useGlobalHotkeys'

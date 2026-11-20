@@ -12,9 +12,11 @@ import {
   ChevronUp,
   ChevronDown,
 } from 'lucide-react'
-import type { TableColumn, ComponentEvent, DropdownColumnConfig } from '@/types/schema'
+import type { TableColumn, ComponentEvent, DropdownColumnConfig, ComponentPolicyRule } from '@/types/schema'
 import { useEditorStore } from '@/store/editorStore'
 import { UnifiedEventEditor } from '@/editor/events/UnifiedEventEditor'
+import { PolicyMatrixGrid } from '@/editor/PolicyMatrixGrid'
+import { usePermissionEngine } from '@/core/engines/permissionEngine'
 import {
   fetchEntityMetadata,
   EntityMetadata,
@@ -38,6 +40,8 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
   const [formData, setFormData] = useState<TableColumn | null>(null)
   const [activeBottomTab, setActiveBottomTab] = useState<'info' | 'dropdownColumns' | 'events' | 'permissions'>('info')
   const [liveEntities, setLiveEntities] = useState<EntityMetadata[]>([])
+  const [pendingPolicyRule, setPendingPolicyRule] = useState<ComponentPolicyRule | null>(null)
+  const [saveSuccess, setSaveSuccess] = useState(false)
   const activeFeature = useEditorStore((s) => s.features.find((f) => f.id === s.activeFeatureId))
 
   useEffect(() => {
@@ -89,8 +93,20 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
         formatData: column.formatData ?? '',
         events: parsedEvents,
       })
+
+      if (activeFeature?.id && column.key) {
+        usePermissionEngine
+          .getState()
+          .fetchComponentPolicies(activeFeature.id, column.key)
+          .then((fetched) => {
+            if (fetched && fetched.length > 0) {
+              setFormData((prev) => (prev ? { ...prev, columnPermissions: fetched } : null))
+            }
+          })
+          .catch(() => {})
+      }
     }
-  }, [column, isOpen])
+  }, [column, isOpen, activeFeature?.id])
 
   if (!isOpen || !formData) return null
 
@@ -115,12 +131,27 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
     })
   }
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
-    if (formData) {
-      onSave(formData)
-      onClose()
+    if (!formData) return
+
+    let finalRules = [...(formData.columnPermissions || [])]
+    if (pendingPolicyRule) {
+      finalRules = [...finalRules, pendingPolicyRule]
+      setFormData((prev) => (prev ? { ...prev, columnPermissions: finalRules } : null))
+      setPendingPolicyRule(null)
     }
+
+    if (activeFeature?.id && formData.key) {
+      await usePermissionEngine
+        .getState()
+        .saveComponentPolicies(activeFeature.id, formData.key, finalRules, formData.key)
+    }
+
+    onSave({ ...formData, columnPermissions: finalRules })
+    setSaveSuccess(true)
+    setTimeout(() => setSaveSuccess(false), 2500)
+    // DO NOT call onClose(): Modal stays open on Save until explicit Close
   }
 
   // ── PORTAL TO BODY (z-[999999]): ĐẢM BẢO HOÀN TOÀN KHÔNG BỊ CÁC Ô GHIM CỦA BẢNG ĐÈ LÊN UI ──
@@ -138,6 +169,11 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {saveSuccess && (
+              <span className="text-[11px] font-semibold text-emerald-400 animate-in fade-in flex items-center gap-1 bg-emerald-950/80 px-2 py-1 rounded border border-emerald-500/40">
+                ✓ Đã lưu thành công!
+              </span>
+            )}
             <button
               type="button"
               onClick={() => handleSubmit()}
@@ -1083,37 +1119,54 @@ export const ColumnPropertiesModal: React.FC<ColumnPropertiesModalProps> = ({
 
             {activeBottomTab === 'permissions' && (
               <div className="p-4 space-y-3 text-xs">
-                <div className="text-slate-300">Cấu hình phân quyền hiển thị / chỉnh sửa cột theo vai trò (Roles):</div>
-                <div className="grid grid-cols-3 gap-3">
-                  {['Admin', 'Manager', 'Dispatcher', 'Sales', 'Customer'].map((role) => (
-                    <label key={role} className="flex items-center gap-2 p-2 rounded bg-slate-800/80 border border-slate-700 cursor-pointer">
-                      <input type="checkbox" defaultChecked={role === 'Admin' || role === 'Manager'} className="rounded text-emerald-500" />
-                      <span className="font-semibold text-slate-200">{role}</span>
-                    </label>
-                  ))}
-                </div>
+                <PolicyMatrixGrid
+                  isColumn={true}
+                  rules={formData.columnPermissions || []}
+                  onChange={(newRules) => {
+                    setFormData({
+                      ...formData,
+                      columnPermissions: newRules,
+                    })
+                    if (activeFeature?.id && formData.key) {
+                      usePermissionEngine.getState().setComponentPolicies(activeFeature.id, formData.key, newRules)
+                    }
+                  }}
+                  onPendingRuleChange={setPendingPolicyRule}
+                  pageId={activeFeature?.id}
+                  nodeId={formData.key}
+                  fieldName={formData.key}
+                />
               </div>
             )}
           </div>
         </div>
 
         {/* ── FOOTER ACTIONS ── */}
-        <div className="flex items-center justify-end gap-3 px-6 py-3 bg-[#0b1329] border-t border-slate-800">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-colors"
-          >
-            Đóng
-          </button>
-          <button
-            type="button"
-            onClick={() => handleSubmit()}
-            className="flex items-center gap-2 px-5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-950/40 transition-all"
-          >
-            <Save className="w-3.5 h-3.5" />
-            <span>Lưu Thuộc Tính Cột</span>
-          </button>
+        <div className="flex items-center justify-between px-6 py-3 bg-[#0b1329] border-t border-slate-800">
+          <div>
+            {saveSuccess && (
+              <span className="text-xs font-semibold text-emerald-400 animate-in fade-in flex items-center gap-1 bg-emerald-950/80 px-2.5 py-1 rounded border border-emerald-500/40">
+                ✓ Đã lưu thành công!
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-colors"
+            >
+              Đóng
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSubmit()}
+              className="flex items-center gap-2 px-5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-950/40 transition-all"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>Lưu Thuộc Tính Cột</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>,

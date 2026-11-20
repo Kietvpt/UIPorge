@@ -16,6 +16,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useEditorStore } from '@/store/editorStore'
+import { useAuthStore } from '@/store/authStore'
 import { useNavigationEngine } from '@/core/engines/navigationEngine'
 import { ContextMenu, MenuItem } from './ContextMenu'
 import { FeatureManagerModal } from './FeatureManagerModal'
@@ -76,6 +77,7 @@ interface SortableFeatureItemProps {
   isCollapsed: boolean
   isActive: boolean
   childCount?: number
+  isDev?: boolean
   onToggleCollapse: (e: React.MouseEvent) => void
   onSelect: () => void
   onContextMenu: (e: React.MouseEvent) => void
@@ -88,12 +90,14 @@ const SortableFeatureItem: React.FC<SortableFeatureItemProps> = ({
   isCollapsed,
   isActive,
   childCount = 0,
+  isDev = true,
   onToggleCollapse,
   onSelect,
   onContextMenu,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: feature.id,
+    disabled: !isDev,
   })
 
   const style: React.CSSProperties = {
@@ -111,7 +115,7 @@ const SortableFeatureItem: React.FC<SortableFeatureItemProps> = ({
       ref={setNodeRef}
       style={style}
       onClick={onSelect}
-      onContextMenu={onContextMenu}
+      onContextMenu={isDev ? onContextMenu : (e) => e.preventDefault()}
       className={`group relative flex items-center justify-between pr-2 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all select-none ${
         isActive
           ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 border border-blue-500'
@@ -121,17 +125,19 @@ const SortableFeatureItem: React.FC<SortableFeatureItemProps> = ({
       }`}
     >
       <div className="flex items-center gap-2 truncate flex-1 min-w-0">
-        {/* Drag Handle */}
-        <button
-          type="button"
-          {...attributes}
-          {...listeners}
-          onClick={(e) => e.stopPropagation()}
-          className="opacity-0 group-hover:opacity-100 p-0.5 -ml-1 text-slate-500 hover:text-slate-300 cursor-grab active:cursor-grabbing transition-opacity shrink-0"
-          title="Kéo để di chuyển vị trí hoặc kéo vào nhóm cha"
-        >
-          <GripVertical className="w-3.5 h-3.5" />
-        </button>
+        {/* Drag Handle (Chỉ dành cho Dev) */}
+        {isDev && (
+          <button
+            type="button"
+            {...attributes}
+            {...listeners}
+            onClick={(e) => e.stopPropagation()}
+            className="opacity-0 group-hover:opacity-100 p-0.5 -ml-1 text-slate-500 hover:text-slate-300 cursor-grab active:cursor-grabbing transition-opacity shrink-0"
+            title="Kéo để di chuyển vị trí hoặc kéo vào nhóm cha"
+          >
+            <GripVertical className="w-3.5 h-3.5" />
+          </button>
+        )}
 
         {/* Expand / Collapse Chevron for Groups */}
         {hasChildren ? (
@@ -183,16 +189,19 @@ const SortableFeatureItem: React.FC<SortableFeatureItemProps> = ({
           </span>
         )}
 
-        <button
-          type="button"
-          onClick={onContextMenu}
-          className={`opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-black/20 transition-opacity ${
-            isActive ? 'text-white' : 'text-slate-400 hover:text-white'
-          }`}
-          title="Tùy chọn Feature"
-        >
-          <MoreVertical className="w-3.5 h-3.5" />
-        </button>
+        {/* Nút tùy chọn feature (Chỉ dành cho Dev) */}
+        {isDev && (
+          <button
+            type="button"
+            onClick={onContextMenu}
+            className={`opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-black/20 transition-opacity ${
+              isActive ? 'text-white' : 'text-slate-400 hover:text-white'
+            }`}
+            title="Tùy chọn Feature"
+          >
+            <MoreVertical className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </div>
   )
@@ -200,6 +209,8 @@ const SortableFeatureItem: React.FC<SortableFeatureItemProps> = ({
 
 // ── Main LeftNavbar Component ──
 export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
+  const user = useAuthStore((s) => s.user)
+  const isDev = user?.role === 'Dev'
   const features = useEditorStore((s) => s.features)
   const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
   const setActiveFeature = useEditorStore((s) => s.setActiveFeature)
@@ -327,9 +338,10 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
     return { treeNodes: nodes, visibleNodeIds: ids }
   }, [visibleFeatures, collapsedGroups])
 
-  // Context Menu handlers
+  // Context Menu handlers (Chỉ cho phép tài khoản Dev)
   const handleSidebarContextMenu = (e: React.MouseEvent) => {
     e.preventDefault()
+    if (!isDev) return
     setContextMenu({
       x: e.clientX,
       y: e.clientY,
@@ -339,6 +351,7 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
   const handleItemContextMenu = (e: React.MouseEvent, featureId: string) => {
     e.preventDefault()
     e.stopPropagation()
+    if (!isDev) return
     setContextMenu({
       x: e.clientX,
       y: e.clientY,
@@ -523,48 +536,6 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
         style={{ width: width ? `${width}px` : undefined }}
         className="w-64 border-r border-slate-800 bg-[#090e1a] flex flex-col shrink-0 select-none relative"
       >
-        {/* ── HEADER THANH LEFTBAR VỚI CÁC NÚT MỞ NHANH (Khớp Yêu Cầu Master) ── */}
-        <div className="px-3.5 py-3 border-b border-slate-800 flex items-center justify-between bg-[#080d17]">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-blue-600/20 text-blue-400">
-              <Layers className="w-4 h-4" />
-            </div>
-            <span className="font-bold text-xs uppercase tracking-wider text-slate-200">TÍNH NĂNG</span>
-          </div>
-
-          <div className="flex items-center gap-1">
-            {/* Nút 1: Mở nhanh Feature Properties của trang đang mở */}
-            <button
-              type="button"
-              onClick={() => openFeatureProperties(activeFeatureId)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-              title="Mở thuộc tính Feature hiện tại (Feature Properties Modal)"
-            >
-              <Sliders className="w-3.5 h-3.5 text-blue-400" />
-            </button>
-
-            {/* Nút 2: Mở nhanh Feature Manager */}
-            <button
-              type="button"
-              onClick={() => openFeatureManager()}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-              title="Quản lý toàn bộ Features (Feature Manager Modal)"
-            >
-              <Menu className="w-3.5 h-3.5 text-slate-300" />
-            </button>
-
-            {/* Nút 3: Thêm Feature mới */}
-            <button
-              type="button"
-              onClick={() => handleOpenAddModal('')}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-              title="Thêm Feature mới"
-            >
-              <Plus className="w-3.5 h-3.5 text-emerald-400" />
-            </button>
-          </div>
-        </div>
-
         {/* ── DANH SÁCH MENU CÂY PHÂN TẦNG VÀ KÉO THẢ DND ── */}
         <nav className="p-2 space-y-1 overflow-y-auto flex-1">
           <DndContext
@@ -586,6 +557,7 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
                     isCollapsed={isCollapsed}
                     isActive={isActive}
                     childCount={childCount}
+                    isDev={isDev}
                     onToggleCollapse={(e) => toggleGroup(feature.id, e)}
                     onSelect={() => {
                       if (feature.isGroup) {
@@ -627,8 +599,8 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
         </div>
       </aside>
 
-      {/* Floating Right-Click ContextMenu (Khớp Hình 2) */}
-      {contextMenu && (
+      {/* Floating Right-Click ContextMenu (Chỉ cho Dev) */}
+      {isDev && contextMenu && (
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
@@ -637,8 +609,8 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
         />
       )}
 
-      {/* Modal Thêm Feature Mới */}
-      {isAddModalOpen && (
+      {/* Modal Thêm Feature Mới (Chỉ cho Dev) */}
+      {isDev && isAddModalOpen && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <form
             onSubmit={handleConfirmAddFeature}
@@ -722,9 +694,9 @@ export const LeftNavbar: React.FC<LeftNavbarProps> = ({ width }) => {
         </div>
       )}
 
-      {/* ── MOUNT CÁC MODAL QUẢN LÝ TÍNH NĂNG VÀ THUỘC TÍNH ── */}
-      <FeatureManagerModal />
-      <FeaturePropertiesModal />
+      {/* ── MOUNT CÁC MODAL QUẢN LÝ TÍNH NĂNG VÀ THUỘC TÍNH (CHỈ CHO DEV) ── */}
+      {isDev && <FeatureManagerModal />}
+      {isDev && <FeaturePropertiesModal />}
     </>
   )
 }

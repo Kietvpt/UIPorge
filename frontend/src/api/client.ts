@@ -16,12 +16,26 @@ export const apiClient = axios.create({
   timeout: 15000,
 })
 
-// Tự động gắn JWT vào mọi request
+// Tự động gắn JWT và X-Preview-Role vào mọi request
 apiClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+
+  try {
+    const rawStorage = typeof window !== 'undefined' ? localStorage.getItem('uiforge-permission-engine') : null
+    if (rawStorage) {
+      const parsed = JSON.parse(rawStorage)
+      const previewRole = parsed?.state?.previewRoleCode
+      if (previewRole) {
+        config.headers['X-Preview-Role'] = previewRole
+      }
+    }
+  } catch {
+    // Bỏ qua nếu lỗi đọc storage
+  }
+
   return config
 })
 

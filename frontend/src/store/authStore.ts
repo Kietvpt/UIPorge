@@ -2,11 +2,12 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 export interface AuthUser {
-  id: string
+  id: string | number
   username: string
   fullName?: string
-  /** "Dev" = được chỉnh sửa giao diện, "User" = chỉ xem */
-  role: 'Dev' | 'User'
+  /** "Dev" = được chỉnh sửa giao diện; các role khác (User, Pricing, Shipment, Accountant...) = chế độ nghiệp vụ */
+  role: 'Dev' | 'User' | string
+  roleCode?: string
 }
 
 interface AuthState {

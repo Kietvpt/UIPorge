@@ -179,6 +179,8 @@ export interface TableColumn extends Partial<import('./gridPolicy').GridColumnPo
   cascadeField?: string
   customCss?: string
   validation?: any
+  permissions?: ComponentPermissionConfig
+  columnPermissions?: ComponentPolicyRule[]
 }
 
 export interface SelectOption {
@@ -245,7 +247,51 @@ export interface ValidationConfig {
   rules?: ValidationRule[]
 }
 
+export interface FeaturePolicyRule {
+  id?: number | string
+  featureId?: number | string
+  featureCode?: string
+  userId?: number | string | null
+  userName?: string
+  roleId?: number | string | null
+  roleCode?: string
+  roleName?: string
+  canRead: boolean
+  canWrite: boolean
+  canWriteAll: boolean
+  canDelete: boolean
+  canDeleteAll: boolean
+  canDeactivate: boolean
+  canShare: boolean
+  recordId?: number
+  lockUpdateAfterCreated?: number | null
+  lockDeleteAfterCreated?: number | null
+  active: boolean
+  description?: string
+}
+
+export interface ComponentPolicyRule {
+  id?: number | string
+  pageId?: number | string
+  nodeId: string
+  componentId?: number | string | null
+  fieldName?: string
+  userId?: number | string | null
+  userName?: string
+  roleId?: number | string | null
+  roleCode?: string
+  roleName?: string
+  canRead: boolean
+  canWrite: boolean
+  canWriteAll: boolean
+  canDelete: boolean
+  canDeactivate: boolean
+  active: boolean
+  description?: string
+}
+
 export interface ComponentPermissionConfig {
+  rules?: ComponentPolicyRule[]
   allowedRoles?: string[]
   readOnlyRoles?: string[]
   deniedBehavior?: 'hide' | 'disable'
@@ -345,6 +391,7 @@ export interface FeaturePage {
   displayFlags?: FeatureDisplayFlags
   customStyles?: FeatureCustomStyles
   badge?: string | number
+  policies?: FeaturePolicyRule[]
   hidden?: boolean
   isDetail?: boolean
   createdAt?: string
