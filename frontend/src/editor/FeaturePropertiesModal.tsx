@@ -22,11 +22,19 @@ import {
   Square,
   Hash,
   Sparkles,
+  Shield,
+  RotateCcw,
+  Equal,
+  Trash2,
+  User,
+  Users,
 } from 'lucide-react'
 import { useEditorStore } from '@/store/editorStore'
 import { fetchEntityMetadata, EntityMetadata } from '@/core/services/metadataService'
-import type { ComponentNode, FeaturePage } from '@/types/schema'
+import type { ComponentNode, FeaturePage, FeaturePolicyRule } from '@/types/schema'
+import { usePermissionEngine } from '@/core/engines/permissionEngine'
 import { ComponentPropertiesModal } from './ComponentPropertiesModal'
+import { DynamicRoleManagerModal } from './DynamicRoleManagerModal'
 
 interface FeaturePropertiesModalProps {
   isOpen?: boolean
@@ -62,8 +70,33 @@ export const FeaturePropertiesModal: React.FC<FeaturePropertiesModalProps> = ({
     closeStoreModal()
   }
 
-  // Active Tab: 2 Tabs only as instructed by Master
-  const [activeTab, setActiveTab] = useState<'settings' | 'components'>('settings')
+  // Active Tab: 3 Tabs (Cài đặt, Phần tử, Quyền hạn khớp 100% Core C#)
+  const [activeTab, setActiveTab] = useState<'settings' | 'components' | 'permissions'>('settings')
+
+  // Security & Permission Engine integration
+  const permissionRoles = usePermissionEngine((s) => s.roles)
+  const permissionUsers = usePermissionEngine((s) => s.users)
+  const storeFeaturePolicies = usePermissionEngine((s) => s.featurePolicies)
+  const setFeaturePoliciesInStore = usePermissionEngine((s) => s.setFeaturePolicies)
+
+  // ── TAB 3 STATE: QUYỀN HẠN (Feature Policies khớp 13 cột media_1795161916077_a96c0ef7.png) ──
+  const [featureRules, setFeatureRules] = useState<FeaturePolicyRule[]>([])
+  const [permSearch, setPermSearch] = useState('')
+
+  // Hàng thêm nhanh Row-0
+  const [newUserId, setNewUserId] = useState<string>('')
+  const [newRoleId, setNewRoleId] = useState<string>('')
+  const [newCanRead, setNewCanRead] = useState<boolean>(true)
+  const [newCanWrite, setNewCanWrite] = useState<boolean>(false)
+  const [newCanWriteAll, setNewCanWriteAll] = useState<boolean>(false)
+  const [newCanDelete, setNewCanDelete] = useState<boolean>(false)
+  const [newCanDeleteAll, setNewCanDeleteAll] = useState<boolean>(false)
+  const [newCanDeactivate, setNewCanDeactivate] = useState<boolean>(false)
+  const [newCanShare, setNewCanShare] = useState<boolean>(false)
+  const [newRecordId, setNewRecordId] = useState<number>(0)
+  const [newLockUpdate, setNewLockUpdate] = useState<string>('')
+  const [newLockDelete, setNewLockDelete] = useState<string>('')
+  const [newActive, setNewActive] = useState<boolean>(true)
 
   // Metadata entities
   const [entities, setEntities] = useState<EntityMetadata[]>([])
@@ -121,6 +154,7 @@ export const FeaturePropertiesModal: React.FC<FeaturePropertiesModalProps> = ({
   const [searchFilter, setSearchFilter] = useState('')
   const [collapsedNodes, setCollapsedNodes] = useState<Record<string, boolean>>({})
   const [selectedNodeForModal, setSelectedNodeForModal] = useState<ComponentNode | null>(null)
+  const [showRoleManagerModal, setShowRoleManagerModal] = useState(false)
 
   // Sync state when feature changes
   useEffect(() => {
@@ -165,12 +199,128 @@ export const FeaturePropertiesModal: React.FC<FeaturePropertiesModalProps> = ({
           feature.featureProps?.scriptContent ||
           `// Logic JavaScript xử lý nghiệp vụ cho Feature: ${feature.name}\nlet methods = {\n  SaveAs: function (gridView, form) {\n    // Code xử lý...\n  }\n};`
       )
+
+      // Sync feature policies from Backend DB
+      if (feature?.id) {
+        usePermissionEngine
+          .getState()
+          .fetchFeaturePolicies(feature.id)
+          .then((dbRules) => {
+            setFeatureRules(dbRules || [])
+          })
+          .catch(() => {
+            const fallback =
+              feature.policies && feature.policies.length > 0
+                ? feature.policies
+                : storeFeaturePolicies[feature.id] || []
+            setFeatureRules(fallback)
+          })
+      } else {
+        setFeatureRules([])
+      }
     }
   }, [feature?.id, isOpen])
+
+  // Helper actions for Feature Policies Tab 3
+  const handleAddRule = () => {
+    if (!newRoleId && !newUserId) {
+      alert('Vui lòng chọn ít nhất một Vai trò hoặc Người dùng để phân quyền!')
+      return
+    }
+    const roleObj = permissionRoles.find((r) => String(r.id) === String(newRoleId) || r.code === newRoleId)
+    const userObj = permissionUsers.find((u) => String(u.id) === String(newUserId) || u.username === newUserId)
+
+    const newRule: FeaturePolicyRule = {
+      id: `rule-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      featureId: feature?.id || '',
+      featureCode: feature?.code || feature?.name,
+      roleId: newRoleId ? (Number(newRoleId) || newRoleId) : null,
+      roleCode: newRoleId ? (roleObj?.code || newRoleId) : undefined,
+      userId: newUserId ? (Number(newUserId) || newUserId) : null,
+      userName: newUserId ? (userObj?.username || newUserId) : undefined,
+      canRead: newCanRead,
+      canWrite: newCanWrite,
+      canWriteAll: newCanWriteAll,
+      canDelete: newCanDelete,
+      canDeleteAll: newCanDeleteAll,
+      canDeactivate: newCanDeactivate,
+      canShare: newCanShare,
+      recordId: Number(newRecordId) || 0,
+      lockUpdateAfterCreated: newLockUpdate ? Number(newLockUpdate) : undefined,
+      lockDeleteAfterCreated: newLockDelete ? Number(newLockDelete) : undefined,
+      active: newActive,
+    }
+
+    setFeatureRules((prev) => [newRule, ...prev])
+    setNewUserId('')
+    setNewRoleId('')
+    setNewCanRead(true)
+    setNewCanWrite(false)
+    setNewCanWriteAll(false)
+    setNewCanDelete(false)
+    setNewCanDeleteAll(false)
+    setNewCanDeactivate(false)
+    setNewCanShare(false)
+    setNewRecordId(0)
+    setNewLockUpdate('')
+    setNewLockDelete('')
+    setNewActive(true)
+  }
+
+  const updateRuleField = (ruleId: string | number | undefined, field: keyof FeaturePolicyRule, val: any) => {
+    setFeatureRules((prev) =>
+      prev.map((r) => (r.id === ruleId ? { ...r, [field]: val } : r))
+    )
+  }
+
+  const deleteRule = (ruleId: string | number | undefined) => {
+    setFeatureRules((prev) => prev.filter((r) => r.id !== ruleId))
+  }
 
   // Save handler
   const handleSave = () => {
     if (!feature) return
+
+    let rulesToSave = [...featureRules]
+    if (newRoleId || newUserId) {
+      const roleObj = permissionRoles.find((r) => String(r.id) === String(newRoleId) || r.code === newRoleId)
+      const userObj = permissionUsers.find((u) => String(u.id) === String(newUserId) || u.username === newUserId)
+      const pending: FeaturePolicyRule = {
+        id: `rule-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        featureId: feature.id,
+        featureCode: feature.code || feature.name,
+        roleId: newRoleId ? (Number(newRoleId) || newRoleId) : null,
+        roleCode: newRoleId ? (roleObj?.code || newRoleId) : undefined,
+        userId: newUserId ? (Number(newUserId) || newUserId) : null,
+        userName: newUserId ? (userObj?.username || newUserId) : undefined,
+        canRead: newCanRead,
+        canWrite: newCanWrite,
+        canWriteAll: newCanWriteAll,
+        canDelete: newCanDelete,
+        canDeleteAll: newCanDeleteAll,
+        canDeactivate: newCanDeactivate,
+        canShare: newCanShare,
+        recordId: Number(newRecordId) || 0,
+        lockUpdateAfterCreated: newLockUpdate ? Number(newLockUpdate) : undefined,
+        lockDeleteAfterCreated: newLockDelete ? Number(newLockDelete) : undefined,
+        active: newActive,
+      }
+      rulesToSave = [pending, ...rulesToSave]
+      setFeatureRules(rulesToSave)
+      setNewUserId('')
+      setNewRoleId('')
+      setNewCanRead(true)
+      setNewCanWrite(false)
+      setNewCanWriteAll(false)
+      setNewCanDelete(false)
+      setNewCanDeleteAll(false)
+      setNewCanDeactivate(false)
+      setNewCanShare(false)
+      setNewRecordId(0)
+      setNewLockUpdate('')
+      setNewLockDelete('')
+      setNewActive(true)
+    }
 
     const finalParentId = parentId && parentId.trim() !== '' ? parentId.trim() : null
 
@@ -189,6 +339,7 @@ export const FeaturePropertiesModal: React.FC<FeaturePropertiesModalProps> = ({
       description: description.trim(),
       entityName: entityName.trim(),
       scriptContent,
+      policies: rulesToSave,
       displayFlags: {
         isDivider,
         isMenu,
@@ -236,10 +387,13 @@ export const FeaturePropertiesModal: React.FC<FeaturePropertiesModalProps> = ({
           stylesheet: customStylesheet,
         },
         scriptContent,
+        policies: rulesToSave,
       },
     }
 
     updateFeatureProperties(feature.id, updatedProps)
+    setFeaturePoliciesInStore(feature.id, rulesToSave)
+    usePermissionEngine.getState().saveFeaturePolicies(feature.id, rulesToSave)
     setSavedFeedback(true)
     setTimeout(() => setSavedFeedback(false), 2000)
   }
@@ -494,11 +648,29 @@ export const FeaturePropertiesModal: React.FC<FeaturePropertiesModalProps> = ({
               {totalComponentCount}
             </span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('permissions')}
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+              activeTab === 'permissions'
+                ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10 rounded-t-lg'
+                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 rounded-t-lg'
+            }`}
+          >
+            <Shield className="w-3.5 h-3.5" />
+            <span>QUYỀN HẠN (RBAC & POLICIES)</span>
+            {featureRules.length > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-emerald-950/80 text-emerald-300 font-mono border border-emerald-800/50">
+                {featureRules.length}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* ── MODAL BODY ── */}
         <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-[#0b1322]">
-          {activeTab === 'settings' ? (
+          {activeTab === 'settings' && (
             /* ══════════════════════════════════════════════════════════════
                TAB 1: TÙY CHỈNH / THÔNG TIN FEATURE (Khớp 100% Hình 3)
                ══════════════════════════════════════════════════════════════ */
@@ -795,7 +967,9 @@ export const FeaturePropertiesModal: React.FC<FeaturePropertiesModalProps> = ({
                 </div>
               </div>
             </div>
-          ) : (
+          )}
+
+          {activeTab === 'components' && (
             /* ══════════════════════════════════════════════════════════════
                TAB 2: PHẦN TỬ / CÂY COMPONENT CHA - CON (Yêu cầu đặc biệt của Master)
                ══════════════════════════════════════════════════════════════ */
@@ -956,6 +1130,465 @@ export const FeaturePropertiesModal: React.FC<FeaturePropertiesModalProps> = ({
               </div>
             </div>
           )}
+
+          {activeTab === 'permissions' && (
+            <div className="space-y-4">
+              {/* ── TOOLBAR KHỚP 100% CORE C# (media_1795161916077_a96c0ef7.png) ── */}
+              <div className="bg-[#0e1726] border border-slate-800 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-md">
+                {/* Left: Search, Filter, Reset, Settings, F-keys */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={permSearch}
+                      onChange={(e) => setPermSearch(e.target.value)}
+                      placeholder="Tìm kiếm vai trò, người dùng..."
+                      className="pl-8 pr-3 py-1.5 text-xs bg-slate-900 border border-slate-700/80 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 w-56 transition-colors"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    title="Lọc điều kiện (=)"
+                    className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    <Equal className="w-3.5 h-3.5 text-emerald-400" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPermSearch('')}
+                    title="Khôi phục tìm kiếm"
+                    className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition-colors cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                  </button>
+
+                  <button
+                    type="button"
+                    title="Cài đặt ma trận phân quyền"
+                    className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition-colors cursor-pointer"
+                  >
+                    <Sliders className="w-3.5 h-3.5 text-slate-400" />
+                  </button>
+
+                  {/* F1..F11 ERP Function Key Badges */}
+                  <div className="hidden xl:flex items-center gap-1 pl-2 border-l border-slate-800 text-[10px] text-slate-400 font-mono">
+                    {['F1: Help', 'F2: Thêm', 'F4: Sửa', 'F5: Tải lại', 'F8: Xóa', 'F10: Lưu'].map((f) => (
+                      <span key={f} className="px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-800 text-slate-400">
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Nút Quản lý Dynamic Roles */}
+                  <button
+                    type="button"
+                    onClick={() => setShowRoleManagerModal(true)}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold transition-colors cursor-pointer ml-1"
+                    title="Quản lý và tạo vai trò động cho dự án"
+                  >
+                    <Users className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>+ Quản lý Vai trò (Roles)</span>
+                  </button>
+                </div>
+
+                {/* Right: Master Checkboxes */}
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={isPermissionInherited}
+                      onChange={(e) => setIsPermissionInherited(e.target.checked)}
+                      className="w-3.5 h-3.5 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                    />
+                    <span>Thừa kế quyền</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={isPublic}
+                      onChange={(e) => setIsPublic(e.target.checked)}
+                      className="w-3.5 h-3.5 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                    />
+                    <span>Công khai (Public)</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* ── BẢNG LƯỚI MA TRẬN 13 CỘT KHỚP 100% ẢNH THỰC TẾ CORE C# CŨ ── */}
+              <div className="bg-[#0b1322] border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left text-slate-300 border-collapse select-none">
+                    <thead className="bg-[#070e1b] text-slate-400 uppercase text-[10px] font-bold border-b border-slate-800 tracking-wider">
+                      <tr>
+                        <th className="py-2.5 px-3 border-r border-slate-800 text-center w-12">#</th>
+                        <th className="py-2.5 px-3 border-r border-slate-800 min-w-[130px]">NGƯỜI DÙNG</th>
+                        <th className="py-2.5 px-3 border-r border-slate-800 min-w-[160px]">VAI TRÒ</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-24">QUYỀN ĐỌC</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-28">QUYỀN CẬP NHẬT</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-32">CẬP NHẬT TOÀN BỘ</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-24">QUYỀN XÓA</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-28">XÓA TOÀN BỘ</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-24">QUYỀN HỦY</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-28">QUYỀN CHIA SẺ</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-24">RECORDID</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-28">KHÓA CẬP NHẬT</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-24">KHÓA XÓA</th>
+                        <th className="py-2.5 px-2.5 border-r border-slate-800 text-center w-20">ACTIVE</th>
+                        <th className="py-2.5 px-2 text-center w-12"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/80">
+                      {/* ── ROW 0: HÀNG THÊM NHANH (Nút + đầu dòng chuẩn Core C# cũ) ── */}
+                      <tr className="bg-emerald-950/20 border-b-2 border-emerald-600/40 hover:bg-emerald-950/30 transition-colors">
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <button
+                            type="button"
+                            onClick={handleAddRule}
+                            className="w-6 h-6 rounded bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center mx-auto transition-transform active:scale-95 shadow-sm shadow-emerald-600/30 cursor-pointer"
+                            title="Thêm mới quy tắc phân quyền (+)"
+                          >
+                            <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                          </button>
+                        </td>
+
+                        {/* Người dùng */}
+                        <td className="py-2 px-2 border-r border-slate-800">
+                          <select
+                            value={newUserId}
+                            onChange={(e) => {
+                              setNewUserId(e.target.value)
+                              if (e.target.value) setNewRoleId('')
+                            }}
+                            className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                          >
+                            <option value="">—</option>
+                            {permissionUsers.map((u) => (
+                              <option key={u.id} value={u.id}>
+                                {u.username}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+
+                        {/* Vai trò */}
+                        <td className="py-2 px-2 border-r border-slate-800">
+                          <select
+                            value={newRoleId}
+                            onChange={(e) => {
+                              setNewRoleId(e.target.value)
+                              if (e.target.value) setNewUserId('')
+                            }}
+                            className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-semibold"
+                          >
+                            <option value="">—</option>
+                            {permissionRoles.map((r) => (
+                              <option key={r.id} value={r.id}>
+                                {r.code}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+
+                        {/* Checkboxes 7 quyền cốt lõi */}
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={newCanRead}
+                            onChange={(e) => setNewCanRead(e.target.checked)}
+                            className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                            title="Quyền Đọc (CanRead)"
+                          />
+                        </td>
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={newCanWrite}
+                            onChange={(e) => setNewCanWrite(e.target.checked)}
+                            className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                            title="Quyền Cập nhật bản ghi của mình (CanWrite)"
+                          />
+                        </td>
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={newCanWriteAll}
+                            onChange={(e) => setNewCanWriteAll(e.target.checked)}
+                            className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                            title="Cập nhật toàn bộ bản ghi của mọi người (CanWriteAll)"
+                          />
+                        </td>
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={newCanDelete}
+                            onChange={(e) => setNewCanDelete(e.target.checked)}
+                            className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                            title="Quyền Xóa bản ghi của mình (CanDelete)"
+                          />
+                        </td>
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={newCanDeleteAll}
+                            onChange={(e) => setNewCanDeleteAll(e.target.checked)}
+                            className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                            title="Xóa toàn bộ bản ghi của mọi người (CanDeleteAll)"
+                          />
+                        </td>
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={newCanDeactivate}
+                            onChange={(e) => setNewCanDeactivate(e.target.checked)}
+                            className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                            title="Quyền Hủy / Ngưng hiệu lực (CanDeactivate)"
+                          />
+                        </td>
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={newCanShare}
+                            onChange={(e) => setNewCanShare(e.target.checked)}
+                            className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                            title="Quyền Chia sẻ bản ghi (CanShare)"
+                          />
+                        </td>
+
+                        {/* RecordId */}
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="number"
+                            value={newRecordId}
+                            onChange={(e) => setNewRecordId(Number(e.target.value) || 0)}
+                            className="w-16 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-center font-mono text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+                            title="0 = Toàn bộ dữ liệu; > 0 = Phân quyền đích danh ID"
+                          />
+                        </td>
+
+                        {/* Khóa cập nhật */}
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="number"
+                            placeholder="Giờ"
+                            value={newLockUpdate}
+                            onChange={(e) => setNewLockUpdate(e.target.value)}
+                            className="w-16 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-center font-mono text-xs text-slate-200 focus:outline-none focus:border-emerald-500 placeholder-slate-600"
+                            title="Số giờ sau khi tạo thì khóa không cho sửa (để trống = không giới hạn)"
+                          />
+                        </td>
+
+                        {/* Khóa xóa */}
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="number"
+                            placeholder="Giờ"
+                            value={newLockDelete}
+                            onChange={(e) => setNewLockDelete(e.target.value)}
+                            className="w-16 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-center font-mono text-xs text-slate-200 focus:outline-none focus:border-emerald-500 placeholder-slate-600"
+                            title="Số giờ sau khi tạo thì khóa không cho xóa"
+                          />
+                        </td>
+
+                        {/* Active */}
+                        <td className="py-2 px-2 text-center border-r border-slate-800">
+                          <input
+                            type="checkbox"
+                            checked={newActive}
+                            onChange={(e) => setNewActive(e.target.checked)}
+                            className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                          />
+                        </td>
+
+                        <td className="py-2 px-2 text-center">
+                          <button
+                            type="button"
+                            onClick={handleAddRule}
+                            className="text-[11px] px-2 py-1 rounded bg-emerald-600/30 text-emerald-300 hover:bg-emerald-600/50 transition-colors font-medium cursor-pointer"
+                          >
+                            Lưu
+                          </button>
+                        </td>
+                      </tr>
+
+                      {/* ── DANH SÁCH CÁC DÒNG QUY TẮC HIỆN CÓ ── */}
+                      {featureRules
+                        .filter((r) => {
+                          if (!permSearch.trim()) return true
+                          const term = permSearch.toLowerCase()
+                          return (
+                            (r.roleCode && r.roleCode.toLowerCase().includes(term)) ||
+                            (r.userName && r.userName.toLowerCase().includes(term)) ||
+                            (r.description && r.description.toLowerCase().includes(term))
+                          )
+                        })
+                        .map((rule, idx) => {
+                          const roleObj = permissionRoles.find(
+                            (r) => String(r.id) === String(rule.roleId) || r.code === rule.roleCode
+                          )
+                          const userObj = permissionUsers.find(
+                            (u) => String(u.id) === String(rule.userId) || u.username === rule.userName
+                          )
+
+                          return (
+                            <tr
+                              key={rule.id || idx}
+                              className="hover:bg-slate-800/40 transition-colors group"
+                            >
+                              <td className="py-2 px-2 text-center text-slate-500 font-mono text-[11px] border-r border-slate-800">
+                                {idx + 1}
+                              </td>
+
+                              {/* Người dùng */}
+                              <td className="py-2 px-3 border-r border-slate-800">
+                                {userObj?.username || rule.userName ? (
+                                  <span className="text-xs text-blue-300 font-mono font-medium">
+                                    {userObj?.username || rule.userName}
+                                  </span>
+                                ) : null}
+                              </td>
+
+                              {/* Vai trò */}
+                              <td className="py-2 px-3 border-r border-slate-800">
+                                {rule.roleCode || roleObj?.code ? (
+                                  <span className="font-semibold text-xs text-slate-200">
+                                    {rule.roleCode || roleObj?.code}
+                                  </span>
+                                ) : null}
+                              </td>
+
+                              {/* 7 Checkboxes trực quan khớp 100% Core C# */}
+                              <td className="py-2 px-2 text-center border-r border-slate-800">
+                                <input
+                                  type="checkbox"
+                                  checked={rule.canRead}
+                                  onChange={(e) => updateRuleField(rule.id, 'canRead', e.target.checked)}
+                                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                                />
+                              </td>
+                              <td className="py-2 px-2 text-center border-r border-slate-800">
+                                <input
+                                  type="checkbox"
+                                  checked={rule.canWrite}
+                                  onChange={(e) => updateRuleField(rule.id, 'canWrite', e.target.checked)}
+                                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                                />
+                              </td>
+                              <td className="py-2 px-2 text-center border-r border-slate-800">
+                                <input
+                                  type="checkbox"
+                                  checked={rule.canWriteAll}
+                                  onChange={(e) => updateRuleField(rule.id, 'canWriteAll', e.target.checked)}
+                                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                                />
+                              </td>
+                              <td className="py-2 px-2 text-center border-r border-slate-800">
+                                <input
+                                  type="checkbox"
+                                  checked={rule.canDelete}
+                                  onChange={(e) => updateRuleField(rule.id, 'canDelete', e.target.checked)}
+                                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                                />
+                              </td>
+                              <td className="py-2 px-2 text-center border-r border-slate-800">
+                                <input
+                                  type="checkbox"
+                                  checked={rule.canDeleteAll}
+                                  onChange={(e) => updateRuleField(rule.id, 'canDeleteAll', e.target.checked)}
+                                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                                />
+                              </td>
+                              <td className="py-2 px-2 text-center border-r border-slate-800">
+                                <input
+                                  type="checkbox"
+                                  checked={rule.canDeactivate}
+                                  onChange={(e) => updateRuleField(rule.id, 'canDeactivate', e.target.checked)}
+                                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                                />
+                              </td>
+                              <td className="py-2 px-2 text-center border-r border-slate-800">
+                                <input
+                                  type="checkbox"
+                                  checked={rule.canShare}
+                                  onChange={(e) => updateRuleField(rule.id, 'canShare', e.target.checked)}
+                                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                                />
+                              </td>
+
+                              {/* RecordId */}
+                              <td className="py-2 px-2 text-center font-mono text-xs border-r border-slate-800">
+                                <input
+                                  type="number"
+                                  value={rule.recordId ?? 0}
+                                  onChange={(e) => updateRuleField(rule.id, 'recordId', Number(e.target.value) || 0)}
+                                  className="w-16 bg-transparent hover:bg-slate-900 border border-transparent hover:border-slate-700 rounded px-1 text-center font-mono text-xs text-slate-300 focus:bg-slate-900 focus:border-emerald-500 focus:outline-none"
+                                />
+                              </td>
+
+                              {/* Khóa cập nhật */}
+                              <td className="py-2 px-2 text-center font-mono text-xs text-slate-400 border-r border-slate-800">
+                                <input
+                                  type="number"
+                                  placeholder="—"
+                                  value={rule.lockUpdateAfterCreated ?? ''}
+                                  onChange={(e) => updateRuleField(rule.id, 'lockUpdateAfterCreated', e.target.value ? Number(e.target.value) : undefined)}
+                                  className="w-16 bg-transparent hover:bg-slate-900 border border-transparent hover:border-slate-700 rounded px-1 text-center font-mono text-xs text-slate-300 focus:bg-slate-900 focus:border-emerald-500 focus:outline-none placeholder-slate-600"
+                                />
+                              </td>
+
+                              {/* Khóa xóa */}
+                              <td className="py-2 px-2 text-center font-mono text-xs text-slate-400 border-r border-slate-800">
+                                <input
+                                  type="number"
+                                  placeholder="—"
+                                  value={rule.lockDeleteAfterCreated ?? ''}
+                                  onChange={(e) => updateRuleField(rule.id, 'lockDeleteAfterCreated', e.target.value ? Number(e.target.value) : undefined)}
+                                  className="w-16 bg-transparent hover:bg-slate-900 border border-transparent hover:border-slate-700 rounded px-1 text-center font-mono text-xs text-slate-300 focus:bg-slate-900 focus:border-emerald-500 focus:outline-none placeholder-slate-600"
+                                />
+                              </td>
+
+                              {/* Active */}
+                              <td className="py-2 px-2 text-center border-r border-slate-800">
+                                <input
+                                  type="checkbox"
+                                  checked={rule.active}
+                                  onChange={(e) => updateRuleField(rule.id, 'active', e.target.checked)}
+                                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 accent-emerald-500 cursor-pointer"
+                                />
+                              </td>
+
+                              {/* Delete button */}
+                              <td className="py-2 px-2 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => deleteRule(rule.id)}
+                                  className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-950/40 transition-colors cursor-pointer"
+                                  title="Xóa quy tắc này"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </td>
+                            </tr>
+                          )
+                        })}
+
+                      {featureRules.length === 0 && (
+                        <tr>
+                          <td colSpan={15} className="py-8 text-center text-slate-500">
+                            Chưa có quy tắc phân quyền nào. Nhấn nút{' '}
+                            <span className="text-emerald-400 font-semibold">+</span> ở hàng đầu để thêm quy tắc mới.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -968,10 +1601,15 @@ export const FeaturePropertiesModal: React.FC<FeaturePropertiesModalProps> = ({
           onSave={(nodeId, updatedProps, updatedBinding) => {
             updateComponentProps(nodeId, updatedProps)
             if (updatedBinding) updateComponentDataBinding(nodeId, updatedBinding)
-            setSelectedNodeForModal(null)
           }}
         />
       )}
+
+      {/* ── DYNAMIC ROLE MANAGER MODAL (z-[999999]) ── */}
+      <DynamicRoleManagerModal
+        isOpen={showRoleManagerModal}
+        onClose={() => setShowRoleManagerModal(false)}
+      />
     </div>,
     document.body
   )

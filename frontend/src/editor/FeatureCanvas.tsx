@@ -8,6 +8,8 @@ import { groupNodesByTabStack } from '@/renderer/tabStackUtils'
 import { ForgeTabStack } from '@/renderer/components'
 import { resolveBlModule } from '@/core/engines/eventRunner'
 import { useDataEngine } from '@/core/engines/dataEngine'
+import { usePermissionEngine } from '@/core/engines/permissionEngine'
+import { useAuthStore } from '@/store/authStore'
 import type { ComponentNode, ComponentType } from '@/types/schema'
 import {
   Box,
@@ -47,11 +49,21 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
   const updateFeatureScriptFile = useEditorStore((s) => s.updateFeatureScriptFile)
 
   const activeFeature = features.find((f) => f.id === activeFeatureId)
+  const user = useAuthStore((s) => s.user)
+  const isDev = user?.role === 'Dev'
   const rootLayout = activeFeature?.layoutConfig || {
     direction: 'column',
     gap: '16px',
     wrap: 'wrap',
   }
+
+  // ── Tự động nạp chính sách phân quyền (Feature & Component policies) từ SQL Server khi mở trang ──
+  React.useEffect(() => {
+    if (activeFeatureId) {
+      usePermissionEngine.getState().fetchFeaturePolicies(activeFeatureId).catch(() => {})
+      usePermissionEngine.getState().fetchComponentPolicies(activeFeatureId).catch(() => {})
+    }
+  }, [activeFeatureId])
 
   // ── Tự động nạp dữ liệu từ SQL Server khi mở màn hình Chi Tiết Lô Hàng ──
   React.useEffect(() => {
@@ -569,22 +581,26 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
           <div>
             <h1 className="text-lg font-bold text-slate-100 flex items-center gap-2.5">
               <span>{activeFeature?.name || 'Màn hình'}</span>
-              {isBlBound ? (
-                <span className="px-2.5 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-800 text-emerald-400 text-xs font-mono flex items-center gap-1.5 shadow-sm">
-                  <FileCode className="w-3.5 h-3.5" />
-                  <span>{activeFeature?.scriptFile}</span>
-                </span>
-              ) : (
-                <span className="px-2.5 py-0.5 rounded-lg bg-amber-950/80 border border-amber-800 text-amber-400 text-xs font-medium flex items-center gap-1.5 shadow-sm">
-                  <Lock className="w-3 h-3" />
-                  <span>Chưa gắn file BL</span>
-                </span>
+              {(isEditing || isDev) && (
+                isBlBound ? (
+                  <span className="px-2.5 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-800 text-emerald-400 text-xs font-mono flex items-center gap-1.5 shadow-sm">
+                    <FileCode className="w-3.5 h-3.5" />
+                    <span>{activeFeature?.scriptFile}</span>
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-0.5 rounded-lg bg-amber-950/80 border border-amber-800 text-amber-400 text-xs font-medium flex items-center gap-1.5 shadow-sm">
+                    <Lock className="w-3 h-3" />
+                    <span>Chưa gắn file BL</span>
+                  </span>
+                )
               )}
             </h1>
             <p className="text-xs text-slate-400 mt-0.5">
-              {isBlBound
-                ? activeFeature?.description || 'Nhấn chuột phải vào màn hình hoặc khoảng trắng để thêm thành phần mới.'
-                : 'Màn hình này đang bị khóa: Cần thiết lập file nghiệp vụ (TypeScript) để kích hoạt thiết kế.'}
+              {isEditing || isDev
+                ? isBlBound
+                  ? activeFeature?.description || 'Nhấn chuột phải vào màn hình hoặc khoảng trắng để thêm thành phần mới.'
+                  : 'Màn hình này đang bị khóa: Cần thiết lập file nghiệp vụ (TypeScript) để kích hoạt thiết kế.'
+                : activeFeature?.description || ''}
             </p>
           </div>
         </div>

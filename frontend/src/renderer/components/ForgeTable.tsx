@@ -15,6 +15,7 @@ import {
   moveColumn,
 } from './grid/gridPolicyUtils'
 import { useEditorStore } from '@/store/editorStore'
+import { useAuthStore } from '@/store/authStore'
 import { useMasterDetailStore } from '@/store/masterDetailStore'
 import {
   Search,
@@ -42,6 +43,7 @@ import { exportGridToExcel } from '@/core/engines/excelExportEngine'
 import { printGridReport } from '@/core/engines/printReportEngine'
 import { triggerComponentEvent, executeSingleEvent } from '@/core/engines/eventRunner'
 import { applyExcelPaste, parseClipboardMatrix } from './grid/excelClipboardUtils'
+import { usePermissionEngine } from '@/core/engines/permissionEngine'
 
 // Mock dữ liệu mặc định trung lập khi bảng chưa được liên kết data
 const DEFAULT_GENERIC_ROWS: any[] = [
@@ -49,9 +51,14 @@ const DEFAULT_GENERIC_ROWS: any[] = [
   { id: 2, name: 'Bản ghi mẫu 02', status: 'Chờ duyệt' },
 ]
 
-export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
+export const ForgeTable: React.FC<ComponentProps> = ({ node, isEditing }) => {
   const { props, style } = node
   const updateComponentProps = useEditorStore((state) => state.updateComponentProps)
+  const activeFeatureId = useEditorStore((state) => state.activeFeatureId)
+  const evaluateColumnPermission = usePermissionEngine((state) => state.evaluateColumnPermission)
+  const evaluateFeaturePermission = usePermissionEngine((state) => state.evaluateFeaturePermission)
+  const previewRoleCode = usePermissionEngine((state) => state.previewRoleCode)
+  const componentPolicies = usePermissionEngine((state) => state.componentPolicies)
 
   // Danh sách cột thô từ props
   const rawColumns: TableColumn[] = useMemo(() => {
@@ -70,10 +77,25 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     return sortColumnsByCorePolicy(rawColumns)
   }, [rawColumns])
 
-  // Danh sách các cột hiển thị (bỏ qua cột ẩn hidden)
+  // Danh sách các cột hiển thị (bỏ qua cột ẩn hidden, áp dụng GridPolicy / Column Permission)
   const visibleColumns: TableColumn[] = useMemo(() => {
-    return columns.filter((col) => !col.hidden)
-  }, [columns])
+    const list = columns.filter((col) => !col.hidden)
+    if (isEditing) return list
+
+    // Ở chế độ Preview / Runtime: áp dụng Column Permission
+    return list
+      .map((col) => {
+        const perm = evaluateColumnPermission(activeFeatureId, node, col)
+        if (!perm.canRead) return null
+        const canEdit = (perm.canWrite || perm.canWriteAll) && col.editable !== false
+        return {
+          ...col,
+          editable: canEdit,
+          isHighlightEditable: perm.shouldHighlightEditable,
+        } as TableColumn & { isHighlightEditable?: boolean }
+      })
+      .filter((col): col is TableColumn => col !== null)
+  }, [columns, isEditing, activeFeatureId, node, evaluateColumnPermission, previewRoleCode, componentPolicies])
 
   // Kết nối Master-Detail Store nếu bảng này thuộc hệ sinh thái Master-Detail (Ảnh 4)
   const detailGrids = useMasterDetailStore((s) => s.detailGrids)
@@ -1022,6 +1044,13 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
   // Nhân bản dòng
   const handleDuplicateRow = (rowIdx: number) => {
+    if (!isEditing) {
+      const featPerm = evaluateFeaturePermission(activeFeatureId)
+      if (!featPerm.canWrite && !featPerm.canWriteAll) {
+        alert('Bạn không có quyền thêm mới hoặc sao chép dòng dữ liệu.')
+        return
+      }
+    }
     if (isMasterDetailGrid) {
       duplicateGridRowInStore(node.id, rowIdx)
     }
@@ -1042,6 +1071,13 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
   // Xóa dòng
   const handleDeleteRow = (rowIdx: number) => {
+    if (!isEditing) {
+      const featPerm = evaluateFeaturePermission(activeFeatureId)
+      if (!featPerm.canDelete && !featPerm.canDeleteAll) {
+        alert('Bạn không có quyền xóa bản ghi / dòng dữ liệu này.')
+        return
+      }
+    }
     if (isMasterDetailGrid) {
       deleteGridRowInStore(node.id, rowIdx)
     }
@@ -1078,6 +1114,13 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
 
   // Chèn dòng mới bên dưới
   const handleInsertRowBelow = (rowIdx: number) => {
+    if (!isEditing) {
+      const featPerm = evaluateFeaturePermission(activeFeatureId)
+      if (!featPerm.canWrite && !featPerm.canWriteAll) {
+        alert('Bạn không có quyền thêm mới dòng dữ liệu.')
+        return
+      }
+    }
     const currentList = (isMasterDetailGrid && detailGrids && detailGrids[node.id])
       ? detailGrids[node.id]
       : activeRows
@@ -1244,16 +1287,18 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     commitColumns(updated)
   }
 
-  // Mở modal thuộc tính cột (Ảnh 6 & Ảnh Properties Core cũ)
+  // Mở modal thuộc tính cột (Ảnh 6 & Ảnh Properties Core cũ) - Chỉ dành riêng cho vai trò Dev
   const handleOpenProperties = (col: TableColumn) => {
+    if (useAuthStore.getState().user?.role !== 'Dev') return
     setPropertiesModal({
       isOpen: true,
       column: col,
     })
   }
 
-  // Nhân bản cột (Clone Column)
+  // Nhân bản cột (Clone Column) - Chỉ dành riêng cho vai trò Dev
   const handleCloneColumn = (columnKey: string) => {
+    if (useAuthStore.getState().user?.role !== 'Dev') return
     const targetIdx = columns.findIndex((c) => c.key === columnKey)
     if (targetIdx === -1) return
     const target = columns[targetIdx]
@@ -1268,8 +1313,9 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     commitColumns(updated)
   }
 
-  // Xóa cột khỏi bảng
+  // Xóa cột khỏi bảng - Chỉ dành riêng cho vai trò Dev
   const handleRemoveColumn = (columnKey: string) => {
+    if (useAuthStore.getState().user?.role !== 'Dev') return
     if (columns.length <= 1) {
       alert('Bảng phải có ít nhất 1 cột!')
       return
@@ -1278,12 +1324,23 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
     commitColumns(updated)
   }
 
-  // Lưu thuộc tính cột từ Modal
+  // Lưu thuộc tính cột từ Modal (Giữ modal mở, chỉ đóng khi người dùng nhấn nút Đóng/X)
   const handleSaveProperties = (updatedColumn: TableColumn) => {
     const updated = columns.map((col) =>
       col.key === updatedColumn.key ? updatedColumn : col
     )
     commitColumns(updated)
+    setPropertiesModal((prev) => ({
+      ...prev,
+      isOpen: true,
+      column: updatedColumn,
+    }))
+    const savePageFn = (useEditorStore.getState() as any).savePage
+    if (typeof savePageFn === 'function') {
+      try {
+        savePageFn()
+      } catch {}
+    }
   }
 
   // ── RENDER DÒNG BẢNG CHUẨN HOÁ DÙNG CHO CẢ VIRTUAL SCROLL VÀ GROUP BY ──
@@ -1353,6 +1410,8 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
             <td
               key={col.key}
               className={`px-2 py-1 whitespace-nowrap transition-colors ${alignClass} ${
+                (col as any).isHighlightEditable ? 'bg-emerald-950/20' : ''
+              } ${
                 isFrozen
                   ? `sticky z-10 bg-[#0f172a] group-hover:bg-slate-800/90 ${
                       isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : 'border-r border-slate-800/60'
@@ -1693,7 +1752,9 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                     onDragEnd={handleColDragEnd}
                     onContextMenu={(e) => handleHeaderContextMenu(e, col, idx)}
                     onClick={() => handleHeaderClick(col)}
-                    className={`group px-3 py-2.5 cursor-grab active:cursor-grabbing select-none transition-all hover:bg-slate-800/60 ${alignClass} ${isFrozen
+                    className={`group px-3 py-2.5 cursor-grab active:cursor-grabbing select-none transition-all hover:bg-slate-800/60 ${alignClass} ${
+                      (col as any).isHighlightEditable ? 'border-b-2 !border-b-emerald-500/80 text-emerald-300 bg-emerald-950/25' : ''
+                    } ${isFrozen
                       ? `sticky z-20 bg-[#0b1329] ${isLastFrozen ? 'border-r-2 border-emerald-500/60 shadow-[4px_0_12px_rgba(0,0,0,0.6)]' : 'border-r border-slate-800/90'}`
                       : 'border-r border-slate-800/90'
                       } ${isBeingDragged ? 'opacity-30 bg-slate-800/80' : ''} ${dropIndicatorClass}`}
@@ -1706,8 +1767,14 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node }) => {
                     title={`Kéo thả để di chuyển đổi thứ tự cột. Click để sắp xếp. Chuột phải để mở menu (Order: ${col.order ?? idx + 1})`}
                   >
                     <div className={`flex items-center gap-1.5 ${col.align === 'right' ? 'justify-end' : col.align === 'center' ? 'justify-center' : 'justify-between'}`}>
-                      <div className="flex items-center gap-1 truncate">
+                      <div className="flex items-center gap-1.5 truncate">
                         {isFrozen && <Pin className="w-2.5 h-2.5 text-emerald-400 fill-emerald-400 flex-shrink-0" />}
+                        {(col as any).isHighlightEditable && (
+                          <span
+                            className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] shrink-0 inline-block mr-0.5"
+                            title="Cột được cấp quyền chỉnh sửa"
+                          />
+                        )}
                         <span className="truncate">{col.title || col.key}</span>
                         {col.order && (
                           <span className="text-[9px] font-mono text-slate-500 font-normal">#{col.order}</span>

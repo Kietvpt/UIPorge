@@ -37,6 +37,8 @@ namespace UIForge.Core.Entities
     {
         public int RoleId { get; set; }
 
+        public int? FeatureId { get; set; }
+
         [MaxLength(100)]
         public string? FeatureCode { get; set; }
 
@@ -48,5 +50,6 @@ namespace UIForge.Core.Entities
         public bool CanUpdate { get; set; } = false;
         public bool CanDelete { get; set; } = false;
         public bool CanExport { get; set; } = true;
+        public bool CanApprove { get; set; } = false;
     }
 }

@@ -30,6 +30,8 @@ namespace UIForge.Core.Data
         public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
         public DbSet<UserSetting> UserSettings => Set<UserSetting>();
         public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+        public DbSet<FeaturePolicy> FeaturePolicies => Set<FeaturePolicy>();
+        public DbSet<ComponentPolicy> ComponentPolicies => Set<ComponentPolicy>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -83,6 +85,52 @@ namespace UIForge.Core.Data
             modelBuilder.Entity<RolePermission>().ToTable("RolePermissions");
             modelBuilder.Entity<UserSetting>().ToTable("UserSettings");
             modelBuilder.Entity<AuditLog>().ToTable("AuditLogs");
+            modelBuilder.Entity<FeaturePolicy>().ToTable("FeaturePolicies");
+            modelBuilder.Entity<ComponentPolicy>().ToTable("ComponentPolicies");
+
+            // FeaturePolicy configurations
+            modelBuilder.Entity<FeaturePolicy>()
+                .HasOne(fp => fp.Feature)
+                .WithMany()
+                .HasForeignKey(fp => fp.FeatureId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<FeaturePolicy>()
+                .HasOne(fp => fp.Role)
+                .WithMany()
+                .HasForeignKey(fp => fp.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<FeaturePolicy>()
+                .HasOne(fp => fp.User)
+                .WithMany()
+                .HasForeignKey(fp => fp.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<FeaturePolicy>()
+                .HasIndex(fp => new { fp.FeatureId, fp.RoleId, fp.UserId, fp.Active });
+
+            // ComponentPolicy configurations
+            modelBuilder.Entity<ComponentPolicy>()
+                .HasOne(cp => cp.Page)
+                .WithMany()
+                .HasForeignKey(cp => cp.PageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ComponentPolicy>()
+                .HasOne(cp => cp.Role)
+                .WithMany()
+                .HasForeignKey(cp => cp.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ComponentPolicy>()
+                .HasOne(cp => cp.User)
+                .WithMany()
+                .HasForeignKey(cp => cp.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ComponentPolicy>()
+                .HasIndex(cp => new { cp.PageId, cp.NodeId, cp.RoleId, cp.UserId, cp.Active });
 
             var seedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 

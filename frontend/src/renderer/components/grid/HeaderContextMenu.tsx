@@ -12,6 +12,7 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import type { TableColumn } from '@/types/schema'
+import { useAuthStore } from '@/store/authStore'
 
 export interface HeaderContextMenuProps {
   x: number
@@ -20,6 +21,7 @@ export interface HeaderContextMenuProps {
   columnIndex: number
   allColumns: TableColumn[]
   isOpen: boolean
+  isDev?: boolean
   onClose: () => void
   onToggleHide: (columnKey: string) => void
   onSetFreeze: (columnKey: string, freeze: 'left' | 'right' | 'none') => void
@@ -34,6 +36,7 @@ export const HeaderContextMenu: React.FC<HeaderContextMenuProps> = ({
   y,
   column,
   isOpen,
+  isDev,
   onClose,
   onToggleHide,
   onSetFreeze,
@@ -44,6 +47,8 @@ export const HeaderContextMenu: React.FC<HeaderContextMenuProps> = ({
 }) => {
   const menuRef = useRef<HTMLDivElement>(null)
   const [showFreezeSubmenu, setShowFreezeSubmenu] = React.useState(false)
+  const authIsDev = useAuthStore((s) => s.user?.role === 'Dev')
+  const effectiveIsDev = isDev !== undefined ? isDev : authIsDev
 
   // Đóng khi click ngoài hoặc nhấn ESC
   useEffect(() => {
@@ -161,41 +166,46 @@ export const HeaderContextMenu: React.FC<HeaderContextMenuProps> = ({
           )}
         </div>
 
-        {/* 3. Column Data Options (Ảnh 6) */}
-        <button
-          className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-emerald-600/20 hover:text-emerald-300 rounded text-left transition-colors font-medium text-emerald-400"
-          onClick={() => {
-            onOpenProperties(column)
-            onClose()
-          }}
-        >
-          <Sliders className="w-3.5 h-3.5 text-emerald-400" />
-          <span>Column Data Options</span>
-        </button>
+        {/* Các mục thiết lập hệ thống chỉ dành riêng cho tài khoản Dev */}
+        {effectiveIsDev && (
+          <>
+            {/* 3. Column Data Options (Ảnh 6) */}
+            <button
+              className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-emerald-600/20 hover:text-emerald-300 rounded text-left transition-colors font-medium text-emerald-400"
+              onClick={() => {
+                onOpenProperties(column)
+                onClose()
+              }}
+            >
+              <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Column Data Options</span>
+            </button>
 
-        {/* 4. Clone Column */}
-        <button
-          className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-slate-800 rounded text-left transition-colors"
-          onClick={() => {
-            onCloneColumn(column.key)
-            onClose()
-          }}
-        >
-          <Copy className="w-3.5 h-3.5 text-sky-400" />
-          <span>Clone Column</span>
-        </button>
+            {/* 4. Clone Column */}
+            <button
+              className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-slate-800 rounded text-left transition-colors"
+              onClick={() => {
+                onCloneColumn(column.key)
+                onClose()
+              }}
+            >
+              <Copy className="w-3.5 h-3.5 text-sky-400" />
+              <span>Clone Column</span>
+            </button>
 
-        {/* 5. Remove Column */}
-        <button
-          className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-rose-500/20 hover:text-rose-300 rounded text-left transition-colors text-rose-400"
-          onClick={() => {
-            onRemoveColumn(column.key)
-            onClose()
-          }}
-        >
-          <Trash2 className="w-3.5 h-3.5 text-rose-400" />
-          <span>Remove Column</span>
-        </button>
+            {/* 5. Remove Column */}
+            <button
+              className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-rose-500/20 hover:text-rose-300 rounded text-left transition-colors text-rose-400"
+              onClick={() => {
+                onRemoveColumn(column.key)
+                onClose()
+              }}
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+              <span>Remove Column</span>
+            </button>
+          </>
+        )}
       </div>
 
       <div className="border-t border-slate-800 pt-1 mt-1">
@@ -211,16 +221,18 @@ export const HeaderContextMenu: React.FC<HeaderContextMenuProps> = ({
             <span>Filter Local</span>
           </button>
         )}
-        <button
-          className="w-full flex items-center gap-2.5 px-3 py-1.5 hover:bg-slate-800 rounded text-left transition-colors text-slate-400"
-          onClick={() => {
-            onOpenProperties(column)
-            onClose()
-          }}
-        >
-          <Settings className="w-3.5 h-3.5" />
-          <span>Feature Settings</span>
-        </button>
+        {effectiveIsDev && (
+          <button
+            className="w-full flex items-center gap-2.5 px-3 py-1.5 hover:bg-slate-800 rounded text-left transition-colors text-slate-400"
+            onClick={() => {
+              onOpenProperties(column)
+              onClose()
+            }}
+          >
+            <Settings className="w-3.5 h-3.5" />
+            <span>Feature Settings</span>
+          </button>
+        )}
       </div>
     </div>,
     document.body

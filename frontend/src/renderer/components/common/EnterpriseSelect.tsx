@@ -468,7 +468,7 @@ export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
         onClick={handleOpen}
         onKeyDown={handleTriggerKeyDown}
         onFocus={onFocus}
-        className={`relative flex items-center justify-between transition-all select-none cursor-pointer ${
+        className={`enterprise-select-trigger relative flex items-center justify-between transition-all select-none cursor-pointer ${
           isGridCell
             ? `w-full h-7 px-2 text-xs rounded bg-slate-900/80 hover:bg-slate-900 text-slate-100 border ${errorBorderClass}`
             : `w-full min-h-[34px] px-3 py-1.5 text-xs rounded-lg bg-slate-900/90 text-slate-100 border ${errorBorderClass} shadow-sm`
