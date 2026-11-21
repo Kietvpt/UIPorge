@@ -23,22 +23,16 @@ namespace UIForge.Core.Entities
         [MaxLength(50)]
         public string Type { get; set; } = string.Empty;
 
-        [Column(TypeName = "nvarchar(max)")]
         public string PropsJson { get; set; } = "{}";
 
-        [Column(TypeName = "nvarchar(max)")]
         public string StyleJson { get; set; } = "{}";
 
-        [Column(TypeName = "nvarchar(max)")]
         public string EventsJson { get; set; } = "[]";
 
-        [Column(TypeName = "nvarchar(max)")]
         public string? DataBindingJson { get; set; }
 
-        [Column(TypeName = "nvarchar(max)")]
         public string? ValidationJson { get; set; }
 
-        [Column(TypeName = "nvarchar(max)")]
         public string? PermissionsJson { get; set; }
 
         public int Order { get; set; }

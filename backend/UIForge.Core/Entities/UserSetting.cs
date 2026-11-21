@@ -29,7 +29,6 @@ namespace UIForge.Core.Entities
         public string SettingType { get; set; } = "GridPolicy";
 
         [Required]
-        [Column(TypeName = "nvarchar(max)")]
         public string SettingJson { get; set; } = "{}";
     }
 }

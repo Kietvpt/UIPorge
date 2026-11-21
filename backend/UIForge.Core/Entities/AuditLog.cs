@@ -20,7 +20,6 @@ namespace UIForge.Core.Entities
         [MaxLength(30)]
         public string Action { get; set; } = string.Empty; // CREATE, UPDATE, PATCH, DELETE
 
-        [Column(TypeName = "nvarchar(max)")]
         public string ChangesJson { get; set; } = "[]"; // [{ field, oldValue, newValue }]
 
         [MaxLength(100)]
