@@ -1,23 +1,22 @@
 import axios from 'axios'
 import { useAuthStore } from '@/store/authStore'
+import { getApiUrl } from '@/core/config'
 import {
   enqueueMutation,
   initResilienceQueueListener,
   isResilienceEligibleError,
 } from './resilienceClient'
 
-// Backend API URL:
-// - Mặc định local dev kết nối backend HTTPS: https://localhost:7057/api
-// - Khi deploy môi trường khác (staging/production): cấu hình biến môi trường VITE_API_URL
-const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://localhost:7057/api'
-
 export const apiClient = axios.create({
-  baseURL: apiBaseUrl,
+  baseURL: getApiUrl(),
   timeout: 15000,
 })
 
-// Tự động gắn JWT và X-Preview-Role vào mọi request
+// Tự động gắn baseURL từ centralized config, JWT và X-Preview-Role vào mọi request
 apiClient.interceptors.request.use((config) => {
+  if (!config.baseURL) {
+    config.baseURL = getApiUrl()
+  }
   const token = useAuthStore.getState().token
   if (token) {
     config.headers.Authorization = `Bearer ${token}`

@@ -5,6 +5,7 @@ import type { DropdownColumnConfig, SelectOption } from '@/types/schema'
 import { useDataEngine } from '@/core/engines/dataEngine'
 import { interpolateFormatData, lookupFieldValue } from '@/core/utils/formatDataInterpolator'
 import { openPopup } from '@/core/engines/navigationEngine'
+import { getApiUrl } from '@/core/config'
 
 export interface EnterpriseSelectProps {
   value?: any
@@ -117,7 +118,7 @@ export const EnterpriseSelect: React.FC<EnterpriseSelectProps> = ({
         active: true,
       }
 
-      const res = await fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(cleanRef)}`, {
+      const res = await fetch(`${getApiUrl()}/core/data/${encodeURIComponent(cleanRef)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

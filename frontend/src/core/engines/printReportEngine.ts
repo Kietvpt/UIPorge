@@ -1,4 +1,5 @@
 import type { TableColumn } from '@/types/schema'
+import { getApiUrl } from '@/core/config'
 
 export interface PrintReportOptions {
   title: string
@@ -250,7 +251,7 @@ export async function downloadBackendPdfReport(options: PrintReportOptions) {
   }
 
   try {
-    const res = await fetch('http://localhost:5048/api/core/reports/pdf', {
+    const res = await fetch(`${getApiUrl()}/core/reports/pdf`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -285,7 +286,7 @@ export async function downloadBackendDocxReport(options: BackendDocxReportOption
   }
 
   try {
-    const res = await fetch('http://localhost:5048/api/core/reports/docx', {
+    const res = await fetch(`${getApiUrl()}/core/reports/docx`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

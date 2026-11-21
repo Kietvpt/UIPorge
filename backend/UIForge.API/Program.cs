@@ -25,9 +25,8 @@ builder.Services.AddScoped(sp =>
     var http = sp.GetService<IHttpContextAccessor>()?.HttpContext;
     var branch = http?.User?.FindFirst("branch")?.Value
                  ?? http?.Request?.Headers["X-Branch"].FirstOrDefault();
-    var connStr = BranchConnectionFactory.Build(config, branch);
     var options = new DbContextOptionsBuilder<AppDbContext>()
-        .UseSqlServer(connStr)
+        .UseUIForgeDatabase(config, branch)
         .Options;
     return new AppDbContext(options);
 });
@@ -59,7 +58,7 @@ builder.Services.AddAuthorization();
 
 // 3. Controllers & JSON options (Kèm Controller từ thư viện UIForge.Core)
 builder.Services.AddControllers()
-    .AddApplicationPart(typeof(UIForge.Core.Controllers.DynamicMetadataController).Assembly)
+    .AddUIForgeControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
@@ -112,8 +111,11 @@ try
     await db.Database.EnsureCreatedAsync();
     Console.WriteLine("[DB] Default branch database is ready.");
 
-    // Non-destructive schema migration for Phase 1 (DataBinding, Validation, Permissions)
-    const string sqlMigration = @"
+    var provider = BranchConnectionFactory.GetDatabaseProvider(app.Configuration);
+    if (provider == "SqlServer")
+    {
+        // Non-destructive schema migration for Phase 1 (DataBinding, Validation, Permissions)
+        const string sqlMigration = @"
         IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Components') AND name = 'DataBindingJson')
             ALTER TABLE Components ADD DataBindingJson NVARCHAR(MAX) NULL;
         IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('Components') AND name = 'ValidationJson')
@@ -576,13 +578,18 @@ try
             END
         ');
     ";
-    await db.Database.ExecuteSqlRawAsync(sqlMigration);
-    Console.WriteLine("[DB] Database schema migrated: Components (JSON), MasterDatas, Roles, UserRoles, RolePermissions, UserSettings, AuditLogs, Pages (Hierarchy & Features), FeaturePolicies (13 columns), ComponentPolicies (5 permissions).");
+        await db.Database.ExecuteSqlRawAsync(sqlMigration);
+        Console.WriteLine("[DB] SQL Server database schema migrated: Components (JSON), MasterDatas, Roles, UserRoles, RolePermissions, UserSettings, AuditLogs, Pages (Hierarchy & Features), FeaturePolicies (13 columns), ComponentPolicies (5 permissions).");
+    }
+    else
+    {
+        Console.WriteLine($"[DB] Multi-DB Provider '{provider}' active. EnsureCreatedAsync initialized all tables and seed data.");
+    }
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"[Notice] SQL Server connection attempt: {ex.Message}");
-    Console.WriteLine("[Notice] Continuing application startup. Kiểm tra SQL Server (ADMIN-PC\\SQLEXPRESS) đã chạy chưa.");
+    Console.WriteLine($"[Notice] Database connection attempt: {ex.Message}");
+    Console.WriteLine("[Notice] Continuing application startup.");
 }
 
 app.MapControllers();

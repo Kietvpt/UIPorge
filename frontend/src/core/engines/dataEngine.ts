@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { useEditorStore, getSavedRecordId } from '@/store/editorStore'
 import { useNavigationEngine } from './navigationEngine'
+import { getApiUrl } from '@/core/config'
 import type { ComponentNode } from '@/types/schema'
 
 export interface SelectOption {
@@ -444,7 +445,7 @@ export const useDataEngine = create<DataEngineState>()(
               ? `?${normalizedQuery}`
               : `?$filter=${encodeURIComponent(normalizedQuery)}`
             : ''
-          const url = `http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}${queryString}`
+          const url = `${getApiUrl()}/core/data/${encodeURIComponent(entityName)}${queryString}`
           const response = await fetch(url, { headers: getSecurityHeaders() })
           if (response.ok) {
             const data = await response.json()
@@ -500,7 +501,7 @@ export const useDataEngine = create<DataEngineState>()(
               ? `?${normalizedQuery}`
               : `?$filter=${encodeURIComponent(normalizedQuery)}`
             : ''
-          const url = `http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}${queryString}`
+          const url = `${getApiUrl()}/core/data/${encodeURIComponent(entityName)}${queryString}`
           const response = await fetch(url, { headers: getSecurityHeaders() })
           if (response.ok) {
             const data = await response.json()
@@ -535,8 +536,8 @@ export const useDataEngine = create<DataEngineState>()(
 
       try {
         const url = isUpdate
-          ? `http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}/${numericId}`
-          : `http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}`
+          ? `${getApiUrl()}/core/data/${encodeURIComponent(entityName)}/${numericId}`
+          : `${getApiUrl()}/core/data/${encodeURIComponent(entityName)}`
         const method = isUpdate ? 'PUT' : 'POST'
 
         // Làm sạch payload trước khi gửi: Chuyển chuỗi rỗng của trường ngày/số thành null
@@ -622,7 +623,7 @@ export const useDataEngine = create<DataEngineState>()(
         return { success: false, message: 'Thiếu thông tin Entity hoặc ID bản ghi' }
       }
       try {
-        const res = await fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}/${id}`, {
+        const res = await fetch(`${getApiUrl()}/core/data/${encodeURIComponent(entityName)}/${id}`, {
           method: 'DELETE',
           headers: getSecurityHeaders(),
         })

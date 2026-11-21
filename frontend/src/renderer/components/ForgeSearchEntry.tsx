@@ -8,6 +8,7 @@ import { FormFieldWrapper } from './FormFieldWrapper'
 import { ForgeSearchModal } from './grid/ForgeSearchModal'
 import { Search, Plus, Save, Loader2, X } from 'lucide-react'
 import { openPopup } from '@/core/engines/navigationEngine'
+import { getApiUrl } from '@/core/config'
 
 /**
  * 📦 ForgeSearchEntry: Search & Auto-Populate Component (Kế thừa SearchEntry.cs từ Core C#)
@@ -116,7 +117,7 @@ export const ForgeSearchEntry: React.FC<ComponentProps> = ({ node, isEditing }) 
         active: true,
       }
 
-      const res = await fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(cleanRef)}`, {
+      const res = await fetch(`${getApiUrl()}/core/data/${encodeURIComponent(cleanRef)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

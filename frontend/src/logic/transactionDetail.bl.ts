@@ -1,5 +1,6 @@
 import { useDataEngine } from '@/core/engines/dataEngine'
 import { useEditorStore, saveActiveFeatureIdToUrl, isDetailFeature } from '@/store/editorStore'
+import { getApiUrl } from '@/core/config'
 import { TransactionItem } from './transactionList.bl'
 
 export class TransactionDetailBL {
@@ -39,7 +40,7 @@ export class TransactionDetailBL {
     }
 
     try {
-      const res = await fetch(`http://localhost:5048/api/core/data/Transaction/${id}`)
+      const res = await fetch(`${getApiUrl()}/core/data/Transaction/${id}`)
       if (res.ok) {
         const data: TransactionItem = await res.json()
         const activeId = useEditorStore.getState().activeFeatureId || '4'
