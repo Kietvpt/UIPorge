@@ -4,7 +4,7 @@ import { X } from 'lucide-react'
 
 export const ForgeModal: React.FC<ComponentProps> = ({ node, children }) => {
   const { props } = node
-  const title = props.title || props.label || 'Hộp Thoại (Modal Dialog)'
+  const title = props.label || props.title || 'Hộp Thoại (Modal Dialog)'
 
   return (
     <div className="w-full p-4 rounded-xl border border-dashed border-blue-500/60 bg-blue-950/10">

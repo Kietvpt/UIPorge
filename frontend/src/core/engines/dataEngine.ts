@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { useEditorStore } from '@/store/editorStore'
+import { useEditorStore, getSavedRecordId } from '@/store/editorStore'
 import { useNavigationEngine } from './navigationEngine'
 import type { ComponentNode } from '@/types/schema'
 
@@ -718,8 +718,7 @@ export const useDataEngine = create<DataEngineState>()(
 
       // Lấy ID từ URL nếu form chưa có
       if (!finalRecord.id && !finalRecord.Id && typeof window !== 'undefined') {
-        const urlParams = new URLSearchParams(window.location.search)
-        const idFromUrl = urlParams.get('id')
+        const idFromUrl = getSavedRecordId()
         if (idFromUrl && idFromUrl !== 'new' && Number(idFromUrl) > 0) {
           finalRecord.id = Number(idFromUrl)
           finalRecord.Id = Number(idFromUrl)

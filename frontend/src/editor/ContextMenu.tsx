@@ -37,14 +37,14 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, items, onClose }
   }, [onClose])
 
   // Prevent overflowing window viewport
-  const adjustedX = Math.min(x, window.innerWidth - 220)
-  const adjustedY = Math.min(y, window.innerHeight - (items.length * 36 + 20))
+  const adjustedX = Math.min(x, window.innerWidth - 340)
+  const adjustedY = Math.max(10, Math.min(y, window.innerHeight - (items.length * 36 + 20)))
 
   return (
     <div
       ref={menuRef}
       style={{ top: `${adjustedY}px`, left: `${adjustedX}px` }}
-      className="fixed z-50 w-56 bg-slate-900 border border-slate-700/80 rounded-xl shadow-2xl py-1.5 backdrop-blur-md text-slate-200 select-none animate-in fade-in zoom-in-95 duration-100"
+      className="fixed z-50 min-w-[290px] w-max max-w-[360px] bg-slate-900 border border-slate-700/80 rounded-xl shadow-2xl py-1.5 backdrop-blur-md text-slate-200 select-none animate-in fade-in zoom-in-95 duration-100"
     >
       {items.map((item, idx) => {
         if (item.divider) {
@@ -67,7 +67,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, items, onClose }
             }`}
           >
             {Icon && <Icon className="w-4 h-4 shrink-0 opacity-80" />}
-            <span className="font-medium truncate">{item.label}</span>
+            <span className="font-medium whitespace-nowrap">{item.label}</span>
           </button>
         )
       })}

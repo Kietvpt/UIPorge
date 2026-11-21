@@ -16,7 +16,7 @@ export const ForgeSection: React.FC<ComponentProps> = ({ node, children }) => {
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
 
   const [collapsed, setCollapsed] = useState(false)
-  const title = props.title || props.label || 'Khối Bố Cục (Section)'
+  const title = props.label || props.title || 'Khối Bố Cục (Section)'
   const isCollapsible = props.collapsible ?? true
 
   const layoutMode = props.layoutMode || 'grid'

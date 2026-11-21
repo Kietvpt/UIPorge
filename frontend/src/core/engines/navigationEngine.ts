@@ -38,6 +38,7 @@ interface NavigationState {
   ) => void
   closeTab: (tabId: string) => void
   setActiveTab: (tabId: string) => void
+  reorderTabs: (fromIndex: number, toIndex: number) => void
   setTabDirty: (tabIdOrFeatureId: string, isDirty: boolean) => void
   closePopup: (result?: any) => void
 }
@@ -129,6 +130,18 @@ export const useNavigationEngine = create<NavigationState>()(
       set({ activeTabId: tabId })
     },
 
+    // Kéo thả sắp xếp lại thứ tự Tab
+    reorderTabs: (fromIndex: number, toIndex: number) => {
+      set((state) => {
+        if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return state
+        if (fromIndex >= state.openTabs.length || toIndex >= state.openTabs.length) return state
+        const tabs = [...state.openTabs]
+        const [moved] = tabs.splice(fromIndex, 1)
+        tabs.splice(toIndex, 0, moved)
+        return { openTabs: tabs }
+      })
+    },
+
     // Đóng popup
     closePopup: (result?: any) => {
       const currentPopup = get().activePopup
@@ -168,5 +181,12 @@ export function closePopup(result?: any) {
  */
 export function closeTab(tabId: string) {
   useNavigationEngine.getState().closeTab(tabId)
+}
+
+/**
+ * ⚡ Kéo thả thay đổi thứ tự Tab
+ */
+export function reorderTabs(fromIndex: number, toIndex: number) {
+  useNavigationEngine.getState().reorderTabs(fromIndex, toIndex)
 }
 

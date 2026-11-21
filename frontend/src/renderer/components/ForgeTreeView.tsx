@@ -286,7 +286,7 @@ export const ForgeTreeView: React.FC<ForgeTreeViewProps> = ({
     )
   }
 
-  const title = (props.title as string) || (node.props?.label as string) || 'Cấu Trúc Cây Phân Cấp'
+  const title = (props.label as string) || (props.title as string) || 'Cấu Trúc Cây Phân Cấp'
 
   return (
     <div
