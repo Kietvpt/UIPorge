@@ -28,6 +28,7 @@ import { WorkspaceTabBar } from '@/editor/WorkspaceTabBar'
 import { FeaturePopupModal } from '@/editor/FeaturePopupModal'
 import { useDataEngine } from '@/core/engines/dataEngine'
 import { useNavigationEngine } from '@/core/engines/navigationEngine'
+import { getApiUrl } from '@/core/config'
 import { useGlobalHotkeys } from '@/core/hooks/useGlobalHotkeys'
 
 export function App() {
@@ -80,7 +81,7 @@ export function App() {
   // ── Nạp dữ liệu thực tế từ SQL Server Database vào Core DataEngine ──
   useEffect(() => {
     const syncDatasetFromBackend = (entityName: string) => {
-      fetch(`http://localhost:5048/api/core/data/${encodeURIComponent(entityName)}`)
+      fetch(`${getApiUrl()}/core/data/${encodeURIComponent(entityName)}`)
         .then((res) => (res.ok ? res.json() : []))
         .then((data) => {
           const items = Array.isArray(data) ? data : (data?.value ?? [])

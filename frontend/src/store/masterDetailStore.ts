@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import { getApiUrl } from '@/core/config'
 import {
   calculateAutoPopulatedFields,
   getCascadedOptions,
@@ -810,7 +811,7 @@ export const useMasterDetailStore = create<MasterDetailState>()(
 
       try {
         // Thử gửi sang Backend API nếu có
-        const response = await fetch('http://localhost:5048/api/fcl-import/save-aggregate', {
+        const response = await fetch(`${getApiUrl()}/fcl-import/save-aggregate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),

@@ -8,6 +8,7 @@
  */
 
 import type { UIEntityCatalog } from '@/types/schema'
+import { getApiUrl } from '@/core/config'
 
 export interface ColumnMetadata {
   name: string
@@ -38,7 +39,7 @@ let cachedMetadata: EntityMetadata[] | null = null
 export async function fetchEntityMetadata(forceRefresh = false): Promise<EntityMetadata[]> {
   if (!forceRefresh && cachedMetadata) return cachedMetadata
   try {
-    const res = await fetch('http://localhost:5048/api/core/metadata/entities')
+    const res = await fetch(`${getApiUrl()}/core/metadata/entities`)
     if (res.ok) {
       const data = await res.json()
       if (Array.isArray(data)) {

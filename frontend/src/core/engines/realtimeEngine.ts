@@ -14,6 +14,7 @@
 
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import { getApiBaseUrl } from '@/core/config'
 
 export interface LockedRecordInfo {
   entityName: string
@@ -56,18 +57,19 @@ export const useRealtimeEngine = create<RealtimeState>()(
     lockedRecords: {},
     notifications: [],
 
-    connect: (hubUrl = 'http://localhost:5048/hubs/uiforge') => {
+    connect: (hubUrl?: string) => {
+      const resolvedHubUrl = hubUrl || `${getApiBaseUrl()}/hubs/uiforge`
       if (get().isConnected) return
 
       try {
         // Tương thích cả SignalR WebSocket endpoint lẫn kết nối trực tiếp
-        const wsUrl = hubUrl.replace(/^http/, 'ws')
+        const wsUrl = resolvedHubUrl.replace(/^http/, 'ws')
         const socket = new WebSocket(wsUrl)
         activeSocket = socket
 
         socket.onopen = () => {
           set({ isConnected: true, connectionId: `conn_${Date.now()}` })
-          console.log('[RealtimeEngine] Đã kết nối thành công tới Hub:', hubUrl)
+          console.log('[RealtimeEngine] Đã kết nối thành công tới Hub:', resolvedHubUrl)
         }
 
         socket.onmessage = (event) => {

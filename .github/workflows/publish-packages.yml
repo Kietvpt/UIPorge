@@ -1,0 +1,96 @@
+name: Publish UIForge Packages to GitHub Packages
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # =================================================================
+  # 1. Publish .NET 8 NuGet Package (UIForge.Core)
+  # =================================================================
+  publish-nuget:
+    name: Build & Push NuGet Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore Dependencies
+        run: dotnet restore backend/UIForge.Core/UIForge.Core.csproj
+
+      - name: Pack NuGet Package
+        run: |
+          dotnet pack backend/UIForge.Core/UIForge.Core.csproj \
+            --configuration Release \
+            --output ./nuget-artifacts \
+            -p:PackageVersion=${GITHUB_REF_NAME#v}
+
+      - name: Push to GitHub Packages NuGet
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet nuget add source \
+            --name github \
+            --username "${{ github.actor }}" \
+            --password "$GITHUB_TOKEN" \
+            --store-password-in-clear-text \
+            "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+
+          dotnet nuget push ./nuget-artifacts/*.nupkg \
+            --source "github" \
+            --api-key "$GITHUB_TOKEN" \
+            --skip-duplicate
+
+  # =================================================================
+  # 2. Publish npm Package (@<owner>/uiforge-core)
+  # =================================================================
+  publish-npm:
+    name: Build & Push npm Package
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@${{ github.repository_owner }}'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Update Package Version & Scope
+        run: |
+          # Set version from Git Tag
+          npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
+          # Ensure package scope matches GitHub repository owner
+          node -e "
+            const pkg = require('./package.json');
+            pkg.name = '@${{ github.repository_owner }}/uiforge-core';
+            pkg.publishConfig = { registry: 'https://npm.pkg.github.com' };
+            require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));
+          "
+
+      - name: Build Core Library
+        run: npm run build:lib
+
+      - name: Publish to GitHub Packages npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm publish

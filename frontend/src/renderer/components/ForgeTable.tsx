@@ -17,6 +17,7 @@ import {
 import { useEditorStore } from '@/store/editorStore'
 import { useAuthStore } from '@/store/authStore'
 import { useMasterDetailStore } from '@/store/masterDetailStore'
+import { getApiUrl } from '@/core/config'
 import {
   Search,
   Plus,
@@ -440,7 +441,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node, isEditing }) => {
 
     // 2. Đồng bộ mới nhất từ SQL Server UserSettings API
     fetch(
-      `http://localhost:5048/api/core/user-settings?featureCode=${encodeURIComponent(
+      `${getApiUrl()}/core/user-settings?featureCode=${encodeURIComponent(
         featureCode
       )}&componentId=${encodeURIComponent(node.id)}&settingType=GridPolicy`
     )
@@ -477,7 +478,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node, isEditing }) => {
 
     // Đồng bộ bất đồng bộ lên SQL Server UserSettings API (TSK-2.6)
     const featureCode = String(node.pageId || 'default')
-    fetch('http://localhost:5048/api/core/user-settings', {
+    fetch(`${getApiUrl()}/core/user-settings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -723,7 +724,7 @@ export const ForgeTable: React.FC<ComponentProps> = ({ node, isEditing }) => {
         rows: processedRows,
       }
 
-      const res = await fetch('http://localhost:5048/api/core/export/excel', {
+      const res = await fetch(`${getApiUrl()}/core/export/excel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

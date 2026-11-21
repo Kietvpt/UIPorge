@@ -1,8 +1,22 @@
 {
-  "name": "frontend",
+  "name": "@uiforge/core",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "main": "./dist-lib/uiforge-core.cjs.js",
+  "module": "./dist-lib/uiforge-core.es.js",
+  "types": "./dist-lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist-lib/index.d.ts",
+      "import": "./dist-lib/uiforge-core.es.js",
+      "require": "./dist-lib/uiforge-core.cjs.js"
+    },
+    "./style.css": "./dist-lib/style.css"
+  },
+  "files": [
+    "dist-lib"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

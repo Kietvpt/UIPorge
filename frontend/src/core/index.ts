@@ -7,6 +7,12 @@
  * Không chứa bất kỳ logic nghiệp vụ Logistics/ERP nào.
  */
 
+// Import Core CSS bundle (Tailwind + Theme ERP Dark Mode)
+import '../index.css'
+
+// 0. Configuration & Endpoints
+export { setApiBaseUrl, getApiBaseUrl, getApiUrl } from './config'
+
 // 1. UI Components
 export * from '@/renderer/components'
 export { EnterpriseDatePicker } from '@/renderer/components/common/EnterpriseDatePicker'
@@ -36,7 +42,13 @@ export type { PrintReportOptions, BackendDocxReportOptions } from './engines/pri
 
 // 3. Core Framework Engines
 export { useDataEngine } from './engines/dataEngine'
-export { useNavigationEngine } from './engines/navigationEngine'
+export {
+  useNavigationEngine,
+  openTab,
+  openPopup,
+  closeTab,
+  closePopup,
+} from './engines/navigationEngine'
 export { useRealtimeEngine } from './engines/realtimeEngine'
 export { usePermissionEngine } from './engines/permissionEngine'
 export type {
@@ -89,8 +101,21 @@ export { UnifiedEventEditor } from '@/editor/events/UnifiedEventEditor'
 export { FeaturePopupModal } from '@/editor/FeaturePopupModal'
 export { ComponentPropertiesModal } from '@/editor/ComponentPropertiesModal'
 
+// 4.1 Full Application & Auth
+export { App as UIForgeApp } from '@/App'
+export { LoginScreen } from '@/auth/LoginScreen'
+
 // 5. Stores
-export { useEditorStore } from '@/store/editorStore'
+export {
+  useEditorStore,
+  saveActiveFeatureIdToUrl,
+  isDetailFeature,
+  isListFeature,
+  getSavedRecordId,
+  getSavedFeatureId,
+  resolveLocationState,
+  resolveFeatureIdFromLocation,
+} from '@/store/editorStore'
 export { useAuthStore } from '@/store/authStore'
 export { useMasterDetailStore } from '@/store/masterDetailStore'
 
