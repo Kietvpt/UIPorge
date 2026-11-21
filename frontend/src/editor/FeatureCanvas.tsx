@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import { useDroppable } from '@dnd-kit/core'
-import { useEditorStore, isDetailFeature } from '@/store/editorStore'
+import {
+  useEditorStore,
+  isDetailFeature,
+  getSavedRecordId,
+  saveActiveFeatureIdToUrl,
+} from '@/store/editorStore'
 import { ComponentRenderer } from '@/renderer/Renderer'
 import { DraggableComponent } from './DraggableComponent'
 import { ContextMenu, MenuItem } from './ContextMenu'
@@ -72,28 +77,69 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
     if (isDetailScreen && activeFeatureId) {
       let recordId = activeRecordId
       if (!recordId && typeof window !== 'undefined') {
-        const urlParams = new URLSearchParams(window.location.search)
-        recordId = urlParams.get('id')
+        recordId = getSavedRecordId()
       }
       const targetId = recordId || '1'
       const curRecord = useDataEngine.getState().formRecords[activeFeatureId]
       const curId = curRecord?.id || curRecord?.Id
+      const curJobNo = curRecord?.jobNo || curRecord?.JobNo || curRecord?.code || curRecord?.Code
 
-      // Nếu chưa có dữ liệu hoặc ID hiện tại khác với ID từ URL/Store -> Nạp ngay từ SQL Server
-      if (String(curId) !== String(targetId)) {
-        const { module: blMod } = resolveBlModule(activeFeature?.scriptFile)
-        const loadDetailFn = blMod?.loadDetail || blMod?.transactionDetailBL?.loadDetail
-        if (typeof loadDetailFn === 'function') {
-          loadDetailFn(targetId).then((data: any) => {
-            if (data && activeFeatureId) {
-              useDataEngine.getState().setFormRecord(activeFeatureId, data)
-              useDataEngine.getState().setFormRecord('default', data)
-              if (activeRecordId !== String(data.id || targetId)) {
-                useEditorStore.getState().setActiveRecordId(String(data.id || targetId))
-              }
+      // Nếu chưa có dữ liệu hoặc ID/Mã hiện tại khác với targetId -> Nạp ngay từ SQL Server
+      const isRecordMatched =
+        (curId && String(curId) === String(targetId)) ||
+        (curJobNo && String(curJobNo) === String(targetId))
+
+      if (!isRecordMatched) {
+        // Hàm chuyển đổi targetId chuỗi (vd FCLI-260200033345) sang ID số nếu cần
+        const resolveNumericId = async (inputKey: string): Promise<string> => {
+          if (!inputKey || inputKey === 'new') return inputKey
+          if (/^\d+$/.test(inputKey)) return inputKey
+
+          // 1. Thử tìm trong datasets['Transaction'] hiện có
+          const localDs = useDataEngine.getState().datasets['Transaction'] || []
+          const foundLocal = localDs.find(
+            (r: any) =>
+              String(r.jobNo || r.JobNo || r.code || r.Code) === inputKey ||
+              String(r.id || r.Id) === inputKey
+          )
+          if (foundLocal) {
+            return String(foundLocal.id || foundLocal.Id)
+          }
+
+          // 2. Nếu chưa có, queryEntity('Transaction') để tải mới và tìm
+          try {
+            const remoteItems = await useDataEngine.getState().queryEntity('Transaction')
+            const foundRemote = (remoteItems || []).find(
+              (r: any) =>
+                String(r.jobNo || r.JobNo || r.code || r.Code) === inputKey ||
+                String(r.id || r.Id) === inputKey
+            )
+            if (foundRemote) {
+              return String(foundRemote.id || foundRemote.Id)
             }
-          })
+          } catch {}
+
+          return inputKey
         }
+
+        resolveNumericId(targetId).then((finalNumericId) => {
+          const { module: blMod } = resolveBlModule(activeFeature?.scriptFile)
+          const loadDetailFn = blMod?.loadDetail || blMod?.transactionDetailBL?.loadDetail
+          if (typeof loadDetailFn === 'function') {
+            loadDetailFn(finalNumericId).then((data: any) => {
+              if (data && activeFeatureId) {
+                useDataEngine.getState().setFormRecord(activeFeatureId, data)
+                useDataEngine.getState().setFormRecord('default', data)
+                const resolvedRecordId = String(data.id || finalNumericId)
+                if (activeRecordId !== resolvedRecordId) {
+                  useEditorStore.getState().setActiveRecordId(resolvedRecordId)
+                }
+                // Đồng thời cập nhật URL đẹp thành clean route với business code / jobNo / id (không có ?id=)
+                saveActiveFeatureIdToUrl(activeFeatureId, resolvedRecordId)
+              }
+            })
+          }
+        })
       }
     }
   }, [activeFeatureId, activeRecordId, activeFeature?.scriptFile, activeFeature?.route, activeFeature?.name, activeFeature?.isDetail])
@@ -228,7 +274,7 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
           ]
           : []),
         {
-          label: '📦 Thêm Khoảng Trắng con (Bố cục Flexbox)',
+          label: '📦 Thêm Container',
           icon: Box,
           onClick: () => {
             const childContainer = createNewComponent(
@@ -236,36 +282,12 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
               {
                 layoutMode: 'flex',
                 flexConfig: {
-                  direction: 'column',
+                  direction: isRow ? 'column' : 'row',
                   wrap: 'wrap',
                   justify: 'flex-start',
                   align: 'stretch',
                   gap: '12px',
                 },
-                ...tabProp,
-              },
-              {
-                flex: isRow ? '1' : undefined,
-                width: isRow ? undefined : '100%',
-                minHeight: '120px',
-                backgroundColor: 'rgba(15, 23, 42, 0.6)',
-                padding: '16px',
-                borderRadius: '10px',
-                border: '1px dashed #64748b',
-              }
-            )
-            addComponent(childContainer, targetContainerId)
-          },
-        },
-        {
-          label: '📐 Thêm Khoảng Trắng con (Bố cục Grid)',
-          icon: Columns,
-          onClick: () => {
-            const childContainer = createNewComponent(
-              'Container',
-              {
-                layoutMode: 'grid',
-                gridConfig: { columns: 2, gap: '12px' },
                 ...tabProp,
               },
               {
@@ -407,6 +429,18 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
             ),
         },
         {
+          label: '➕ Thêm Nhãn Chữ (Label)',
+          icon: FileText,
+          onClick: () =>
+            addComponent(
+              createNewComponent('Label', {
+                label: 'Nhãn thông tin',
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
+        },
+        {
           label: '➕ Thêm Bảng Dữ Liệu (Advanced Grid)',
           icon: TableIcon,
           onClick: () =>
@@ -417,6 +451,32 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
                   { key: 'col2', title: 'Cột 2', width: '150px' },
                   { key: 'col3', title: 'Cột 3', width: '120px' },
                 ],
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
+        },
+        {
+          label: '➕ Thêm Ô Tra Cứu (SearchEntry)',
+          icon: Type,
+          onClick: () =>
+            addComponent(
+              createNewComponent('SearchEntry', {
+                label: 'Tra cứu',
+                labelPosition: 'left',
+                colSpan: 4,
+                ...tabProp,
+              }),
+              targetContainerId
+            ),
+        },
+        {
+          label: '➕ Thêm Chọn Bản Ghi (RecordSelector)',
+          icon: Type,
+          onClick: () =>
+            addComponent(
+              createNewComponent('RecordSelector', {
+                label: 'Chọn bản ghi',
                 ...tabProp,
               }),
               targetContainerId
@@ -479,12 +539,9 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
     }
 
     // 2. Default Canvas Context Menu
-    const isRootRow = rootLayout.direction === 'row'
     return [
       {
-        label: isRootRow
-          ? '📦 Thêm Khoảng Trắng (Tự chia đôi song song)'
-          : '📦 Thêm Khoảng Trắng (Bố cục Flexbox)',
+        label: '📦 Thêm Container',
         icon: Box,
         onClick: () => {
           const container = createNewComponent(
@@ -500,8 +557,7 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
               },
             },
             {
-              flex: isRootRow ? '1' : undefined,
-              width: isRootRow ? undefined : '100%',
+              width: '100%',
               minHeight: '130px',
               backgroundColor: '#1e293b',
               padding: '16px',
@@ -513,29 +569,17 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
         },
       },
       {
-        label: '📐 Thêm Khoảng Trắng (Bố cục Grid 2 Cột)',
+        label: '🗂️ Thêm Khung Card / Section (12 Cột)',
         icon: Columns,
         onClick: () => {
-          const container = createNewComponent(
-            'Container',
-            {
-              layoutMode: 'grid',
-              gridConfig: {
-                columns: 2,
-                gap: '16px',
-              },
-            },
-            {
-              flex: isRootRow ? '1' : undefined,
-              width: isRootRow ? undefined : '100%',
-              minHeight: '140px',
-              backgroundColor: '#1e293b',
-              padding: '16px',
-              borderRadius: '12px',
-              border: '1px dashed #475569',
-            }
-          )
-          addComponent(container, null)
+          const sec = createNewComponent('Section', {
+            title: 'Phân Vùng Mới',
+            label: 'Phân Vùng Mới',
+            collapsible: true,
+            boxShadow: true,
+            colSpan: 12,
+          })
+          addComponent(sec, null)
         },
       },
       {
@@ -544,24 +588,152 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
         onClick: () => { },
       },
       {
-        label: '🔘 Thêm Nút bấm (Button)',
-        icon: Square,
-        onClick: () => addComponent(createNewComponent('Button'), null),
-      },
-      {
-        label: '📝 Thêm Hộp nhập liệu (TextBox)',
+        label: '➕ Thêm TextBox (Ô nhập liệu)',
         icon: Type,
-        onClick: () => addComponent(createNewComponent('TextBox'), null),
+        onClick: () =>
+          addComponent(
+            createNewComponent('TextBox', {
+              label: 'Ô nhập liệu',
+              labelPosition: 'left',
+              colSpan: 4,
+            }),
+            null
+          ),
       },
       {
-        label: '🏷️ Thêm Nhãn chữ (Label)',
+        label: '➕ Thêm Số (Number)',
+        icon: Type,
+        onClick: () =>
+          addComponent(
+            createNewComponent('Number', {
+              label: 'Số tiền / Lượng',
+              labelPosition: 'left',
+              colSpan: 4,
+              precision: 2,
+              thousandsSeparator: true,
+            }),
+            null
+          ),
+      },
+      {
+        label: '➕ Thêm Chọn Ngày (DatePicker)',
+        icon: Type,
+        onClick: () =>
+          addComponent(
+            createNewComponent('DatePicker', {
+              label: 'Ngày tháng',
+              labelPosition: 'left',
+              colSpan: 4,
+            }),
+            null
+          ),
+      },
+      {
+        label: '➕ Thêm Dropdown (Select)',
+        icon: Type,
+        onClick: () =>
+          addComponent(
+            createNewComponent('Select', {
+              label: 'Lựa chọn',
+              labelPosition: 'left',
+              colSpan: 4,
+              options: [
+                { value: 'opt1', label: 'Tùy chọn 1' },
+                { value: 'opt2', label: 'Tùy chọn 2' },
+              ],
+            }),
+            null
+          ),
+      },
+      {
+        label: '➕ Thêm Hộp Kiểm (Checkbox)',
+        icon: Square,
+        onClick: () =>
+          addComponent(
+            createNewComponent('Checkbox', {
+              label: 'Kích hoạt',
+              labelPosition: 'left',
+              colSpan: 4,
+            }),
+            null
+          ),
+      },
+      {
+        label: '➕ Thêm Ghi Chú Nhiều Dòng (Textarea)',
         icon: FileText,
-        onClick: () => addComponent(createNewComponent('Label'), null),
+        onClick: () =>
+          addComponent(
+            createNewComponent('Textarea', {
+              label: 'Ghi chú',
+              labelPosition: 'left',
+              colSpan: 12,
+              rows: 3,
+            }),
+            null
+          ),
       },
       {
-        label: '📊 Thêm Bảng dữ liệu (Table)',
+        label: '➕ Thêm Nút Bấm (Button)',
+        icon: Square,
+        onClick: () =>
+          addComponent(
+            createNewComponent('Button', {
+              label: 'Nút bấm',
+              variant: 'primary',
+              size: 'sm',
+            }),
+            null
+          ),
+      },
+      {
+        label: '➕ Thêm Nhãn Chữ (Label)',
+        icon: FileText,
+        onClick: () =>
+          addComponent(
+            createNewComponent('Label', {
+              label: 'Nhãn thông tin',
+            }),
+            null
+          ),
+      },
+      {
+        label: '➕ Thêm Bảng Dữ Liệu (Advanced Grid)',
         icon: TableIcon,
-        onClick: () => addComponent(createNewComponent('Table'), null),
+        onClick: () =>
+          addComponent(
+            createNewComponent('Table', {
+              columns: [
+                { key: 'col1', title: 'Cột 1', width: '120px' },
+                { key: 'col2', title: 'Cột 2', width: '150px' },
+                { key: 'col3', title: 'Cột 3', width: '120px' },
+              ],
+            }),
+            null
+          ),
+      },
+      {
+        label: '➕ Thêm Ô Tra Cứu (SearchEntry)',
+        icon: Type,
+        onClick: () =>
+          addComponent(
+            createNewComponent('SearchEntry', {
+              label: 'Tra cứu',
+              labelPosition: 'left',
+              colSpan: 4,
+            }),
+            null
+          ),
+      },
+      {
+        label: '➕ Thêm Chọn Bản Ghi (RecordSelector)',
+        icon: Type,
+        onClick: () =>
+          addComponent(
+            createNewComponent('RecordSelector', {
+              label: 'Chọn bản ghi',
+            }),
+            null
+          ),
       },
     ]
   }
@@ -576,34 +748,21 @@ export const FeatureCanvas: React.FC<FeatureCanvasProps> = ({
         }`}
     >
       <div className="max-w w-full mx-auto flex-1 flex flex-col space-y-4">
-        {/* Feature Header Bar */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
-          <div>
-            <h1 className="text-lg font-bold text-slate-100 flex items-center gap-2.5">
-              <span>{activeFeature?.name || 'Màn hình'}</span>
-              {(isEditing || isDev) && (
-                isBlBound ? (
-                  <span className="px-2.5 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-800 text-emerald-400 text-xs font-mono flex items-center gap-1.5 shadow-sm">
-                    <FileCode className="w-3.5 h-3.5" />
-                    <span>{activeFeature?.scriptFile}</span>
-                  </span>
-                ) : (
-                  <span className="px-2.5 py-0.5 rounded-lg bg-amber-950/80 border border-amber-800 text-amber-400 text-xs font-medium flex items-center gap-1.5 shadow-sm">
-                    <Lock className="w-3 h-3" />
-                    <span>Chưa gắn file BL</span>
-                  </span>
-                )
-              )}
-            </h1>
-            <p className="text-xs text-slate-400 mt-0.5">
-              {isEditing || isDev
-                ? isBlBound
-                  ? activeFeature?.description || 'Nhấn chuột phải vào màn hình hoặc khoảng trắng để thêm thành phần mới.'
-                  : 'Màn hình này đang bị khóa: Cần thiết lập file nghiệp vụ (TypeScript) để kích hoạt thiết kế.'
-                : activeFeature?.description || ''}
-            </p>
+        {/* Feature Header Bar (Chỉ hiển thị khi chưa gắn file BL để nhắc nhở) */}
+        {!isBlBound && (
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
+            <div>
+              <h1 className="text-lg font-bold text-slate-100 flex items-center gap-2.5">
+                <span>{activeFeature?.name || 'Màn hình'}</span>
+              </h1>
+              {activeFeature?.description ? (
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {activeFeature.description}
+                </p>
+              ) : null}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ── NẾU CHƯA GẮN FILE BL: KHÓA CANVAS VÀ HIỂN THỊ MÀN HÌNH THIẾT LẬP ── */}
         {!isBlBound ? (

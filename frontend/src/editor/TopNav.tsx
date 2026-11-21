@@ -44,14 +44,10 @@ export const TopNav: React.FC<TopNavProps> = ({
   branch,
   onLogout,
 }) => {
-  const features = useEditorStore((s) => s.features)
-  const activeFeatureId = useEditorStore((s) => s.activeFeatureId)
   const undo = useEditorStore((s) => s.undo)
   const redo = useEditorStore((s) => s.redo)
   const historyIndex = useEditorStore((s) => s.historyIndex)
   const history = useEditorStore((s) => s.history)
-
-  const activeFeature = features.find((f) => f.id === activeFeatureId)
 
   // Permission Engine Preview Role Simulation (0-second role switch)
   const previewRoleCode = usePermissionEngine((s) => s.previewRoleCode)
@@ -83,15 +79,6 @@ export const TopNav: React.FC<TopNavProps> = ({
             </div>
             <p className="text-[10px] text-slate-400">Web App Visual Framework</p>
           </div>
-        </div>
-
-        <div className="h-5 w-[1px] bg-slate-800" />
-
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-slate-500">Feature:</span>
-          <span className="font-semibold text-slate-200 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700/60">
-            {activeFeature?.name || 'Chưa chọn feature'}
-          </span>
         </div>
       </div>
 

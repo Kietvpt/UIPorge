@@ -7,7 +7,13 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import { useEditorStore } from '@/store/editorStore'
+import {
+  useEditorStore,
+  resolveLocationState,
+  resolveFeatureIdFromLocation,
+  getSavedFeatureId,
+  saveActiveFeatureIdToUrl,
+} from '@/store/editorStore'
 import { useAuthStore } from '@/store/authStore'
 import { apiPageToFeature, getPages, savePage } from '@/api/pagesApi'
 import { LoginScreen } from '@/auth/LoginScreen'
@@ -93,11 +99,11 @@ export function App() {
   // ── Lắng nghe sự kiện Back/Forward của trình duyệt để đổi màn hình ──
   useEffect(() => {
     const handlePopState = () => {
-      const urlParams = new URLSearchParams(window.location.search)
-      const pageId = urlParams.get('feature') || urlParams.get('page')
-      const recId = urlParams.get('id')
+      const features = useEditorStore.getState().features
+      const { featureId, recordKey } = resolveLocationState(features)
+      const pageId = featureId || getSavedFeatureId()
       if (pageId) {
-        setActiveFeature(pageId, recId)
+        setActiveFeature(pageId, recordKey)
       }
     }
     window.addEventListener('popstate', handlePopState)
@@ -119,15 +125,16 @@ export function App() {
           // Đồng bộ tab mở trên WorkspaceTabBar nếu chưa có tab nào
           const navEngine = useNavigationEngine.getState()
           if (navEngine.openTabs.length === 0) {
+            const locState = resolveLocationState(loadedFeatures)
             const activeId = useEditorStore.getState().activeFeatureId
             const activePage =
               loadedFeatures.find((f) => f.id === activeId) ||
               loadedFeatures.find((f) => !f.hidden && !f.isDetail) ||
               loadedFeatures[0]
             if (activePage) {
-              const urlParams = new URLSearchParams(window.location.search)
-              const recId = urlParams.get('id')
+              const recId = locState.recordKey || useEditorStore.getState().activeRecordId
               navEngine.openFeature(activePage.id, recId ? { id: recId } : {}, 'Tab', activePage.name)
+              saveActiveFeatureIdToUrl(activePage.id, recId, loadedFeatures)
             }
           }
         }
@@ -224,9 +231,6 @@ export function App() {
           onLogout={logout}
         />
 
-        {/* ── 1.1 Workspace Multitasking Tab Bar (FeatureTab Navigation Engine) ── */}
-        <WorkspaceTabBar />
-
         {/* Toast Notification */}
         {toast && (
           <div className="fixed top-16 right-6 z-50 bg-emerald-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xl shadow-emerald-950/40 animate-in fade-in slide-in-from-top-2 duration-200">
@@ -234,9 +238,9 @@ export function App() {
           </div>
         )}
 
-        {/* ── 2. Main Workspace Layout ── */}
+        {/* ── 2. Main Workspace Layout: LeftNavbar full height from TopNav to bottom ── */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Thanh Navbar bên trái: Danh mục màn hình (Chuột phải để thêm) */}
+          {/* Thanh Navbar bên trái: Danh mục màn hình (Cao xuyên suốt từ dưới TopNav) */}
           <LeftNavbar width={leftWidth} />
 
           {/* Thanh kéo co giãn bên trái (Left Splitter) */}
@@ -248,32 +252,40 @@ export function App() {
             <div className="w-0.5 h-8 bg-slate-700 group-hover:bg-white rounded-full transition-colors" />
           </div>
 
-          {/* Màn hình làm việc của Feature qua FeatureCanvas */}
-          {isLoading ? (
-            <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">
-              Đang tải dữ liệu từ server...
-            </div>
-          ) : (
-            <FeatureCanvas
-              isEditing={!effectivePreview}
-              activeId={dragState.activeId}
-              overId={dragState.overId}
-            />
-          )}
+          {/* Khung làm việc bên phải: WorkspaceTabBar trên cùng, dưới là Canvas & PropertyPanel */}
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            {/* ── 2.1 Workspace Multitasking Tab Bar (FeatureTab Navigation Engine) ── */}
+            <WorkspaceTabBar />
 
-          {/* Thanh kéo co giãn bên phải (Right Splitter) */}
-          {!effectivePreview && showRightPanel && (
-            <div
-              onMouseDown={startRightResize}
-              className="w-1.5 hover:w-2 bg-transparent hover:bg-blue-500/80 active:bg-blue-500 cursor-col-resize transition-all duration-75 relative group z-20 shrink-0 select-none flex items-center justify-center"
-              title="Kéo sang trái/phải để điều chỉnh độ rộng thanh thuộc tính"
-            >
-              <div className="w-0.5 h-8 bg-slate-700 group-hover:bg-white rounded-full transition-colors" />
-            </div>
-          )}
+            <div className="flex-1 flex overflow-hidden">
+              {/* Màn hình làm việc của Feature qua FeatureCanvas */}
+              {isLoading ? (
+                <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">
+                  Đang tải dữ liệu từ server...
+                </div>
+              ) : (
+                <FeatureCanvas
+                  isEditing={!effectivePreview}
+                  activeId={dragState.activeId}
+                  overId={dragState.overId}
+                />
+              )}
 
-          {/* Thanh quản lý bên phải: Quản lý kích thước, flex/grid, css, sự kiện */}
-          {!effectivePreview && showRightPanel && <PropertyPanel width={rightWidth} />}
+              {/* Thanh kéo co giãn bên phải (Right Splitter) */}
+              {!effectivePreview && showRightPanel && (
+                <div
+                  onMouseDown={startRightResize}
+                  className="w-1.5 hover:w-2 bg-transparent hover:bg-blue-500/80 active:bg-blue-500 cursor-col-resize transition-all duration-75 relative group z-20 shrink-0 select-none flex items-center justify-center"
+                  title="Kéo sang trái/phải để điều chỉnh độ rộng thanh thuộc tính"
+                >
+                  <div className="w-0.5 h-8 bg-slate-700 group-hover:bg-white rounded-full transition-colors" />
+                </div>
+              )}
+
+              {/* Thanh quản lý bên phải: Quản lý kích thước, flex/grid, css, sự kiện */}
+              {!effectivePreview && showRightPanel && <PropertyPanel width={rightWidth} />}
+            </div>
+          </div>
         </div>
 
         {/* ── 3. Drag Overlay (Floating Ghost Preview) ── */}

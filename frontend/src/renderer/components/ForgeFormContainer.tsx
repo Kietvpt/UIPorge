@@ -11,7 +11,7 @@ export const ForgeFormContainer: React.FC<ComponentProps> = ({ node, children })
   const { props, style } = node
   const { flex, flexGrow, flexShrink, flexBasis, minWidth, maxWidth, width, ...visualStyle } = style || {}
 
-  const title = props.title || props.label || 'Biểu Mẫu Doanh Nghiệp'
+  const title = props.label || props.title || 'Biểu Mẫu Doanh Nghiệp'
 
   return (
     <div

@@ -92,7 +92,7 @@ export const ForgeChart: React.FC<ForgeChartProps> = ({
   const totalValue = useMemo(() => chartData.reduce((acc, d) => acc + d.value, 0), [chartData])
   const maxValue = useMemo(() => Math.max(...chartData.map((d) => d.value), 1), [chartData])
 
-  const title = (propsTitle || props.title || node.props?.label || 'Biểu Đồ Thống Kê Sản Lượng') as string
+  const title = (props.label || propsTitle || props.title || 'Biểu Đồ Thống Kê Sản Lượng') as string
   const subtitle = (props.subtitle as string) || (reference ? `Nguồn dữ liệu: ${reference}` : 'Đơn vị: TEUs')
 
   // ── 1. RENDER BIỂU ĐỒ CỘT (BAR CHART) ──

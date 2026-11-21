@@ -13,9 +13,14 @@ export const WorkspaceTabBar: React.FC = () => {
   const activeTabId = useNavigationEngine((s) => s.activeTabId)
   const setActiveTab = useNavigationEngine((s) => s.setActiveTab)
   const closeTab = useNavigationEngine((s) => s.closeTab)
+  const reorderTabs = useNavigationEngine((s) => s.reorderTabs)
   const setActiveFeature = useEditorStore((s) => s.setActiveFeature)
   const isFormDirty = useDataEngine((s) => s.isFormDirty)
   const markFormClean = useDataEngine((s) => s.markFormClean)
+
+  // Drag & drop reordering state
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
   // Quản lý Modal xác nhận khi đóng tab có dữ liệu chưa lưu (Dirty Tracking Guard)
   const [tabToClose, setTabToClose] = useState<ActiveTab | null>(null)
@@ -65,15 +70,51 @@ export const WorkspaceTabBar: React.FC = () => {
   return (
     <>
       <div className="h-9 bg-[#0b1120] border-b border-slate-800/80 px-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0 select-none z-20">
-        {openTabs.map((tab) => {
+        {openTabs.map((tab, idx) => {
           const isActive = tab.id === activeTabId
+          const isDragging = draggedIndex === idx
+          const isOver = dragOverIndex === idx && draggedIndex !== idx
           const dirty = tab.isDirty || (tab.featureId ? isFormDirty(tab.featureId) : false)
 
           return (
             <div
               key={tab.id}
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData('text/plain', String(idx))
+                e.dataTransfer.effectAllowed = 'move'
+                setDraggedIndex(idx)
+              }}
+              onDragOver={(e) => {
+                e.preventDefault()
+                e.dataTransfer.dropEffect = 'move'
+                if (dragOverIndex !== idx) {
+                  setDragOverIndex(idx)
+                }
+              }}
+              onDragLeave={() => {
+                if (dragOverIndex === idx) {
+                  setDragOverIndex(null)
+                }
+              }}
+              onDrop={(e) => {
+                e.preventDefault()
+                if (draggedIndex !== null && draggedIndex !== idx) {
+                  reorderTabs(draggedIndex, idx)
+                }
+                setDraggedIndex(null)
+                setDragOverIndex(null)
+              }}
+              onDragEnd={() => {
+                setDraggedIndex(null)
+                setDragOverIndex(null)
+              }}
               onClick={() => handleSelectTab(tab.id, tab.featureId)}
-              className={`group h-7 px-3 rounded-t-md text-xs font-medium flex items-center gap-2 cursor-pointer transition-all border-t border-x ${
+              className={`group h-7 px-3 rounded-t-md text-xs font-medium flex items-center gap-2 cursor-grab active:cursor-grabbing transition-all border-t border-x relative ${
+                isDragging ? 'opacity-40 scale-95' : ''
+              } ${
+                isOver ? 'ring-1 ring-blue-400 bg-blue-950/40 border-blue-500' : ''
+              } ${
                 isActive
                   ? 'bg-slate-900 border-slate-700 text-blue-400 font-semibold shadow-sm shadow-blue-500/10'
                   : 'bg-transparent border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
@@ -95,6 +136,7 @@ export const WorkspaceTabBar: React.FC = () => {
               {openTabs.length > 1 && (
                 <button
                   type="button"
+                  draggable={false}
                   onClick={(e) => handleCloseTabClick(e, tab)}
                   className="w-4 h-4 rounded-full flex items-center justify-center text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors ml-1 cursor-pointer"
                   title="Đóng tab này"

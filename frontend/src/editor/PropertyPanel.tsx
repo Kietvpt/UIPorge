@@ -16,9 +16,7 @@ import {
   Code,
   Play,
   Database,
-  ShieldCheck,
   CheckCircle2,
-  Lock,
   ChevronUp,
   ChevronDown,
   GripVertical,
@@ -29,8 +27,6 @@ import { UnifiedEventEditor } from './events/UnifiedEventEditor'
 import { parseRawCss, formatStyleToCss } from './cssParser'
 import { ColumnPropertiesModal } from '@/renderer/components/grid/ColumnPropertiesModal'
 import { ComponentPropertiesModal } from './ComponentPropertiesModal'
-import { PolicyMatrixGrid } from './PolicyMatrixGrid'
-import { usePermissionEngine } from '@/core/engines/permissionEngine'
 import {
   moveColumn,
   toggleColumnFreeze,
@@ -205,7 +201,7 @@ interface PropertyPanelProps {
 
 const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
   const [activeTab, setActiveTab] = useState<
-    'layout' | 'children' | 'props' | 'styles' | 'events' | 'data' | 'validation' | 'permissions' | 'columns'
+    'layout' | 'children' | 'props' | 'styles' | 'events' | 'data' | 'columns'
   >('layout')
   const [selectedColumnIndex, setSelectedColumnIndex] = useState<number | null>(null)
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false)
@@ -233,8 +229,6 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
   const updateComponentStyle = useEditorStore((s) => s.updateComponentStyle)
   const updateComponentEvents = useEditorStore((s) => s.updateComponentEvents)
   const updateComponentDataBinding = useEditorStore((s) => s.updateComponentDataBinding)
-  const updateComponentValidation = useEditorStore((s) => s.updateComponentValidation)
-  const updateComponentPermissions = useEditorStore((s) => s.updateComponentPermissions)
   const updateComponentOrder = useEditorStore((s) => s.updateComponentOrder)
   const removeComponent = useEditorStore((s) => s.removeComponent)
   const distributeSiblingWidths = useEditorStore((s) => s.distributeSiblingWidths)
@@ -491,8 +485,10 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
   const effectiveTab =
     !isContainer && (activeTab === 'layout' || activeTab === 'children')
       ? 'props'
+      : isContainer && activeTab === 'data'
+      ? 'props'
       : !isLookupNode && activeTab === 'columns'
-      ? 'data'
+      ? 'props'
       : activeTab
   const layoutMode: LayoutMode = selectedNode.props.layoutMode || 'flex'
   const flexConfig: FlexConfig = (selectedNode.props.flexConfig as FlexConfig) || {
@@ -606,17 +602,19 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
           Events
         </button>
 
-        <button
-          onClick={() => setActiveTab('data')}
-          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'data'
-            ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
-            : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          title="Liên kết dữ liệu thực thể (Data Binding) - Tương đương DataSource trong Core cũ"
-        >
-          <Database className="w-3.5 h-3.5" />
-          Data
-        </button>
+        {!isContainer && (
+          <button
+            onClick={() => setActiveTab('data')}
+            className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'data'
+              ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            title="Liên kết dữ liệu thực thể (Data Binding) - Tương đương DataSource trong Core cũ"
+          >
+            <Database className="w-3.5 h-3.5" />
+            Data
+          </button>
+        )}
 
         {isLookupNode && (
           <button
@@ -632,30 +630,6 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
             <span>Cột Dropdown ({dropdownColumns.length})</span>
           </button>
         )}
-
-        <button
-          onClick={() => setActiveTab('validation')}
-          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'validation'
-            ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
-            : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          title="Quy tắc kiểm tra hợp lệ dữ liệu (Validation Rules)"
-        >
-          <ShieldCheck className="w-3.5 h-3.5" />
-          Validation
-        </button>
-
-        <button
-          onClick={() => setActiveTab('permissions')}
-          className={`px-3 py-2.5 flex items-center justify-center gap-1 border-b-2 shrink-0 transition-colors cursor-pointer ${effectiveTab === 'permissions'
-            ? 'border-blue-500 text-blue-400 bg-slate-800/40 font-bold'
-            : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          title="Phân quyền hiển thị và thao tác theo vai trò (SecurityBL.cs & PolicyEditorBL.cs)"
-        >
-          <Lock className="w-3.5 h-3.5" />
-          Quyền hạn
-        </button>
       </div>
 
       {/* Tab Contents */}
@@ -1169,6 +1143,16 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
         {/* ── TAB 2: PROPS (THUỘC TÍNH NÂNG CAO & GRIDPOLICY INSPECTOR) ── */}
         {effectiveTab === 'props' && (
           <div className="space-y-4">
+            {/* 🔍 Nút mở Modal Toàn Bộ Thông Số (Component Properties) */}
+            <button
+              type="button"
+              onClick={() => setIsComponentModalOpen(true)}
+              className="w-full py-2.5 px-3 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95"
+            >
+              <Sliders className="w-4 h-4 text-emerald-400" />
+              <span>🔍 Mở Toàn Bộ Thông Số (Component Properties)</span>
+            </button>
+
             {/* Thứ Tự & Số Cột Chiếm Dụng (Order & ColSpan) */}
             <div className="p-3 bg-slate-950/60 border border-slate-800 rounded-xl space-y-3">
               <label className="text-[11px] font-bold text-amber-400 uppercase tracking-wider block">
@@ -1664,7 +1648,7 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
                         className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-xs font-semibold transition-colors"
                       >
                         <Sliders className="w-3.5 h-3.5" />
-                        <span>Mở Modal Cấu Hình Đầy Đủ (Chuẩn Ảnh 6)</span>
+                        <span>Mở Toàn Bộ Thông Số Cột</span>
                       </button>
 
                       <div className="grid grid-cols-3 gap-2">
@@ -1806,34 +1790,6 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
                         </label>
                       </div>
 
-                      {/* Sự kiện gắn trên cột (Quick Event Info) */}
-                      <div className="p-2.5 bg-slate-900/90 border border-slate-800 rounded-lg space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                            <Zap className="w-3 h-3 text-amber-400" />
-                            <span>Sự Kiện Cột ({Array.isArray(selectedCol.events) ? selectedCol.events.length : selectedCol.action ? 1 : 0})</span>
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setIsColumnModalOpen(true)}
-                            className="text-[10px] text-emerald-400 hover:text-emerald-300 font-semibold cursor-pointer flex items-center gap-0.5"
-                          >
-                            <span>Cấu hình chi tiết</span>
-                            <span>&rarr;</span>
-                          </button>
-                        </div>
-                        <div className="text-[11px] text-slate-300 font-mono">
-                          {Array.isArray(selectedCol.events) && selectedCol.events.length > 0 ? (
-                            <span className="text-emerald-300">
-                              {selectedCol.events.map((e) => `${e.trigger} ➔ ${e.handlerName || e.action}()`).join(', ')}
-                            </span>
-                          ) : selectedCol.action ? (
-                            <span className="text-emerald-300">click ➔ {selectedCol.action}()</span>
-                          ) : (
-                            <span className="text-slate-500 italic">Chưa gắn sự kiện</span>
-                          )}
-                        </div>
-                      </div>
                     </div>
                   )}
 
@@ -2022,16 +1978,8 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
                   {isTable && 'Cấu hình đối tượng thực thể truy vấn và bộ lọc DATASOURCE cho toàn bộ bảng.'}
                   {isLookup && 'Cấu hình trường dữ liệu lưu trữ, danh mục tra cứu tham chiếu và quy tắc tự động điền (Populate).'}
                   {isInput && 'Cấu hình trường ánh xạ dữ liệu (Field Name) và đồng bộ 2 chiều với mô hình form.'}
-                  {isStaticOrLayout && 'Thành phần giao diện/bố cục. Nhấn nút bên dưới để xem toàn bộ thông số chi tiết.'}
+                  {isStaticOrLayout && 'Thành phần giao diện/bố cục. Quản lý thuộc tính và mở thông số trong tab Props.'}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setIsComponentModalOpen(true)}
-                  className="w-full py-2 px-3 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95"
-                >
-                  <Sliders className="w-4 h-4 text-emerald-400" />
-                  <span>🔍 Mở Toàn Bộ Thông Số Core (Component Properties)</span>
-                </button>
               </div>
 
               {/* ── 1. GIAO DIỆN DÀNH CHO BẢNG DỮ LIỆU (Table / GridView / AdvancedGrid) ── */}
@@ -2741,189 +2689,6 @@ const PropertyPanelComponent: React.FC<PropertyPanelProps> = ({ width }) => {
                     </div>
                   </div>
                 )}
-              </div>
-            </div>
-          )
-        })()}
-
-        {/* ── TAB 6: VALIDATION (QUY TẮC XÁC THỰC) ── */}
-        {effectiveTab === 'validation' && (() => {
-          const val = selectedNode.validation || {}
-
-          return (
-            <div className="space-y-4">
-              <div className="p-3 bg-emerald-950/20 border border-emerald-800/40 rounded-xl space-y-1">
-                <div className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <span>Quy Tắc Xác Thực Dữ Liệu (Validation Rules)</span>
-                </div>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Thiết lập các điều kiện kiểm tra hợp lệ cho ô nhập liệu. Hệ thống sẽ tự động hiển thị thông báo lỗi khi không thỏa mãn.
-                </p>
-              </div>
-
-              {/* Bắt buộc nhập */}
-              <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-200 font-bold">Bắt buộc nhập (Required)</span>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(val.required)}
-                    onChange={(e) => updateComponentValidation(selectedNode.id, { required: e.target.checked })}
-                    className="rounded bg-slate-800 border-slate-700 text-red-500 cursor-pointer"
-                  />
-                </div>
-                {val.required && (
-                  <input
-                    type="text"
-                    placeholder="Thông báo lỗi khi để trống (ví dụ: Trường này là bắt buộc)..."
-                    value={val.requiredMessage || ''}
-                    onChange={(e) => updateComponentValidation(selectedNode.id, { requiredMessage: e.target.value })}
-                    className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-red-500"
-                  />
-                )}
-              </div>
-
-              {/* Độ dài ký tự */}
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Độ dài tối thiểu (Min)
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    placeholder="0"
-                    value={val.minLength !== undefined ? val.minLength : ''}
-                    onChange={(e) =>
-                      updateComponentValidation(selectedNode.id, {
-                        minLength: e.target.value === '' ? undefined : Number(e.target.value),
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Độ dài tối đa (Max)
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    placeholder="255"
-                    value={val.maxLength !== undefined ? val.maxLength : ''}
-                    onChange={(e) =>
-                      updateComponentValidation(selectedNode.id, {
-                        maxLength: e.target.value === '' ? undefined : Number(e.target.value),
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-              </div>
-
-              {/* Regex Pattern */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                  Mẫu Kiểm Tra Regex (Pattern)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ví dụ: ^[A-Z0-9]{8,18}$ (Mã Bill MBL)"
-                  value={val.pattern || ''}
-                  onChange={(e) => updateComponentValidation(selectedNode.id, { pattern: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Thông báo lỗi khi không khớp mẫu Regex..."
-                  value={val.patternMessage || ''}
-                  onChange={(e) => updateComponentValidation(selectedNode.id, { patternMessage: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
-                />
-              </div>
-
-              {/* Custom Validator Function */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                  Hàm Xác Thực Nghiệp Vụ Tùy Biến (Custom BL)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ví dụ: CheckMBL, validateTaxCode..."
-                  value={val.customValidator || ''}
-                  onChange={(e) => updateComponentValidation(selectedNode.id, { customValidator: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-cyan-300 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                />
-                <p className="text-[10px] text-slate-500">
-                  Tên hàm trong file logic (BL) sẽ được gọi để thẩm định dữ liệu nâng cao.
-                </p>
-              </div>
-            </div>
-          )
-        })()}
-
-        {/* ── TAB 7: PHÂN QUYỀN MỊN (FIELD-LEVEL RBAC - KẾ THỪA SECURITYBL & POLICYEDITORBL) ── */}
-        {effectiveTab === 'permissions' && (() => {
-          const perms = selectedNode.permissions || {}
-          const currentRules = perms.rules || []
-
-          return (
-            <div className="space-y-4">
-              <div className="p-3 bg-amber-950/20 border border-amber-800/40 rounded-xl space-y-1">
-                <div className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                  <Lock className="w-4 h-4 text-amber-400" />
-                  <span>Phân Quyền Trường Dữ Liệu (Field-Level RBAC)</span>
-                </div>
-                <p className="text-[11px] text-amber-200/80 leading-relaxed">
-                  Kế thừa trực tiếp từ <code>SecurityBL.cs</code> &amp; <code>PolicyEditorBL.cs</code> của C# Core. Giới hạn hiển thị hoặc quyền thao tác cho từng vai trò trên giao diện.
-                </p>
-              </div>
-
-              {/* Ma Trận Phân Quyền Grid 9 Cột Chuẩn */}
-              <PolicyMatrixGrid
-                rules={currentRules}
-                onChange={(newRules) => {
-                  updateComponentPermissions(selectedNode.id, { rules: newRules })
-                  const activePageId = useEditorStore.getState().activeFeatureId ?? ''
-                  if (activePageId) {
-                    usePermissionEngine.getState().setComponentPolicies(activePageId, selectedNode.id, newRules)
-                  }
-                }}
-                pageId={selectedNode.pageId || useEditorStore.getState().activeFeatureId || ''}
-                nodeId={selectedNode.id}
-                fieldName={selectedNode.dataBinding?.fieldName}
-              />
-
-              {/* Hành vi khi không có quyền (deniedBehavior) */}
-              <div className="space-y-2 pt-2 border-t border-slate-800">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                  Hành Vi Khi Không Có Quyền (Denied Behavior)
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => updateComponentPermissions(selectedNode.id, { deniedBehavior: 'hide' })}
-                    className={`p-2.5 rounded-lg border text-left text-xs transition-colors ${(perms.deniedBehavior || 'hide') === 'hide'
-                      ? 'bg-blue-600/20 border-blue-500 text-blue-200'
-                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
-                      }`}
-                  >
-                    <div className="font-bold mb-0.5">Ẩn Hoàn Toàn</div>
-                    <div className="text-[10px] text-slate-400">Không hiển thị trên màn hình</div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => updateComponentPermissions(selectedNode.id, { deniedBehavior: 'disable' })}
-                    className={`p-2.5 rounded-lg border text-left text-xs transition-colors ${perms.deniedBehavior === 'disable'
-                      ? 'bg-blue-600/20 border-blue-500 text-blue-200'
-                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
-                      }`}
-                  >
-                    <div className="font-bold mb-0.5">Khóa Mờ (Disable)</div>
-                    <div className="text-[10px] text-slate-400">Hiển thị xám chỉ đọc</div>
-                  </button>
-                </div>
               </div>
             </div>
           )

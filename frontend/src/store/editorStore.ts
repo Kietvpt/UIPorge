@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import { useDataEngine } from '@/core/engines/dataEngine'
 import type {
   ComponentNode,
   FeaturePage,
@@ -93,6 +94,109 @@ const MAX_HISTORY = 40
 const initialFeatures: FeaturePage[] = []
 
 // ── URL & LocalStorage Persistence Helpers ──
+export function slugify(text: string): string {
+  if (!text) return ''
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
+export function normalizeRoute(route?: string | null): string {
+  if (!route) return ''
+  let cleaned = route.trim().toLowerCase()
+  if (!cleaned.startsWith('/')) {
+    cleaned = '/' + cleaned
+  }
+  if (cleaned.length > 1 && cleaned.endsWith('/')) {
+    cleaned = cleaned.replace(/\/+$/, '')
+  }
+  return cleaned
+}
+
+export function getCleanRouteForFeature(feat?: FeaturePage | null): string {
+  if (!feat) return '/'
+  if (feat.route && feat.route.trim()) {
+    return normalizeRoute(feat.route)
+  }
+  const slug = slugify(feat.title || feat.name || feat.id)
+  return normalizeRoute(slug || feat.id)
+}
+
+export function resolveLocationState(features: FeaturePage[]): {
+  featureId: string | null
+  recordKey: string | null
+} {
+  if (typeof window === 'undefined' || !features || features.length === 0) {
+    return { featureId: null, recordKey: null }
+  }
+  try {
+    const rawPath = window.location.pathname
+    const cleanPath = normalizeRoute(rawPath)
+
+    if (cleanPath && cleanPath !== '/') {
+      // Sắp xếp các features theo độ dài route giảm dần để ưu tiên prefix dài nhất
+      const sortedFeatures = [...features].sort((a, b) => {
+        const routeA = getCleanRouteForFeature(a)
+        const routeB = getCleanRouteForFeature(b)
+        return routeB.length - routeA.length
+      })
+
+      // 1. Khớp hoàn toàn (exact match: e.g. /transactions)
+      for (const feat of sortedFeatures) {
+        const featRoute = getCleanRouteForFeature(feat)
+        if (
+          featRoute === cleanPath ||
+          normalizeRoute(feat.route) === cleanPath ||
+          normalizeRoute(`/${feat.id}`) === cleanPath
+        ) {
+          const urlParams = new URLSearchParams(window.location.search)
+          const qId = urlParams.get('id')
+          return { featureId: feat.id, recordKey: qId || null }
+        }
+      }
+
+      // 2. Khớp prefix (prefix match: e.g. /fcl-import/FCLI-260200033345 hoặc /fcl-import/1)
+      for (const feat of sortedFeatures) {
+        const featRoute = getCleanRouteForFeature(feat)
+        if (featRoute && featRoute !== '/' && cleanPath.startsWith(featRoute + '/')) {
+          const rest = cleanPath.slice(featRoute.length + 1)
+          const firstSegment = rest.split('/')[0]
+          const recordKey = firstSegment ? decodeURIComponent(firstSegment) : null
+          return { featureId: feat.id, recordKey }
+        }
+      }
+    }
+
+    // 3. Fallback query param cũ (?feature=... & ?id=...)
+    const urlParams = new URLSearchParams(window.location.search)
+    const queryFeature = urlParams.get('feature') || urlParams.get('page')
+    const queryId = urlParams.get('id')
+    if (queryFeature) {
+      const matchedByQuery = features.find(
+        (f) => String(f.id) === String(queryFeature) || normalizeRoute(f.route) === normalizeRoute(queryFeature)
+      )
+      return {
+        featureId: matchedByQuery ? matchedByQuery.id : queryFeature,
+        recordKey: queryId || null,
+      }
+    }
+
+    return { featureId: null, recordKey: null }
+  } catch {
+    return { featureId: null, recordKey: null }
+  }
+}
+
+export function resolveFeatureIdFromLocation(features: FeaturePage[]): string | null {
+  return resolveLocationState(features).featureId
+}
+
 export function getSavedFeatureId(): string | null {
   if (typeof window === 'undefined') return null
   try {
@@ -108,9 +212,22 @@ export function getSavedFeatureId(): string | null {
 export function getSavedRecordId(): string | null {
   if (typeof window === 'undefined') return null
   try {
+    // 1. Đọc segment thứ 2 từ pathname nếu có (/fcl-import/FCLI-260200033345 -> FCLI-260200033345)
+    const rawPath = window.location.pathname
+    const cleanPath = normalizeRoute(rawPath)
+    if (cleanPath && cleanPath !== '/') {
+      const parts = cleanPath.split('/').filter(Boolean)
+      if (parts.length >= 2) {
+        return decodeURIComponent(parts[1])
+      }
+    }
+
+    // 2. Query param cũ fallback (?id=1)
     const urlParams = new URLSearchParams(window.location.search)
     const fromUrl = urlParams.get('id')
     if (fromUrl) return fromUrl
+
+    // 3. LocalStorage fallback
     return localStorage.getItem('uiforge_active_transaction_id')
   } catch {
     return null
@@ -149,20 +266,40 @@ export function saveActiveFeatureIdToUrl(
   try {
     localStorage.setItem('uiforge_active_feature_id', id)
     const url = new URL(window.location.href)
-    url.searchParams.set('feature', id)
 
-    // Xác định xem feature đích có phải màn hình danh sách hay không
+    // XÓA hoàn toàn feature, page, và id khỏi searchParams (100% Clean Route)
+    url.searchParams.delete('feature')
+    url.searchParams.delete('page')
+    url.searchParams.delete('id')
+
+    // Xác định route thân thiện từ feature
     const features = featureList || useEditorStore.getState()?.features || []
     const feat = features.find((f) => String(f.id) === String(id) || f.route === `/${id}` || f.route === id)
+    const cleanRoute = feat ? getCleanRouteForFeature(feat) : (id ? normalizeRoute(id) : '/')
+
+    // Xác định xem feature đích có phải màn hình danh sách hay không
     const isList = feat ? isListFeature(feat) : (id === '6' || id === '1' || id === '3')
 
-    if (isList || recordId === null || recordId === '') {
-      url.searchParams.delete('id')
+    if (isList || recordId === null || recordId === '' || recordId === undefined) {
+      url.pathname = cleanRoute
       try {
         localStorage.removeItem('uiforge_active_transaction_id')
       } catch {}
-    } else if (recordId !== undefined && recordId !== null) {
-      url.searchParams.set('id', String(recordId))
+    } else {
+      // Màn hình chi tiết có recordId
+      let pathSuffix = String(recordId)
+      try {
+        const dataEngineState = useDataEngine?.getState?.()
+        const formRecord = dataEngineState?.formRecords?.[id] || dataEngineState?.formRecords?.['default']
+        if (formRecord && (String(formRecord.id ?? formRecord.Id) === String(recordId) || recordId === 'new')) {
+          const bizCode = formRecord.jobNo || formRecord.JobNo || formRecord.code || formRecord.Code
+          if (bizCode) {
+            pathSuffix = String(bizCode)
+          }
+        }
+      } catch {}
+
+      url.pathname = `${cleanRoute}/${encodeURIComponent(pathSuffix)}`
       try {
         localStorage.setItem('uiforge_active_transaction_id', String(recordId))
       } catch {}
@@ -240,20 +377,24 @@ export const useEditorStore = create<EditorState>()(
           })
           return
         }
+        const locState = resolveLocationState(features)
+        const idFromLocation = locState.featureId
         const savedId = getSavedFeatureId()
         // Ưu tiên chọn:
-        // 1. Feature đã lưu trong URL/LocalStorage nếu còn tồn tại
-        // 2. Feature /transactions (Danh Sách Lô Hàng)
-        // 3. Feature hiển thị đầu tiên (không bị ẩn / không phải detail)
-        // 4. Feature đầu tiên
+        // 1. Khớp từ window.location.pathname qua resolveLocationState
+        // 2. Feature đã lưu trong URL/LocalStorage nếu còn tồn tại
+        // 3. Feature /transactions (Danh Sách Lô Hàng)
+        // 4. Feature hiển thị đầu tiên (không bị ẩn / không phải detail)
+        // 5. Feature đầu tiên
         const target =
+          (idFromLocation && features.find((f) => f.id === idFromLocation)) ||
           (savedId && features.find((f) => f.id === savedId || f.route === `/${savedId}` || f.route === savedId)) ||
           features.find((f) => f.route === '/transactions' || f.name.includes('Lô Hàng')) ||
           features.find((f) => !f.hidden && !f.isDetail) ||
           features[0]
 
         const isList = isListFeature(target)
-        const recId = isList ? null : getSavedRecordId()
+        const recId = isList ? null : (locState.recordKey || getSavedRecordId())
         saveActiveFeatureIdToUrl(target.id, recId, features)
         set({
           features,
