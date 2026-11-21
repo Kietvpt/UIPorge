@@ -44,10 +44,15 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Resolved NuGet version: $VERSION"
 
-      - name: Restore & Pack NuGet Package
+      - name: Restore, Build & Pack NuGet Package
         run: |
           dotnet restore backend/UIForge.Core/UIForge.Core.csproj -p:PackageVersion=${{ steps.ver.outputs.version }}
+          dotnet build backend/UIForge.Core/UIForge.Core.csproj \
+            --no-restore \
+            --configuration Release \
+            -p:PackageVersion=${{ steps.ver.outputs.version }}
           dotnet pack backend/UIForge.Core/UIForge.Core.csproj \
+            --no-build \
             --no-restore \
             --configuration Release \
             --output ./nuget-artifacts \
