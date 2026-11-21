@@ -50,17 +50,14 @@ namespace UIForge.Core.Entities
         [MaxLength(255)]
         public string? ScriptFile { get; set; }
 
-        [Column(TypeName = "nvarchar(max)")]
         public string? ScriptContent { get; set; }
 
         [Required]
         [MaxLength(100)]
         public string LayoutTemplateId { get; set; } = "sidebar-left";
 
-        [Column(TypeName = "nvarchar(max)")]
         public string? LayoutConfigJson { get; set; }
 
-        [Column(TypeName = "nvarchar(max)")]
         public string? FeaturePropsJson { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
