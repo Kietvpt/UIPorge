@@ -62,5 +62,6 @@
   "voice": "Aoede",
   "id": "luna",
   "isActive": false,
-  "avatar": "assets/luna_avatar.webp"
+  "avatar": "assets/luna_avatar.webp",
+  "casual_role": "Giám đốc Trải nghiệm & Thiết kế Giao diện Đa nhận thức"
 }

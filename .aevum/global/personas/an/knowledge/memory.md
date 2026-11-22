@@ -65,3 +65,35 @@ BỘ RULE PHÁT TRIỂN & VẬN HÀNH DỰ ÁN UIFORGE (AEVUM CORE):
 4. THỐNG NHẤT FORMAT SỰ KIỆN: ∀ component & cột bảng MUST ∋ tab Event goal: xem/upd, use: chung format δ (trigger, handlerName, action, payload). ∀ tương tác mở detail, save, del... đều đi qua Event Runner gọi fn BL.
 5. sync state URL & TAB: Màn hình danh sách !ALLOW giữ tham số id (xóa id khỏi URL & ε). Màn hình chi tiết & các tab đa nhiệm MUST sync chính xác record ID tương ứng khi rep: || mở bản ghi.
 6. VỆ SINH MÃ NGUỒN: Xóa ∀ file script tạm thời (.sql, .py) sau khi chk: done, bảo toàn cấu trúc tài liệu & comment.
+
+
+### [LEARN - GLOBAL] [SEMANTIC_RULE] - 11/9/2026, 6:51:13 PM
+[MAP α:navigationEngine]
+ĐỊNH HƯỚNG CỐT LÕI DỰ ÁN UIFORGE:
+1. BẢN CHẤT: UIForge Web Application Visual Framework & Low-Code/Pro-Code Engine dành cho doanh nghiệp, kế thừa & phát triển từ SYS Core C# cũ (rep: Bridge.NET bằng React + TypeScript + ASP.NET Core 8).
+2. NHIỆM VỤ CHÍNH: Xây dựng nền tảng Core UIForge hoàn chỉnh, mạnh mẽ, đa năng (Core Engines: dataEngine, α, eventRunner, ForgeTable/GridPolicy, Form Controls, Sec, Reports).
+3. VAI TRÒ LOGIC NGHIỆP VỤ: Các FEAT nghiệp vụ cụ thể (như Logistics, FCL Import, Khách hàng, Doanh thu...) CHỈ MẪU THỬ NGHIỆM (Test Benches / Proof Concept) goal: kiểm thử, chứng minh & hoàn thiện năng lực Core UIForge, KHÔNG MUST đích đến cuối cùng dự án.
+4. NGUYÊN TẮC: Luôn tập trung nâng cấp năng lực Core, không goal: logic nghiệp vụ do: loãng || dính vào Core. ∀ nghiệp vụ MUST chạy trên nền tảng Core qua Event & BL.
+
+
+### [LEARN - GLOBAL] [SEMANTIC_RULE] - 11/9/2026, 6:55:45 PM
+[MAP α:navigationEngine,β:ForgeTextBox,γ:DynamicODataController,δ:MetadataDiscoveryService,ε:ComponentGroups]
+[REF [F1]:/Vite/Next.js]
+MÔ HÌNH ĐÓNG GÓI 2 THƯ VIỆN ĐỘC LẬP UIFORGE:
+1. FRONTEND PACKAGE (@uiforge/core - NPM Package):
+[LIST:Đóng gói cài đặt qua npm/yarn vào bất kỳ ứng dụng React[F1] nào.;∋: ∀ Generic Components trung lập (ForgeTable, β, ForgeSelect...), Visual Canvas Designer, & các Core Runtime Engines (dataEngine, α, eventRunner).;Tuyệt đối trung lập với ∀ nghiệp vụ (Domain-Agnostic), ∌ code logic ngành nghề nào.]
+2. BACKEND PACKAGE (UIForge.Core - NuGet Package cho ASP.NET Core .NET 8):
+[LIST:Cài đặt qua `dotnet add package UIForge.Core` vào bất kỳ WebAPI .NET 8 nào.;Cung cấp: BaseEntity chuẩn (Id, Active soft-del, Audit dates/USER), γ, Generic REST CRUD, δ (Reflection entity metadata), & bộ Schema bảng Core MUST (FEAT, Components, ε, GridPolicies, FeaturePolicies).]
+
+BỘ RULE DÀNH CHO LẬP TRÌNH VIÊN use: CORE UIFORGE:
+[LIST:∀ bảng nghiệp vụ chỉ cần kế thừa BaseEntity.;∀ logic nghiệp vụ viết độc lập trong *.bl.ts, không đụng vào Core package.;conn giao diện với BL qua SYS ComponentEvent (Event Runner).;use: tiện ích dataEngine & α goal: thao tác info & chuyển màn hình siêu tốc.]
+
+
+### [LEARN - GLOBAL] [DIRECTIVE_CONSTRAINT] - 11/9/2026, 7:08:51 PM
+[MAP α:DynamicMetadataController,β:PagesController,γ:LogisticsEntities]
+Kế hoạch tái cấu trúc UIForge thành 2 thư viện độc lập: 1. Frontend Library (@uiforge/core - NPM) ∋ ∀ Components, Engines, Renderer, Editor. 2. Backend Library (UIForge.Core - NuGet) ∋ BaseEntity, Generic α, β, Core Services. ∀ logic Logistics/ERP (FCL Import, Transaction Detail, *.bl.ts, γ) chỉ đóng vai trò Host Demo / Sample Test Bench, !ALLOW nằm trong Core libraries.
+
+
+### [LEARN - GLOBAL] [EPISODIC_EVENT] - 11/9/2026, 7:26:02 PM
+[REF [F1]:src/core/engines/,[F2]:src/core/index.ts]
+done xuất sắc Giai đoạn 1 & 2 tái cấu trúc UIForge: 1. Backend: Tạo OK thư viện NuGet UIForge.Core (.NET 8 Class Library) sinh file UIForge.Core.1.0.0.nupkg; UIForge.API chỉ đóng vai trò Web Host tham chiếu UIForge.Core. 2. Frontend: Di chuyển ∀ Core Engines sang [F1] cô lập các file *.bl.ts nghiệp vụ thành Host Sample Demo, tạo entry-point [F2] cho thư viện @uiforge/core & cấu hình lệnh build:lib xuất ra dist-lib/uiforge-core.es.js & dist-lib/uiforge-core.cjs.js trong 627ms. SYS chạy 100% OK.

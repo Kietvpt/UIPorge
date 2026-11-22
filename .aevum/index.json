@@ -41,7 +41,23 @@
           "id": "feat_component_renderer",
           "name": "Forge UI Component Renderers & 120Hz Smoothness",
           "path": "features/feat_component_renderer",
-          "plans": []
+          "plans": [
+            {
+              "name": "rebuild_uiforge_docs_v2_plan.md",
+              "path": "domains/dom_frontend_studio/features/feat_component_renderer/plans/rebuild_uiforge_docs_v2_plan.md",
+              "status": "done",
+              "progress": 0,
+              "updatedAt": "2026-11-22T10:12:19.092Z",
+              "history": [
+                {
+                  "timestamp": "2026-11-22T10:12:19.092Z",
+                  "status": "done",
+                  "agent": "Kael",
+                  "summary": "Đã kiểm toán toàn diện UIForge Core (26 UI Components, 14 Frontend Engines, 10 Backend .NET 8 Controllers, 12 Entities, 10 Services) và xây mới hoàn toàn D:\\I2FLabs\\UIForge-Docs v2 bằng Vite + React 18 + Tailwind v4 + MDX, song ngữ VI/EN, Light/Dark mode, Ctrl+K Search và Live Interactive Playground cài trực tiếp @kietvpt/uiforge-core@1.0.1. Build production PASS (0 errors, 2.94s)."
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "feat_logic_runtime",
@@ -72,13 +88,13 @@
     "handshake_registry": "mcp/handshake_registry.json",
     "knowledge_rules": "Every active persona has a dedicated knowledge folder in `.aevum/global/personas/<id>/knowledge/`. Log project-specific patterns and agent-exclusive wisdom there.",
     "debtHistory": [
-      92,
       90,
       95,
       93,
       97,
       100,
-      40
+      40,
+      27
     ]
   },
   "agents": [
