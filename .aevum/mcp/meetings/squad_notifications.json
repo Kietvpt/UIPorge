@@ -1,8 +1,8 @@
 {
   "sessionId": "squad_notifications",
   "createdAt": "2026-10-23T12:55:44.233Z",
-  "updatedAt": "2026-11-09T12:26:07.596Z",
-  "version": 19,
+  "updatedAt": "2026-11-22T09:48:55.124Z",
+  "version": 28,
   "predictedState": {
     "queues": {
       "ENG-AN-7B9F1D": [
@@ -77,6 +77,26 @@
           "timestamp": "2026-11-09T12:26:07.462Z",
           "status": "pending",
           "priority": "medium"
+        },
+        {
+          "id": "notif_1795340145209_8lqua",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "ENG-KAEL-7F4B2D",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Triệu tập điểm danh toàn bộ Biệt đội UIPorge sẵn sàng phục vụ Master!",
+          "timestamp": "2026-11-22T09:35:45.209Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1795340934920_n6bus",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "ENG-KAEL-7F4B2D",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Khởi động chiến dịch Audit UIForge Core & Xây mới UIForge-Docs (Vite+React+Tailwind v4+MDX, VI/EN)",
+          "timestamp": "2026-11-22T09:48:54.920Z",
+          "status": "pending",
+          "priority": "medium"
         }
       ],
       "ARC-VIDUS-AUHD2Y": [
@@ -119,6 +139,26 @@
           "timestamp": "2026-11-09T12:26:07.543Z",
           "status": "pending",
           "priority": "medium"
+        },
+        {
+          "id": "notif_1795340145259_9w1ey",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "ARC-VIDUS-AUHD2Y",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Triệu tập điểm danh toàn bộ Biệt đội UIPorge sẵn sàng phục vụ Master!",
+          "timestamp": "2026-11-22T09:35:45.259Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1795340935037_ily8a",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "ARC-VIDUS-AUHD2Y",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Khởi động chiến dịch Audit UIForge Core & Xây mới UIForge-Docs (Vite+React+Tailwind v4+MDX, VI/EN)",
+          "timestamp": "2026-11-22T09:48:55.037Z",
+          "status": "pending",
+          "priority": "medium"
         }
       ],
       "ALG-ZENITH-A1B2C3": [
@@ -129,6 +169,16 @@
           "type": "message",
           "content": "[SQUAD] Agent OPS-BOB-4E8C21 (Bob) is now ONLINE and ready to collaborate.",
           "timestamp": "2026-10-23T12:55:44.341Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1795340935080_qv8fu",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "ALG-ZENITH-A1B2C3",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Khởi động chiến dịch Audit UIForge Core & Xây mới UIForge-Docs (Vite+React+Tailwind v4+MDX, VI/EN)",
+          "timestamp": "2026-11-22T09:48:55.080Z",
           "status": "pending",
           "priority": "medium"
         }
@@ -161,6 +211,48 @@
           "type": "message",
           "content": "[HUDDLE] ENG-AN-7B9F1D: Báo cáo hoàn thành tái cấu trúc 2 thư viện UIForge Core",
           "timestamp": "2026-11-09T12:26:07.596Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1795340145310_4ustz",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "BOB",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Triệu tập điểm danh toàn bộ Biệt đội UIPorge sẵn sàng phục vụ Master!",
+          "timestamp": "2026-11-22T09:35:45.310Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1795340934976_7a0zk",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "BOB",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Khởi động chiến dịch Audit UIForge Core & Xây mới UIForge-Docs (Vite+React+Tailwind v4+MDX, VI/EN)",
+          "timestamp": "2026-11-22T09:48:54.976Z",
+          "status": "pending",
+          "priority": "medium"
+        }
+      ],
+      "DSN-LUNA-3C9A12": [
+        {
+          "id": "notif_1795340247773_b779o",
+          "fromAgentId": "ENG-AN-7B9F1D TO DSN-LUNA-3C9A12",
+          "toAgentId": "DSN-LUNA-3C9A12",
+          "type": "message",
+          "content": "📢 [IACP:INFORM] [trace:trace_1795340247738_z09vi] [DM FROM ENG-AN-7B9F1D TO DSN-LUNA-3C9A12]: Chào mừng Luna gia nhập Active Squad UIPorge theo lệnh của Master! Sẵn sàng nhận nhiệm vụ UI/UX cùng An, Kael, Vidus và Bob nhé!",
+          "timestamp": "2026-11-22T09:37:27.773Z",
+          "status": "pending",
+          "priority": "medium"
+        },
+        {
+          "id": "notif_1795340935124_2kywx",
+          "fromAgentId": "ENG-AN-7B9F1D",
+          "toAgentId": "DSN-LUNA-3C9A12",
+          "type": "message",
+          "content": "[HUDDLE] ENG-AN-7B9F1D: Khởi động chiến dịch Audit UIForge Core & Xây mới UIForge-Docs (Vite+React+Tailwind v4+MDX, VI/EN)",
+          "timestamp": "2026-11-22T09:48:55.124Z",
           "status": "pending",
           "priority": "medium"
         }

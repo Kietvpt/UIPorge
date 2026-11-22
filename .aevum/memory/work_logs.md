@@ -822,3 +822,17 @@
 - **🔜 Trạng thái bàn giao buổi sáng cho Master**:
   - Hệ thống đã sẵn sàng 100%. Master chỉ cần mở trình duyệt tại `http://localhost:5173/` để kiểm tra và tương tác trực tiếp!
 
+
+---
+### [2026-11-22 17:12] — An & Biệt đội UIPorge (Kael, Vidus, Zenith, Luna, Bob)
+- **🎯 Nhiệm vụ**: Kiểm toán toàn diện UIForge Core (`D:\I2FLabs\UIPorge`) và đập đi xây lại toàn bộ `D:\I2FLabs\UIForge-Docs` (từ Docusaurus sang Vite + React 18 + Tailwind v4 + MDX).
+- **📦 Package & Tích hợp**:
+  - Cài đặt trực tiếp `@kietvpt/uiforge-core@^1.0.1` từ GitHub Packages (`https://npm.pkg.github.com`) với cấu hình bảo mật tại `~/.npmrc` và `.npmrc.example` (tuyệt đối không lưu token trong repo).
+  - Kiểm toán 26 UI Components, 14 Frontend Core Engines/Contracts, 10 Backend .NET 8 Controllers, 12 Core Entities, 10 Zero-Dependency Services, SignalR Hub và RBAC/ABAC Filter.
+- **🛠️ Thành phẩm tại `D:\I2FLabs\UIForge-Docs`**:
+  - Kiến trúc Registry-Driven (`src/registry/components/*.ts`) giúp dễ dàng bổ sung/chỉnh sửa component & props trong tương lai.
+  - Live Interactive Playground (`src/components/playground/ComponentPlayground.tsx`) render trực tiếp 26 component thật từ `@kietvpt/uiforge-core` kèm Controls chỉnh props realtime, JSON Schema Editor và Copy React Code.
+  - Song ngữ Việt – Anh (`VI / EN`), Light / Dark mode Developer Studio Modern, Command Palette Search (`Ctrl+K`), và 13 trang hướng dẫn chi tiết (Getting Started, Core Engines, Backend .NET 8, Extending Docs).
+- **✅ Kiểm chứng**:
+  - `tsc -b && vite build`: PASS (0 errors, 2236 modules, 2.94s).
+  - Dev Server đang chạy tại `http://localhost:5175/`.

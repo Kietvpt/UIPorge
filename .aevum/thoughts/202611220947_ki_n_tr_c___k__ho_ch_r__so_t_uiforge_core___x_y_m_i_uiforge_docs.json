@@ -1,0 +1,9 @@
+{
+  "personaId": "ENG-AN-7B9F1D",
+  "topic": "Kiến trúc & Kế hoạch Rà soát UIForge Core + Xây mới UIForge-Docs",
+  "content": "Master yêu cầu rà soát toàn bộ UIForge Core (Frontend @uiforge/core + Backend UIForge.Core), viết tài liệu chi tiết toàn bộ tính năng/component/props, và đập đi xây lại D:\\I2FLabs\\UIForge-Docs (hiện là Docusaurus) thành web tài liệu hiện đại có cài trực tiếp @uiforge/core để live-demo từng component và dễ mở rộng trong tương lai. Bước 1: Chốt 4 quyết định kiến trúc với Master qua ask_question (Tech stack, Ngôn ngữ, Cách phân phối package .tgz/npm để deploy Vercel, Phong cách UI & Playground). Bước 2: Sau khi Master chốt, phân công Squad (An: điều phối & viết docs, Kael: audit Frontend Core & Playground, Vidus: audit kiến trúc tổng thể & Backend .NET, Zenith: audit Data/OData/Validation/Resilience engines, Luna: thiết kế UI/UX Docs & Design System, Bob: cấu hình build/deploy Vercel & script sync package).",
+  "priority": "high",
+  "id": "thought_1795340857165",
+  "timestamp": "2026-11-22T09:47:37.165Z",
+  "isRead": false
+}
